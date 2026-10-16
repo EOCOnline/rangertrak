@@ -1,6 +1,6 @@
 <!-- E-187 phase B (ADR D-58, 2026-10-15): the places half of the "Import, export & print"
-     panel, in the same card style as the one on Rangers. It hides itself in field mode. No Print
-     card yet (phase D). The file input is triggered from a real button via .click(), called
+     panel, in the same card style as the one on Rangers. It hides itself in field mode. Phase D
+     (2026-10-16) added the Print card and the print-only places sheet at the foot of this file. The file input is triggered from a real button via .click(), called
      synchronously inside the click handler, as on Rangers. -->
 <rangertrak-io-panel class="map-print-hide">
   <mat-card appearance="outlined" class="rt-mission-card rt-io-card">
@@ -82,5 +82,68 @@
     </mat-card-content>
   </mat-card>
 
+  <!-- E-187 phase D: a places list on paper, beside Export. It uses Export's category choice (and
+       "only in view" on Leaflet). The existing "Print map" is a different print and is unchanged. -->
+  <mat-card appearance="outlined" class="rt-mission-card rt-io-card">
+    <mat-card-header>
+      <mat-card-title>Print places</mat-card-title>
+      <mat-card-subtitle data-testid="placesPrintCount">
+        Prints {{ chosen().length }} of {{ places().length }} places
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="rt-action-bar__buttons places-io__format">
+        <mat-form-field class="places-io__control">
+          <mat-label>Coordinates</mat-label>
+          <mat-select [value]="coordFormat()" (selectionChange)="setCoordFormat($event.value)">
+            <mat-option value="DD" title="Decimal degrees">DD</mat-option>
+            <mat-option value="DDM" title="Degrees and decimal minutes (air operations)">DDM</mat-option>
+            <mat-option value="USNG" title="US National Grid, the same grid as MGRS (ground search and rescue)">USNG</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button matButton="filled" type="button" [disabled]="chosen().length === 0 || printPreparing()"
+          data-testid="printPlaces" (click)="onBtnPrintPlaces()"
+          title="A list of the chosen places by category, with a small map of them. Opens your browser's print dialog.">
+          <mat-icon>print</mat-icon>
+          {{ printPreparing() ? 'Preparing…' : 'Print' }}
+        </button>
+      </div>
+      <p class="places-io__links">
+        @if (engine() === 'leaflet') {
+          Prints the categories ticked under Export places, with a map of them on top.
+        } @else {
+          Prints the list only: switch to the main map to print a map with it.
+        }
+      </p>
+    </mat-card-content>
+  </mat-card>
+
   <rangertrak-layers-card kind="places" />
 </rangertrak-io-panel>
+
+<!-- E-187 phase D: the places sheet. Hidden on screen; while the Print card's print runs it is the
+     only thing on paper besides the small map above it (styles.scss, mapLeaflet.component.scss). -->
+@if (sheet(); as s) {
+<section class="rt-sheet rt-sheet--places" data-testid="placesSheet">
+  <rangertrak-print-sheet-head title="Places"
+    [detail]="s.count + (s.count === 1 ? ' place' : ' places') + ' of ' + places().length + (s.scope ? ', ' + s.scope : '')"
+    [printedAt]="s.printedAt" />
+  @if (!s.withMap) {
+  <p class="rt-sheet__none">Map not included: switch to the main map to print it.</p>
+  }
+  @for (g of s.groups; track g.label) {
+  <h2>{{ g.label }} ({{ g.rows.length }})</h2>
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Address</th><th>Coordinates</th><th>Note</th></tr>
+    </thead>
+    <tbody>
+      @for (r of g.rows; track $index) {
+      <tr><td>{{ r.name }}</td><td>{{ r.address }}</td><td>{{ r.coordinates }}</td><td>{{ r.note }}</td></tr>
+      }
+    </tbody>
+  </table>
+  }
+</section>
+}

@@ -774,3 +774,39 @@ mat-slide-toggle {
     height: 100%;
   }
 }
+
+// E-187 Layers phase D (ADR D-58): the small map at the top of the Print card's places sheet.
+// A portrait page: the map box is the top third, full width; the list follows (places-io). None
+// of Print map's sheet furniture belongs here - no title/legend panels, north arrow or edge
+// ticks (the sheet has its own heading). The radio log's entries and paths are taken off the map
+// by preparePlacesPrint().
+@media print {
+  :host-context(body.rt-print-places) {
+    .mapLeaflet-frame {
+      --rt-print-reserve: 0mm;
+      height     : 80mm;
+      margin-bottom: 3mm;
+    }
+
+    .map-print-panel,
+    .map-edge-ticks,
+    rangertrak-map-print-furniture {
+      display: none !important;
+    }
+  }
+}
+
+// While the places map is prepared (preparePlacesPrint), the map is given its printed size on
+// screen too, so the tiles fetched are the ones the sheet shows. 190 mm is A4's printable width,
+// the narrower of A4 and Letter. Screen only: on paper the rules above win.
+@media screen {
+  :host-context(body.rt-print-places-prep) .mapLeaflet-frame {
+    width    : 190mm;
+    max-width: none;
+    height   : 80mm;
+  }
+
+  :host-context(body.rt-print-places-prep) #mapLeaflet-main {
+    height: 100%;
+  }
+}

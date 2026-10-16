@@ -1,3 +1,5 @@
+@use "../../styles/print-sheet" as sheet;
+
 // https://www.ag-grid.com/angular-data-grid/themes-v23-migration/
 //@ use "@material/banner";
 //@ use "@material/banner/styles";
@@ -282,3 +284,16 @@ label {
   gap                  : 0 var(--rt-gap);
   align-items          : start;
 }
+
+// E-187 phase D: while the Print card's contact sheet prints (body.rt-print-roster, set around
+// window.print()), the page's own content steps aside and the sheet (styles.scss) is all that shows.
+@media print {
+  :host-context(body.rt-print-roster) {
+    .privacy-bar,
+    #rangersgrid {
+      display: none;
+    }
+  }
+}
+
+@include sheet.print-sheet(rt-print-roster, (16%, 28%, 25%, 17%, 14%));

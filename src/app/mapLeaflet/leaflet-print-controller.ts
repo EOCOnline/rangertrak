@@ -8,6 +8,7 @@ import {
 } from '../domain/map-print-layout'
 import { printMapSheet } from '../map/map-print/map-print-sheet'
 import type { MissionType } from '../shared/services'
+import type { MissionLocationType } from '../shared/services/mission-location.interface'
 import type { LeafletOverlays } from './leaflet-overlays'
 
 /** What LeafletPrintController needs from the map component (a narrow view, not the component itself). */
@@ -83,6 +84,14 @@ export class LeafletPrintController {
   private readonly printMedia = typeof window !== 'undefined' && window.matchMedia
     ? window.matchMedia('print') : undefined
   private readonly onPrintMediaChange = () => {
+    // E-187 phase D: the Print card's places list prints a small map of its own (see
+    // preparePlacesPrint). It has no title/legend panels, rings, fanning or edge ticks, so none
+    // of the sheet layout below runs; the map only needs re-measuring at the printed box size.
+    if (document.body.classList.contains('rt-print-places')) {
+      this.lMap?.invalidateSize()
+      this.edgeTicks?.nativeElement.replaceChildren()
+      return
+    }
     const printing = !!this.printMedia?.matches
     // 2026-10-01, John: E-152b - order matters. Markers become individual ones, the frame is
     // re-measured at the sheet's size, rings go on (at that size), the legend re-renders with
@@ -214,6 +223,89 @@ export class LeafletPrintController {
     }
   }
 
+
+  /**
+   * E-187 Layers phase D (ADR D-58): the small map at the top of the Print card's places sheet.
+   * Not an image (tile canvases are cross-origin): the live map is printed, as Print map does,
+   * only smaller. Before the print dialog opens this
+   * - sizes the map like its printed box (`rt-print-places-prep`, see the scss),
+   * - shows only the places being printed (the other places, the radio log entries and the ranger
+   *   paths are taken off for the print; grids and rings the user switched on stay),
+   * - fits the map to those places with some padding, and
+   * - waits for the tiles it now needs (at most 6 s).
+   * Returns the function that puts the map and its markers back as they were.
+   */
+  async preparePlacesPrint(places: readonly MissionLocationType[]): Promise<() => void> {
+    const map = this.lMap
+    if (!map || !places.length) {
+      return () => { }
+    }
+    const view = { center: map.getCenter(), zoom: map.getZoom() }
+    document.body.classList.add('rt-print-places-prep')
+    map.invalidateSize()
+
+    const keyOf = (lat: number, lng: number, name: string) => `${lat},${lng},${name}`
+    const wanted = new Set(places.map(p => keyOf(p.lat, p.lng, p.name)))
+    const hiddenPlaces: L.Layer[] = []
+    this.locationsLayer.eachLayer(layer => {
+      if (layer instanceof L.Marker) {
+        const at = layer.getLatLng()
+        if (!wanted.has(keyOf(at.lat, at.lng, layer.options.title ?? ''))) {
+          hiddenPlaces.push(layer)
+        }
+      }
+    })
+    hiddenPlaces.forEach(layer => this.locationsLayer.removeLayer(layer))
+    const locationsWereOff = !map.hasLayer(this.locationsLayer)
+    if (locationsWereOff) {
+      map.addLayer(this.locationsLayer)
+    }
+    // The radio log's entries and ranger paths (with their minutes badges) are not part of a places list.
+    const entriesWereOn = map.hasLayer(this.myMarkerCluster)
+    if (entriesWereOn) {
+      map.removeLayer(this.myMarkerCluster)
+    }
+    const trailsWereOn = map.hasLayer(this.myTrailsLayer)
+    if (trailsWereOn) {
+      map.removeLayer(this.myTrailsLayer)
+    }
+
+    map.fitBounds(L.latLngBounds(places.map(p => [p.lat, p.lng] as L.LatLngTuple)),
+      { padding: [28, 28], maxZoom: 15, animate: false })
+    await this.waitForTiles(6000)
+
+    let undone = false
+    return () => {
+      if (undone || !this.lMap) {
+        return
+      }
+      undone = true
+      document.body.classList.remove('rt-print-places-prep')
+      hiddenPlaces.forEach(layer => this.locationsLayer.addLayer(layer))
+      if (locationsWereOff) {
+        map.removeLayer(this.locationsLayer)
+      }
+      if (entriesWereOn) {
+        map.addLayer(this.myMarkerCluster)
+      }
+      if (trailsWereOn) {
+        map.addLayer(this.myTrailsLayer)
+      }
+      map.invalidateSize()
+      map.setView(view.center, view.zoom, { animate: false })
+    }
+  }
+
+  /** Resolves once the map has no tile still loading, or after `maxMs`. */
+  private async waitForTiles(maxMs: number): Promise<void> {
+    const root = this.mapContainer?.nativeElement
+    const started = Date.now()
+    await new Promise(r => setTimeout(r, 150)) // let Leaflet ask for the tiles the new view needs
+    while (root && Date.now() - started < maxMs
+      && root.querySelector('.leaflet-tile-pane .leaflet-tile:not(.leaflet-tile-loaded)')) {
+      await new Promise(r => setTimeout(r, 100))
+    }
+  }
 
   /**
    * 2026-09-30, John: "printers show more resolution than screens" - base-map tiles are

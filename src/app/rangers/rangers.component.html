@@ -219,12 +219,37 @@
             <!-- E-109 Setup files v2 (2026-08-31): a pre-mission provisioning tool that packages
                  any combination of rangers + photos, locations, and mission settings - a separate
                  page, linked from here since it's the natural next stop from roster management. -->
-            <a matButton="outlined" routerLink="/prep"
-              title="Package this roster and its photos, locations, and/or mission settings into one or more files for another device - or load ones someone handed you">
+            <a matButton="outlined" routerLink="/mission" fragment="setup-file"
+              title="Package this roster and its photos, places and/or mission settings into a Setup file for another device - or load one someone handed you. Opens the Setup file card on the Mission page.">
               <mat-icon>layers</mat-icon>
               Setup files
             </a>
           </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- E-187 phase D (ADR D-58): a contact sheet on paper, beside Export. Follows the grid's
+           selection or filter, as Export does. It carries names and phone numbers (rule 5). -->
+      <mat-card appearance="outlined" class="rt-mission-card rt-io-card">
+        <mat-card-header>
+          <mat-card-title>Print roster</mat-card-title>
+          <mat-card-subtitle data-testid="rosterPrintCount">
+            Prints {{ printCount() }} of {{ rangers().length }}
+            @if (selectedCount() > 0) { (selected) } @else if (filterChips().length > 0) { (filtered) }
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="rt-action-bar__buttons">
+            <button matButton="filled" type="button" (click)="onBtnPrintRoster()" [disabled]="printCount() === 0"
+              data-testid="printRoster"
+              title="A contact sheet: call sign, name, role, phone and ID, grouped by team. Opens your browser's print dialog.">
+              <mat-icon>print</mat-icon>
+              Print
+            </button>
+          </div>
+          <p class="rangers__io-links">
+            A contact sheet by team. It shows names and phone numbers, so keep the paper safe.
+          </p>
         </mat-card-content>
       </mat-card>
 
@@ -267,8 +292,28 @@
 
   </div>
 
-
-
+  <!-- E-187 phase D: the contact sheet. Hidden on screen; the only thing that shows on paper
+       while the Print card's print is running (styles.scss, rangers.component.scss). -->
+  @if (rosterSheet(); as sheet) {
+  <section class="rt-sheet rt-sheet--roster" data-testid="rosterSheet">
+    <rangertrak-print-sheet-head title="Contact sheet"
+      [detail]="sheet.count + (sheet.count === 1 ? ' person' : ' people') + ' of ' + rangers().length"
+      [printedAt]="sheet.printedAt" />
+    @for (g of sheet.groups; track g.label) {
+    <h2>{{ g.label }} ({{ g.rows.length }})</h2>
+    <table>
+      <thead>
+        <tr><th>Call sign</th><th>Name</th><th>Role</th><th>Phone</th><th>{{ idLabel() }}</th></tr>
+      </thead>
+      <tbody>
+        @for (r of g.rows; track $index) {
+        <tr><td>{{ r.callsign }}</td><td>{{ r.name }}</td><td>{{ r.role }}</td><td>{{ r.phone }}</td><td>{{ r.id }}</td></tr>
+        }
+      </tbody>
+    </table>
+    }
+  </section>
+  }
 
   <br />
 

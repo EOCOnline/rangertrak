@@ -1,5 +1,7 @@
 import { Injectable, signal } from '@angular/core'
 
+import type { CoordinateFormat } from '../domain/coordinate'
+import type { MissionLocationType } from '../shared/services/mission-location.interface'
 import type { PlaceBounds } from '../domain/places-file'
 
 export type MapEngine = 'leaflet' | 'maplibre'
@@ -23,6 +25,21 @@ export class MapEngineService {
    * every move, and cleared when it goes away.
    */
   readonly viewBounds = signal<PlaceBounds | null>(null)
+
+  /**
+   * The format the Leaflet map's coordinate readout is written in (DD, DDM or USNG). Here rather
+   * than in the map component so the Print card's places list can use the same one. Session only,
+   * as the readout always was: a reload starts at DD again.
+   */
+  readonly coordFormat = signal<CoordinateFormat>('DD')
+
+  /**
+   * E-187 phase D: the Leaflet map's side of "Print places". Set by the Leaflet component while
+   * it is mounted (null under MapLibre, D-56). Given the places being printed it frames the map on
+   * them, shows only their markers, sizes it for the sheet and waits for its tiles; it returns
+   * the function that puts the map back, to call once the print is over.
+   */
+  readonly placesPrinter = signal<((places: readonly MissionLocationType[]) => Promise<() => void>) | null>(null)
 
   setEngine(engine: MapEngine): void {
     this.engine.set(engine)

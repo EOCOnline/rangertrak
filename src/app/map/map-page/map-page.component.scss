@@ -219,3 +219,16 @@
     max-width: 100%;
   }
 }
+
+// E-187 Layers phase D: the Print card's places sheet. Leaflet's map is the top of that sheet
+// (mapLeaflet.component.scss); under MapLibre the sheet is the list alone, so the map area and
+// its title band step aside. The sheet writes its own heading.
+@media print {
+  :host-context(body.rt-print-places) .map-print-header {
+    display: none !important;
+  }
+
+  :host-context(body.rt-print-places-nomap) .map-fullscreen-area {
+    display: none;
+  }
+}

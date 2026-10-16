@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core'
+import { ApplicationRef, ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
@@ -26,6 +26,11 @@ import { LOCKED_FILE_MESSAGE, readEnvelope } from '../../shared/export/handover-
 import { LayersCardComponent } from '../../shared/io-panel/layers-card.component'
 import { LayerService } from '../../shared/services/layer.service'
 import { recordableLayerName } from '../../domain/layers'
+import type { CoordinateFormat } from '../../domain/coordinate'
+import { buildPlacesPrint, PlacesPrintGroup } from '../../domain/places-print'
+import { PrintSheetHeadComponent } from '../../shared/print-sheet/print-sheet-head.component'
+import { showFirstPrintTip } from '../../shared/export/print-tip'
+import { armPrintTitle } from '../../shared/export/print-title'
 import { MapEngineService } from '../map-engine.service'
 import type { PlacesImportDialogResult } from '../places-import-dialog/places-import-dialog.component'
 
@@ -51,7 +56,7 @@ type ReadPlaces = PlacesParseResult & {
 @Component({
   selector: 'rangertrak-places-io',
   standalone: true,
-  imports: [IoPanelComponent, LayersCardComponent, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule],
+  imports: [IoPanelComponent, LayersCardComponent, PrintSheetHeadComponent, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule],
   templateUrl: './places-io.component.html',
   styleUrls: ['./places-io.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -66,6 +71,7 @@ export class PlacesIoComponent {
   private readonly missionService = inject(MissionService)
   private readonly engineService = inject(MapEngineService)
   private readonly document = inject(DOCUMENT)
+  private readonly appRef = inject(ApplicationRef)
 
   /** A fresh array each time: the service mutates its own list in place. */
   readonly places = signal<MissionLocationType[]>([])
@@ -89,6 +95,17 @@ export class PlacesIoComponent {
     categories: this.selectedCategories(),
     bounds: this.inViewOnly() && this.canUseView() ? this.engineService.viewBounds() : null,
   }))
+
+  /** E-187 phase D: the places sheet being printed; null except while the print dialog is open. */
+  readonly sheet = signal<{
+    groups: PlacesPrintGroup[], count: number, printedAt: Date, withMap: boolean, scope: string,
+  } | null>(null)
+  readonly printPreparing = signal(false)
+  /** The format the sheet writes coordinates in; the same one as the map's readout (DD, DDM or USNG). */
+  readonly coordFormat = this.engineService.coordFormat
+  setCoordFormat(value: CoordinateFormat): void {
+    this.coordFormat.set(value)
+  }
 
   /** The name offered for a Setup file until the user types their own. */
   readonly defaultLayerName = computed(() => `${this.eventName()} places ${this.today()}`)
@@ -188,7 +205,7 @@ export class PlacesIoComponent {
     return parseKmlPlaces(new TextDecoder().decode(entries[key]), parseXml)
   }
 
-  /** A Setup file: its places go through the same preview; people and settings are left for the Setup files page. */
+  /** A Setup file: its places go through the same preview; people and settings are left for the Setup file card on the Mission page. */
   private async readSetupFile(file: File): Promise<ReadPlaces> {
     const { extractMissionZip, layerName, entryCountOf } = await import('../../shared/export/mission-zip')
     const zipBytes = new Uint8Array(await file.arrayBuffer())
@@ -196,7 +213,7 @@ export class PlacesIoComponent {
     const { manifest } = extractMissionZip(zipBytes)
     if (!manifest.locations) {
       throw new Error('This Setup file does not carry any places, so there is nothing here to put on the map. '
-        + 'If it carries people or settings, load it from the Setup files page.')
+        + 'If it carries people or settings, load it from the Setup file card on the Mission page.')
     }
     const others = [manifest.rangers && 'people', manifest.settings && 'mission settings']
       .filter((c): c is string => !!c)
@@ -212,7 +229,7 @@ export class PlacesIoComponent {
       },
       notes: [
         ...(others.length
-          ? [`This file also carries ${others.join(' and ')}. Importing places does not apply those; use the Setup files page for the whole file.`]
+          ? [`This file also carries ${others.join(' and ')}. Importing places does not apply those; use the Setup file card on the Mission page for the whole file.`]
           : []),
         ...(entryCountOf(manifest)
           ? [`This file also holds ${entryCountOf(manifest)} radio log entr${entryCountOf(manifest) === 1 ? 'y' : 'ies'}; merge them from Radio Log → Hand over to another scribe.`]
@@ -305,7 +322,7 @@ export class PlacesIoComponent {
         const bytes = await buildMissionZipBytes({
           schemaVersion: MISSION_ZIP_SCHEMA_VERSION,
           exportedAt,
-          // Same JSON.parse(JSON.stringify(...)) workaround the Setup files page uses for a default-exporting module.
+          // Same JSON.parse(JSON.stringify(...)) workaround the Setup file card uses for a default-exporting module.
           appVersion: JSON.parse(JSON.stringify(packageJson)).version,
           ...contents,
           layer: layerFor(contents, name, stamp),
@@ -324,6 +341,80 @@ export class PlacesIoComponent {
     } catch (e: any) {
       this.log.error(`Failed to export places: ${e?.message ?? e}`, this.id)
       alert(`Could not export the places.\n\n${e?.message ?? e}`)
+    }
+  }
+
+  // ── Print ─────────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Prints the chosen places as a list grouped by category (the mission's own order), with a
+   * small map of them on top. The categories and "only in view" choice are Export's. The sheet is
+   * a print-only block (hidden on screen, styles.scss); under Leaflet the live map is framed on
+   * these places first and printed small (LeafletPrintController.preparePlacesPrint), under
+   * MapLibre (D-56) the sheet is the list alone and says so. A portrait page for this print only.
+   */
+  async onBtnPrintPlaces(): Promise<void> {
+    const places = this.chosen()
+    if (!places.length || this.printPreparing()) {
+      if (!places.length) {
+        alert('There are no places to print. Tick at least one category that has places in it.')
+      }
+      return
+    }
+    showFirstPrintTip()
+    this.printPreparing.set(true)
+    let restoreMap: () => void = () => { }
+    try {
+      const printer = this.engine() === 'leaflet' ? this.engineService.placesPrinter() : null
+      if (printer) {
+        restoreMap = await printer(places)
+      }
+      const settings = this.missionService.settings
+      this.sheet.set({
+        groups: buildPlacesPrint(places, (settings?.locationTypes ?? []).map(t => t.type), this.coordFormat()),
+        count: places.length,
+        printedAt: new Date(),
+        withMap: !!printer,
+        scope: this.inViewOnly() && this.canUseView() ? 'only places in the map view' : '',
+      })
+      this.appRef.tick() // the sheet must be in the page before the browser lays it out
+
+      const style = this.document.createElement('style')
+      style.textContent = '@page { size: portrait; margin: 10mm 10mm 14mm 10mm;'
+        + ' @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 9pt sans-serif; color: #000; } }'
+      this.document.head.appendChild(style)
+      this.document.body.classList.add('rt-print-places')
+      if (!printer) {
+        this.document.body.classList.add('rt-print-places-nomap')
+      }
+      const untitle = armPrintTitle('Places', settings)
+      let finished = false
+      const finish = () => {
+        if (finished) return
+        finished = true
+        this.document.body.classList.remove('rt-print-places', 'rt-print-places-nomap')
+        style.remove()
+        this.sheet.set(null)
+        restoreMap()
+        untitle()
+      }
+      window.addEventListener('afterprint', finish, { once: true })
+      this.log.info(`Printing ${places.length} places.`, this.id)
+      const started = Date.now()
+      window.print()
+      // Where print() returns at once (the dialog is not modal), wait for afterprint, and as a
+      // last resort the next tap or click, rather than pulling the sheet from under the preview.
+      if (Date.now() - started > 500) {
+        finish()
+      } else {
+        setTimeout(() => this.document.addEventListener('pointerdown', finish, { once: true }), 1000)
+      }
+    } catch (e: any) {
+      restoreMap()
+      this.log.error(`Failed to print places: ${e?.message ?? e}`, this.id)
+      alert(`Could not print the places.\n\n${e?.message ?? e}`)
+    } finally {
+      this.printPreparing.set(false)
     }
   }
 

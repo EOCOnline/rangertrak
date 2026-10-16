@@ -73,8 +73,6 @@ const iconDefault = L.icon({
 })
 L.Marker.prototype.options.icon = iconDefault;
 
-// See MapLeafletComponent.coordFormat.
-const coordFormat = signal<CoordinateFormat>('DD')
 // See MapLeafletComponent.ringStepIndex: 0 = Auto, n = RING_STEPS_MILES[n - 1].
 const ringStepIndex = signal(0)
 
@@ -159,7 +157,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   // 2026-09-30, John: the readout under the map (and click-to-copy) in DD, DDM or USNG.
   // Module-level, so the choice survives leaving and returning to the Map page; not saved,
   // so a reload starts at DD again.
-  readonly coordFormat = coordFormat
+  readonly coordFormat = this.engineService.coordFormat
   readonly mouseCoords = computed(() =>
     formatLatLng(this.mouseLatLng().lat, this.mouseLatLng().lng, this.coordFormat()))
 
@@ -357,6 +355,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       this.syncOverview?.()  // E-157: the sizes are final now; make the overview match
     })
     this.print.attach()
+    // E-187 phase D: lets the Map page's Print card print its places with a map on top.
+    this.engineService.placesPrinter.set(places => this.print.preparePlacesPrint(places))
   }
 
   /**
@@ -1108,7 +1108,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     printTitle: () => this.printTitle,
     printLegend: () => this.printLegend,
     printTitleTemplate: () => this.printTitleTemplate,
-    coordFormat,
+    coordFormat: this.engineService.coordFormat,
     printPreparing: this.printPreparing,
     badgeMarkers: this.badgeMarkers,
     detectChanges: () => this.cdr.detectChanges(),
@@ -1432,6 +1432,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   override ngOnDestroy(): void {
     super.ngOnDestroy()
     this.engineService.viewBounds.set(null)
+    this.engineService.placesPrinter.set(null)
     this.locationsSubscription?.unsubscribe()
     clearTimeout(this.afterViewInitTimer)
     this.print.dispose()

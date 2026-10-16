@@ -224,6 +224,8 @@ rangertrak-footer {
   body.rt-print-309,
   body.rt-print-aar,
   body.rt-print-summary,
+  body.rt-print-roster,
+  body.rt-print-places,
   body.rt-print-map {
     rangertrak-navbar,
     rangertrak-stale-origin-notice,
@@ -242,6 +244,8 @@ rangertrak-footer {
   body.rt-print-309,
   body.rt-print-aar,
   body.rt-print-summary,
+  body.rt-print-roster,
+  body.rt-print-places,
   body.rt-print-map {
     &,
     .mat-drawer-container,
@@ -255,6 +259,8 @@ rangertrak-footer {
   html:has(body.rt-print-309),
   html:has(body.rt-print-aar),
   html:has(body.rt-print-summary),
+  html:has(body.rt-print-roster),
+  html:has(body.rt-print-places),
   html:has(body.rt-print-map) {
     background: #fff !important;
   }

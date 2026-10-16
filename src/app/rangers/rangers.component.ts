@@ -6,7 +6,7 @@ import { bundledRangerImage } from '../shared/ranger-image'
 import { Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
-import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core'
+import { AfterViewInit, ApplicationRef, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { RouterLink } from '@angular/router'
@@ -49,7 +49,11 @@ import { DevicePrefsService } from '../shared/services/device-prefs.service'
 import { LOCKED_FILE_MESSAGE, readEnvelope } from '../shared/export/handover-kind'
 import { entryCountOf, extractMissionZip, layerName, MissionZipManifest, MissionZipPhoto } from '../shared/export/mission-zip'
 import { describeRangerMerge, normalizeRangerIds } from '../domain/ranger-migration'
-import { rosterToRows, rowsToCsv } from '../domain/roster-sheet'
+import { idColumnLabel, rosterToRows, rowsToCsv } from '../domain/roster-sheet'
+import { buildRosterPrint, RosterPrintGroup } from '../domain/roster-print'
+import { PrintSheetHeadComponent } from '../shared/print-sheet/print-sheet-head.component'
+import { armPrintTitle } from '../shared/export/print-title'
+import { showFirstPrintTip } from '../shared/export/print-tip'
 import type { RosterImportDialogResult } from './roster-import-dialog/roster-import-dialog.component'
 import { CustomTooltip } from './customTooltip'
 
@@ -57,7 +61,7 @@ import { CustomTooltip } from './customTooltip'
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, LayersCardComponent, RouterLink, FilterChipsComponent, MatFormFieldModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule],
+  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, LayersCardComponent, PrintSheetHeadComponent, RouterLink, FilterChipsComponent, MatFormFieldModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']
@@ -66,6 +70,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private id = 'Ranger Component'
   private readonly layerService = inject(LayerService)
+  private readonly appRef = inject(ApplicationRef)
   title = 'Rangers & Teams'
   pageDescr = `Grid display of rangers & teams on this mission`
 
@@ -112,6 +117,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   public selectedCount = signal(0)
   /** Export everyone, ignoring the selection and any filters. */
   public allRows = signal(false)
+  /** E-187 phase D: the contact sheet being printed; null except while the print dialog is open. */
+  public rosterSheet = signal<{ groups: RosterPrintGroup[], count: number, printedAt: Date } | null>(null)
   /** "N photos for M rangers" for the rows an export would take. */
   public exportPhotoCount = signal(0)
   public exportRangerCount = signal(0)
@@ -637,7 +644,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * A Setup file (.zip, E-109 v2: `mission-zip.json` plus an optional `photos/`) - the same shape
-   * `/prep` builds. Applies ONLY the rangers and their photos, matching this page's scope
+   * the Setup file card on the Mission page builds. Applies ONLY the rangers and their photos, matching this page's scope
    * ("roster and nothing else"): settings or locations the file also carries are not applied
    * here (the preview says so). Its rangers go through the same preview as any other list.
    */
@@ -657,7 +664,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!manifest.rangers) {
       alert(`"${file.name}" does not carry a Rangers category - there is nothing here for `
         + `Import a list to apply. If it carries locations or settings instead, use the `
-        + `Setup files page (/prep) to load those.`)
+        + `Setup file card on the Mission page to load those.`)
       return
     }
 
@@ -667,7 +674,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     const notes = [
       ...(named ? [`From "${named}".`] : []),
       ...(otherCategories.length
-        ? [`This file also carries ${otherCategories.join(' and ')}. Import a list does not apply those; use the Setup files page for the whole file.`]
+        ? [`This file also carries ${otherCategories.join(' and ')}. Import a list does not apply those; use the Setup file card on the Mission page for the whole file.`]
         : []),
       ...(entryCountOf(manifest)
         ? [`This file also holds ${entryCountOf(manifest)} radio log entr${entryCountOf(manifest) === 1 ? 'y' : 'ies'}; merge them from Radio Log → Hand over to another scribe.`]
@@ -845,9 +852,9 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** The rows an export covers: everyone when asked (the changes-export fallback), else the selection if there
    *  is one, else what the grid is showing (filtered and sorted). */
-  private rowsToExport(everyone = false): RangerType[] {
+  private rowsToExport(everyone = false, ignoreAllRows = false): RangerType[] {
     const all = this.rangerService.rangers
-    if (everyone || this.allRows() || !this.gridApi?.getSelectedRows) {
+    if (everyone || (this.allRows() && !ignoreAllRows) || !this.gridApi?.getSelectedRows) {
       return all
     }
     const selected: RangerType[] = this.gridApi.getSelectedRows()
@@ -895,6 +902,59 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
         `rangertrak-roster-${stamp}${partial}.csv`)
     }
     this.log.info(`Exported ${rows.length} rangers as ${this.exportFormat()}.`, this.id)
+  }
+
+  //--------------------------------------------------------------------------
+  // Print (E-187 Layers phase D, ADR D-58)
+
+  /** The mission's name for the ID column ("Ranger ID" when it has none), for the contact sheet's heading. */
+  public idLabel(): string {
+    return idColumnLabel(this.settings?.idFieldLabel)
+  }
+
+  /** How many rows the Print card will print (its subtitle): the selection if there is one, else what the grid shows. */
+  public printCount(): number {
+    return this.selectedCount() > 0 ? this.selectedCount() : this.shownCount()
+  }
+
+  /**
+   * Prints a contact sheet of the rows the grid is showing or has selected, grouped by team.
+   * The sheet is a print-only block in this page (hidden on screen, see styles.scss); this
+   * renders it, puts the body class on for the duration of the print, and takes it away again,
+   * as Radio Log's ICS-309 does. The sheet holds names and phone numbers, so it is a paper
+   * copy of the roster: the card says so.
+   */
+  onBtnPrintRoster(): void {
+    const rows = this.rowsToExport(false, true)
+    if (!rows.length) {
+      alert('There are no rangers to print.')
+      return
+    }
+    this.rosterSheet.set({ groups: buildRosterPrint(rows), count: rows.length, printedAt: new Date() })
+    this.appRef.tick() // the sheet must be in the page before the browser lays it out
+    showFirstPrintTip()
+    document.body.classList.add('rt-print-roster')
+    const untitle = armPrintTitle('Roster', this.settings)
+    let finished = false
+    const finish = () => {
+      if (finished) return
+      finished = true
+      document.body.classList.remove('rt-print-roster')
+      this.rosterSheet.set(null)
+      untitle()
+    }
+    window.addEventListener('afterprint', finish, { once: true })
+    this.log.info(`Printing a contact sheet of ${rows.length} rangers.`, this.id)
+    const started = Date.now()
+    window.print()
+    // print() blocks until the dialog closes on desktop browsers. Where it returns at once, wait
+    // for afterprint - and, as a last resort, the next tap or click - rather than pulling the
+    // sheet out from under the preview.
+    if (Date.now() - started > 500) {
+      finish()
+    } else {
+      setTimeout(() => document.addEventListener('pointerdown', finish, { once: true }), 1000)
+    }
   }
 
   /**

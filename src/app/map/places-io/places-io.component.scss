@@ -1,3 +1,5 @@
+@use "../../../styles/print-sheet" as sheet;
+
 :host {
   display: block;
 }
@@ -43,3 +45,5 @@
   flex      : 1 1 14rem;
   min-width : 0;
 }
+
+@include sheet.print-sheet(rt-print-places, (24%, 26%, 20%, 30%));
