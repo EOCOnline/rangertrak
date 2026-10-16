@@ -1,4 +1,5 @@
-import { Routes } from '@angular/router'
+import { inject } from '@angular/core'
+import { Router, Routes } from '@angular/router'
 
 import { EntryComponent } from './entry/entry.component'
 import { unsavedChangesGuard } from './shared/guards/unsaved-changes.guard'
@@ -121,7 +122,8 @@ export const APP_ROUTES: Routes = [
   // E-109's Setup files page (/prep) folded into Mission's Data safety card (E-187 phase D, ADR
   // D-58). The redirect keeps old links, bookmarks and Help text working; the fragment scrolls to
   // the card (the router's anchor scrolling, plus Mission's masonry re-scroll).
-  { path: 'prep', redirectTo: 'mission#setup-file', pathMatch: 'full' },
+  // A function, because a fragment written into a string redirect is read as part of the path.
+  { path: 'prep', pathMatch: 'full', redirectTo: () => inject(Router).parseUrl('/mission#setup-file') },
 
   // LAZY child routes (via dynamic import)
   // 2026-08-22: was 'about' - the nav item and page heading were renamed "About" ->

@@ -919,7 +919,13 @@ async function checkPrintCards(fx) {
     await evaluate(`!document.body.classList.contains('rt-print-roster') && !document.querySelector('[data-testid=rosterSheet]')`), true)
   check('Print roster says how many it prints', /Prints \d+ of \d+/.test(await evaluate(`document.querySelector('[data-testid=rosterPrintCount]')?.textContent || ''`)), true)
 
+  const placesFile = path.join(path.dirname(fx.csvPath), 'e2e-print-places.csv')
+  fs.writeFileSync(placesFile, ['Name,Category,Latitude,Longitude', 'E2E Print A,E2E Prints,47.41,-122.46', 'E2E Print B,E2E Prints,47.42,-122.47'].join('\r\n') + '\r\n')
   await goto('/map', 3500)
+  await setFileInput('#importPlacesFile', placesFile)
+  await clickImportDialog('Continue')
+  check('Print places: two places to print were added', await clickImportDialog('Add to map'), true)
+  await sleep(1500)
   await evaluate(`localStorage.removeItem('printTipShown')`)
   await evaluate(stub)
   await evaluate(`window.__sheetId = 'placesSheet'; document.querySelector('[data-testid=printPlaces]')?.click()`)
