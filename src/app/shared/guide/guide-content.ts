@@ -526,7 +526,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             // 2026-10-15, E-187 phase B (ADR D-58): places in and out, in the Import, export & print panel.
             heading: 'Putting places on the map, and handing them on',
             bullets: [
-              'Import, export & print, near the bottom of this page, puts places on the map from an Excel or CSV sheet, a Google My Maps export (KML or KMZ) or a GeoJSON file. You see what would change first, nothing is deleted, and rows without a latitude and longitude are skipped.',
+              'Import, export & print, near the bottom of this page, puts places on the map from an Excel or CSV sheet, a Google My Maps export (KML or KMZ) or a GeoJSON file. You see what would change first, nothing is removed without asking, and rows without a latitude and longitude are skipped.',
               'Export places hands on the categories you tick, as a spreadsheet, a CSV or a named Setup file.',
               'Give an import a Layer name and the device remembers it. Importing a newer version under the same name asks, with the answer set to No, about places that are no longer in it. A place renamed in the newer file is updated, not added twice. "Layers on this device" lists what is remembered and has Remove this layer; places you added by hand are never touched.'
             ]
