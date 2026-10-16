@@ -111,7 +111,36 @@
         <p class="pid__note">{{ n }}</p>
       }
     }
-    <p class="pid__safe">Add to map adds new places and updates matching ones (matched by name); no place is deleted.</p>
+    @if (canNameLayer) {
+      <div class="pid__layer-field">
+        <mat-form-field subscriptSizing="dynamic" class="pid__layer-name">
+          <mat-label>Layer name</mat-label>
+          <input matInput type="text" autocomplete="off" data-testid="layerName" [attr.list]="'pid-layer-names'"
+            [value]="layerName()" (input)="layerName.set($any($event.target).value)" />
+          <mat-hint>Names this list so the device remembers it. Leave blank to import without keeping track.</mat-hint>
+        </mat-form-field>
+        <datalist id="pid-layer-names">
+          @for (n of knownLayerNames(); track n) {
+            <option [value]="n"></option>
+          }
+        </datalist>
+      </div>
+
+      @if (leftBehind().length) {
+        <fieldset class="pid__left" data-testid="layerLeft">
+          <legend>
+            {{ leftBehind().length }} {{ leftBehind().length === 1 ? 'place is' : 'places are' }}
+            no longer in {{ layerName().trim() }}. Remove them?
+          </legend>
+          <p class="pid__note">{{ leftBehindNames() }}. Only places this layer brought in are listed; places another layer also holds stay.</p>
+          <mat-radio-group [value]="removeLeft()" (change)="removeLeft.set($event.value)" aria-label="Remove the places that left this layer?">
+            <mat-radio-button [value]="false" data-testid="layerKeep">No, keep them</mat-radio-button>
+            <mat-radio-button [value]="true" data-testid="layerRemove">Yes, remove them</mat-radio-button>
+          </mat-radio-group>
+        </fieldset>
+      }
+    }
+    <p class="pid__safe">Add to map adds new places and updates matching ones (matched by id first, then by name); no place is deleted unless you answer Yes above.</p>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
     <button matButton type="button" (click)="cancel()">Cancel</button>

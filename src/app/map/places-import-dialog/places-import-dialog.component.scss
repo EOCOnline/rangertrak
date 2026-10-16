@@ -70,3 +70,16 @@
 .pid__layer { margin: 0 0 0.75em; font-weight: bold; }
 
 .pid__plain { margin: 0; }
+
+.pid__layer-field { margin-top: 1em; }
+.pid__layer-name { width: 100%; max-width: 28rem; }
+
+.pid__left {
+  margin: 1em 0 0;
+  padding: 0.5em 0.75em;
+  border: 1px solid var(--rt-line);
+  border-radius: 4px;
+
+  legend { font-weight: bold; padding: 0 0.25em; }
+  mat-radio-group { display: flex; flex-wrap: wrap; gap: 0 1.5em; }
+}

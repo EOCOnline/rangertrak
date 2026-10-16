@@ -9,6 +9,8 @@ import {
 import { SheetFile } from '../../shared/import/sheet-reader'
 import { RangerService, RangerType } from '../../shared/services'
 import { DevicePrefsService } from '../../shared/services/device-prefs.service'
+import { LayerService } from '../../shared/services/layer.service'
+import { layersOfKind, suggestLayerName } from '../../domain/layers'
 
 /** What the Rangers page hands the dialog. */
 export type RosterImportDialogData = {
@@ -23,6 +25,13 @@ export type RosterImportDialogData = {
   sheet?: SheetFile
   /** Extra lines for the preview (e.g. what else a Setup file carries). */
   notes?: string[]
+  /** False for a hand-over (D-59), which is never a layer: the dialog then offers no layer name. */
+  trackable?: boolean
+  /** The name a Setup file calls itself; a spreadsheet's is suggested from its file name. */
+  layerName?: string
+  /** The "as of" date and source the Setup file gave itself; today for anything else. */
+  layerAsOf?: string
+  layerSource?: string
 }
 
 /** What the dialog hands back. Nothing has been saved yet. */
@@ -30,6 +39,10 @@ export type RosterImportDialogResult = {
   action: 'add' | 'replace'
   incoming: RangerType[]
   merge: RangerMergeResult
+  /** E-187 phase C: the layer to remember this import as, or null when the name was left blank. */
+  layer: { name: string, asOf: string, source?: string } | null
+  /** Uids the user agreed to remove because they left the layer. Empty unless they chose Remove. */
+  removeUids: string[]
 }
 
 type Step = 'map' | 'preview'
@@ -61,6 +74,7 @@ export class RosterImportDialogComponent {
   private ref = inject<MatDialogRef<RosterImportDialogComponent, RosterImportDialogResult>>(MatDialogRef)
   private rangerService = inject(RangerService)
   private prefs = inject(DevicePrefsService)
+  private layerService = inject(LayerService)
 
   readonly isSheet = !!this.data.sheet
   readonly sheets = this.data.sheet?.sheets ?? []
@@ -88,6 +102,31 @@ export class RosterImportDialogComponent {
   merge = signal<RangerMergeResult | null>(null)
   skipped = signal(0)
   warnings = signal<string[]>([])
+
+  // ── Layers (E-187 phase C, ADR D-58 points 6 and 7) ───────────────────────────────────────
+  readonly canNameLayer = this.data.trackable !== false
+  /** Left blank, the import is not tracked as a layer and behaves exactly as before. */
+  layerName = signal(this.data.layerName ?? (this.isSheet ? suggestLayerName(this.data.fileName) : ''))
+  /** Default No: removal is always a question, never automatic (D-50). */
+  removeLeft = signal(false)
+  /** The device's existing people layers, offered as choices. */
+  knownLayerNames = computed(() => [...new Set(layersOfKind(this.layerService.layers(), 'people').map(l => l.name))])
+  /** Everyone this import writes or confirms. */
+  private touchedUids = computed(() => {
+    const m = this.merge()
+    return m ? [...m.added, ...m.overwritten, ...m.unchanged].map(n => n.uid).filter((u): u is string => !!u) : []
+  })
+  /** People in the previous version of this layer who are not in this one and in no other layer. */
+  leftBehind = computed(() => {
+    const name = this.layerName().trim()
+    if (!this.canNameLayer || !name) return []
+    const gone = new Set(this.layerService.leftBehind(name, 'people', this.touchedUids()))
+    return this.data.existing.filter(r => !!r.uid && gone.has(r.uid))
+  })
+  leftBehindNames = computed(() => {
+    const names = this.leftBehind().map(r => r.callsign || r.fullName || r.id || '(unidentified)')
+    return names.slice(0, 8).join(', ') + (names.length > 8 ? `, and ${names.length - 8} more` : '')
+  })
 
   updatedShown = computed(() => (this.merge()?.overwritten ?? []).slice(0, 10))
   updatedHidden = computed(() => Math.max(0, (this.merge()?.overwritten.length ?? 0) - 10))
@@ -215,6 +254,12 @@ export class RosterImportDialogComponent {
     if (this.isSheet) {
       this.prefs.rememberImportMapping(headerSetKey(this.headers()), this.targets())
     }
-    this.ref.close({ action, incoming: this.incoming(), merge })
+    const name = this.canNameLayer ? this.layerName().trim() : ''
+    const layer = name
+      ? { name, asOf: this.data.layerAsOf || new Date().toISOString().slice(0, 10), ...(this.data.layerSource ? { source: this.data.layerSource } : {}) }
+      : null
+    // Replace already removed everyone who is not in the file, so the question only applies to Add.
+    const removeUids = action === 'add' && this.removeLeft() ? this.leftBehind().map(r => r.uid!) : []
+    this.ref.close({ action, incoming: this.incoming(), merge, layer, removeUids })
   }
 }

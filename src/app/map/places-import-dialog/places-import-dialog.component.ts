@@ -9,6 +9,8 @@ import { headerSetKey, recallMapping } from '../../domain/roster-sheet'
 import { SheetFile } from '../../shared/import/sheet-reader'
 import { MissionLocationType } from '../../shared/services'
 import { DevicePrefsService } from '../../shared/services/device-prefs.service'
+import { LayerService } from '../../shared/services/layer.service'
+import { layersOfKind, suggestLayerName } from '../../domain/layers'
 
 /** What the Map page hands the dialog. */
 export type PlacesImportDialogData = {
@@ -28,11 +30,20 @@ export type PlacesImportDialogData = {
   notes?: string[]
   /** The name a Setup file calls itself. */
   layerName?: string
+  /** False for a hand-over (D-59), which is never a layer: the dialog then offers no layer name. */
+  trackable?: boolean
+  /** The "as of" date and source a Setup file gave itself; today for anything else. */
+  layerAsOf?: string
+  layerSource?: string
 }
 
 /** What the dialog hands back. Nothing has been saved yet. */
 export type PlacesImportDialogResult = {
   plan: PlacesImportPlan
+  /** E-187 phase C: the layer to remember this import as, or null when the name was left blank. */
+  layer: { name: string, asOf: string, source?: string } | null
+  /** Uids the user agreed to remove because they left the layer. Empty unless they chose Remove. */
+  removeUids: string[]
 }
 
 type Step = 'map' | 'preview'
@@ -69,6 +80,7 @@ export class PlacesImportDialogComponent {
   readonly data = inject<PlacesImportDialogData>(MAT_DIALOG_DATA)
   private ref = inject<MatDialogRef<PlacesImportDialogComponent, PlacesImportDialogResult>>(MatDialogRef)
   private prefs = inject(DevicePrefsService)
+  private layerService = inject(LayerService)
 
   readonly isSheet = !!this.data.sheet
   readonly sheets = this.data.sheet?.sheets ?? []
@@ -93,6 +105,26 @@ export class PlacesImportDialogComponent {
   plan = signal<PlacesImportPlan | null>(null)
   skipped = signal(this.data.skipped ?? 0)
   warnings = signal<string[]>(this.data.warnings ?? [])
+
+  // -- Layers (E-187 phase C, ADR D-58 points 6 and 7) ------------------------------------
+  readonly canNameLayer = this.data.trackable !== false
+  /** Left blank, the import is not tracked as a layer and behaves exactly as before. */
+  layerName = signal(this.data.layerName ?? (this.isSheet ? suggestLayerName(this.data.fileName) : ''))
+  /** Default No: removal is always a question, never automatic (D-50). */
+  removeLeft = signal(false)
+  knownLayerNames = computed(() => [...new Set(layersOfKind(this.layerService.layers(), 'places').map(l => l.name))])
+  /** Places in the previous version of this layer that are not in this one and in no other layer. */
+  leftBehind = computed(() => {
+    const name = this.layerName().trim()
+    const plan = this.plan()
+    if (!this.canNameLayer || !name || !plan) return []
+    const gone = new Set(this.layerService.leftBehind(name, 'places', plan.merge.touchedUids))
+    return this.data.existing.filter(l => !!l.uid && gone.has(l.uid))
+  })
+  leftBehindNames = computed(() => {
+    const names = this.leftBehind().map(l => l.name)
+    return names.slice(0, 8).join(', ') + (names.length > 8 ? `, and ${names.length - 8} more` : '')
+  })
 
   updatedShown = computed(() => (this.plan()?.merge.changes ?? []).slice(0, 10))
   updatedHidden = computed(() => Math.max(0, (this.plan()?.merge.changes.length ?? 0) - 10))
@@ -176,6 +208,11 @@ export class PlacesImportDialogComponent {
     if (this.isSheet) {
       this.prefs.rememberImportMapping('places:' + headerSetKey(this.headers()), this.targets())
     }
-    this.ref.close({ plan })
+    const name = this.canNameLayer ? this.layerName().trim() : ''
+    const layer = name
+      ? { name, asOf: this.data.layerAsOf || new Date().toISOString().slice(0, 10), ...(this.data.layerSource ? { source: this.data.layerSource } : {}) }
+      : null
+    const removeUids = this.removeLeft() ? this.leftBehind().map(l => l.uid!) : []
+    this.ref.close({ plan, layer, removeUids })
   }
 }

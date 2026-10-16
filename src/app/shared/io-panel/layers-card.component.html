@@ -1,0 +1,35 @@
+<!-- E-187 phase C (ADR D-58 point 7): the layers this device remembers importing. -->
+<mat-card appearance="outlined" class="rt-mission-card rt-io-card" data-testid="layersCard">
+  <mat-card-header>
+    <mat-card-title>Layers on this device</mat-card-title>
+    <mat-card-subtitle>
+      {{ kind() === 'people' ? 'Lists of people' : 'Lists of places' }} you imported and named.
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    @if (layers().length === 0) {
+      <p class="layers__empty">
+        None yet. Give an import a layer name and the device remembers it, so a newer version can say who has left it.
+      </p>
+    } @else {
+      <ul class="layers__list">
+        @for (l of layers(); track l.name) {
+          <li class="layers__item" data-testid="layerItem">
+            <div class="layers__text">
+              <strong class="layers__name">{{ l.name }}</strong>
+              <span class="layers__meta">
+                {{ count(l) }} {{ noun(count(l)) }}
+                &middot; as of {{ l.asOf || 'unknown' }}
+                &middot; imported {{ importedOn(l) }}
+              </span>
+            </div>
+            <button matButton="outlined" type="button" data-testid="layerRemoveBtn" (click)="remove(l)">
+              <mat-icon>layers_clear</mat-icon>
+              Remove this layer
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,27 @@
+:host {
+  display: block;
+}
+
+.layers__empty { margin: 0; color: var(--rt-ink-2); }
+
+.layers__list {
+  margin : 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap    : 0.75em;
+}
+
+.layers__item {
+  display    : flex;
+  flex-wrap  : wrap;
+  gap        : 0.5em 1em;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.5em;
+  border-bottom : 1px solid var(--rt-line);
+}
+
+.layers__text { display: flex; flex-direction: column; min-width: 0; }
+.layers__name { overflow-wrap: anywhere; }
+.layers__meta { color: var(--rt-ink-2); font-size: 0.875rem; }

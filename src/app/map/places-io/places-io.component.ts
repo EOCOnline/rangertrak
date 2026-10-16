@@ -17,13 +17,20 @@ import { readSheetFile, rowsToXlsxBytes } from '../../shared/import/sheet-reader
 import { LogService, MissionLocationService, MissionService } from '../../shared/services'
 import type { MissionLocationType } from '../../shared/services'
 import { LOCKED_FILE_MESSAGE, readEnvelope } from '../../shared/export/handover-kind'
+import { LayersCardComponent } from '../../shared/io-panel/layers-card.component'
+import { LayerService } from '../../shared/services/layer.service'
+import { recordableLayerName } from '../../domain/layers'
 import { MapEngineService } from '../map-engine.service'
 import type { PlacesImportDialogResult } from '../places-import-dialog/places-import-dialog.component'
 
 type ExportFormat = 'xlsx' | 'csv' | 'setup'
 
 /** A KML / GeoJSON / Setup file, read and ready for the preview. */
-type ReadPlaces = PlacesParseResult & { notes?: string[]; layerName?: string }
+type ReadPlaces = PlacesParseResult & {
+  notes?: string[]; layerName?: string
+  /** E-187 phase C: what to remember the layer as; trackable is false for a hand-over, which is never a layer. */
+  layerInfo?: { trackable: boolean, name: string, asOf?: string, source?: string }
+}
 
 /**
  * The Map page's "Import, export & print" panel, places half (E-187 Layers phase B, ADR D-58):
@@ -38,7 +45,7 @@ type ReadPlaces = PlacesParseResult & { notes?: string[]; layerName?: string }
 @Component({
   selector: 'rangertrak-places-io',
   standalone: true,
-  imports: [IoPanelComponent, ...MATERIAL_IMPORTS],
+  imports: [IoPanelComponent, LayersCardComponent, ...MATERIAL_IMPORTS],
   templateUrl: './places-io.component.html',
   styleUrls: ['./places-io.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -49,6 +56,7 @@ export class PlacesIoComponent {
   private readonly snackBar = inject(MatSnackBar)
   private readonly log = inject(LogService)
   private readonly locationService = inject(MissionLocationService)
+  private readonly layerService = inject(LayerService)
   private readonly missionService = inject(MissionService)
   private readonly engineService = inject(MapEngineService)
   private readonly document = inject(DOCUMENT)
@@ -149,6 +157,7 @@ export class PlacesIoComponent {
       }
       await this.previewAndApply(file.name, {
         incoming: read.places, skipped: read.skipped, warnings: read.warnings, notes: read.notes, layerName: read.layerName,
+        trackable: read.layerInfo?.trackable, layerAsOf: read.layerInfo?.asOf, layerSource: read.layerInfo?.source,
       })
     } catch (error: any) {
       this.log.error(`onImportFileSelected: ${file.name} rejected: ${error.message}`, this.id)
@@ -191,6 +200,10 @@ export class PlacesIoComponent {
       skipped: 0,
       warnings: [],
       layerName: layerName(manifest) || undefined,
+      layerInfo: {
+        trackable: manifest.layer?.kind !== 'handover', name: recordableLayerName(manifest.layer),
+        asOf: manifest.layer?.asOf, source: manifest.layer?.source,
+      },
       notes: [
         ...(others.length
           ? [`This file also carries ${others.join(' and ')}. Importing places does not apply those; use the Setup files page for the whole file.`]
@@ -209,6 +222,9 @@ export class PlacesIoComponent {
     warnings?: string[]
     notes?: string[]
     layerName?: string
+    trackable?: boolean
+    layerAsOf?: string
+    layerSource?: string
   }): Promise<void> {
     const { PlacesImportDialogComponent } = await import('../places-import-dialog/places-import-dialog.component')
     const ref = this.dialog.open(PlacesImportDialogComponent, {
@@ -237,9 +253,27 @@ export class PlacesIoComponent {
     }
     this.locationService.replaceAllLocations(plan.merge.locations)
 
+    // E-187 phase C: removal the user agreed to, then remember which places this layer holds.
+    let removed = 0
+    if (result.removeUids.length) {
+      const gone = new Set(result.removeUids)
+      const all = this.locationService.getCurrentLocations()
+      const kept = all.filter(l => !l.uid || !gone.has(l.uid))
+      removed = all.length - kept.length
+      this.locationService.replaceAllLocations(kept)
+    }
+    if (result.layer) {
+      this.layerService.record({
+        name: result.layer.name, kind: 'places', asOf: result.layer.asOf, source: result.layer.source,
+        fileName, importedAt: new Date().toISOString(), uids: plan.merge.touchedUids,
+      })
+    }
+    this.layerService.prune('places', new Set(this.locationService.getCurrentLocations().map(l => l.uid).filter((u): u is string => !!u)))
+
     const summary = `Imported "${fileName}"${extra.layerName ? ` (from "${extra.layerName}")` : ''}: `
       + describeLocationMerge(plan.merge)
-      + (plan.newCategories.length ? `. New categories: ${plan.newCategories.join(', ')}` : '') + '.'
+      + (plan.newCategories.length ? `. New categories: ${plan.newCategories.join(', ')}` : '')
+      + (removed ? `. Removed ${removed} no longer in "${result.layer?.name}"` : '') + '.'
     this.log.warn(summary, this.id)
     this.snackBar.open(summary, 'OK', { duration: 20000 })
   }

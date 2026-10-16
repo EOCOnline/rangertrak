@@ -116,6 +116,36 @@
         <p class="rid__note">{{ n }}</p>
       }
     }
+    @if (canNameLayer) {
+      <div class="rid__layer">
+        <mat-form-field subscriptSizing="dynamic" class="rid__layer-name">
+          <mat-label>Layer name</mat-label>
+          <input matInput type="text" autocomplete="off" data-testid="layerName" [attr.list]="'rid-layer-names'"
+            [value]="layerName()" (input)="layerName.set($any($event.target).value)" />
+          <mat-hint>Names this list so the device remembers it. Leave blank to import without keeping track.</mat-hint>
+        </mat-form-field>
+        <datalist id="rid-layer-names">
+          @for (n of knownLayerNames(); track n) {
+            <option [value]="n"></option>
+          }
+        </datalist>
+      </div>
+
+      @if (leftBehind().length) {
+        <fieldset class="rid__left" data-testid="layerLeft">
+          <legend>
+            {{ leftBehind().length }} {{ leftBehind().length === 1 ? 'person is' : 'people are' }}
+            no longer in {{ layerName().trim() }}. Remove them?
+          </legend>
+          <p class="rid__note">{{ leftBehindNames() }}. Only people this layer brought in are listed; anyone another layer also holds stays.</p>
+          <mat-radio-group [value]="removeLeft()" (change)="removeLeft.set($event.value)" aria-label="Remove the people who left this layer?">
+            <mat-radio-button [value]="false" data-testid="layerKeep">No, keep them</mat-radio-button>
+            <mat-radio-button [value]="true" data-testid="layerRemove">Yes, remove them</mat-radio-button>
+          </mat-radio-group>
+          <p class="rid__note">Radio log entries that name them are not changed: they keep the call sign as it was written.</p>
+        </fieldset>
+      }
+    }
     <p class="rid__safe">Add to roster adds new people and updates matching ones; nobody is deleted.</p>
   </mat-dialog-content>
   <mat-dialog-actions align="end">

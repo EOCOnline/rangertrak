@@ -6,7 +6,7 @@ import { bundledRangerImage } from '../shared/ranger-image'
 import { Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT } from '@angular/common'
-import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy, signal, computed } from '@angular/core'
+import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { RouterLink } from '@angular/router'
@@ -25,6 +25,9 @@ import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
 import { ExpandableSectionComponent } from '../shared/expandable-section/expandable-section.component'
 import { IoPanelComponent } from '../shared/io-panel/io-panel.component'
+import { LayersCardComponent } from '../shared/io-panel/layers-card.component'
+import { LayerService } from '../shared/services/layer.service'
+import { recordableLayerName } from '../domain/layers'
 import { readSheetFile, rowsToXlsxBytes } from '../shared/import/sheet-reader'
 import { formatReportTime } from '../shared/mapping/report-time'
 import {
@@ -49,7 +52,7 @@ import { CustomTooltip } from './customTooltip'
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, RouterLink, FilterChipsComponent, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, LayersCardComponent, RouterLink, FilterChipsComponent, ...MATERIAL_IMPORTS],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']
@@ -57,6 +60,7 @@ import { CustomTooltip } from './customTooltip'
 export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private id = 'Ranger Component'
+  private readonly layerService = inject(LayerService)
   title = 'Rangers & Teams'
   pageDescr = `Grid display of rangers & teams on this mission`
 
@@ -537,6 +541,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       + `Export the roster first if you might want it back.`)) {
       this.log.info("Removing all rangers from local storage...", this.id)
       this.rangerService.deleteAllRangers()
+      this.layerService.prune('people', new Set())
       this.refreshGrid()
       this.reloadPage()
     }
@@ -562,7 +567,10 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Opens the shared preview dialog; resolves to what the user chose, or undefined on cancel. */
   private async openImportDialog(
     fileName: string,
-    extra: { incoming?: RangerType[]; sheet?: Awaited<ReturnType<typeof readSheetFile>>; notes?: string[] },
+    extra: {
+      incoming?: RangerType[]; sheet?: Awaited<ReturnType<typeof readSheetFile>>; notes?: string[]
+      trackable?: boolean; layerName?: string; layerAsOf?: string; layerSource?: string
+    },
   ): Promise<RosterImportDialogResult | undefined> {
     const { RosterImportDialogComponent } = await import('./roster-import-dialog/roster-import-dialog.component')
     const ref = this.dialog.open(RosterImportDialogComponent, {
@@ -587,13 +595,39 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       this.rangerService.replaceAllRangers(result.merge.rangers)
       this.rangerService.recordMergeImport(fileName, result.merge)
     }
+    const layerNote = this.trackLayer(fileName, result)
     const summary = result.action === 'replace'
       ? `Replaced the roster with ${result.incoming.length} people from "${fileName}".`
-      : `Imported "${fileName}"${layer ? ` (from "${layer}")` : ''}: ${describeRangerMerge(result.merge)}.`
+      : `Imported "${fileName}"${layer ? ` (from "${layer}")` : ''}: ${describeRangerMerge(result.merge)}.${layerNote}`
     this.log.warn(summary, this.id)
     this.gridApi?.setGridOption('rowData', this.rangers())
     this.refreshGrid()
     return summary
+  }
+
+  /**
+   * E-187 phase C: removes the people the user agreed to remove (they left the layer), remembers
+   * which people this layer holds, and forgets uids that are no longer on the device. Returns a
+   * sentence for the summary, or '' when the import was not tracked as a layer.
+   */
+  private trackLayer(fileName: string, result: RosterImportDialogResult): string {
+    let note = ''
+    if (result.removeUids.length) {
+      const gone = new Set(result.removeUids)
+      this.rangerService.replaceAllRangers(this.rangerService.rangers.filter(r => !r.uid || !gone.has(r.uid)))
+      note += ` Removed ${gone.size} no longer in "${result.layer?.name}".`
+    }
+    if (result.layer) {
+      const uids = result.action === 'replace'
+        ? this.rangerService.rangers.map(r => r.uid)
+        : [...result.merge.added, ...result.merge.overwritten, ...result.merge.unchanged].map(n => n.uid)
+      this.layerService.record({
+        name: result.layer.name, kind: 'people', asOf: result.layer.asOf, source: result.layer.source,
+        fileName, importedAt: new Date().toISOString(), uids: uids.filter((u): u is string => !!u),
+      })
+    }
+    this.layerService.prune('people', new Set(this.rangerService.rangers.map(r => r.uid).filter((u): u is string => !!u)))
+    return note
   }
 
   /**
@@ -638,6 +672,10 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const result = await this.openImportDialog(file.name, {
       incoming: normalizeRangerIds(manifest.rangers).rangers, notes,
+      // A hand-over is not a layer (D-59); any other named file is remembered as one.
+      trackable: manifest.layer?.kind !== 'handover',
+      layerName: recordableLayerName(manifest.layer),
+      layerAsOf: manifest.layer?.asOf, layerSource: manifest.layer?.source,
     })
     if (!result) {
       this.log.verbose('importRosterFromZip: user cancelled.', this.id)
