@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.48-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.47-alpha...v0.99.48-alpha) (2026-10-16)
+
+
+### Bug Fixes
+
+* **map:** measure the print sheet in CSS px, so the legend stops covering the title ([c4d23a5](https://github.com/SteadyEOC/RangerTrak/commit/c4d23a5fbadbe098fdb2a0abe2694da2a95ba48b))
+
 ### [0.99.47-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.46-alpha...v0.99.47-alpha) (2026-10-16)
 
 
