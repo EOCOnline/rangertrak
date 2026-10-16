@@ -221,8 +221,48 @@
   // Cards are grid items whose parents set `align-items: start`, so they size to their own
   // content rather than stretching to the tallest card in the row.
   align-self   : start;
-  // Mission lays its cards out in CSS columns (mission.component.scss) - never split one.
+  // Keep a card whole when a page prints it across pages.
   break-inside : avoid;
+}
+
+// ── Masonry (E-169) ──────────────────────────────────────────────────────────
+// Mission's card grid. Cards keep DOM order (so tab order and screen readers read the page
+// the way the template tells it) and each one spans as many small rows as it is tall;
+// `MasonryDirective` (shared/layout/masonry.directive.ts) measures them and sets
+// `--rt-masonry-span`. Row unit 4px = MASONRY_ROW_UNIT. The card's own margin-bottom is the
+// row gap (it is part of the measured height), so row-gap is 0. Phone: normal flow, one
+// column, the span is ignored. Print: same, so a page break never lands in a masonry gap.
+// Cards that need the whole width (a data grid) add `.rt-mission-card--wide`.
+.rt-masonry {
+  display: block;
+
+  @include bp.tablet-up {
+    display              : grid;
+    // 22rem floor on a tablet (two columns from ~720px), 30rem on a laptop, where the widest
+    // control (the geocoding key field) needs about that before it scrolls its own value.
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+    grid-auto-rows       : 4px;
+    column-gap           : var(--rt-gap);
+    row-gap              : 0;
+    align-items          : start;
+
+    > .rt-mission-card,
+    > * > .rt-mission-card {
+      grid-row-end: span var(--rt-masonry-span, 1);
+    }
+    > .rt-mission-card--wide,
+    > * > .rt-mission-card--wide {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @include bp.laptop-up {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 30rem), 1fr));
+  }
+
+  @media print {
+    display: block;
+  }
 }
 
 // ── Field layout ─────────────────────────────────────────────────────────────

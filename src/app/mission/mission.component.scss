@@ -35,18 +35,10 @@
 // 30rem is the floor because the widest single control on any card (the geocoding API key
 // field) needs about that much before it starts scrolling its own value.
 .mission__grid {
-  // 2026-09-30, John ("not as much white space; the logical structure remains most
-  // important"): was a row grid, so every row was as tall as its tallest card (Maps) and the
-  // short cards beside it left large empty holes. Now CSS columns: the cards flow DOWN each
-  // column in the same DOM order and pack with no holes, so the page reads top-to-bottom,
-  // column by column - SETUP (mission, op period, statuses, categories, locations), then
-  // maps/location defaults, recipients, then SHARING - which is the order this template
-  // already tells. Same 30rem floor, so the column count per width is unchanged, and one
-  // column on a phone. `.rt-mission-card` carries `break-inside: avoid` (global, since the
-  // cards live in the section components' own templates) and its own margin-bottom is the
-  // row gap.
-  columns   : min(100%, 30rem);
-  column-gap: var(--rt-gap);
+  // Layout lives in the shared `.rt-masonry` (styles/_patterns.scss), applied by the
+  // `rtMasonry` directive: a grid in DOM order whose cards each span the rows they need.
+  // 2026-10-16 (E-169): replaces the 2026-09-30 CSS `columns` layout, which filled each
+  // column top to bottom and so scrambled reading and tab order across columns.
 }
 
 // ── Readiness alert (E-79) ───────────────────────────────────────────────────

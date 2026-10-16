@@ -122,7 +122,7 @@
          bar) follow as their own always-last group - see this page's own doc comment on
          mission-advanced-options's placement. Nothing here changed a component's inputs,
          outputs, ids or data-testids - only which order they render in. -->
-    <div class="mission__grid">
+    <div class="mission__grid" rtMasonry (laidOut)="onGridLaidOut()">
       <rangertrak-mission-details-section [form]="settingsForm" [opPeriodStart]="opPeriodStart()"
         [opPeriodEnd]="opPeriodEnd()" [timePickerLabelStart]="timePickerLabelStart"
         [timePickerLabelEnd]="timePickerLabelEnd" (timeEventStart)="onNewTimeEventStart($event)"

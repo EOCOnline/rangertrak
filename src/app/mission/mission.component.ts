@@ -26,7 +26,7 @@ function addHours(from: Date, hours: number): Date {
 
 import { CommonModule, DOCUMENT } from '@angular/common'
 import {
-  ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, OnInit, computed, effect, signal, untracked
+  ChangeDetectionStrategy, Component, HostListener, Inject, OnDestroy, OnInit, computed, effect, inject, signal, untracked
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 // FormField (the template directive) is gone from this component's own template: every
@@ -34,7 +34,8 @@ import { FormsModule } from '@angular/forms'
 // WritableSignal instead - see mission.component.html's Debug checkbox for why
 // (angular/components#32072). The child sections still import it for their own text inputs.
 import { form, max, min, required } from '@angular/forms/signals'
-import { RouterLink } from '@angular/router'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { ActivatedRoute, RouterLink } from '@angular/router'
 
 import { PageComponent } from '../shared/page/page.component'
 import {
@@ -55,6 +56,7 @@ import { MissionLocationsListComponent } from './sections/mission-locations-list
 import { MissionRecipients213Component } from './sections/mission-recipients213/mission-recipients213.component'
 import { MissionTacticalCallsComponent } from './sections/mission-tactical-calls/mission-tactical-calls.component'
 import { MissionCommandPostComponent } from './sections/mission-command-post/mission-command-post.component'
+import { MasonryDirective } from '../shared/layout/masonry.directive'
 import { MissionAdvancedOptionsComponent } from './sections/mission-advanced-options/mission-advanced-options.component'
 
 // Placeholder used only until the real settings arrive via the constructor's synchronous
@@ -90,6 +92,7 @@ const blankMission: MissionType = {
     RouterLink,
     ...MATERIAL_IMPORTS,
     PageComponent,
+    MasonryDirective,
     MissionDetailsSectionComponent,
     MissionLocationSectionComponent,
     MissionMapsSectionComponent,
@@ -339,6 +342,28 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
     if (this.hasUnsavedChanges()) {
       event.preventDefault()
       event.returnValue = ''
+    }
+  }
+
+  // E-169: the masonry grid settles a frame or two after the page renders, which moves
+  // everything below it (the Data safety and Danger zone cards). A deep link such as
+  // /mission#readiness-storage-protection is scrolled to by the router before that, so
+  // scroll again whenever the grid re-lays-out within a moment of the fragment arriving.
+  private readonly routeFragment = inject(ActivatedRoute).fragment
+  private deepLink: { id: string, at: number } | null = null
+  private readonly deepLinkSub = this.routeFragment.pipe(takeUntilDestroyed()).subscribe(f => {
+    this.deepLink = f ? { id: f, at: performance.now() } : null
+  })
+
+  onGridLaidOut(): void {
+    const link = this.deepLink
+    if (!link || performance.now() - link.at > 1500) return
+    const target = link.id === 'demo'
+      ? document.querySelector('rangertrak-demo-picker')
+      : document.getElementById(link.id)
+    // 'demo' is scrolled to by the Danger zone itself once its panel has opened.
+    if (target && (link.id !== 'demo' || (target as HTMLElement).offsetParent)) {
+      target.scrollIntoView({ block: link.id === 'demo' ? 'center' : 'start' })
     }
   }
 
