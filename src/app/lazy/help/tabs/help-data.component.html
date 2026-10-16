@@ -105,11 +105,15 @@
   <span class="ui">Export changes</span>, beside it, is for after an event: it saves only the rangers
   added or edited on this device since the roster was imported, so whoever keeps the master list
   can add the walk-ups and fixes without combing through the whole roster. The
-  <a routerLink="/prep">Setup files</a> page is different from both: it packages any
-  combination of roster, photos, locations and settings — but never radio log entries — for setting
+  <a routerLink="/mission" fragment="setup-file">Setup file</a> card on the Mission page (under
+  Data safety) is different from both: it packages any
+  combination of roster, photos, places and settings — but never radio log entries — for setting
   up a NEW device before a mission starts, merging into whatever is already there rather than
   replacing it (Export roster never includes photos; Back up mission is a mid/post-mission
   backup that assumes reports already exist and always replaces wholesale).
+  <span class="ui">Print roster</span> on Rangers and <span class="ui">Print places</span> on the
+  <a routerLink="/map">Map</a> page print the same lists on paper, grouped by team and by category (the
+  roster sheet carries names and phone numbers, so keep it safe).
   <span class="ui">Export</span> on Radio Log produces an Excel-friendly spreadsheet — useful
   for working with the data, but one-way: it cannot be imported back in.
 </p>

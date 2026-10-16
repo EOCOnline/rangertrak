@@ -62,3 +62,9 @@ in the same panel on the Map page, lists what the device remembers and has **Rem
 to the places in the current view), then save them as a spreadsheet, a CSV or a **Setup file**
 with a name you choose, such as "Fernhollow shelters, Oct 2026". The spreadsheet and CSV load
 straight back in with no column choices to make. A file of places holds no personal information.
+
+**Print places** (the same panel) prints the same chosen places as a list on paper, grouped by category in
+the mission's own order: name, address, coordinates and note. On the Leaflet map a small map of those
+places runs across the top of the page; with the MapLibre map the list prints without it. The
+coordinates are written in the format picked on the card (DD, DDM or USNG). **Print map** is a different
+print and is unchanged.

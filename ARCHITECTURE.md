@@ -370,11 +370,11 @@ layer. Layer identity is the trimmed, case-insensitive name plus the kind. `merg
 changed field. The UI is the `Layer name` field and the "no longer in" radio (default No) in both import
 dialogs, and `shared/io-panel/layers-card` (Rangers: people, Map: places). It is all lazy-route code; the
 only eager change is the two key names and a dynamic `import()` of `LayerService` in `BackupService`. Not
-done: the Setup files page (`/prep`) does not record layers (no per-file preview to ask in), and edits made
+done: the Setup file card on Mission (formerly the `/prep` page) does not record layers (its preview is a summary, not the per-person one that asks who left), and edits made
 on the device after an import are not tracked, so Remove this layer says so.
 
 Setup files are manifest **v3**: an optional `layer` block (`name`, `asOf`, `source?`, `contains`,
-`sensitivity`: `pii` whenever rangers are in the file, else `none`), written by Prep (a blank name
+`sensitivity`: `pii` whenever rangers are in the file, else `none`), written by the Setup file card (a blank name
 writes no block) and by the Map's Export places. Readers accept v1, v2 and v3 and never reject on the
 version number, so an older build opens a v3 file and ignores `layer`. An import that finds a name
 shows it in its preview and summary.
@@ -398,6 +398,25 @@ same `rangertrak-encrypted-v1` envelope the backup uses (`encryptBytes` / `decry
 `encryptJson` in `shared/crypto/encrypted-file.ts`); a reader tells envelope from zip by content. The UI
 is the Hand over card on Radio Log and `radio-log/handover-dialog/` (passphrase, preview, confirm), which
 reuses the roster import dialog's stylesheet.
+
+2026-10-16 (E-187 phase D, ADR D-58): the **Print** cards and the end of `/prep`. Rangers' Print roster
+and the Map's Print places are print-only blocks in their own pages (class `rt-sheet`, hidden on screen;
+`styles.scss` shows the one whose body class, `rt-print-roster` or `rt-print-places`, is set around
+`window.print()`, as the ICS-309 does; a `print()` that returns at once defers the cleanup to
+`afterprint`, as Print map does). The rows come from `domain/roster-print.ts` (people by team, call-sign
+order) and `domain/places-print.ts` (places by category in the mission's order, coordinates through
+`formatLatLng`); both are pure and specced. The places sheet carries the live Leaflet map, small, not an
+image (tile canvases are cross-origin): `LeafletPrintController.preparePlacesPrint()` sizes the map to its
+printed box (`rt-print-places-prep`, screen only), takes off the other places, the radio log entries and
+the ranger paths, fits the printed places, waits for the tiles and returns an undo. Its media-change
+handler skips Print map's layout (panels, rings, fanning, ticks) while `rt-print-places` is on, so the two
+prints cannot collide; Print map's landscape `@page` is its own and is not added. The Map page reaches it
+through `MapEngineService.placesPrinter` (null under MapLibre, which prints the list alone, D-56), and the
+readout's coordinate format moved there too (`coordFormat`, session only) so the sheet can use it. `/prep`
+is a redirect to `/mission#setup-file`: the Setup file card (`mission/sections/setup-file/`) sits in the Data
+safety card, exports settings, rangers (with photos) and places, and imports one file at a time with a
+what-it-would-do preview (settings replace wholesale, the roster and places merge). The multi-file queue
+was dropped. Everything is in lazy routes; the initial bundle did not grow.
 
 ## Data stored on the device
 

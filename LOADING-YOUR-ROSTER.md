@@ -75,7 +75,7 @@ column choices, so a repeat import is one click on **Continue**. Only the headin
 remembered, never anyone's details.
 
 A file you saved from RangerTrak's own **Export roster** goes back in the same way, with nothing
-to fix, and the preview shows everyone as unchanged. A Setup file (made on the Setup files page)
+to fix, and the preview shows everyone as unchanged. A Setup file (made on the Mission page, under Data safety)
 and an older RangerTrak file also open with **Import a list…**; they show the same preview.
 
 ## Building up your roster from several lists
@@ -92,8 +92,8 @@ For example, on a new device:
 3. Import Team D's list: *Added 6 rangers, updated 2.*
 
 After each import RangerTrak tells you what it did, by name: who it **added**, who it **updated**
-(and which details changed), and how many were already up to date. On the Setup files page it
-also names each person and place added or updated, and how many photos it stored.
+(and which details changed), and how many were already up to date. The Setup file card on the Mission page
+shows the same kind of summary before it saves anything, and says how many photos it stored.
 
 **What "updated" means.** When someone in the file is already on the device, RangerTrak treats
 them as the same person and fills their details in from the file. The newest file wins. A blank
@@ -125,8 +125,12 @@ as-of date, when it was imported and how many people it holds. **Remove this lay
 removes the people only that layer brought in. Changes you made to those people on this device since
 the import aren't tracked, so someone you edited is still removed.
 
-**Importing several Setup files at once** (on the Setup files page): RangerTrak applies them in
-filename order, so name them `01-cert…`, `02-radio…` to choose which list wins.
+**Importing several Setup files**: load them one after another on the Mission page (Data safety, Setup file).
+Each shows its own preview first, and a later file wins where it matches someone an earlier one added.
+
+**Printing the roster.** **Print roster**, beside Export on the Rangers page, prints a contact sheet
+of the selected rows (or the rows the table shows): call sign, name, role, phone and ID, grouped by team.
+It has names and phone numbers on it, so keep the paper safe.
 
 **Locations layer the same way.** Import your county's places, then your own group's, then a
 mission's. A location with the **same name** as one already on the device is updated; any other
