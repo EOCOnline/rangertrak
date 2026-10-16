@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.46-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.45-alpha...v0.99.46-alpha) (2026-10-16)
+
+
+### Bug Fixes
+
+* **map:** edge ticks sit below Leaflet's controls on screen ([3741d28](https://github.com/SteadyEOC/RangerTrak/commit/3741d28b9f6e2af49e4873e8ac63a1e52a8d7d9d))
+
 ### [0.99.45-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.44-alpha...v0.99.45-alpha) (2026-10-16)
 
 ### [0.99.44-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.43-alpha...v0.99.44-alpha) (2026-10-16)
