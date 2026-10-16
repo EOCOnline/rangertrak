@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.49-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.48-alpha...v0.99.49-alpha) (2026-10-16)
+
+
+### Bug Fixes
+
+* **print:** let the printed document end with its content, so Print map stops adding a blank page ([c79f7e6](https://github.com/SteadyEOC/RangerTrak/commit/c79f7e6eea2cfea5a2f2d0cd1344f86e3039539b))
+
 ### [0.99.48-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.47-alpha...v0.99.48-alpha) (2026-10-16)
 
 
