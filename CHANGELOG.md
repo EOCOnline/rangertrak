@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.51-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.50-alpha...v0.99.51-alpha) (2026-10-16)
+
+
+### Bug Fixes
+
+* **map:** pin the print panels to their nearest edges, so a resized frame cannot push the legend onto a second sheet ([2518a03](https://github.com/SteadyEOC/RangerTrak/commit/2518a03e6a918cfc848449dee2d6c81e5778aedc))
+
 ### [0.99.50-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.49-alpha...v0.99.50-alpha) (2026-10-16)
 
 ### [0.99.49-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.48-alpha...v0.99.49-alpha) (2026-10-16)
