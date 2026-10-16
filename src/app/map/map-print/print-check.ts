@@ -56,11 +56,31 @@ export function armPrintCheck(kind: string): () => void {
         .slice(0, 15)
       const frameEl = document.querySelector<HTMLElement>('.mapLeaflet-frame, .mapLibre-frame')
       const frame = frameEl?.getBoundingClientRect()
+      const k = frame?.width && frameEl ? frameEl.offsetWidth / frame.width : 1
+      // Round 4 (a blank second sheet on 0.99.49 too): the page's printable height in CSS px (100vh
+      // in print; innerHeight is the screen window's), and what reaches past it, outermost first.
+      const probe = document.createElement('div')
+      probe.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:100vh;visibility:hidden'
+      document.body.appendChild(probe)
+      const pageH = probe.offsetHeight
+      probe.remove()
+      const bottomOf = (el: Element) => (el.getBoundingClientRect().bottom + window.scrollY) * k
+      const past = Array.from(document.querySelectorAll('body *'))
+        .filter(el => !el.closest('.leaflet-pane, .leaflet-control-container'))
+        .filter(el => el.getBoundingClientRect().height && bottomOf(el) > pageH + 0.5)
+        .filter(el => !el.parentElement || el.parentElement === document.body || bottomOf(el.parentElement) <= pageH + 0.5)
+        .slice(0, 8)
+        .map(el => ({ el: name(el), bottom: Math.round(bottomOf(el) * 10) / 10, pos: getComputedStyle(el).position, display: getComputedStyle(el).display }))
       console.info('RangerTrak print check: ' + JSON.stringify({
         kind,
         // Round 3: CSS px per measured px (1.5 on John's 150% display); the print layout divides by it.
         dpr: window.devicePixelRatio,
-        ratio: frame?.width && frameEl ? +(frameEl.offsetWidth / frame.width).toFixed(3) : null,
+        ratio: +k.toFixed(3),
+        pageH,
+        htmlH: Math.round(doc.getBoundingClientRect().height * k * 10) / 10,
+        bodyH: Math.round(document.body.getBoundingClientRect().height * k * 10) / 10,
+        scrollH: doc.scrollHeight,
+        past,
         page: [window.innerWidth, window.innerHeight],
         scroll: [doc.scrollWidth, doc.scrollHeight],
         frame: frame ? [Math.round(frame.width), Math.round(frame.height)] : null,
