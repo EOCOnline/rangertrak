@@ -89,7 +89,6 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
         // is created. Stash the location and stop - the tail of ngOnInit replays
         // it onto the map. Calling addMarker() here anyway is what produced the
         // "addMarker(): bad lat ... mapLeaflet: undefined" error on every Entry load.
-        this.log.verbose(`Location arrived before the map was built; ngOnInit will place it.`, this.id)
         return
       }
       this.addMarker(newLocation.lat, newLocation.lng, newLocation.address)
@@ -186,7 +185,6 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
       log,
       document)
 
-    this.log.verbose(`======== Constructor() ============, using https://www.LeafletJS.com version ${L.version}`, this.id)
 
     this.hasOverviewMap = false
     this.displayReports = true
@@ -201,28 +199,14 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
 
   // override ngOnInit() {
   //   super.ngOnInit()
-  //   this.log.excessive("ngOnInit()", this.id)
   // }
 
   override ngOnInit() {
     super.ngOnInit()
-    this.log.excessive("ngOnInit()", this.id)
 
     if (!this.settings) {
       this.log.error(`ngOnInit - Settings have yet to be read!`, this.id)
     }
-
-    // let i = 0
-    // let msMaxDelay = 5000
-    // while (!this.settings) {
-    //   setTimeout(() => {
-    //     this.log.error(`ngOnInit - Settings have yet to be read! Delayed ${i / 10 * msMaxDelay} ms. Retrying.`, this.id)
-    //     //this.logPanel = this.document.getElementById("log")
-    //   }, msMaxDelay / 10)
-    //   if (++i > 9) {
-    //     return
-    //   }
-    // }
 
     if (this.settings?.debugMode) {
       Utility.displayShow(this.document.getElementById("Entry__LMinimap-debug")!)
@@ -265,13 +249,10 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     // _location and nothing ever assigns `location`, so this compared undefined to
     // undefinedLocation, took the else branch on a fresh page, and called addMarker with
     // the (-1, -1) sentinel - the second source of "addMarker(): bad lat" on Entry.
-    if (this._location === undefinedLocation || this._location.address === undefinedAddressFlag) {
-      this.log.verbose("No location entered yet at end of ngOnInit() - nothing to mark.", this.id)
-    } else {
+    if (!(this._location === undefinedLocation || this._location.address === undefinedAddressFlag)) {
       this.addMarker(this._location.lat, this._location.lng, this._location.address)
     }
 
-    this.log.excessive("exiting ngOnInit() ...", this.id)
   }
 
   /**
@@ -287,7 +268,6 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     this.map = this.lMap
     super.initMainMap()
 
-    this.log.excessive("initMap()", this.id)
 
     // ! Repeat of the guards in super:
     if (!this.settings) {
@@ -445,11 +425,9 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     overviewTiles.addTo(this.overviewMapLeaflet)
 
     // if (this.overviewMapLeaflet === null || this.overviewMapLeaflet === undefined) {
-    //   this.log.error(`Could not create overview map!`, this.id)
     //   return
     // }
     // if (this.lMap == null || this.lMap == undefined) {
-    //   this.log.error(`map doesn't exist when creating overview map!`, this.id)
     //   return
     // }
 
@@ -457,7 +435,6 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     /* this.overviewMapLeaflet.addListener("click", () => {
       let mapId = this.overviewMapType.cur++ % 4
       this.overviewMapLeaflet.setMapTypeId(this.overviewMapType.types.type[mapId])
-      this.log.verbose(`Overview map set to ${this.overviewMapType.types.type[mapId]}`, this.id)
     })*/
 
     // const infowindow = new google.maps.InfoWindow({
@@ -482,7 +459,6 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
    * @param ev
    */
   onMapReady(ev: any) {
-    this.log.verbose(`OnMapReady()`, this.id)
   }
 
   /**
@@ -522,10 +498,7 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
         this.clickStatus.set(`${coords} copied to clipboard`)
         if (this.statusEl) {
           Utility.resetMaterialFadeAnimation(this.statusEl.nativeElement)
-        } else {
-          this.log.info(`statusEl not found!`, this.id)
         }
-        this.log.excessive(`${coords} copied to clipboard`, this.id)
       })
       .catch(err => {
         this.log.error(`latlng NOT copied to clipboard, error: ${err}`, this.id)
@@ -583,11 +556,9 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
     if (!this.displayedRadioLogEntries) {
       this.log.error(`displayMarkers did not find radio log entries to display`, this.id)
     }
-    this.log.verbose(`displayMarkers: all ${this.displayedRadioLogEntries.length} of 'em`, this.id)
     this.displayedRadioLogEntries.forEach(i => {
       if (i.location.lat && i.location.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
         let title = `${i.callsign} at ${formatReportTime(i.date)} with ${i.status}`
-        //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
         // E-86 (narrowed): a distinct shape+color per ranger callsign, team ignored for now.
         // NOT given the status halo the main map's markers got (2026-08-26) - this mini-map
@@ -659,14 +630,12 @@ export class MiniMapLeafletComponent extends AbstractMap implements OnInit, Afte
   }
 
   private _markerOnClick(e: any) {
-    this.log.warn(`Got Marker Click!!!! e= ${JSON.stringify(e)}`, this.id)
   }
 
   hideMarkers(): void {
     //throw new Error('Method not implemented.')
   }
   clearMarkers(): void {
-    this.log.info(`MarkclearMarkers()`, this.id)
 
     // https://stackoverflow.com/questions/24772022/using-leaflet-js-how-do-i-iterate-through-markers-in-a-cluster
     // if(this.myMarkers.hasLayer(marker) this.myMarkers.removeLayer(marker);

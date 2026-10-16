@@ -45,7 +45,6 @@ export class MissionService implements OnInit {
   constructor(@Optional() @SkipSelf() existingService: MissionService,
     private log: LogService
   ) {
-    this.log.verbose(`======== constructor() ============`, this.id);
 
     if (existingService) {
       /**
@@ -134,7 +133,6 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
     let localStorageMission = localStorage.getItem(this.storageLocalName)
     let needMission = this.settings == undefined
     if (needMission) {
-      this.log.info("Get App Settings...", this.id)
       try {
         // E-89/E-90 (2026-08-25): was a substring check for "defPlusCode" - that field is
         // now removed from MissionType (dead control, never read by anything), so a
@@ -154,11 +152,12 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
           // field existed gains it rather than breaking the Settings page (see
           // mission-migration.ts's own backfillMissingFields() comment).
           this.setMission(migrateMission(JSON.parse(localStorageMission), this.initMission()))
-          this.log.verbose("Initialized App Settings from localstorage", this.id)
           needMission = false
         }
       } catch (error: any) {
-        this.log.verbose(`Unable to parse settings in localstorage (${localStorageMission}), so will be renamed out of the way. Error: ${error.name}; msg: ${error.message}`, this.id);
+        // The raw text is deliberately not logged: it can hold a legacy geocoding key, and it
+        // is kept under the -BAD key below for anyone who needs it.
+        this.log.verbose(`Unable to parse settings in localstorage, so will be renamed out of the way. Error: ${error.name}; msg: ${error.message}`, this.id);
         // localStorage.removeItem(this.storageLocalName) /// will get overwritten anyway
         localStorage.setItem(this.storageLocalName + '-BAD', localStorageMission!)
       }
@@ -189,7 +188,6 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
     this.settings.version = packageAsJson.version
     // Routine startup information, not a fault. Logging it at error level put a red entry
     // at the top of the Log page on every single load and buried the real errors under it.
-    this.log.info(`Settings version (from package.json) set to: ${packageAsJson.version} `, this.id)
 
     // publish settings to subscribers
     this.updateMission(this.settings)
@@ -200,15 +198,12 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
     packageAsString = ''
     packageAsJson = null
 
-    this.log.verbose('out of constructor', this.id)
   }
 
   ngOnInit() {
-    this.log.verbose(`ngOnInit()`, this.id);
 
 
     if (window.isSecureContext) {
-      this.log.verbose(`Application running in secure context`, this.id)
 
       // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt
       // https://mdn.github.io/dom-examples/web-crypto/encrypt-decrypt/index.html
@@ -219,18 +214,6 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       // Page is a secure context so service workers are now available
       //navigator.serviceWorker.register("/offline-worker.js").then(() => {  ...  })
     }
-
-    this.sha256("hello").then(digestValue => {
-      console.error(` #### SECRET Digest is: ${digestValue}`)
-    });
-
-  }
-
-  async sha256(str: string) {
-    const encoder = new TextEncoder();
-    const encdata = encoder.encode(str);
-    const buf = await crypto.subtle.digest("SHA-256", encdata);
-    return Array.prototype.map.call(new Uint8Array(buf), x => (('00' + x.toString(16)).slice(-2))).join('');
   }
 
 
@@ -251,12 +234,10 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
    * mission-migration.ts's own backfillMissingFields() comment. */
   public initMission(): MissionType { // settings: MissionType
     //original hardcoded defaults... not updated until form is submitted... Settings.component.ts' form doesn't allow editing of all values
-    this.log.verbose("Initialize App Settings from hardcoded values", this.id)
 
     let dt = new Date()
     let endDt = new Date()
     endDt.setHours(Number(dt.getHours()) + this.defOpPeriodLength)
-    this.log.verbose(`OpPeriod: ${dt.toLocaleString("en-US")}, plus ${this.defOpPeriodLength} hours = ${endDt.toLocaleString("en-US")} `, this.id)
 
     return {
       schemaVersion: MISSION_SCHEMA_VERSION,
@@ -362,10 +343,10 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
     localStorage.setItem(this.storageLocalName, JSON.stringify({ ...newMission, googleGeocodingApiKey: '' }))
     this.writeSecretKey(newMission.googleGeocodingApiKey)
     this.setMission(newMission)
-    this.log.verbose(`Notified subscribers of new Application Settings ${JSON.stringify(newMission)} `, this.id)
+    // 2026-10-16: no longer logs the settings object - it carries the Google geocoding key in
+    // memory, and the Log page exports to CSV.
 
     //! Is this proper?!
-    //this.log.verbose(`updateMission: Reloading window!`, this.id)
     //window.location.reload() creates endless cycle!
   }
 

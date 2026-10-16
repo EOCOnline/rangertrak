@@ -27,7 +27,6 @@ export class Utility {
   https://gist.github.com/paulirish/5d52fb081b3570c81e3a
 */
   static resetMaterialFadeAnimation(element: HTMLElement) {
-    // this.log.excessive(`Fade Animation reset`, this.id)
     element.style.animation = 'none';
     element.offsetHeight; // trigger reflow
     element.style.animation = "";
@@ -109,7 +108,6 @@ export class Utility {
     //   }
     // }
     //     else {
-    //   this.log.error("Expected 1st char of . (for Class), or # (for ID).", this.id)
     // }
 
   }
@@ -289,7 +287,7 @@ export class Utility {
     } else if (slc.toLowerCase() === 'r') {
       return Utility.splitRGB(col);
     } else {
-      console.log('!Ooops! RGBvalues.color(' + col + ') : HEX, RGB, or RGBa strings only');
+      console.warn('RGBvalues.color(' + col + '): HEX, RGB, or RGBa strings only');
       return
     }
   }

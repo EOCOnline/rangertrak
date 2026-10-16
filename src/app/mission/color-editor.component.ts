@@ -92,31 +92,26 @@ export class ColorEditor implements ICellEditorAngularComp, AfterViewInit {
       // light/dark pair) untouched.
       this.colorCtr.setValue(pickerHex(this.color) ?? this.color);
     }
-    console.log(`agInit color = ${this.color}`);
   }
 
   // called by ag-grid
   getValue(): any {
-    console.log(`getValue = ${this.color}`);
     return this.color;
   }
 
   // Gets called when color picker value changes
   onColorChange() {
     this.color = this.colorCtr.value;
-    console.log(`onColorChange = ${this.color}`);
     this.params.api.stopEditing(); // close inline editor
   }
 
   // -------------- REST OF THESE ARE EXTRANEOUS???  ----------------------------
 
   isPopup(): boolean {
-    console.log(`isPopup = ${this.color}`);
     return false;
   }
 
   setColor(color: string): void {
-    console.log(`setValue = ${color}`);
     this.color = color;
     this.colorCtr.setValue(color);
   }

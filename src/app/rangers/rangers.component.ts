@@ -166,7 +166,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     floatingFiltersHeight: RangersComponent.GRID_HEADER_PX,
 
     // EVENT handlers
-    // onRowClicked: event => this.log.verbose('A row was clicked'),
     // onSelectionChanged: (event: SelectionChangedEvent) => this.onRowSelection(event),
     // 2026-09-28, John: same pattern radio-log.component.ts's gridOptions already uses
     // (onCellValueChanged -> onCellEdited() -> <service>.saveEdited...()) - see
@@ -352,7 +351,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     private dialog: MatDialog,
     @Inject(DOCUMENT) private document: Document
   ) {
-    this.log.info(`======== Constructor() ============`, this.id)
     ensureAgGridRegistered()
 
     this.now = new Date()
@@ -373,32 +371,25 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (newMission) => {
         this.settings = newMission
         this.columnDefs = this.buildColumnDefs(newMission.idFieldLabel)
-        this.log.excessive('Received new Settings via subscription.', this.id)
       },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id)
     })
 
     this.rangersSubscription = this.rangerService.getRangersObserver().subscribe({
       next: (newRangers) => {
         this.rangers.set(newRangers)
-        this.log.verbose('Received new Rangers via subscription.', this.id)
       },
-      error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
-      complete: () => this.log.info('Rangers Subscription complete', this.id)
+      error: (e) => this.log.error('Rangers Subscription got:' + e, this.id)
     })
 
     this.radioLogSubscription = this.radioLogService.getRadioLogObserver().subscribe({
       next: (reports) => {
         this.lastContactByKey = RangersComponent.buildLastContactByKey(reports.logEntries)
         this.refreshGrid()
-        this.log.verbose('Received new Radio Log entries via subscription.', this.id)
       },
-      error: (e) => this.log.error('Radio Log entries Subscription got:' + e, this.id),
-      complete: () => this.log.info('Radio Log entries Subscription complete', this.id)
+      error: (e) => this.log.error('Radio Log entries Subscription got:' + e, this.id)
     })
 
-    this.log.verbose(`ngInit: ${this.rangers().length} Rangers retrieved from Local Storage`, this.id)
 
     if (this.rangers().length < 1) {
       this.alert.Banner("No Rangers have been entered yet. Go to the bottom & click on 'Advanced' to resolve.")
@@ -434,8 +425,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     // TODO: use this line, or next routine?!
     if (this.gridApi) {
       this.gridApi.refreshCells()
-    } else {
-      this.log.verbose("no this.gridApi yet in ngOnInit()", this.id)
     }
   }
 
@@ -443,8 +432,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     // E-104: autoSizeStrategy already sized these from content by the time this fires.
     if (this.gridApi) {
       this.gridApi.refreshCells()
-    } else {
-      this.log.verbose("no this.gridApi yet in ngOnInit()", this.id)
     }
   }
 
@@ -1086,8 +1073,6 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       this.gridApi.refreshCells()
       // E-104: was sizeColumnsToFit(), which undid the content sizing after every edit.
       this.gridApi.autoSizeAllColumns()
-    } else {
-      this.log.verbose("no this.gridApi yet in refreshGrid()", this.id)
     }
   }
 

@@ -261,7 +261,8 @@ export class RadioLogService {
    * @returns
    */
   public addRadioLogEntry(formData: string) {
-    this.log.info(`Got new radio log entry: ${JSON.stringify(formData)}`, 'RadioLogService')
+    // Not the entry itself: it can name people and addresses, and the Log page exports to CSV.
+    this.log.info(`Got new radio log entry.`, 'RadioLogService')
 
     // EntryComponent hands this over as JSON.stringify(mergedFormValue()) - a deliberate
     // deep clone - so `date` arrives here as an ISO STRING even though RadioLogEntryType

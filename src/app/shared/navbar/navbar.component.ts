@@ -110,7 +110,6 @@ export class NavbarComponent implements OnInit {
     protected fieldMode: FieldModeService,
     private radioLog: RadioLogService
   ) {
-    this.log.verbose("constructor", this.id)
 
     // 2026-09-28: fires the brand mark's wave pulse on every submitted radio log entry - see
     // pulseKey's own comment for why the first (creation-time) run is skipped.
@@ -150,6 +149,5 @@ export class NavbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.log.info("ngOnInit", this.id)
   }
 }

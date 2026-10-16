@@ -123,7 +123,6 @@ export class TimePickerComponent implements OnInit, OnChanges {
   constructor(
     private log: LogService,
     @Inject(DOCUMENT) private document: Document) {
-    this.log.excessive(`======== Constructor() ============`, this.id)
     // #81 (2026-09-27): a 10-hours-back / 1-hour-ahead min/max was "set" here, but minDate was
     // never assigned, so it was a no-op, and nothing bound it. Removed: any time can be entered,
     // which back-filling a paper log after a long operational period needs.
@@ -131,7 +130,6 @@ export class TimePickerComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.applyInitialDate()
-    this.log.verbose(`initialDate = ${this.initialDate} in ngInit`, this.id)
   }
 
   /**
@@ -215,7 +213,6 @@ export class TimePickerComponent implements OnInit, OnChanges {
     const combined = this.combinedTime()
     this.time = combined
     this.newTimeEvent.emit(combined)
-    this.log.verbose(`Combined date/time emitted: ${combined}`, this.id)
   }
 
   // ── Segmented hour/minute entry (24-hour) ──────────────────────────────────────────

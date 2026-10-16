@@ -87,10 +87,8 @@ export class HelpComponent implements OnDestroy {
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
       next: (newMission) => {
         this.settings = newMission
-        this.log.excessive('Received new Settings via subscription.', this.id)
       },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id)
     })
 
     this.version = this.settings ? this.settings.version : '0'

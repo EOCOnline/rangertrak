@@ -65,10 +65,8 @@ export class RangerService implements OnInit {
       this.log.error(msg, this.id)
       throw new Error(msg)
     }
-    this.log.verbose("======== Constructor() ============", this.id)
 
     this.LoadRangersFromLocalStorage()
-    this.log.verbose(`Got ${this.rangers.length} from Local Storage`, this.id)
 
     // Maintainer, 2026-08-26: a fresh install used to auto-seed the 18 hardcoded Vashon
     // station callsigns here, unconditionally, for every new user everywhere - "Rangers
@@ -127,7 +125,6 @@ export class RangerService implements OnInit {
   public updateLocalStorageAndPublish() {
     // Do any needed sanity/validation here
 
-    this.log.verbose(`New set of ${this.rangers.length} rangers. Save to local storage & publish`, this.id)
     this.SortRangersByCallsign()   // Only place this needs to be called?
 
     //! TODO: encrypt user data (in LocalStorage or elsewhere)
@@ -177,7 +174,6 @@ export class RangerService implements OnInit {
       const parsed = (localStorageRangers != null) ? JSON.parse(localStorageRangers) : null
       const store = migrateRangers(parsed)
       this.rangers = store.rangers
-      this.log.excessive(`Loaded ${this.rangers.length} rangers from local storage (schema v${store.schemaVersion})`, this.id)
     } catch (error: any) {
       this.rangers = []
       this.log.verbose(`Unable to parse Rangers from Local Storage. Error: ${error.message}`, this.id)
@@ -436,7 +432,6 @@ export class RangerService implements OnInit {
   // this needs be done for the autocomplete control in the enter comonent to work correctly
   // TODO: Getting called too often?
   SortRangersByCallsign() {
-    this.log.excessive(`SortRangersByCallsign: ${this.rangers.length} Rangers in array`, this.id)
 
     return this.rangers.sort((n1, n2) => {
       if (n1.callsign > n2.callsign) { return 1 }
@@ -447,7 +442,6 @@ export class RangerService implements OnInit {
 
   // TODO: verify new report is proper shape/validated here or by caller??? Send as string or object?
   public AddRanger(formData: string = ""): RangerType {
-    this.log.excessive(`Got new ranger: ${formData}`, this.id)
     let newRanger: RangerType
     if (formData != "") {
       newRanger = JSON.parse(formData)
@@ -567,7 +561,6 @@ export class RangerService implements OnInit {
 
   //--------------------------------------------------------------------------
   loadHardcodedRangers() {
-    this.log.verbose("Adding all hardcoded Rangers", this.id)
 
     /* Following from 98070 AND 98013 zip codes, MUST be sorted by call sign!
         https://wireless2.fcc.gov/UlsApp/UlsSearch/searchAmateur.jsp
@@ -613,10 +606,8 @@ export class RangerService implements OnInit {
     //
     // Deleted 2026-08-14. The live seed above is stations only. Real rosters arrive via
     // Restore mission; the fictional demo roster lives in SampleDataService.
-    //this.log.verbose(`Next: update LocalStorage: ${this.localStorageRangerName}`, this.id)
     this.SortRangersByCallsign()
     this.updateLocalStorageAndPublish();
-    //this.log.verbose(`returned from: updating LocalStorage: ${this.localStorageRangerName}`, this.id)
   }
 
   // FUTURE:  getActiveRangers() {

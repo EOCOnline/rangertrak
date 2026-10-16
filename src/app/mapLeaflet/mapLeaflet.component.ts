@@ -242,7 +242,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       log,
       document)
 
-    this.log.verbose(`Constructing Leaflet Map, using https://www.LeafletJS.com version ${L.version}`, this.id)
 
     this.hasOverviewMap = true
     this.displayReports = true
@@ -265,13 +264,11 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
   // override ngOnInit() {
   //   super.ngOnInit()
-  //   this.log.excessive("ngOnInit()", this.id)
   // }
 
   // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
   override ngOnInit() {
     super.ngOnInit()
-    this.log.excessive("ngOnInit()", this.id)
 
     // #81 finding (real, open - see the roadmap list): this used to be blamed for a
     // "mapLeaflet:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous
@@ -330,7 +327,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       this.syncOverview?.()  // E-157: see above - don't rely on the fit firing 'move'
     }
 
-    this.log.excessive("out of ngOnInit()", this.id)
   }
 
   /**
@@ -386,14 +382,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     ? 'Edge ticks: latitude / longitude, decimal degrees, WGS84'
     : 'Edge ticks: latitude / longitude, degrees and decimal minutes, WGS84')
 
-  onInstallBtn() {
-    this.log.error("onInstallBtn onInstallBtn onInstallBtn onInstallBtn UNIMPLEMENTED!!!!!!!!!!!!!!!!!!!!!!", this.id)
-  }
-
   override initMainMap() {
-    //this.log.excessive("initMainMap()  pre-super", this.id)
     super.initMainMap()
-    this.log.excessive("initMainMap() post-super", this.id)
 
 
     // ! Repeat of the guards in super:
@@ -401,7 +391,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       this.log.error(`Settings still NULL! while initializing the Leaflet Map!`, this.id)
       return
     }
-    this.log.excessive("initMainMap() post null check", this.id)
 
     if (this.settings === undefined) {
       this.log.error(`initMainMap(): Settings still UNDEFINED! while initializing the Leaflet Map!`, this.id)
@@ -426,7 +415,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     this.zoom.set(this.settings ? this.settings.leaflet.defZoom : 15)
 
-    // this.log.excessive("initMainMap(): 3", this.id)
 
     // TODO: Allow centering map on user's position (geolocation): https://leafletjs.com/reference.html#locate-options
     // TODO: Provide fullscreen button: https://tomik23.github.io/leaflet-examples/#27.fullscreen
@@ -663,9 +651,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
     if (!this.radioLog) {
       this.log.error(`initMainMap(): this.radioLog is null/undefined!`, this.id)
-    } else {
-      const b = this.radioLog.bounds
-      this.log.info(`initMainMap() E: ${b.east};  N: ${b.north};  W: ${b.west};  S: ${b.south};  `, this.id)
     }
 
     this.captureLMoveAndZoom(this.lMap)
@@ -733,7 +718,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     //! No super.initOverviewMap(), correct?!
 
     // TODO: Add a light grey rectangle on overview map to show extend/bounods of main map
-    this.log.info(`initOverviewMap()`, this.id)
 
 
     // instantiate the overview map without controls
@@ -760,11 +744,9 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     L.DomUtil.addClass(this.overviewMapLeaflet.getContainer(), 'crosshair-cursor-enabled')  //  Enable crosshairs
 
     // if (this.overviewMapLeaflet === null || this.overviewMapLeaflet === undefined) {
-    //   this.log.error(`Could not create overview map!`, this.id)
     //   return
     // }
     // if (this.lMap == null || this.lMap == undefined) {
-    //   this.log.error(`map doesn't exist when creating overview map!`, this.id)
     //   return
     // }
 
@@ -772,7 +754,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     /* this.overviewMapLeaflet.addListener("click", () => {
       let mapId = this.overviewMapType.cur++ % 4
       this.overviewMapLeaflet.setMapTypeId(this.overviewMapType.types.type[mapId])
-      this.log.verbose(`Overview map set to ${this.overviewMapType.types.type[mapId]}`, this.id)
     })*/
 
     // const infowindow = new google.maps.InfoWindow({
@@ -797,7 +778,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
    * @param ev
    */
   onMapReady(ev: any) {
-    this.log.verbose(`OnMapReady()`, this.id)
 
     // following from https://github.com/bluehalo/ngx-leaflet/issues/104
     setTimeout(() => {
@@ -842,10 +822,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
           status.innerText = `${coords} copied to clipboard`
           //status.style.visibility = "visible"
           Utility.resetMaterialFadeAnimation(status)
-        } else {
-          this.log.info(`onMouseClick(): Entry__Minimap-status not found!`, this.id)
         }
-        this.log.excessive(`onMouseClick(): ${latlng} copied to clipboard`, this.id)
       })
       .catch(err => {
         this.log.error(`onMouseClick(): latlng NOT copied to clipboard, error: ${err}`, this.id)
@@ -853,7 +830,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   }
 
   refreshMap() {
-    this.log.info(`refreshMap()`, this.id)
     // Try map.remove(); before you try to reload the map. This removes the previous map element using Leaflet's library
     if (this.lMap) {
       this.lMap.invalidateSize() // https://github.com/Leaflet/Leaflet/issues/690
@@ -927,7 +903,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // selected-only view could never be honored no matter what the switch said.
     this.clearMarkers()
 
-    this.log.verbose(`displayMarkers: ${this.displayedRadioLogEntries.length} of 'em`, this.id)
     // E-190: the Show choice thins the entry MARKERS only; trails below still use the full
     // displayedRadioLogEntries (after the selected-only switch), so a path is always the whole trail.
     const shown = this.shownEntries()
@@ -935,7 +910,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     shown.forEach(i => {
       if (i.location.lat && i.location.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
         let title = `${i.callsign} at ${formatReportTime(i.date)} with ${i.status}`
-        //this.log.excessive(`displayMarkers: ${i}: ${JSON.stringify(i)}`, this.id)
 
         // E-86 (narrowed): a distinct shape+color per ranger callsign, team ignored for now.
         // Raised live 2026-08-26: the status halo behind it, colored per the Mission page's
@@ -1157,7 +1131,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   override onSwitchSelectedRadioLog() {
     super.onSwitchSelectedRadioLog()
     this.selectedOnly.set(this.showingSelectedOnly)
-    this.log.excessive(`onSwitchSelectedRadioLog()`, this.id)
 
   }
 
@@ -1189,7 +1162,6 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   }
 
   override addMarker(lat: number, lng: number, title: string = '') {
-    this.log.excessive(`addMarker at ${lat}. ${lng}, ${title}`, this.id)
 
     if (!lat || !lng || !this.lMap) {
       console.error(`bad lat: ${lat} or lng: ${lng} or mapLeaflet: ${this.lMap}`)
@@ -1205,19 +1177,14 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
         _marker.bindPopup(city);
         _marker.on('popupopen', function() {
-          this.log.excessive('open popup', this.id);
         });
         _marker.on('popupclose', function() {
-          this.log.excessive('close popup', this.id);
         });
         _marker.on('mouseout', function() {
-          this.log.excessive('close popup with mouseout', this.id);
           _map.closePopup();
         });
-        this.log.excessive(_map.getZoom());
         if (_map.getZoom() > 15 && _map.hasLayer(_marker)) {
           _map.closePopup();
-          this.log.excessive('zoom > 15 close popup', this.id);
         }
       */
 

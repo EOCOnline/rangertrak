@@ -112,7 +112,6 @@ export class MessagesComponent implements OnInit, OnDestroy {
         if (!filtered.some(r => r.id === this.selectedId())) {
           this.selectedId.set(filtered[0]?.id ?? null)
         }
-        this.log.verbose(`Received ${filtered.length} ICS-213 message(s) of ${reports.logEntries?.length ?? 0} reports.`, this.id)
       },
       error: (e) => this.log.error('Radio log entries subscription got: ' + e, this.id),
     })

@@ -58,7 +58,6 @@ export class MissionLocationService {
       const parsed = stored != null ? JSON.parse(stored) : null
       const result = migrateLocations(parsed)
       this.locations = result.locations
-      this.log.excessive(`Loaded ${this.locations.length} locations from local storage (schema v${result.schemaVersion})`, this.id)
     } catch (error: any) {
       this.locations = []
       this.log.verbose(`Unable to parse Locations from local storage. Error: ${error.message}`, this.id)

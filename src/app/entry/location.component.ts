@@ -424,14 +424,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     @Inject(GEOCODING_PROVIDER) private geocodingProvider: GeocodingProvider,
     // private _toppy: Toppy,
   ) {
-    this.log.info("======== Constructor() ============", this.id)
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     // Settings only needed for Check PCode...
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
       next: (newMission) => {
         this.settings = newMission
-        this.log.excessive('Received new Settings via subscription.', this.id)
 
         // `activeSystem` defaults to 'DD' before real settings arrive (a synchronous
         // default is needed for the first render). Once real settings land, open on this
@@ -455,16 +453,13 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
           if (preferred) this.activeSystem.set(preferred)
         }
       },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id)
     })
 
-    this.log.verbose("Out of constructor", this.id)
   }
 
   // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
   ngOnInit(): void {
-    this.log.info("ngOnInit", this.id)
 
     this.newLocationToFormAndEmit(this.location)
 
@@ -671,7 +666,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     navigator.clipboard.writeText(value)
       .then(() => {
         this.copiedSystem.set(system)
-        this.log.excessive(`${system} "${value}" copied to clipboard`, this.id)
       })
       .catch(err => {
         this.log.error(`${system} NOT copied to clipboard, error: ${err}`, this.id)
@@ -717,7 +711,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * @param newLocation: LocationType
    */
   newLocationToFormAndEmit(newLocation: LocationType) {
-    this.log.info(`newLocationToFormAndEmit() got a new Location: ${JSON.stringify(newLocation)}`, this.id);
 
     this.canonical.set({ lat: newLocation.lat, lng: newLocation.lng })
     this.lastEmitted = { lat: newLocation.lat, lng: newLocation.lng }
@@ -737,7 +730,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     this.addressModel.set(address)
 
     // Emit new location event to parent: so it & any children can react
-    this.log.warn(`newLocationToFormAndEmit() Emitting new Location ${JSON.stringify(newLocation)}`, this.id)
     this.locationChange.emit(newLocation)
   }
 
@@ -750,7 +742,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
 
   chkPCodes(pCode: string) {
-    this.log.verbose(`User entered potential pCode: '${pCode}'. Verify it.`, this.id);
     if (pCode.length) {
       if (!this.settings) {
         this.log.error(`this.settings was null in chkPCodes`, this.id)
@@ -776,7 +767,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
         // Following needs a full (Global) code
         let coord = OpenLocationCode.decode(pCode)
-        this.log.verbose("chkPCodes got " + pCode + "; returned: lat=" + coord.latitudeCenter + ', lng=' + coord.longitudeCenter, this.id);
         //let newLocation: LocationType =
         this.newLocationToFormAndEmit({ lat: coord.latitudeCenter, lng: coord.longitudeCenter, address: "", derivedFromAddress: false })
       }
@@ -795,7 +785,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * 4-6 character token has no natural sub-component split the way DD/DDM/DMS do.
    */
   chkMaidenhead(locator: string) {
-    this.log.verbose(`User entered potential Maidenhead locator: '${locator}'. Verify it.`, this.id)
     const converted = MaidenheadToDD(locator)
     if (!converted) {
       this.log.warn(`chkMaidenhead: MaidenheadToDD rejected "${locator}"`, this.id)
@@ -805,19 +794,16 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   }
 
   updateDerivedLocations(location: LocationType) {
-    this.log.verbose(`updateDerivedLocations()`, this.id)
 
     // DDToAddress already called - if needed...
     //if (location.derivedFromAddress == false) {
     // Updates location.address, but asyncronously
     //let result = this.DDToAddress(location)
-    //this.log.verbose(`DDToAddress returned ${result} & ${JSON.stringify(location)}`, this.id)
     //}
 
     //! duplicate code in ChkPCode()!
     // Check for https://github.com/google/open-location-code (works offline!)
     let pCode = OpenLocationCode.encode(location.lat, location.lng, 11); // OpenLocationCode.encode using default accuracy returns an INVALID +Code!!!
-    this.log.verbose(`updateCoords: Encode returned PlusCode: ${pCode}`, this.id)
     let fullCode
     if (pCode.length) {
       if (OpenLocationCode.isValid(pCode)) {
@@ -826,11 +812,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
           fullCode = OpenLocationCode.recoverNearest(pCode, this.settings.defLat, this.settings.defLng)
         } else {
           fullCode = pCode
-          this.log.verbose(`Shorten +Codes, Global: ${fullCode}, Lat: ${this.settings.defLat}; lng: ${this.settings.defLng}`, this.id)
           // Attempt to trim the first characters from a code; may return same innerText...
           pCode = OpenLocationCode.shorten(fullCode, this.settings.defLat, this.settings.defLng)
         }
-        this.log.verbose(`New PlusCodes: ${pCode} ; Global: ${fullCode}`, this.id)
         // E-item, 2026-08-27: dropped the "+Code: " prefix this string used to open with -
         // the row's own "+Codes:" label (location.component.html) already says that, so the
         // two together used to read "+Codes: +Code: 8QQ2..." on screen.
@@ -891,7 +875,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * @returns
    */
   DDToAddress(location: LocationType) {
-    this.log.verbose(`DDToAddress() Looking up address: ${location.lat}, ${location.lng}`, this.id)
     // assert(!location.derivedFromAddress)
     if (location.derivedFromAddress) {
       this.log.error(`DDToAddress got a primary address NOT needing derivation!`, this.id)
@@ -910,13 +893,11 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
           return
         }
 
-        this.log.info(`DDToAddress(): Received a new geocoded address: ${result.address}`, this.id)
 
         location.address = result.address
         // Async update of DERIVED address fields...
         this.updateDerivedLocations(location)
 
-        this.log.warn(`DDToAddress() Emitting new Location ${JSON.stringify(location)}`, this.id)
         this.locationChange.emit(location)
       })
     return ("No immediate address available: await the result!")
@@ -924,7 +905,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   onAddressChg() { //newAddress: string = "undefined address"
     const newAddress = this.addressModel()
-    this.log.verbose(`onAddressChg got newAddress: ${JSON.stringify(newAddress)}`, this.id)
+    // Typed address text stays out of the log (it can be a home address; the log exports to CSV).
 
     if (!newAddress || !newAddress.length) {
       this.log.error(`onAddressChggot null or undefined address`, this.id)
@@ -933,10 +914,8 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     // Now see what kind/format of address we have and get DD
     if (newAddress.includes("+")) {
-      this.log.verbose("Got PCode: " + newAddress, this.id)
       this.chkPCodes(newAddress)
     } else if (isMaidenhead(newAddress)) {
-      this.log.verbose("Got Maidenhead grid locator: " + newAddress, this.id)
       this.chkMaidenhead(newAddress)
     } else {
       // A what3words-shaped "a.b.c" address used to be routed to a check that could only
@@ -950,7 +929,6 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   // Address stuff
 
   chkStreetAddress(addrText: string) {
-    this.log.verbose("Got street address to check: " + addrText, this.id)
 
     this.geocodingProvider.geocodeAddress(addrText).then((result) => {
       if (!result.found) {

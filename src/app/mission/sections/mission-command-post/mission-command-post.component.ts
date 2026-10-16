@@ -99,7 +99,6 @@ export class MissionCommandPostComponent implements OnDestroy {
     navigator.clipboard.writeText(value)
       .then(() => {
         this.copiedField.set(field)
-        this.log.excessive(`Command Post ${field} "${value}" copied to clipboard`, 'Mission Command Post')
       })
       .catch(err => {
         this.log.error(`Command Post ${field} NOT copied to clipboard, error: ${err}`, 'Mission Command Post')

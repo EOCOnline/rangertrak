@@ -1,5 +1,4 @@
-import { VERSION as CDK_VERSION } from '@angular/cdk'
-import { enableProdMode, VERSION as NG_VERSION } from '@angular/core'
+import { enableProdMode } from '@angular/core'
 import { bootstrapApplication } from '@angular/platform-browser'
 
 import { AppComponent } from './app/app.component'
@@ -31,8 +30,6 @@ if (environment.production) {
 }
 
 /* eslint-disable no-console */
-console.info('Angular version', NG_VERSION.full);
-console.info('Angular CDK version', CDK_VERSION.full);
 
 async function bootstrap() {
   // Item 9 (2026-09-28, John): must run before anything else touches storage or renders the

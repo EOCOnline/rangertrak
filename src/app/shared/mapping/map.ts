@@ -101,17 +101,14 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     protected log: LogService,
     @Inject(DOCUMENT) protected document: Document) {
 
-    this.log.excessive(`(Abstract) ======== Constructor() ============`, this.id)
 
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
       next: (newMission) => {
         // Stored, not pushed: settings are only edited on the Mission page, and a map page is
         // rebuilt from them on every visit, so nothing on the map needs redrawing here (#81).
         this.settings = newMission
-        this.log.excessive('(Abstract) Received new Settings via subscription.', this.id)
       },
-      error: (e) => this.log.error('(Abstract) Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('(Abstract) Settings Subscription complete', this.id)
+      error: (e) => this.log.error('(Abstract) Settings Subscription got:' + e, this.id)
     })
 
     this.radioLogSubscription =
@@ -119,8 +116,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
         next: (newReport) => {
           this.gotNewRadioLog(newReport)
         },
-        error: (e) => this.log.error('(Abstract) Radio Log entries Subscription got:' + e, this.id),
-        complete: () => this.log.info('(Abstract) Radio Log entries Subscription complete', this.id)
+        error: (e) => this.log.error('(Abstract) Radio Log entries Subscription got:' + e, this.id)
       })
   }
 
@@ -128,7 +124,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
    *
    */
   ngOnInit() {
-    this.log.verbose("(Abstract) ngOnInit()", this.id)
 
     if (!this.settings) {
       this.log.error(`(Abstract) this.settings not yet established in ngOnInit()`, this.id)
@@ -147,7 +142,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
    * @returns
    */
   initMainMap() {
-    this.log.verbose("(Abstract) initMainMap()", this.id)
 
     if (!this.settings) {
       this.log.error(`(Abstract) initMainMap(): Settings not yet initialized while initializing the abstract Map!`, this.id)
@@ -215,10 +209,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
           status.innerText = `${coords} copied to clipboard`
           //status.style.visibility = "visible"
           Utility.resetMaterialFadeAnimation(status)
-        } else {
-          this.log.info(`(Abstract) onMouseClick Entry__Minimap-status not found!`, this.id)
         }
-        this.log.excessive(`(Abstract) ${coords} copied to clipboard`, this.id)
       })
       .catch(err => {
         this.log.error(`(Abstract) onMouseClick latlng NOT copied to clipboard, error: ${err}`, this.id)
@@ -231,7 +222,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
 
   abstract refreshMap(): void
   //  {
-  //   this.log.error(`(Abstract) refreshMap() is unimplemented!`, this.id)
   // }
 
   // ------------------------------------  Radio Log entries  ---------------------------------------
@@ -245,7 +235,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
    * no DOM now; the template binds to numAllRows/numSelectedRows directly.
    */
   updateRadioLog() {
-    this.log.excessive(`updateRadioLog()`, this.id)
 
     this.numAllRows.set(this.radioLog?.numReport ?? 0)
 
@@ -265,7 +254,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
 
 
   gotNewRadioLog(newReports: RadioLogType) {
-    this.log.verbose(`(Abstract) gotNewRadioLog(): New collection of ${newReports.numReport} Radio Log entries observed.`, this.id)
 
     this.numAllRows.set(newReports.numReport)
     this.radioLog = newReports
@@ -299,7 +287,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
     this.showingSelectedOnly = !this.showingSelectedOnly
     this.updateRadioLog()
 
-    this.log.verbose(`(Abstract) onSwitchSelectedRadioLog(): displaying ${this.displayedRadioLogEntries.length} ${this.showingSelectedOnly ? 'SELECTED' : 'ALL'} radio log entries`, this.id)
 
     this.refreshMap()
   }
@@ -311,7 +298,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   abstract clearMarkers(): void
 
   displayMarkers() {
-    this.log.verbose(`(Abstract) displayMarkers()`, this.id)
 
     if (!this.displayReports) {
       this.log.error(`(Abstract) displayMarkers() BUT displayReports is false!`, this.id)
@@ -328,7 +314,6 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
   // Deletes all markers in the array by removing references to them
   // https://developers.google.com/maps/documentation/javascript/markers#remove
   removeAllMarkers() {
-    this.log.verbose(`(Abstract) removeAllMarkers()`, this.id)
     this.hideMarkers()
   }
 

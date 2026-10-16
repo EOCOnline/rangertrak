@@ -11,7 +11,7 @@ import { MatCardModule } from '@angular/material/card'
 import { ensureAgGridRegistered } from '../../../shared/ag-grid-setup'
 import { rangertrakGridTheme } from '../../../shared/ag-grid-theme'
 import {
-  RadioLogService, RadioLogStatusType, LogService, statusColorMeetsAA, statusColorValue,
+  RadioLogService, RadioLogStatusType, statusColorMeetsAA, statusColorValue,
   statusInkValue
 } from '../../../shared/services/'
 import { ColorEditor } from '../../color-editor.component'
@@ -44,7 +44,6 @@ import { isStatusFlagged } from '../../../domain/map-entry-filter'
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class MissionFieldReportStatusesComponent implements OnChanges {
-  private id = 'Mission Radio Log Statuses Component'
 
   @Input({ required: true }) rowData: RadioLogStatusType[] = []
 
@@ -140,7 +139,7 @@ export class MissionFieldReportStatusesComponent implements OnChanges {
     }
   ]
 
-  constructor(private log: LogService, private radioLogService: RadioLogService) {
+  constructor(private radioLogService: RadioLogService) {
     ensureAgGridRegistered()
   }
 
@@ -167,7 +166,6 @@ export class MissionFieldReportStatusesComponent implements OnChanges {
   }
 
   onGridReady = (params: any) => {
-    this.log.verbose(" onGridReady", this.id)
 
     this.gridApi = params.api
     this.gridColumnApi = params.columnApi
@@ -202,8 +200,6 @@ export class MissionFieldReportStatusesComponent implements OnChanges {
     if (this.gridApi) {
       this.gridApi.refreshCells({ force })
       this.gridApi.sizeColumnsToFit();
-    } else {
-      this.log.verbose("no this.gridApi yet in refreshStatusGrid()", this.id)
     }
   }
 

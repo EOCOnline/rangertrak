@@ -81,12 +81,10 @@ export function DDToDMS(D: number, lng: boolean = false) {
   }
   */
   /*
-    this.log.verbose("DDtoDMS: D=" + D + " lng=" + lng, this.id)
     let dirr = D<0?lng?'W':'S':lng?'E':'N'
     let degg = 0|(D<0?D=-D:D)
     let minn = 0|D%1*60
     let secc = (0|D*60%1*6000)/100
-    this.log.verbose("DDtoDMS: dir=" + dirr + " deg=" + degg + " min" + minn + " sec=" + secc, this.id)
   */
   return {
     dir: D < 0 ? lng ? 'W' : 'S' : lng ? 'E' : 'N',
@@ -134,7 +132,6 @@ export function DDToDDM(D: number, lng: boolean = false) {
  * @returns number
  */
 export function DMSToDD(Q: string, D: number, M: number, S: number): number {
-  console.info(`DMSToDD got:  ${D}° ${M}' ${S}" ${Q}`)
   return (((Q.toLowerCase() == 'w' || Q.toLowerCase() == 's') ? -1 : 1) * (D
     + Math.round((M / 60 + S / 6000) * (10 ** 4)) / (10 ** 4))) // float portion to 4 decimals
   //+ Number(Math.round((M / 60 + S / 6000) * (10 ** 4)).toFixed(4)))  // alternatively
@@ -155,7 +152,6 @@ export function DMSToDD(Q: string, D: number, M: number, S: number): number {
  */
 
 export function DDMToDD(Q: string, D: number, M: number) {
-  // console.info(`DDMToDD got:  ${D}° ${M} ' ${Q}`)
   return (((Q.toLowerCase() == 'w' || Q.toLowerCase() == 's') ? -1 : 1) * (D
     + Math.round((M / 60) * 10 ** 4) / 10 ** 4)) // float portion to 4 decimals
 }
@@ -463,10 +459,8 @@ class Coord_Unused {
       if (isNaN(coord)) throw "Coordinate is not a number"
       if (coord < -180) throw "Coordinate under -180 degrees."
       if (coord > 180) throw "Coordinate over 180 degrees."
-      // this.log.excessive("Coordinate passed range check...", this.id)
     }
     catch (err: unknown) {
-      // this.log.verbose("Bad Coordinate at Coord(): " + err.message, this.id)
     }
   }
   // Get object {deg:, min:, sec:, dir:}

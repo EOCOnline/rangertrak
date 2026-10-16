@@ -180,10 +180,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
       next: (newMission) => {
         this.onNewSettings(newMission)
-        this.log.excessive('Received new Settings via subscription.', this.id)
       },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.warn('Settings Subscription complete', this.id)
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id)
     })
 
     if (!this.settings) {
@@ -193,7 +191,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onNewSettings(newMission: MissionType) {
-    this.log.verbose(`New settings received`, this.id)
 
     this.settings = newMission
     // debugger
@@ -214,11 +211,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.opPeriodEndDisplay.set(new Date(this.settings.opPeriodEnd).toLocaleString([], timeOpts))
 
     // if (!this.settings.opPeriodStart) {
-    //   console.error(`OpPeriod had no Start time! Reset to 2 hours ago...`, this.id)
     //   this.settings.opPeriodStart = new Date()
     //   this.settings.opPeriodStart.setHours(new Date().getHours() - 2)
     // }
-    // this.log.verbose(`OpPeriodStart = ${JSON.stringify(this.settings.opPeriodStart)}`, this.id)
 
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#calculating_elapsed_time
     //

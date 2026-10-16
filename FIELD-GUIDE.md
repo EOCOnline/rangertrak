@@ -447,8 +447,8 @@ The roster is the sensitive part: names, personal phone numbers, photos, and cal
 tie back to publicly searchable licence records. It is stored unencrypted on the device,
 unless you turn on **device encryption** (Mission → Data safety → Device encryption), which
 also covers radio log entries and ranger photos and needs a passphrase you choose — see below.
-**The same applies to log exports regardless** — the log is a raw diagnostic record and can
-quote report details and addresses verbatim, and is never encrypted.
+**Log exports are never encrypted.** The log records what the app did, not what was entered —
+no report text or addresses — but it can name call signs, file names and map positions.
 
 ### Encrypting the roster and reports on this device
 

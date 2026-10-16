@@ -41,21 +41,15 @@ export class AlertsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    console.log('AlertComponent.ngInit')
-
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
       next: (newMission) => {
         this.settings = newMission
-        this.log.excessive('Received new Settings via subscription.', this.id)
       },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id)
     })
 
+    // May be null here; Banner() looks it up again on first use.
     this.alertBanner = this.document.querySelector('.mdc-banner')
-    if (this.alertBanner == null) {
-      console.log("Alerts:ngInit() couldn't find alert Banner!")
-    }
   }
 
   Banner(msg: string, action1: string | undefined = 'Close', action2: string | undefined = "Close") {
@@ -75,9 +69,8 @@ export class AlertsComponent implements OnInit, OnDestroy {
       banner.setPrimaryActionText(action1)
       banner.setSecondaryActionText(action2)
       //banner.layout()
-      console.log(`BANNER displayed with ${msg}`)
     } else {
-      console.log("Could not locate alertBanner !!!!")
+      this.log.warn(`Could not show the alert banner (no .mdc-banner element): ${msg}`, this.id)
     }
     //this.openSnackBar(`No Rangers found. Please enter them into the grid and then use the Update button,  or provide a Rangers.JSON file to import from or FUTUREE: Import them from an Excel file.`, `Nota Bene`, 1000)
     //  this.openSnackBar(`Imported "${this.rangers.length}" rangers.`, `Nota Bene`, 2000)
@@ -90,11 +83,9 @@ export class AlertsComponent implements OnInit, OnDestroy {
   }
 
   onBtnCloseAlert() {
-    console.log(`onBtnCloseAlert() called`)
   }
 
   onBtnCloseBottomAlert() {
-    console.log(`onBtnCloseBottomAlert() called`)
     this.isAlertHidden = true;
   }
 
@@ -107,7 +98,6 @@ export class AlertsComponent implements OnInit, OnDestroy {
       dbugLog.innerHTML = dbugMsg;
     }
     // TODO: Only if settings say to do this!
-    // console.log("Ranger Track: " + dbugMsg); // Convert dbugLog from HTML to plain text...
     if (alerts == true) {
       //document.getElementById('#alerts').html("<strong>Alert!</strong> "+time + "-  &nbsp;&nbsp;" + msg);
       //document.getElementById('#alerts').fadeIn().delay(2500).fadeOut();

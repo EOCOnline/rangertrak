@@ -1,7 +1,7 @@
 import { CommonModule, DOCUMENT, formatDate } from '@angular/common'
 import { Component, Inject, ChangeDetectionStrategy } from '@angular/core'
 
-import { FieldModeService, LogService, MissionService, UpdateService } from '../services'
+import { FieldModeService, MissionService, UpdateService } from '../services'
 import { InstallUpdateComponent } from '../install-update/install-update.component'
 
 /**
@@ -17,7 +17,6 @@ import { InstallUpdateComponent } from '../install-update/install-update.compone
 })
 export class FooterComponent {
 
-  private id = 'Footer Component'
 
   today = new Date()
 
@@ -74,12 +73,10 @@ export class FooterComponent {
   }
 
   constructor(
-    private log: LogService,
     private fieldMode: FieldModeService,
     private missionService: MissionService,
     private updateService: UpdateService,
     @Inject(DOCUMENT) private document: Document) {
 
-    this.log.excessive(`======== Constructor() ============`, this.id)
   }
 }

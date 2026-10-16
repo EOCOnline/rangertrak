@@ -408,7 +408,6 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     tooltipShowDelay: 300,
 
     // EVENT handlers
-    // onRowClicked: event => this.log.verbose('A row was clicked'),
     onSelectionChanged: (event: SelectionChangedEvent) => this.onRowSelection(event),
     onFilterChanged: () => this.refreshFilterChips(),
     // The grid's rows ARE the service's report objects, so an edit has already
@@ -458,7 +457,6 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     public fieldMode: FieldModeService,
     @Inject(DOCUMENT) private document: Document
   ) {
-    this.log.info(` Construction`, this.id)
     ensureAgGridRegistered()
 
     this.now = new Date()
@@ -491,17 +489,14 @@ export class RadioLogComponent implements OnInit, OnDestroy {
   // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
   ngOnInit(): void {
 
-    this.log.verbose("ngInit", this.id)
 
     // https://angular.io/tutorial/toh-pt4#call-it-in-ngoninit states subscribes should happen in OnInit()
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
       next: (newMission) => {
         this.settings = newMission
         this.columnDefs = this.buildColumnDefs()
-        this.log.excessive('Received new Settings via subscription.', this.id)
       },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id)
     })
 
     if (!this.settings) {
@@ -518,17 +513,13 @@ export class RadioLogComponent implements OnInit, OnDestroy {
 
     this.radioLogSubscription = this.radioLogService.getRadioLogObserver().subscribe({
       next: (newReport) => {
-        console.log(newReport)
         this.gotNewRadioLog(newReport)
       },
-      error: (e) => this.log.error('Radio Log entries Subscription got:' + e, this.id),
-      complete: () => this.log.info('Radio Log entries Subscription complete', this.id)
+      error: (e) => this.log.error('Radio Log entries Subscription got:' + e, this.id)
     })
 
     if (this.gridApi) {
       this.gridApi.refreshCells()
-    } else {
-      this.log.verbose("no this.gridApi yet in ngOnInit()", this.id)
     }
   }
 
@@ -598,12 +589,9 @@ export class RadioLogComponent implements OnInit, OnDestroy {
 */
 
   onGridReady = (params: any) => {
-    this.log.verbose("onGridReady()", this.id)
 
     this.gridApi = params.api
-    //this.log.verbose(`onGridReady() gridApi: ${this.gridApi}`, this.id)
     this.gridColumnApi = params.columnApi
-    // this.log.verbose(`onGridReady() gridColumnApi: ${this.gridColumnApi}`, this.id)
     this.refreshFilterChips()
 
     // E-104: `sizeColumnsToFit()` used to run here, and it is what actually produced the
@@ -614,8 +602,6 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     // TODO: use this line, or onFirstDataRendered()?
     if (this.gridApi) {
       this.gridApi.refreshCells()
-    } else {
-      this.log.verbose("no this.gridApi yet in onGridReady()", this.id)
     }
 
 
@@ -623,15 +609,12 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     //paginationAutoPageSize: true
     // this.gridApi.paginationAutoPageSize(true) // also see: onRowsPerPage
 
-    //this.log.verbose("onGridReady() done", this.id)
   }
 
   onFirstDataRendered(params: any) {
-    this.log.verbose("onFirstDataRendered()", this.id)
 
     // following should not be needed, duplicate of onGridReady()...
     this.gridApi = params.api
-    //this.log.verbose(`onGridReady() gridApi: ${this.gridApi}`, this.id)
     this.gridColumnApi = params.columnApi
 
     //params.api.sizeColumnsToFit();
@@ -645,7 +628,6 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     let selectedNodes = this.gridApi.getSelectedNodes()
     this.selectedRows.set(selectedNodes.length)
     let selectedData = selectedNodes.map((node: { data: RadioLogEntryType; }) => node.data)
-    this.log.verbose(`Selected Row Data obtained ${selectedNodes.length} selected rows`, this.id)
     this.radioLogService.setSelectedRadioLogEntries(selectedData)
   }
 
@@ -676,7 +658,6 @@ export class RadioLogComponent implements OnInit, OnDestroy {
 
 
   gotNewRadioLog(newReports: RadioLogType) {
-    this.log.verbose(`New collection of ${newReports.numReport} Radio Log entries observed.`, this.id)
 
     this.radioLog = newReports
     // A fresh array: the service pushes onto logEntries in place (mergeIncomingEntries), so
@@ -696,23 +677,18 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     const weekday = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
     let dt = 'unknown date'
     let d: Date = params.data.date
-    //this.log.excessive(`Day is: ${d.toISOString()}`, this.id)
-    //this.log.excessive(`WeekDay is: ${d.getDay}`, this.id)
 
     try {  // TODO: Use the date pipe instead?
       //weekday[d.getDay()] +
       dt = formatDate(d, 'M-dd HH:mm:ss', 'en-US')
-      //this.log.excessive(`Day is: ${params.data.date.toISOString()}`, this.id)
     } catch (error: any) {
       dt = `Bad date format: Error name: ${error.name}; msg: ${error.message}`
     }
 
     // https://www.w3schools.com/jsref/jsref_obj_date.asp
-    //this.log.excessive(`Day is: ${params.data.date.toISOString()}`, this.id)
     /*
         if (this.isValidDate(d)) {
           dt = weekday[d.getDay()] + formatDate(d, 'yyyy-MM-dd HH:mm:ss', 'en-US')
-          this.log.excessive(`Day is: ${params.data.date.toISOString()}`, this.id)
         }
     */
     return dt
@@ -748,7 +724,6 @@ export class RadioLogComponent implements OnInit, OnDestroy {
   //   let selectedNodes = this.gridApi.getSelectedNodes();
   //   let selectedData = selectedNodes.map((node: { data: RadioLogEntryType; }) => node.data);
   //   this.selectedRows = selectedNodes.length
-  //   this.log.excessive(`onBtnGetSelectedRowData obtained ${ selectedNodes.length } selected rows: \n${ JSON.stringify(selectedData) } `, this.id)
   //   this.radioLogService.setSelectedRadioLogEntries(selectedData)
   // }
 
@@ -1196,40 +1171,33 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     // this.gridApi.pagination = true // should have been done initially...
     switch (option) {
       case "Auto":
-        this.log.verbose("onRowsPerPage set to Auto", this.id)
         //this.gridApi.paginationSetPageSize()
         this.gridApi.paginationAutoPageSize = true
         this.gridApi.redrawRows()
         break;
       case "5":
         //! WORKS! - Maybe any number LESS than auto????
-        this.log.verbose("onRowsPerPage set to 5", this.id)
         this.gridApi.paginationAutoPageSize = false
         this.gridApi.paginationSetPageSize("5")
         break;
       case "10":
         // WORKS! - Maybe any number LESS than auto????
-        this.log.verbose("onRowsPerPage set to 10", this.id)
         this.gridApi.paginationAutoPageSize = false
         this.gridApi.paginationSetPageSize("10")
         break;
       case "25":
-        this.log.verbose("onRowsPerPage set to 25", this.id)
         this.gridApi.paginationAutoPageSize = false
         this.gridApi.paginationSetPageSize("25")
         break;
       case "50":
-        this.log.verbose("onRowsPerPage set to 50", this.id)
         this.gridApi.paginationAutoPageSize = false
         this.gridApi.paginationSetPageSize("50")
         break;
       case "100":
-        this.log.verbose("onRowsPerPage set to 100", this.id)
         this.gridApi.paginationAutoPageSize = false
         this.gridApi.paginationSetPageSize("100")
         break;
       case "All":
-        this.log.verbose("onRowsPerPage set to All", this.id)
         //https://www.ag-grid.com/javascript-data-grid/infinite-scrolling
         //set rowModelType: infinite ???
         this.gridApi.pagination = false

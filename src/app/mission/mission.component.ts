@@ -255,11 +255,10 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
     public readiness: MissionReadinessService,
     public usage: UsageStateService,
     @Inject(DOCUMENT) private document: Document) {
-    this.log.verbose('======== Constructor() ============', this.id)
 
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
       next: (newMission) => {
-        this.log.excessive(`Received new Settings via subscription: ${JSON.stringify(newMission)}`, this.id)
+        // Not the settings themselves: they carry the geocoding key (see MissionService.updateMission).
         this.settings = newMission
         // 2026-09-30, John: E-145 - our own autosave emits through this same subscription
         // (updateMission() notifies synchronously). Resetting the form from that would
@@ -270,8 +269,7 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
           this.applyMissionToForm(newMission)
         }
       },
-      error: (e) => this.log.error('Mission Subscription got:' + e, this.id),
-      complete: () => this.log.info('Mission Subscription complete', this.id)
+      error: (e) => this.log.error('Mission Subscription got:' + e, this.id)
     })
   }
 
@@ -375,10 +373,8 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
     } else {
       // rowData is seeded by the settings subscription in the constructor (and re-seeded
       // on every later emission), so it is already populated by the time we get here.
-      this.log.verbose(`Application: ${this.settings.application} -- Version: ${this.settings.version}`, this.id)
     }
 
-    this.log.verbose("ngInit done ", this.id)
   }
 
   /**
@@ -407,7 +403,6 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
       this.log.error(`this.settings is null at onNewTimeEventStart`, this.id)
       return
     }
-    this.log.verbose(`Got new start OpPeriod time: ${(newTime)}`, this.id)
     this.settings.opPeriodStart = newTime
     this.opPeriodStart.set(newTime)
     this.missionModel.update(m => ({ ...m, opPeriodStart: newTime }))
@@ -437,7 +432,6 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
     const clamped = asTime(newTime) <= asTime(start)
       ? addHours(start, DEFAULT_OP_PERIOD_HOURS)
       : newTime
-    this.log.verbose(`Got new end OpPeriod time: ${newTime}${clamped !== newTime ? ` (would not leave a positive-length period; re-derived to ${clamped})` : ''}`, this.id)
     this.settings.opPeriodEnd = clamped
     this.opPeriodEnd.set(clamped)
     this.missionModel.update(m => ({ ...m, opPeriodEnd: clamped }))
@@ -582,7 +576,6 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
       return
     }
     const newMission = this.payloadFor(this.missionModel())
-    this.log.verbose('Autosave: updating mission settings.', this.id)
     this.savingFromHere = true
     try {
       this.missionService.updateMission(newMission)

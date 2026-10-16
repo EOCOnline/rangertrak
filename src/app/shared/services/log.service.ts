@@ -15,8 +15,9 @@ import { LogHeadings, LogLevel, LogLevelNames, LogType } from './'
  * history. A scribe running RangerTrak on a field tablet has no devtools, so an in-app log
  * requires capturing entries ourselves. What this adds over `console` is (a) visibility
  * inside the app, (b) structured records that can be filtered and exported, and (c)
- * something a user can actually attach to a trouble report. Entries are still mirrored to
- * the console, which stays the better tool when devtools *are* available.
+ * something a user can actually attach to a trouble report. Only Warn and Error entries are
+ * mirrored to the console (2026-10-16, John: the Info/Verbose/Excessive chatter buried real
+ * problems in devtools); everything captured is still on the Log page.
  */
 @Injectable({ providedIn: 'root' })
 export class LogService {
@@ -74,7 +75,6 @@ export class LogService {
         new Error(`This singleton service has already been provided in the application. Avoid providing it again in child modules.`)
       })
     }
-    console.log(`==== Log Service  ======== Constructor =============`)
 
     this.log_('Log Service is being constructed', 'LogService', LogLevel.Verbose)
   }
@@ -103,7 +103,7 @@ export class LogService {
       case LogLevel.Excessive:
       case LogLevel.Verbose:
       case LogLevel.Info:
-        console.log(line)
+        // In-app log only - see the class comment.
         break
       default:
         console.error(`Unknown level = ${level}!`)
@@ -160,10 +160,10 @@ export class LogService {
   /**
    * Serializes the log as CSV. Pure and separate from the download so it can be tested.
    *
-   * FUTURE: this exports everything. A second "redacted" export - stripping addresses,
-   * call signs and report payloads - would allow anonymized analysis and hot-wash action
-   * replay without distributing personal data. Until that exists the UI warns that the
-   * export may contain confidential information.
+   * There is one export, not a full and a "redacted" pair (retired 2026-10-16, John): the
+   * log is kept free of content instead. Log events, never payloads - no entry or settings
+   * objects, no typed or geocoded addresses, no keys or passphrases. Call signs, file names,
+   * counts, uids and coordinates are fine.
    */
   toCsv(): string {
     const rows = [

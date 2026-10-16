@@ -7,7 +7,7 @@ import { PrintCopiesService } from '../shared/services/print-copies.service'
 import { CommonModule, DOCUMENT } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import {
-  AfterViewInit, Component, computed, ElementRef, EventEmitter, Inject, Input, isDevMode, NgZone, OnDestroy,
+  AfterViewInit, Component, computed, ElementRef, EventEmitter, Inject, Input, NgZone, OnDestroy,
   OnInit, Output, signal, ViewChild, QueryList, ViewChildren,
   ChangeDetectionStrategy, effect
 } from '@angular/core'
@@ -395,7 +395,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     private printCopies: PrintCopiesService,
     @Inject(DOCUMENT) private document: Document) {
 
-    this.log.excessive(`======== constructor() ============`, this.id)
 
     // 2026-10-05 (tester: "I have to keep typing my name"): this component is destroyed whenever
     // the scribe visits another page, so the operator went blank on every return to Entry. Seed it
@@ -421,7 +420,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
         if (JSON.stringify(this.locationParent) === JSON.stringify(undefinedLocation)) {
           // Local location has yet to be set
 
-          this.log.excessive('Setting updated location based on default settings.', this.id)
           // Settings just store default lat/lng, not address.
           // Child will figure out the address...
           this.locationParent = {
@@ -431,20 +429,16 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
             derivedFromAddress: false
           }
         }
-        this.log.excessive('Received new Settings via subscription.', this.id)
       },
-      error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
+      error: (e) => this.log.error('Settings Subscription got:' + e, this.id)
     })
 
     // TODO: Move callSign input to new component?
     this.rangersSubscription = this.rangerService.getRangersObserver().subscribe({
       next: (newRangers) => {
         this.rangers = newRangers
-        this.log.excessive('Received new Rangers via subscription.', this.id)
       },
-      error: (e) => this.log.error('Rangers Subscription got:' + e, this.id),
-      complete: () => this.log.info('Rangers Subscription complete', this.id)
+      error: (e) => this.log.error('Rangers Subscription got:' + e, this.id)
     })
 
     // TODO: Use Alert Service to avoid passing along doc & snackbar properties!
@@ -470,13 +464,9 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   onNewLocationEvent(newLocation: LocationType) { //LocationType) {
     // Based on listing 8.8 in TS dev w/ TS, pg 188
-    this.log.info(`Entry form (parent) got new Location: ${JSON.stringify(newLocation)}`, this.id)
 
     //!BUG: The next line *should* propogate new value to all children, but only does so intermittently...
-    this.log.info(`locationParent was: ${JSON.stringify(this.locationParent)}`, this.id)
     this.locationParent = newLocation
-    //this.locationParent.lat += 0.0000001  //! REMOVE ME!
-    this.log.info(`locationParent now: ${JSON.stringify(this.locationParent)}`, this.id)
 
     // patch entryForm's model - as THAT is what gets saved with on form submit
     this.entryModel.update(m => ({ ...m, location: newLocation }))
@@ -492,7 +482,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param newTime
    */
   onNewTimeEvent(newTime: Date) {
-    this.log.verbose(`Got new Report time: ${newTime}`, this.id)
     this.entryModel.update(m => ({ ...m, date: newTime }))
   }
 
@@ -609,19 +598,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.log.info(`EntryForm initialization with development mode ${isDevMode() ? "" : "NOT "} enabled`, this.id)
 
-    /*
-        this.sha256("hello").then(digestValue => {
-          console.error(` ########## SECRET      Digest is: ${digestValue}`)
-        });
-    */
-
-    this.log.excessive("EntryComponent - ngOnInit - Use settings to fill form", this.id)
 
     // https://angular.io/api/router/Resolve - following fails as MissionComponent has yet to run...
     // or even https://stackoverflow.com/questions/35655361/angular2-how-to-load-data-before-rendering-the-component
-    this.log.excessive(`Running ${this.settings?.application} version ${this.settings?.version} `, this.id)
     // verifies Settings has been loaded
 
     /*  if receiving the https://flexiple.com/angular/expressionchangedafterithasbeencheckederror/
@@ -650,7 +630,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       //this.alert.OpenSnackBar(`No Rangers exist.Please go to Advance section at bottom of Ranger page!`, `No Rangers yet exist.`, 2000)
       //TODO: Force navigation to /Rangers?
 
-      this.log.excessive(` ngOnInit completed`, this.id)
     }
 
     this.tryGpsAutoFill()
@@ -692,7 +671,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
           this.log.info('Field mode GPS fix arrived after the location was already changed - not overwriting it.', this.id)
           return
         }
-        this.log.info(`Field mode GPS auto-fill: ${position.coords.latitude}, ${position.coords.longitude}`, this.id)
+        // The fix is this device's own position, so it is not written to the log.
+        this.log.info(`Field mode GPS auto-fill (accuracy ${Math.round(position.coords.accuracy)} m)`, this.id)
         this.onNewLocationEvent({
           lat: position.coords.latitude,
           lng: position.coords.longitude,
@@ -975,7 +955,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       this.log.error(`this.settings was null in initEntryForm`, this.id)
       return
     }
-    this.log.verbose("Resetting form...", this.id)
     this.resetAll()
 
     // Rebuilds filteredRangers' pipeline from scratch (rather than re-filtering on the just-
@@ -1039,7 +1018,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   callsignChanged(callsign: string) { // Just serves timer for input field - post interaction
-    this.log.excessive(`EntryForm CallsignChanged()`, this.id)
 
     this.callImg = this.document.getElementById("enter__Callsign-image")
     this.callInfo = this.document.getElementById("enter__Callsign-upshot")
@@ -1055,7 +1033,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
         return
       }
 
-      this.log.verbose(`EntryForm callsignChanged looking for ${callsign}`, this.id)
 
       // E-165: a tactical call resolves to its operator (by uid); an unstaffed one has no one
       // to show, so the panel is simply cleared rather than showing the "unknown" silhouette.
@@ -1171,14 +1148,13 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
    *
    */
   onFormSubmit(): void {
-    this.log.excessive(`Submit Form`, this.id)
 
     // FUTURE: Allow keywords, or search Notes for semicolon delimited tokens?
 
     let formDataJSON = JSON.stringify(this.mergedFormValue())
 
     let newReport = this.radioLogService.addRadioLogEntry(formDataJSON)
-    this.log.info(`Report id # ${newReport.id} has been added with: ${formDataJSON} `, this.id)
+    this.log.info(`Report id # ${newReport.id} has been added`, this.id)
 
     if (this.submitInfo) {
       // The KEPT confirmation: a fading line beside the Submit button, right where the

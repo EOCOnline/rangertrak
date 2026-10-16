@@ -104,19 +104,18 @@ export class LogComponent {
   /**
    * Downloads the whole log as CSV.
    *
-   * Confirms first, because the log is not sanitized: it contains whatever was logged,
-   * which includes serialized radio log entries, resolved street addresses and call signs.
-   * Same treatment as the roster export on the Rangers page.
+   * Confirms first. Since 2026-10-16 the log records events, not content: no entry text,
+   * addresses, settings or keys (see LogService's class comment). It can still name call
+   * signs, file names and map positions, and it is not encrypted.
    *
-   * FUTURE: offer "full log" and "redacted log" exports, the latter stripping personal
-   * detail so a log can be shared for anonymized analysis or replayed during a hot wash.
+   * The "redacted log" export once planned here was retired the same day (John): with no
+   * content in the log there is nothing for it to strip.
    */
   onBtnSaveLog() {
     if (!Utility.getConfirmation(
       `Save the event log to a file?\n\n`
-      + `The log is a raw diagnostic record and MAY CONTAIN CONFIDENTIAL INFORMATION - `
-      + `radio log entry details, street addresses and call signs among them - and is NOT `
-      + `encrypted.\n\n`
+      + `The log records what the app did, not what was entered, but it can name call signs, `
+      + `file names and map positions, and the file is NOT encrypted.\n\n`
       + `Share it only with people who need it to diagnose a problem, and delete it `
       + `afterwards.`)) {
       this.logService.verbose('onBtnSaveLog: user cancelled export.', this.id)
