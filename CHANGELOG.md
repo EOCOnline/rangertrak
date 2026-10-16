@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.43-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.42-alpha...v0.99.43-alpha) (2026-10-16)
+
+
+### Features
+
+* **map:** lat/long edge ticks on screen too; bigger and more of them in print ([bbeec0a](https://github.com/SteadyEOC/RangerTrak/commit/bbeec0ab37b9acc942ddb23be7fffc7abda9541a))
+
 ### [0.99.42-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.41-alpha...v0.99.42-alpha) (2026-10-16)
 
 
