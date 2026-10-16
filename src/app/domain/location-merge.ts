@@ -18,6 +18,9 @@ export type LocationMergeResult = {
   changes: { name: string, changedFields: string[] }[]
   /** Names of matched rows where nothing differed (D-58: say so, rather than count it as an update). */
   unchanged: string[]
+  /** The `uid` of every row this merge wrote or confirmed (added, updated or unchanged): what a
+   *  layer record remembers (E-187 phase C, `domain/layers.ts`). */
+  touchedUids: string[]
 }
 
 /** Two coordinates are the same place when they agree to 5 decimals (about a metre): the
@@ -30,11 +33,13 @@ const sameCoordinate = (a: number, b: number) => a.toFixed(5) === b.toFixed(5)
  * deliberately, including its D-58 rule: **a blank incoming field never erases** what the device
  * already holds (a blank category, address or note, or a coordinate that is not a number).
  *
- * Match key: trimmed `name`, EXACT (not case-insensitive) match - "Command Post" and "command
- * post" are treated as two different locations rather than merged, since a location has no
- * stronger identifier the way a ranger's `id` is (no real-world credential to fall back on).
- * Matching on `uid` first is phase C of E-187. `incoming` is run through
- * `normalizeLocationUids()` first.
+ * Match key (E-187 phase C, ADR D-58 point 6): `uid` first, then trimmed `name`, EXACT (not
+ * case-insensitive) - "Command Post" and "command post" are treated as two different locations
+ * rather than merged, since a location has no stronger identifier the way a ranger's `id` is.
+ * A uid match means a later layer that RENAMES a place updates it in place instead of adding a
+ * copy; `name` is then one of the changed fields. `incoming` is run through
+ * `normalizeLocationUids()` first (it mints a uid for a row with none, and that fresh uid
+ * matches nothing, so such a row falls through to the name match as before).
  *
  * On a match, keeps the EXISTING row's `uid` and takes each non-blank incoming field, updated in
  * place (order preserved, same reasoning as `mergeRangers()`). A matched row where nothing
@@ -53,25 +58,35 @@ export function mergeLocations(
 
   const locations = existing.map(l => ({ ...l }))
   const byName = new Map<string, number>()
+  const byUid = new Map<string, number>()
   locations.forEach((l, i) => {
     const key = l.name.trim()
     if (key) byName.set(key, i)
+    if (l.uid) byUid.set(l.uid, i)
   })
 
   const added: string[] = []
   const overwritten: string[] = []
   const changes: { name: string, changedFields: string[] }[] = []
   const unchanged: string[] = []
+  const touchedUids: string[] = []
 
   for (const inc of normalizedIncoming) {
     const key = inc.name.trim()
-    const matchIndex = key ? byName.get(key) : undefined
+    const uidMatch = inc.uid ? byUid.get(inc.uid) : undefined
+    const matchIndex = uidMatch !== undefined ? uidMatch : (key ? byName.get(key) : undefined)
 
     if (matchIndex !== undefined) {
       const current = locations[matchIndex]
       const next: MissionLocationType = { ...current }
       const changedFields: string[] = []
 
+      // Only a uid match can differ in name (a name match is equal by construction).
+      if (uidMatch !== undefined && key && key !== current.name.trim()) {
+        changedFields.push('name')
+        next.name = inc.name
+        byName.set(key, matchIndex)
+      }
       for (const field of ['type', 'address', 'note'] as const) {
         const value = inc[field]
         if (typeof value !== 'string' || value.trim() === '') continue   // blank keeps the existing value
@@ -88,6 +103,7 @@ export function mergeLocations(
       }
 
       locations[matchIndex] = { ...next, uid: current.uid }
+      if (current.uid) touchedUids.push(current.uid)
       if (changedFields.length) {
         overwritten.push(key)
         changes.push({ name: key, changedFields })
@@ -99,10 +115,14 @@ export function mergeLocations(
       locations.push({ ...inc, type })
       added.push(key)
       if (key) byName.set(key, locations.length - 1)
+      if (inc.uid) {
+        byUid.set(inc.uid, locations.length - 1)
+        touchedUids.push(inc.uid)
+      }
     }
   }
 
-  return { locations, added, overwritten, changes, unchanged }
+  return { locations, added, overwritten, changes, unchanged, touchedUids }
 }
 
 /**

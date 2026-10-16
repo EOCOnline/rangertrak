@@ -96,5 +96,34 @@ describe('location-merge', () => {
       expect(result.added).toEqual([]);
       expect(result.overwritten).toEqual([]);
     });
+
+    // E-187 phase C (ADR D-58 point 6): uid first, then exact name.
+    it('matches on uid first: a place renamed in a later layer is updated in place, not added', () => {
+      const existing = [location('Shelter A', { uid: 'u-1', address: '1 Main St' }), location('Fire Stn 1', { uid: 'u-2' })];
+      const incoming = [location('Shelter Alpha', { uid: 'u-1' })];
+
+      const result = mergeLocations(existing, incoming);
+
+      expect(result.locations.length).toBe(2);
+      expect(result.locations[0].name).toBe('Shelter Alpha');
+      expect(result.locations[0].uid).toBe('u-1');
+      expect(result.locations[0].address).toBe('1 Main St');   // blank incoming never erases
+      expect(result.added).toEqual([]);
+      expect(result.changes).toEqual([{ name: 'Shelter Alpha', changedFields: ['name'] }]);
+    });
+
+    it('falls back to the exact name when the uid matches nothing', () => {
+      const existing = [location('Shelter A', { uid: 'u-1' })];
+      const result = mergeLocations(existing, [location('Shelter A', { uid: 'u-other' })]);
+      expect(result.locations.length).toBe(1);
+      expect(result.locations[0].uid).toBe('u-1');
+      expect(result.unchanged).toEqual(['Shelter A']);
+    });
+
+    it('reports the uids it wrote or confirmed, added rows included', () => {
+      const existing = [location('A', { uid: 'u-a' }), location('B', { uid: 'u-b' })];
+      const result = mergeLocations(existing, [location('A', { uid: 'u-a' }), location('C', { uid: 'u-c' })]);
+      expect(result.touchedUids.sort()).toEqual(['u-a', 'u-c']);
+    });
   });
 });
