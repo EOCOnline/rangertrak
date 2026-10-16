@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.38-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.37-alpha...v0.99.38-alpha) (2026-10-16)
+
+
+### Features
+
+* **handover:** give every radio log entry a permanent uid (E-188) ([3f07813](https://github.com/SteadyEOC/RangerTrak/commit/3f0781393965725db00df74161f488d407becf41))
+* **handover:** Hand over to another scribe card on Radio Log (E-188) ([b30c24f](https://github.com/SteadyEOC/RangerTrak/commit/b30c24f70dfe4dc6ef86a60755800e6b05e20e7c))
+* **handover:** hand-over file format with optional passphrase (E-188) ([2368493](https://github.com/SteadyEOC/RangerTrak/commit/2368493356610ecda84e9be6b3978a6f0fa157a7))
+* **handover:** pure entry merge and ranger uid remap (E-188) ([24fec46](https://github.com/SteadyEOC/RangerTrak/commit/24fec4613ba6d4cd5f2eebb0f2bf198d6b262b12))
+
 ### [0.99.37-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.36-alpha...v0.99.37-alpha) (2026-10-15)
 
 
