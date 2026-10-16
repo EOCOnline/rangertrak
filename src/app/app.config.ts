@@ -1,5 +1,4 @@
 import { ApplicationConfig, ErrorHandler, isDevMode, provideZonelessChangeDetection } from '@angular/core'
-import { provideAnimations } from '@angular/platform-browser/animations'
 import {
   NoPreloading, provideRouter, withInMemoryScrolling, withPreloading
 } from '@angular/router'
@@ -30,7 +29,6 @@ import { GlobalErrorHandler, MissionService } from './shared/services'
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
-    provideAnimations(),
     // Sends uncaught exceptions and rejected promises to the in-app Log page, which a
     // field user can actually see - see global-error-handler.ts.
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
