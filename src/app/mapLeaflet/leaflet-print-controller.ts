@@ -465,25 +465,45 @@ export class LeafletPrintController {
   private readonly movedBadges = new Map<L.Tooltip, L.LatLng>()
   private readonly fanLayer = L.layerGroup()
 
+  /**
+   * 2026-10-16 (John's prints, Windows display scale 150%): in a real print, getBoundingClientRect()
+   * came back at 2/3 of the CSS px Leaflet and style.left/top work in (print check: map 630 px
+   * measured, 945 px laid out), so the legend was measured too small and printed over the title.
+   * Every measurement the print layout takes goes through this, so all of it is in the map
+   * container's CSS px. The ratio is 1 on screen and wherever the two agree.
+   */
+  private containerRect(): (r: DOMRect) => PrintRect {
+    const map = this.mapContainer.nativeElement
+    const origin = map.getBoundingClientRect()
+    const k = origin.width && map.offsetWidth ? map.offsetWidth / origin.width : 1
+    return r => ({
+      left: (r.left - origin.left) * k, top: (r.top - origin.top) * k,
+      right: (r.right - origin.left) * k, bottom: (r.bottom - origin.top) * k,
+    })
+  }
+
   private fanPrintMarkers(): void {
     this.unfanPrintMarkers()
     const markers = this.printMarkers.getLayers() as L.Marker[]
     const points = markers.map(m => this.lMap.latLngToContainerPoint(m.getLatLng()))
     // What stays put and must not be fanned onto: the Location icons. (The minutes badges travel
     // with their report, see placeBadges().)
-    const origin = this.mapContainer.nativeElement.getBoundingClientRect()
+    const rel = this.containerRect()
     const fixed: PrintRect[] = []
     const keep = (el: Element | undefined | null) => {
       const r = el?.getBoundingClientRect()
       if (r && r.width && r.height) {
-        fixed.push(padRect({ left: r.left - origin.left, top: r.top - origin.top, right: r.right - origin.left, bottom: r.bottom - origin.top }, 1))
+        fixed.push(padRect(rel(r), 1))
       }
     }
     this.locationsLayer.eachLayer(l => keep((l as L.Marker).getElement?.()))
 
     // The printed icon is a scaled-down svg inside the 28 px icon box (see the scss), so measure
     // that, now that the print styles are on: the grouping and spacing follow the printed size.
-    const sample = markers.map(m => m.getElement()?.querySelector('svg')?.getBoundingClientRect().width).find(w => !!w)
+    const sample = markers.map(m => {
+      const r = m.getElement()?.querySelector('svg')?.getBoundingClientRect()
+      return r && r.width ? rel(r).right - rel(r).left : 0
+    }).find(w => !!w)
     const plan = planFans(points, { icon: sample || undefined, fixed })
     const dots = new Set<string>()
     for (const group of plan.groups) {
@@ -518,12 +538,10 @@ export class LeafletPrintController {
    */
   private placeBadges(): void {
     const map = this.mapContainer.nativeElement
-    const origin = map.getBoundingClientRect()
+    const toMap = this.containerRect()
     const rel = (el: Element | null | undefined): PrintRect | null => {
       const r = el?.getBoundingClientRect()
-      return r && r.width && r.height
-        ? { left: r.left - origin.left, top: r.top - origin.top, right: r.right - origin.left, bottom: r.bottom - origin.top }
-        : null
+      return r && r.width && r.height ? toMap(r) : null
     }
     const iconOf = (m: L.Marker) => rel(m.getElement()?.querySelector('svg') ?? m.getElement())
     const items: { badge: L.Tooltip, marker: L.Marker, size: { width: number, height: number } }[] = []
@@ -535,8 +553,8 @@ export class LeafletPrintController {
       badge.options.direction = 'top'
       badge.options.offset = L.point(0, -BADGE_OVERLAP_PX)
       badge.setLatLng(marker.getLatLng())
-      const r = badge.getElement()?.getBoundingClientRect()
-      items.push({ badge, marker, size: { width: r?.width ?? 0, height: r?.height ?? 0 } })
+      const r = rel(badge.getElement())
+      items.push({ badge, marker, size: { width: r ? r.right - r.left : 0, height: r ? r.bottom - r.top : 0 } })
     })
     if (!items.length) {
       return
@@ -624,15 +642,13 @@ export class LeafletPrintController {
       legend.classList.add('legend--compact')
       legend.style.removeProperty('width')
       if (titleBand) {
-        frame.style.setProperty('--rt-print-band', `${title.getBoundingClientRect().height}px`)
+        frame.style.setProperty('--rt-print-band', `${title.offsetHeight}px`)
       }
       this.lMap.invalidateSize()
       this.fanPrintMarkers()
 
-      const origin = this.mapContainer.nativeElement.getBoundingClientRect()
-      const rel = (r: DOMRect): PrintRect => ({
-        left: r.left - origin.left, top: r.top - origin.top, right: r.right - origin.left, bottom: r.bottom - origin.top,
-      })
+      const rel = this.containerRect()
+      const map = this.mapContainer.nativeElement
       const visible = (selector: string, pad: number) => [...frame.querySelectorAll(selector)]
         .map(el => el.getBoundingClientRect()).filter(r => r.width && r.height)
         .map(r => padRect(rel(r), pad))
@@ -651,14 +667,14 @@ export class LeafletPrintController {
           }
         }
       })
-      const container = { width: origin.width, height: origin.height }
+      const container = { width: map.offsetWidth, height: map.offsetHeight }
       // The scale bar and credits run along the bottom edge: panels sit above them.
       const credits = visible('.leaflet-control-scale, .leaflet-control-attribution', 0)
-      const bottomExtra = credits.length ? Math.max(0, origin.height - Math.min(...credits.map(r => r.top))) : 0
+      const bottomExtra = credits.length ? Math.max(0, container.height - Math.min(...credits.map(r => r.top))) : 0
       const place = (el: HTMLElement, extraHard: PrintRect[]) => {
-        const r = el.getBoundingClientRect()
+        const r = rel(el.getBoundingClientRect())
         return choosePanelSpot({
-          container, panel: { width: r.width, height: r.height }, inset, bottomExtra,
+          container, panel: { width: r.right - r.left, height: r.bottom - r.top }, inset, bottomExtra,
           hard: [...hard, ...extraHard], soft, segments,
         })
       }
@@ -671,7 +687,7 @@ export class LeafletPrintController {
         }
       }
       {
-        const tr = title.getBoundingClientRect()
+        const tr = { width: title.offsetWidth, height: title.offsetHeight }
         const withTitle = hasTitle && !titleBand && titleSpot
           ? [padRect({ left: titleSpot.left, top: titleSpot.top, right: titleSpot.left + tr.width, bottom: titleSpot.top + tr.height }, 3)] : []
         // A wider, shorter legend (three or four columns) gets a chance before page 2.

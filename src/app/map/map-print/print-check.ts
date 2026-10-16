@@ -54,9 +54,13 @@ export function armPrintCheck(kind: string): () => void {
         })
         .sort((a, b) => b.depth - a.depth)
         .slice(0, 15)
-      const frame = document.querySelector('.mapLeaflet-frame, .mapLibre-frame')?.getBoundingClientRect()
+      const frameEl = document.querySelector<HTMLElement>('.mapLeaflet-frame, .mapLibre-frame')
+      const frame = frameEl?.getBoundingClientRect()
       console.info('RangerTrak print check: ' + JSON.stringify({
         kind,
+        // Round 3: CSS px per measured px (1.5 on John's 150% display); the print layout divides by it.
+        dpr: window.devicePixelRatio,
+        ratio: frame?.width && frameEl ? +(frameEl.offsetWidth / frame.width).toFixed(3) : null,
         page: [window.innerWidth, window.innerHeight],
         scroll: [doc.scrollWidth, doc.scrollHeight],
         frame: frame ? [Math.round(frame.width), Math.round(frame.height)] : null,
