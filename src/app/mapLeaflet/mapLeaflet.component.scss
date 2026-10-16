@@ -688,7 +688,10 @@ mat-slide-toggle {
 .map-edge-ticks {
   position      : absolute;
   inset         : 0;
-  z-index       : 1100;
+  // On screen: above the map panes (popups are 700) but BELOW Leaflet's controls (1000), so an
+  // opened layers panel covers the ticks instead of a label covering its first entry (John,
+  // 2026-10-16). On paper it goes back above the furniture (see @media print below).
+  z-index       : 900;
   pointer-events: none;
   overflow      : hidden;
   color         : #000;
@@ -722,6 +725,7 @@ mat-slide-toggle {
 
 @media print {
   .map-edge-ticks {
+    z-index                   : 1100;
     -webkit-print-color-adjust: exact;
     print-color-adjust        : exact;
   }
