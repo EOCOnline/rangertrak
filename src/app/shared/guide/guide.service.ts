@@ -3,7 +3,22 @@ import { Router, NavigationEnd } from '@angular/router'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { filter, map, startWith } from 'rxjs/operators'
 
-import { GuideEntry, guideFor } from './guide-content'
+import type { GuideEntry } from './guide-content'
+
+/**
+ * The routes that have Guide text. Kept here, eagerly, so the header can show or hide its
+ * Guide button without loading the text itself (guide-content.ts, ~40 kB), which is loaded
+ * by dynamic import() the first time the Guide opens (E-192). guide.service.spec.ts checks
+ * this list against GUIDE_CONTENT's keys so the two cannot drift.
+ */
+export const GUIDE_ROUTES: readonly string[] = [
+  '/', '/radio-log', '/messages', '/after-action', '/rangers', '/mission', '/map', '/prep'
+]
+
+function hasGuide(url: string): boolean {
+  const path = url.split('?')[0].split('#')[0]
+  return GUIDE_ROUTES.includes(path) || GUIDE_ROUTES.includes(path.replace(/\/$/, ''))
+}
 
 /**
  * Open/closed state for the one Guide drawer, plus which screen's content it should show.
@@ -41,11 +56,21 @@ export class GuideService {
     { initialValue: this.router.url }
   )
 
-  /** The guide content for the screen currently on display, or undefined if it has none. */
-  readonly entry = computed<GuideEntry | undefined>(() => guideFor(this.url()))
+  /** The Guide text module, once loaded; undefined until the Guide has been opened. */
+  private readonly content = signal<typeof import('./guide-content') | undefined>(undefined)
+  private loading = false
+
+  /** True when the Guide text could not be fetched (offline with no cached copy). */
+  readonly loadFailed = signal(false)
+
+  /**
+   * The guide content for the screen currently on display, or undefined if it has none or
+   * the text is still loading.
+   */
+  readonly entry = computed<GuideEntry | undefined>(() => this.content()?.guideFor(this.url()))
 
   /** Whether this screen has anything to show - the Guide button hides itself when not. */
-  readonly available = computed(() => this.entry() !== undefined)
+  readonly available = computed(() => hasGuide(this.url()))
 
   /** True only when the drawer should actually be rendered. */
   readonly isOpen = computed(() => this._open() && this.available())
@@ -62,6 +87,21 @@ export class GuideService {
     if (this.available()) {
       this._requestedTab.set(tabLabel)
       this._open.set(true)
+      void this.ensureLoaded()
+    }
+  }
+
+  /** Fetches the Guide text once; the service worker caches the chunk for offline use. */
+  private async ensureLoaded(): Promise<void> {
+    if (this.content() || this.loading) { return }
+    this.loading = true
+    this.loadFailed.set(false)
+    try {
+      this.content.set(await import('./guide-content'))
+    } catch {
+      this.loadFailed.set(true)
+    } finally {
+      this.loading = false
     }
   }
 

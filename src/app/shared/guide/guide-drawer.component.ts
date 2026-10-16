@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatTabsModule } from '@angular/material/tabs'
 
 import { GuideService } from './guide.service'
-import { renderGuideText } from './guide-content'
+import { renderGuideText } from './guide-render'
 
 /**
  * The one Guide drawer, rendered once in app.component.html and opened by the Guide button

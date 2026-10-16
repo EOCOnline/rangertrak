@@ -4,21 +4,25 @@
      the accessible way out - a screen reader has no use for a backdrop it cannot describe. -->
 <div class="guide__scrim" (click)="guide.close()" aria-hidden="true"></div>
 
-<aside class="guide" role="dialog" aria-modal="false" [attr.aria-label]="'Guide: ' + guide.entry()!.screen"
+<aside class="guide" role="dialog" aria-modal="false" [attr.aria-label]="'Guide: ' + (guide.entry()?.screen ?? 'loading')"
   cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
 
   <header class="guide__header">
     <div class="guide__titles">
       <h2 class="guide__title">Guide</h2>
-      <p class="guide__screen">{{ guide.entry()!.screen }}</p>
+      <p class="guide__screen">{{ guide.entry()?.screen ?? (guide.loadFailed() ? '' : 'Loading...') }}</p>
     </div>
     <button matIconButton type="button" (click)="guide.close()" aria-label="Close the guide">
       <mat-icon>close</mat-icon>
     </button>
   </header>
 
+  @if (guide.loadFailed()) {
+  <p class="guide__panel guide__text" role="alert">The Guide text could not be loaded. Check the connection and try again.</p>
+  }
+  @if (guide.entry(); as entry) {
   <mat-tab-group class="guide__tabs" [selectedIndex]="guide.selectedTabIndex()">
-    @for (tab of guide.entry()!.tabs; track tab.label) {
+    @for (tab of entry.tabs; track tab.label) {
     <mat-tab [label]="tab.label">
       <div class="guide__panel">
         @for (block of tab.blocks; track block.heading) {
@@ -40,6 +44,7 @@
     </mat-tab>
     }
   </mat-tab-group>
+  }
 
   <footer class="guide__footer">
     <a routerLink="/help" (click)="guide.close()" class="guide__help-link">Open the full Help section</a>
