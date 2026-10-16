@@ -189,6 +189,19 @@ async function main() {
         + ' px (' + Math.round(100 * f?.height / innerHeight) + '% of page height); sign-off line ends at ' + end
         + ' px (overflow ' + (end - innerHeight) + ' px)' + (page2 ? '; legend on page 2' : '')
     })()`))
+    // 2026-10-16, John's PDFs: a blank second sheet. Anything that reaches past page 1's printable
+    // height, outermost first (nothing inside the map, which clips its own tiles).
+    console.log(await evaluate(`(() => {
+      const past = [...document.querySelectorAll('body *')]
+        .filter(el => !el.closest('.leaflet-pane, .leaflet-control-container'))
+        .map(el => ({ el, r: el.getBoundingClientRect() }))
+        .filter(({ r }) => r.height && r.bottom + scrollY > innerHeight + 0.5)
+        .filter(({ el }) => { const p = el.parentElement?.getBoundingClientRect(); return !p || p.bottom + scrollY <= innerHeight + 0.5 || el.parentElement === document.body })
+        .map(({ el, r }) => el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + (typeof el.className === 'string' && el.className.trim() ? '.' + el.className.trim().split(/\\s+/).slice(0, 3).join('.') : '')
+          + ' top ' + Math.round(r.top + scrollY) + ' bottom ' + Math.round(r.bottom + scrollY) + ' ' + getComputedStyle(el).position)
+      const h = el => Math.round(el.getBoundingClientRect().height * 10) / 10
+      return 'past page 1 (' + innerHeight + ' px; html ' + h(document.documentElement) + ', body ' + h(document.body) + ' px): ' + (past.join('; ') || 'nothing')
+    })()`))
     // 2026-10-01, John: E-152b - how far the fanned-out icons sit from their true points (the
     // length of the longest leader line, in CSS px).
     const longest = await evaluate(`Math.round(Math.max(0, ...[...document.querySelectorAll('path.rt-fan-leader')].map(p => {

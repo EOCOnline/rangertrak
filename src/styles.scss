@@ -94,6 +94,17 @@ body {
   height: 100%;
 }
 
+// 2026-10-16, John's Map PDFs: a blank second sheet. On paper 100% is exactly one page's printable
+// height, so the document filled page 1 to the last fraction of a px, and the real print dialog's
+// rounding (Letter is 725.3 px tall) started another sheet with nothing on it. The sheet's content
+// ends ~16 px short of the page (print-map-sheet.js), so let the document be only as tall as that.
+@media print {
+  html,
+  body {
+    height: auto;
+  }
+}
+
 // 2026-09-28, John: AAR note - "less oval" buttons, if it's OK by Material style. M3's
 // default shape for every mat-button variant is `corner-full` (a full pill, its own
 // height/2 radius) - Material itself supports a smaller, less-round corner through the
