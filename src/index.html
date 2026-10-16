@@ -45,6 +45,13 @@
        load listener. A same-origin stylesheet of this size does not need deferring, and
        the CSP no longer has to allow either Google host. See assets/fonts/fonts.css. -->
   <link rel="stylesheet" href="assets/fonts/fonts.css">
+  <!-- E-193 (2026-10-16): fetch Roboto's latin file now, not when fonts.css is parsed and
+       text first needs it. Found that late, it arrived ~0.3 s after first paint, and the swap
+       from the fallback font (line-height: normal follows the font's metrics) pushed the Entry
+       form down 4 px: CLS 0.014-0.06 on desktop. 22 KB, so it costs the main bundle nothing
+       worth measuring. crossorigin is required for font preloads, even same-origin ones. The
+       icon font (128 KB) is deliberately not preloaded: it would compete with main.js on Slow 4G. -->
+  <link rel="preload" href="assets/fonts/roboto-latin.woff2" as="font" type="font/woff2" crossorigin>
 
   <!-- E-42: theme-color was Angular Material's default blue (#1976d2), unrelated to the
        app's actual Command skin accent (#0B5FA8, ADR D-37) - this is what colors the
