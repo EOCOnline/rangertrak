@@ -35,7 +35,7 @@ import {
   statusColorValue, undefinedAddressFlag, undefinedLocation, WelcomePanelService, FieldModeService
 } from '../shared/services/'
 // Direct path: a plain const export, used for the demo card's scenario name.
-import { SAMPLE_SCENARIOS } from '../shared/services/sample-data.service'
+import { SAMPLE_SCENARIOS } from '../shared/services/sample-scenarios'
 import { activeDemoScenario } from '../shared/mapping/demo-map'
 import { DemoPickerComponent } from '../shared/demo-picker/demo-picker.component'
 //import { LocationComponent } from './location.component'

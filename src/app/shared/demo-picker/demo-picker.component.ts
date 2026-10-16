@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, input, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector, OnInit, input, signal } from '@angular/core'
 
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
@@ -6,9 +6,11 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatSelectModule } from '@angular/material/select'
 import { LogService, MissionService, UsageStateService } from '../services'
 // Direct path, not the barrel - see the note in rangers.component.ts.
+// sample-scenarios.ts is the small list; the demo data itself (sample-data.service.ts) is
+// loaded with a dynamic import() at the moment a demo loads (E-192).
 import {
-  DEFAULT_SAMPLE_SCENARIO, SAMPLE_SCENARIOS, SampleDataService, SampleScenarioId
-} from '../services/sample-data.service'
+  DEFAULT_SAMPLE_SCENARIO, SAMPLE_SCENARIOS, SampleScenarioId
+} from '../services/sample-scenarios'
 import { activeDemoScenario } from '../mapping/demo-map'
 import { confirmReplaceMission } from './replace-guard'
 
@@ -69,7 +71,7 @@ export class DemoPickerComponent implements OnInit {
   }
 
   constructor(
-    private sampleData: SampleDataService,
+    private injector: Injector,
     private usage: UsageStateService,
     private missionService: MissionService,
     private log: LogService,
@@ -101,7 +103,8 @@ export class DemoPickerComponent implements OnInit {
       return false
     }
 
-    await this.sampleData.loadSampleMission(scenario)
+    const { SampleDataService } = await import('../services/sample-data.service')
+    await this.injector.get(SampleDataService).loadSampleMission(scenario)
     this.log.warn(`Loaded the sample mission (demo data): ${scenario}.`, this.id)
     if (state !== 'empty') alert('Sample mission loaded. Reloading to refresh every screen with the new data...')
     window.location.reload()

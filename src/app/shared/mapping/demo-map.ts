@@ -1,4 +1,4 @@
-import type { SampleScenarioId } from '../services/sample-data.service'
+import type { SampleScenarioId } from '../services/sample-scenarios'
 import { DEFAULT_PMTILES_URL, DEMO_DETAIL_MAPS, DemoDetailMap, PMTILES_WARM_CACHE_NAME } from './pmtiles-config'
 
 /**

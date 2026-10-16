@@ -9,7 +9,7 @@
 // warmBundledPmtilesCache() comment). OfflineBasemapService warms them into its own Cache
 // Storage entry instead, from the /map page only. See FIELD-GUIDE.md ("Warm start").
 
-import type { SampleScenarioId } from '../services/sample-data.service'
+import type { SampleScenarioId } from '../services/sample-scenarios'
 
 // E-124 split (2026-09-26): was one merged `world-vashon.pmtiles` (z0-5 world + Vashon's
 // z6-15 detail, 16.3 MB) that every device opening the Alternative map downloaded, whichever
