@@ -2953,6 +2953,110 @@ async function checkEntryUsesNewMissionDefault() {
 }
 
 /**
+ * E-188 (ADR D-59): scribe hand-over. Device A (a walk-up and a known ranger, three entries, one
+ * corrected) builds a hand-over; device B (its own copy of the walk-up with a different uid, two
+ * entries of its own, a different mission name) merges it in. Asserts the preview counts, the
+ * mismatch warning, the stored result, that A's walk-up entries attach to B's person, and that
+ * merging the same file again changes nothing.
+ */
+async function checkScribeHandover() {
+  console.log('\nE-188: scribe hand-over - build on one device, merge into another with entries of its own')
+  await send('Emulation.setDeviceMetricsOverride', { width: 1400, height: 900, deviceScaleFactor: 1, mobile: false })
+  await goto('/')
+  const savedSettings = await evaluate(`localStorage.getItem('appSettings')`)
+  const setMission = name => evaluate(`(() => { const s = JSON.parse(localStorage.getItem('appSettings') || '{}'); s.mission = ${JSON.stringify(name)}; s.event = 'drill'; s.opPeriod = '1'; localStorage.setItem('appSettings', JSON.stringify(s)); })()`)
+  const person = (uid, id, callsign, fullName, phone) => ({ uid, id, callsign, fullName, phone, image: '', team: '', role: '', note: '' })
+  const entry = (id, callsign, rangerUid, notes, extra = {}) => ({
+    id, callsign, rangerUid, status: 'Normal', notes, source: 'Voice', operator: 'Scribe A',
+    date: new Date(Date.UTC(2026, 9, 15, 12, id)).toISOString(),
+    location: { lat: 47.4, lng: -122.4, address: '' }, ...extra,
+  })
+  const seedLog = (entries, maxId) => idbSetRaw('radioLog', JSON.stringify({
+    schemaVersion: 1, version: '0.0.0', date: new Date().toISOString(), event: 'e2e', bounds: {},
+    numReport: entries.length, maxId, filter: 'All', logEntries: entries,
+  }))
+  const seedPeople = list => idbSetRaw('rangers', JSON.stringify({ schemaVersion: 1, rangers: list }))
+  const storedEntries = async () => JSON.parse((await idbGetRaw('radioLog')) || '{}').logEntries || []
+
+  // Device A: build the file.
+  await setMission('E2E-HANDOVER')
+  await seedPeople([
+    person('a-walk', 'REW-1001', 'E2EWALK', 'Walk Up', '555-0100'),
+    person('a-known', 'REW-1002', 'E2EKNOWN', 'Known One', '555-0101'),
+  ])
+  await seedLog([
+    entry(0, 'E2EWALK', 'a-walk', 'A first'),
+    entry(1, 'E2EWALK', 'a-walk', 'A second, corrected', { revisedAt: new Date(Date.UTC(2026, 9, 15, 13, 0)).toISOString() }),
+    entry(2, 'E2EKNOWN', 'a-known', 'A third'),
+  ], 3)
+  await goto('/radio-log')
+  check('the Hand over card is on Radio Log', await evaluate(`!!document.querySelector('[data-testid="handover-card"]')`), true)
+  await evaluate(`window.__rtBlobs = [];
+    const orig = URL.createObjectURL.bind(URL);
+    URL.createObjectURL = b => { b.arrayBuffer().then(buf => { let s = ''; const u = new Uint8Array(buf);
+      for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode(...u.subarray(i, i + 0x8000));
+      window.__rtBlobs.push(btoa(s)) }); return orig(b) }`)
+  await evaluate(`document.querySelector('[data-testid="handover-build"]')?.click()`)
+  const b64 = String(await pollUntil(() => evaluate(`window.__rtBlobs[0] || ''`), t => !!t))
+  const file = path.join(os.tmpdir(), `rangertrak-e2e-handover-${Date.now()}.zip`)
+  fs.writeFileSync(file, Buffer.from(b64, 'base64'))
+  check('a plain hand-over is a zip (the passphrase was blank)', b64.startsWith('UEs'), true)
+  check('the card says what it wrote', /3 radio log entries/.test(await evaluate(`document.querySelector('[data-testid="handover-summary"]')?.textContent || ''`)), true)
+  const aUids = (await storedEntries()).map(e => e.uid)
+  check('every entry on device A got a permanent uid on load', aUids.length === 3 && aUids.every(Boolean) && new Set(aUids).size === 3, true)
+
+  // Device B: entries of its own, the same walk-up under a different uid, another mission name.
+  await setMission('E2E-OTHER')
+  await seedPeople([person('b-walk', 'REW-1001', 'E2EWALK', 'Walk Up', '555-9999')])
+  await seedLog([
+    entry(0, 'E2EWALK', 'b-walk', 'B first', { uid: 'b-0' }),
+    entry(1, 'E2EWALK', 'b-walk', 'B second', { uid: 'b-1' }),
+  ], 2)
+  await goto('/radio-log')
+  const pick = async () => {
+    await setFileInput('[data-testid="handover-file"]', file)
+    await pollUntil(() => evaluate(`!!document.querySelector('[data-testid="handover-entry-counts"]')`), ok => ok === true)
+  }
+  const counts = () => evaluate(`[...document.querySelectorAll('[data-testid="handover-entry-counts"] span')].map(x => x.textContent.trim()).join(' ')`)
+  await pick()
+  check('the preview counts the entries: 3 added, none updated, none unchanged', await counts(), 'Added 3 Updated 0 Unchanged 0 Could not read 0')
+  check('a different mission name warns', await evaluate(`/E2E-HANDOVER/.test(document.querySelector('[data-testid="handover-mismatch"]')?.textContent || '')`), true)
+  check('...and the preview names the walk-up whose phone number would change',
+    await evaluate(`/E2EWALK[^]*phone/.test(document.querySelector('mat-dialog-content')?.textContent || '')`), true)
+  check('nothing is merged until Merge in is pressed', (await storedEntries()).length, 2)
+  await evaluate(`[...document.querySelectorAll('mat-dialog-actions button')].find(b => b.textContent.trim() === 'Merge in')?.click()`)
+  await pollUntil(() => evaluate(`!!document.querySelector('[data-testid="handover-summary"]')`), ok => ok === true)
+  const summary = await evaluate(`document.querySelector('[data-testid="handover-summary"]')?.textContent || ''`)
+  check('the summary names what happened', /radio log entries: 3 added/.test(summary), true)
+
+  const merged = await pollUntil(storedEntries, list => list.length === 5)
+  check('device B holds its 2 entries plus A\'s 3', merged.length, 5)
+  check('A\'s entries were renumbered by B, none kept A\'s numbers', merged.map(e => e.id).sort((x, y) => x - y), [0, 1, 2, 3, 4])
+  const arrivedWalk = merged.filter(e => /^A /.test(e.notes) && e.callsign === 'E2EWALK')
+  check('A\'s walk-up entries attach to B\'s own copy of the person (uid b-walk)', arrivedWalk.length === 2 && arrivedWalk.every(e => e.rangerUid === 'b-walk'), true)
+  check('...and the known ranger\'s entry points at the person who arrived', merged.find(e => e.notes === 'A third')?.rangerUid, 'a-known')
+  check('each arrival keeps its own operator', merged.filter(e => /^A /.test(e.notes)).every(e => e.operator === 'Scribe A'), true)
+  check('...and is marked as merged in', merged.filter(e => /^A /.test(e.notes)).every(e => !!e.sourceUid), true)
+  const people = JSON.parse((await idbGetRaw('rangers')) || '{}').rangers || []
+  check('the roster holds 2 people, not 3', people.length, 2)
+  check('the walk-up kept B\'s uid and took A\'s phone number (D-58)',
+    people.find(p => p.callsign === 'E2EWALK')?.uid === 'b-walk' && people.find(p => p.callsign === 'E2EWALK')?.phone === '555-0100', true)
+
+  // The same file again changes nothing.
+  await pick()
+  check('merging the same file again: all 3 unchanged', await counts(), 'Added 0 Updated 0 Unchanged 3 Could not read 0')
+  await evaluate(`[...document.querySelectorAll('mat-dialog-actions button')].find(b => b.textContent.trim() === 'Cancel')?.click()`)
+  await sleep(500)
+  check('...and cancelling leaves the log alone', (await storedEntries()).length, 5)
+
+  await idbRemoveRaw('radioLog')
+  await idbRemoveRaw('rangers')
+  if (savedSettings) await evaluate(`localStorage.setItem('appSettings', ${JSON.stringify(savedSettings)})`)
+  await send('Emulation.clearDeviceMetricsOverride')
+  try { fs.unlinkSync(file) } catch { /* temp file */ }
+}
+
+/**
  * E-189: the Mission summary page. Seeds a small radio log (6 entries over two days, 2 of them
  * Urgent, one from an unstaffed tactical call) and 3 AAR notes (two sharing an area in different
  * case, one about the app), then reads the real page: the stamp names the mission, "Whole log"
@@ -3776,6 +3880,7 @@ async function main() {
       if (want('roster')) await checkRangersFilterChips(fx)
       if (want('radiolog')) await checkRadioLogFilterChips()
       if (want('radiolog')) await checkMissionSummary() // E-189
+      if (want('radiolog')) await checkScribeHandover() // E-188
       if (FULL) {
         if (want('roster') || want('entry')) await checkRosterLifecycle(fx) // entry's checks use its E2E-AA1 ranger
         if (want('roster')) await checkGridHeaderTooltipsOpaque()
