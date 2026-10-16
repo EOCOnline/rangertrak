@@ -52,7 +52,9 @@ export const ENCRYPTION_MARKER_KEY = '__encryption'
 // so it is encrypted whenever device encryption is on.
 // 'rangersImported' added 2026-10-05: the roster import baseline. Hashes keyed by roster uids, no
 // names - but it describes the roster, so it is covered with it.
-export const ENCRYPTED_KEYS = ['rangers', 'radioLog', 'radioLog-BAD', 'aarNotes', 'secrets', 'rangersImported'] as const
+// 'layers' added 2026-10-16 (E-187 phase C): which layers the device holds, as lists of roster and
+// place uids. The uids tie to PII, so it is covered with the roster.
+export const ENCRYPTED_KEYS = ['rangers', 'radioLog', 'radioLog-BAD', 'aarNotes', 'secrets', 'rangersImported', 'layers'] as const
 
 const VERIFIER_PLAINTEXT = 'rangertrak-encryption-verifier-v1'
 const SALT_BYTES = 16

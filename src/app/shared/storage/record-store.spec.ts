@@ -306,6 +306,7 @@ describe('RecordStore', () => {
         aarNotes: JSON.stringify({ schemaVersion: 1, notes: [{ uid: 'n1', text: 'Relay out of range' }] }),
         secrets: JSON.stringify({ googleGeocodingApiKey: 'k' }),
         rangersImported: JSON.stringify({ importedAt: 1, source: 'roster.json', rows: { u1: 'abc' } }),
+        layers: JSON.stringify({ schemaVersion: 1, layers: [{ name: 'Fernhollow CERT', kind: 'people', asOf: '2026-10-15', fileName: 'f.xlsx', importedAt: '2026-10-15T10:00:00Z', uids: ['u1'] }] }),
       };
       for (const key of MIGRATED_KEYS) localStorage.setItem(key, values[key]);
 

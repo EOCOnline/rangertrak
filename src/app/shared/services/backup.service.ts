@@ -14,6 +14,8 @@ import { normalizeLocationUids } from '../../domain/mission-location-migration'
 import { migrateAarNotes } from '../../domain/aar-note-migration'
 import { recordStore } from '../storage/record-store'
 import { clearActiveDemoScenario } from '../mapping/demo-map'
+import { LayerService } from './layer.service'
+import { LayerRecord, parseLayers } from '../../domain/layers'
 
 /**
  * A full mission backup: everything needed to restore the app to its
@@ -30,6 +32,10 @@ import { clearActiveDemoScenario } from '../mapping/demo-map'
  * `aarNotes` (E-116, 2026-09-27): the same rule. Additive and optional, so no schema bump: a
  * backup from before After Action notes restores with none.
  *
+ * `layers` (E-187 phase C, 2026-10-16): which layers the device holds, with the uids each brought in. The
+ * same rule: PRESENT replaces this device's list, ABSENT (an older backup) leaves nothing stale - the list
+ * is pruned to the roster and places just restored. No schema bump.
+ *
  * `photos` (2026-10-01, John): the same rule. Ranger photos, one entry per stored photo, `data`
  * base64. PRESENT (even empty) on restore means "replace this device's photos with these";
  * ABSENT (an older backup) leaves the device's photos alone. No schema bump.
@@ -43,6 +49,7 @@ export type MissionExport = {
   radioLog: Omit<RadioLogType, 'bounds'>,
   locations?: MissionLocationType[],
   aarNotes?: AarNoteType[],
+  layers?: LayerRecord[],
   photos?: { stem: string, type: string, data: string }[],
 }
 
@@ -77,6 +84,7 @@ export class BackupService {
     private aarNoteService: AarNoteService,
     private log: LogService,
     private photoService: RangerPhotoService,
+    private layerService: LayerService,
   ) { }
 
   /**
@@ -106,6 +114,7 @@ export class BackupService {
       radioLog: fieldReportsSansBounds,
       locations: this.locationService.getCurrentLocations(),
       aarNotes: this.aarNoteService.getCurrentNotes(),
+      layers: this.layerService.snapshot(),
       photos: await this.photosForExport(),
     }
   }
@@ -202,6 +211,13 @@ export class BackupService {
     // rejecting the import, same tolerance every other additive field in this app gets.
     this.locationService.replaceAllLocations(normalizeLocationUids(payload.locations ?? []))
     this.aarNoteService.replaceAllNotes(migrateAarNotes(payload.aarNotes ?? []).notes)
+    // The layers the device held (E-187 phase C). Present: put them back. Absent (an older backup):
+    // keep the list but forget whatever the restored roster and places no longer contain.
+    if (payload.layers) {
+      this.layerService.replaceAll(parseLayers({ layers: payload.layers }))
+    }
+    this.layerService.prune('people', new Set(this.rangerService.rangers.map(r => r.uid).filter((u): u is string => !!u)))
+    this.layerService.prune('places', new Set(this.locationService.getCurrentLocations().map(l => l.uid).filter((u): u is string => !!u)))
 
     // 2026-10-01, John: photos present (even empty) replace the device's; absent (older
     // backup) leaves them alone. importFiles() matches by stem against the roster just restored

@@ -95,7 +95,9 @@ export const STORE = 'kv'
 // of plaintext appSettings (and out of plain backups). MissionService moves a legacy key in.
 // 'rangersImported' (2026-10-05): the roster import baseline for "Export changes since import"
 // (RangerService.recordImport()). New; nothing to migrate, listed so load() reads it.
-export const MIGRATED_KEYS = ['rangers', 'radioLog', 'radioLog-BAD', 'locations', 'aarNotes', 'secrets', 'rangersImported'] as const
+// 'layers' (2026-10-16, E-187 phase C): the layers the device holds (LayerService). New; nothing to
+// migrate, listed so load() reads it.
+export const MIGRATED_KEYS = ['rangers', 'radioLog', 'radioLog-BAD', 'locations', 'aarNotes', 'secrets', 'rangersImported', 'layers'] as const
 
 /**
  * The real implementation, and the module-level singleton this file exports as `recordStore`.
