@@ -1,5 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
-import { encryptJson } from '../crypto/encrypted-file';
+import { encryptBytes, encryptJson } from '../crypto/encrypted-file';
+import { buildHandoverFile } from '../export/handover-file';
 import { TestBed } from '@angular/core/testing';
 
 import { BackupService, MissionExport } from './backup.service';
@@ -191,6 +192,29 @@ describe('BackupService', () => {
         // No passphrase callback supplied at all: a plain file must never ask for one.
         const parsed = await backup.readFileAsMissionExport(file);
         expect(parsed.settings.mission).toBe(payload.settings.mission);
+      });
+
+      it('points an encrypted hand-over to Radio Log before asking for a passphrase', async () => {
+        const backup = TestBed.inject(BackupService);
+        const handover = await buildHandoverFile({
+          mission: 'M', event: '', opPeriod: '', appVersion: 't', rangers: [], locations: [],
+          entries: [], photos: [], passphrase: 'pw',
+        });
+        const file = new File([handover.bytes as BlobPart], handover.filename, { type: 'application/json' });
+        const ask = jasmine.createSpy('ask').and.returnValue('pw');
+        await expectAsync(backup.readFileAsMissionExport(file, ask)).toBeRejectedWithError(/scribe hand-over file/);
+        expect(ask).not.toHaveBeenCalled();
+      });
+
+      it('recognises a hand-over with no kind (0.99.38) by its zip payload, not as a wrong passphrase', async () => {
+        const backup = TestBed.inject(BackupService);
+        const handover = await buildHandoverFile({
+          mission: 'M', event: '', opPeriod: '', appVersion: 't', rangers: [], locations: [],
+          entries: [], photos: [],
+        });
+        const envelope = await encryptBytes(handover.bytes as Uint8Array<ArrayBuffer>, 'pw');
+        const file = new File([JSON.stringify(envelope)], 'old.rtenc.json', { type: 'application/json' });
+        await expectAsync(backup.readFileAsMissionExport(file, () => 'pw')).toBeRejectedWithError(/scribe hand-over file/);
       });
 
       it('round-trips an encrypted backup through the passphrase callback', async () => {

@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core'
-import { EncryptedFile, decryptJson, encryptJson, isEncryptedFile } from '../crypto/encrypted-file'
+import { EncryptedFile, DecryptionFailedError, decryptBytes, encryptJson, isEncryptedFile } from '../crypto/encrypted-file'
+import { HANDOVER_KIND, HANDOVER_NOT_A_BACKUP_MESSAGE, looksLikeZip } from '../export/handover-kind'
 
 import * as packageJson from '../../../../package.json'
 import {
@@ -240,6 +241,10 @@ export class BackupService {
           // through email still has to open, and a plain backup must still import
           // untouched (isEncryptedFile is deliberately strict about that).
           if (isEncryptedFile(parsed)) {
+            // E-188: a hand-over is not a backup. Say so before asking for a passphrase.
+            if (parsed.hint?.kind === HANDOVER_KIND) {
+              throw new Error(HANDOVER_NOT_A_BACKUP_MESSAGE)
+            }
             if (!getPassphrase) {
               throw new Error('This backup is encrypted, and no passphrase was supplied.')
             }
@@ -247,7 +252,16 @@ export class BackupService {
             if (passphrase === null) {
               throw new Error('Cancelled - an encrypted backup cannot be opened without its passphrase.')
             }
-            parsed = await decryptJson(parsed, passphrase)
+            const plain = await decryptBytes(parsed, passphrase)
+            // A hand-over from 0.99.38 carries no kind; its decrypted payload is a zip.
+            if (looksLikeZip(plain)) {
+              throw new Error(HANDOVER_NOT_A_BACKUP_MESSAGE)
+            }
+            try {
+              parsed = JSON.parse(new TextDecoder().decode(plain))
+            } catch {
+              throw new DecryptionFailedError()
+            }
           }
 
           this.validatePayload(parsed)

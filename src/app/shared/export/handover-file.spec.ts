@@ -1,7 +1,9 @@
 import { decryptBytes, DecryptionFailedError, encryptBytes } from '../crypto/encrypted-file';
 import { RadioLogEntryType } from '../services/radio-log-entry.interface';
 import { RangerType, UnknownRanger } from '../services/ranger.interface';
-import { buildHandoverFile, openHandoverFile, readEnvelope } from './handover-file';
+import {
+  buildHandoverFile, classifyOpenedBytes, HANDOVER_KIND, openHandoverFile, readEnvelope,
+} from './handover-file';
 import {
   buildMissionZipBytes, entryCountOf, extractMissionZip, handoverFilename, layerFor,
   MISSION_ZIP_SCHEMA_VERSION, MissionZipManifest,
@@ -115,6 +117,30 @@ describe('handover file', () => {
       const back = await decryptBytes(await encryptBytes(bytes, 'pw'), 'pw');
 
       expect([...back]).toEqual([...bytes]);
+    });
+  });
+  describe('classifyOpenedBytes (E-188 follow-up)', () => {
+    it('tags an encrypted hand-over with hint.kind and classifies it without the passphrase', async () => {
+      const file = await buildHandoverFile(input({ passphrase: 'pw' }));
+      expect(readEnvelope(file.bytes)?.hint?.kind).toBe(HANDOVER_KIND);
+      expect(classifyOpenedBytes(file.bytes).kind).toBe('encrypted-handover');
+    });
+
+    it('classifies a plain hand-over as a zip', async () => {
+      const file = await buildHandoverFile(input());
+      expect(classifyOpenedBytes(file.bytes).kind).toBe('zip');
+    });
+
+    it('classifies an old envelope with no kind (every backup so far) as another encrypted file', async () => {
+      const env = await encryptBytes(new TextEncoder().encode('{}') as Uint8Array<ArrayBuffer>, 'pw', { exportedAt: '2026-09-22' });
+      expect(classifyOpenedBytes(new TextEncoder().encode(JSON.stringify(env))).kind).toBe('encrypted-other');
+      const bare = await encryptBytes(new TextEncoder().encode('{}') as Uint8Array<ArrayBuffer>, 'pw');
+      expect(classifyOpenedBytes(new TextEncoder().encode(JSON.stringify(bare))).kind).toBe('encrypted-other');
+    });
+
+    it('classifies anything else as unknown', () => {
+      expect(classifyOpenedBytes(new TextEncoder().encode('{"a":1}')).kind).toBe('unknown');
+      expect(classifyOpenedBytes(new Uint8Array(0)).kind).toBe('unknown');
     });
   });
 });

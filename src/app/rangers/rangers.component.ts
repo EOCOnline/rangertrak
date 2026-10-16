@@ -38,6 +38,7 @@ import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 // E-122 Phase 2a: reloadPage() below awaits this before reloading - see its own doc comment.
 import { RecordStore } from '../shared/storage/record-store'
 import { DevicePrefsService } from '../shared/services/device-prefs.service'
+import { LOCKED_FILE_MESSAGE, readEnvelope } from '../shared/export/handover-kind'
 import { entryCountOf, extractMissionZip, layerName, MissionZipManifest, MissionZipPhoto } from '../shared/export/mission-zip'
 import { describeRangerMerge, normalizeRangerIds } from '../domain/ranger-migration'
 import { rosterToRows, rowsToCsv } from '../domain/roster-sheet'
@@ -606,6 +607,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     let photos: MissionZipPhoto[]
     try {
       const bytes = new Uint8Array(await file.arrayBuffer())
+      if (readEnvelope(bytes)) throw new Error(LOCKED_FILE_MESSAGE)
       ;({ manifest, photos } = extractMissionZip(bytes))
     } catch (error: any) {
       this.log.error(`Could not read ${file.name} as a Setup file: ${error.message}`, this.id)
@@ -738,7 +740,9 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       if (/\.json$/i.test(file.name) || file.type === 'application/json') {
         // Old RangerTrak files keep loading, quietly. Same preview as everything else, and
         // it adds: a .json no longer replaces the roster behind the user's back (D-58).
-        const incoming = this.rangerService.parseRosterJson(await file.text())
+        const text = await file.text()
+        if (readEnvelope(new TextEncoder().encode(text))) throw new Error(LOCKED_FILE_MESSAGE)
+        const incoming = this.rangerService.parseRosterJson(text)
         const result = await this.openImportDialog(file.name, { incoming })
         if (result) {
           this._snackBar.open(this.applyImport(file.name, result), 'OK', { duration: 20000 })

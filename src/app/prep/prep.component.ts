@@ -8,6 +8,7 @@ import {
   buildMissionZipBytes, entryCountOf, extractMissionZip, layerFor, layerName, MissionZipManifest, MissionZipPhoto,
   MISSION_ZIP_SCHEMA_VERSION,
 } from '../shared/export/mission-zip'
+import { LOCKED_FILE_MESSAGE, readEnvelope } from '../shared/export/handover-kind'
 import { migrateMission } from '../domain/mission-migration'
 import { describeRangerMerge, mergeRangers } from '../domain/ranger-migration'
 import { describeLocationMerge, mergeLocations } from '../domain/location-merge'
@@ -184,6 +185,7 @@ export class PrepComponent {
     for (const file of files) {
       try {
         const bytes = new Uint8Array(await file.arrayBuffer())
+        if (readEnvelope(bytes)) throw new Error(LOCKED_FILE_MESSAGE)
         const { manifest, photos } = extractMissionZip(bytes)
         queued.push({ filename: file.name, manifest, photos })
       } catch (e: any) {

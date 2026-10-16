@@ -1,5 +1,6 @@
-import { decryptBytes, encryptBytes, isEncryptedFile } from '../crypto/encrypted-file'
-import type { EncryptedFile } from '../crypto/encrypted-file'
+import { decryptBytes, encryptBytes } from '../crypto/encrypted-file'
+import { HANDOVER_KIND, readEnvelope } from './handover-kind'
+export * from './handover-kind'
 import { RadioLogEntryType } from '../services/radio-log-entry.interface'
 import { MissionLocationType } from '../services/mission-location.interface'
 import { RangerType } from '../services/ranger.interface'
@@ -68,25 +69,11 @@ export async function buildHandoverFile(input: HandoverBuildInput): Promise<Hand
     }
   }
 
-  const envelope = await encryptBytes(zip as Uint8Array<ArrayBuffer>, passphrase, { exportedAt, appVersion: input.appVersion })
+  const envelope = await encryptBytes(zip as Uint8Array<ArrayBuffer>, passphrase, { exportedAt, appVersion: input.appVersion, kind: HANDOVER_KIND })
   return {
     bytes: new TextEncoder().encode(JSON.stringify(envelope, null, 2)),
     filename: handoverFilename(input.mission, exportedAt, true),
     mime: 'application/json', encrypted: true, manifest,
-  }
-}
-
-/** Looks inside the file's bytes (not its name) for the encrypted envelope; null for a plain zip. */
-export function readEnvelope(bytes: Uint8Array): EncryptedFile | null {
-  // A zip starts with "PK"; the envelope is JSON text starting with "{".
-  if (bytes.length < 2 || (bytes[0] === 0x50 && bytes[1] === 0x4b)) {
-    return null
-  }
-  try {
-    const parsed = JSON.parse(new TextDecoder().decode(bytes))
-    return isEncryptedFile(parsed) ? parsed : null
-  } catch {
-    return null
   }
 }
 

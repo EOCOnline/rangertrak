@@ -16,6 +16,7 @@ import { IoPanelComponent } from '../../shared/io-panel/io-panel.component'
 import { readSheetFile, rowsToXlsxBytes } from '../../shared/import/sheet-reader'
 import { LogService, MissionLocationService, MissionService } from '../../shared/services'
 import type { MissionLocationType } from '../../shared/services'
+import { LOCKED_FILE_MESSAGE, readEnvelope } from '../../shared/export/handover-kind'
 import { MapEngineService } from '../map-engine.service'
 import type { PlacesImportDialogResult } from '../places-import-dialog/places-import-dialog.component'
 
@@ -140,7 +141,9 @@ export class PlacesIoComponent {
       } else if (name.endsWith('.kml')) {
         read = parseKmlPlaces(await file.text(), parseXml)
       } else if (name.endsWith('.geojson') || name.endsWith('.json')) {
-        read = parseGeoJsonPlaces(await file.text())
+        const text = await file.text()
+        if (readEnvelope(new TextEncoder().encode(text))) throw new Error(LOCKED_FILE_MESSAGE)
+        read = parseGeoJsonPlaces(text)
       } else {
         throw new Error('RangerTrak reads places from a spreadsheet (.csv, .xlsx), Google My Maps (.kml, .kmz), GeoJSON (.geojson) or a Setup file (.zip).')
       }
@@ -173,7 +176,9 @@ export class PlacesIoComponent {
   /** A Setup file: its places go through the same preview; people and settings are left for the Setup files page. */
   private async readSetupFile(file: File): Promise<ReadPlaces> {
     const { extractMissionZip, layerName, entryCountOf } = await import('../../shared/export/mission-zip')
-    const { manifest } = extractMissionZip(new Uint8Array(await file.arrayBuffer()))
+    const zipBytes = new Uint8Array(await file.arrayBuffer())
+    if (readEnvelope(zipBytes)) throw new Error(LOCKED_FILE_MESSAGE)
+    const { manifest } = extractMissionZip(zipBytes)
     if (!manifest.locations) {
       throw new Error('This Setup file does not carry any places, so there is nothing here to put on the map. '
         + 'If it carries people or settings, load it from the Setup files page.')

@@ -48,7 +48,8 @@ export type EncryptedFile = {
   /** Base64 AES-GCM output: ciphertext with its authentication tag appended. */
   ciphertext: string,
   /** Unencrypted, deliberately: lets a person identify a file without unlocking it. */
-  hint?: { exportedAt?: string, appVersion?: string },
+  /** `kind` (E-188) names what the payload is, e.g. 'handover'; absent on every mission backup written before it. */
+  hint?: { exportedAt?: string, appVersion?: string, kind?: string },
 }
 
 /**
