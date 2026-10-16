@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.39-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.38-alpha...v0.99.39-alpha) (2026-10-16)
+
+
+### Features
+
+* **mission:** masonry layout for Mission cards on tablet and wider (E-169) ([d613a43](https://github.com/SteadyEOC/RangerTrak/commit/d613a43300c3e7ec5cff5729cc679c8533d6b92d))
+
+
+### Bug Fixes
+
+* **handover:** point an encrypted hand-over opened elsewhere to Radio Log (E-188) ([73a1fb0](https://github.com/SteadyEOC/RangerTrak/commit/73a1fb09d4d64dd51b4f8d92b1ea036ecbe9191a))
+
 ### [0.99.38-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.37-alpha...v0.99.38-alpha) (2026-10-16)
 
 
