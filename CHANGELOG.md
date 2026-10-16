@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.47-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.46-alpha...v0.99.47-alpha) (2026-10-16)
+
+
+### Bug Fixes
+
+* **map:** drop the sharp-tile prep size before the print dialog opens ([ff35af3](https://github.com/SteadyEOC/RangerTrak/commit/ff35af3dbcde8dd22dd54cf2734df15af10edac9))
+
 ### [0.99.46-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.45-alpha...v0.99.46-alpha) (2026-10-16)
 
 
