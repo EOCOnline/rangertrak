@@ -32,6 +32,38 @@
   use <span class="ui">Restore</span> on the Mission page instead.
 </p>
 
+<h3 id="attachments">Photos, video and audio on entries</h3>
+
+<p>
+  <span class="ui">Attach</span> on the Entry page, or <span class="ui">Add</span> in the viewer of a
+  saved entry, keeps a file with the entry. The original is stored exactly as it arrived, with a
+  fingerprint (SHA-256) so a later copy can be shown to be unaltered. The viewer shows the
+  fingerprint in short form, with a copy button.
+</p>
+
+<ul>
+  <li>
+    <strong>Originals keep their hidden details</strong>, including the GPS position a phone wrote
+    into a photo. The thumbnails shown in lists and printouts do not. Think before sharing an
+    original outside the team.
+  </li>
+  <li>
+    An iPhone may convert a HEIC photo to JPEG before RangerTrak sees it. What RangerTrak
+    fingerprints is what it was given.
+  </li>
+  <li>
+    Files take space on this device. <span class="ui">Mission</span> &gt; Data safety shows how much of
+    the mission's attachment budget is used and lets you change it. RangerTrak warns at 80% and
+    100%, and asks before a file over 100 MB, but only the browser's own limit can stop you.
+  </li>
+  <li>
+    <span class="ui">Back up mission</span> saves an attachments file next to the backup (locked with
+    the same passphrase). <span class="ui">Restore</span> accepts the backup, the attachments file or
+    both, and refuses any file that does not match its fingerprint. A hand-over carries the
+    attachments too.
+  </li>
+</ul>
+
 <h3 id="one-copy-per-browser">One copy per browser</h3>
 
 <ul>

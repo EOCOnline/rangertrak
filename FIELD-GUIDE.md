@@ -257,6 +257,27 @@ filled in for you (left blank if they have none). The optional **To station** bo
 records which station the message went to, with the same choices; leave it blank if it does not
 matter. It is separate from **ICS-213 addressed to**, further down.
 
+**Attaching photos, video and audio.** The **Attach** button under Notes adds files to the entry you
+are typing (on a phone or tablet, **Take photo / video** opens the camera). They wait as chips and
+are stored when you save the entry; a saved entry shows a **📎 N** chip that opens the viewer. In the
+viewer you can **Add** more, **Save** or **Share** the original, and **Remove** one - which deletes it
+from this device but leaves "Removed 14:02 by K7ABC" on the entry.
+
+- **The original is never altered.** It is stored exactly as it arrived and given a SHA-256
+  fingerprint, shown in short form with a Copy button. A copy of the file can later be shown to be
+  identical. Backups and hand-overs carry the references, and re-check every file against its
+  fingerprint when they open it.
+- **Originals keep the camera's hidden details, GPS position included.** The small pictures used
+  in lists and printouts do not. Think before sharing an original outside the team.
+- **An iPhone may convert a HEIC photo to JPEG** before RangerTrak sees it. RangerTrak fingerprints
+  what it is given.
+- **Space.** Mission > Data safety shows "Attachments: 41 MB of 512 MB (8%)" and lets you change
+  the budget. RangerTrak warns at 80% and 100% and asks before any file over 100 MB; it never
+  refuses (only the browser's own storage limit can).
+- **Travel.** Back up mission saves `...-attachments.zip` beside the backup (`.rtenc.zip` with a
+  passphrase) when any attachment has its file here. Restore accepts the backup, the zip, or both.
+  A hand-over carries the files in its own `attachments/` folder.
+
 **Setting a location.** You can enter coordinates directly, or type an address and let
 RangerTrak look it up. The small "Current Location" map right on the Entry page is the
 fastest way — click anywhere on it and that position is set immediately, no typing or
@@ -472,6 +493,9 @@ the same as any lock screen wouldn't.
 - If you ever cannot remember the passphrase, the lock screen offers **"Forgot it: erase this
   device's mission data"** — it deletes the roster, reports and photos on this device (not any
   backup file elsewhere) and lets you restore from a backup afterward.
+
+Device encryption also covers attachments. Photos, video and audio are confidential mission content
+like the roster: a backup's attachments file is plain unless you give the backup a passphrase.
 
 ### Putting a passphrase on a mission backup
 

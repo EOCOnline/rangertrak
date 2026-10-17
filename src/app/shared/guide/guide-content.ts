@@ -161,6 +161,18 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             text: 'The small map confirms where the location you typed actually landed — glance at it, and if the pin is in the water, re-read the coordinates back over the radio. It is also a drawing surface: click anywhere on it to set the location directly instead of typing coordinates.'
           },
           {
+            heading: 'Attaching photos, video and audio',
+            text: 'Attach, under Notes, adds files to the entry you are typing. On a phone or tablet, Take photo / video opens the camera straight away. The files wait as small chips (x removes one) and are stored when you save the entry. A saved entry shows a 📎 chip with how many it has; the chip opens the viewer.',
+            bullets: [
+              'The original is kept exactly as it arrived — never resized or re-encoded — and given a fingerprint (SHA-256). The viewer shows it short, with a Copy button for the whole value; a copy of the file can later be proved identical to the original.',
+              'Originals keep everything the camera wrote into them, including the GPS position where the photo was taken. Think before you share a photo outside your team. The small pictures RangerTrak shows in lists and prints carry none of that.',
+              'An iPhone may turn a HEIC photo into a JPEG before RangerTrak ever sees it. RangerTrak fingerprints what it is given.',
+              'Space: Mission > Data safety shows how much of the mission\'s attachment budget is used (512 MB to start; you can change it). Near the limit, and for any file over 100 MB, you are asked first. It never refuses; only the browser\'s own storage limit can.',
+              'In the viewer: Add attaches more files to a saved entry, Save downloads the original, Share hands it to another app, and Remove deletes the file from this device but leaves a note on the entry saying when and by whom. Arrow keys or a swipe move between files.',
+              'An entry from another device can name a file whose bytes are not here; the viewer says "On another device" until the backup\'s attachments file or a hand-over brings it.'
+            ]
+          },
+          {
             heading: 'Field mode — a ranger\'s own phone',
             text: 'This turns a personal phone into a stripped-down device for filing your own reports — not a second command post. On a phone or tablet the welcome panel offers the choice; on a laptop it is under Mission > Advanced > Field phone. Either way only on a genuinely empty device (before any rangers, reports, or mission name are set). To go back to the full app, use Turn off field mode in Help (Rangers\' phones section).',
             bullets: [
@@ -204,7 +216,8 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             heading: 'Exporting',
             bullets: [
               'Only the filtered and sorted rows are exported, unless you tick All rows.',
-              'Comma-separated imports into Excel most cleanly.'
+              'Comma-separated imports into Excel most cleanly.',
+              'The file has an Attachments count and the attachments\' file names, joined with a semicolon.'
             ]
           },
           {
@@ -234,6 +247,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
               'Nothing is replaced or removed. This device keeps its own entry numbers. If the file holds a later correction of an entry you already have, that entry is updated and named in the summary.',
               'A walk-up typed in on both devices becomes one person, and the entries from the file attach to them.',
               'Merging the same file twice, or handing back and forth, never makes duplicates.',
+              'Attachments go in the file too (not the ones that were removed). The preview counts how many would be added, are already here, or do not match their fingerprint; a file that does not match is never stored.',
               'The file names real people and their phone numbers: keep it on a device you control, and delete it once it is merged in.'
             ]
           }
@@ -390,6 +404,10 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
               'Clear out the previous exercise’s radio log entries from the Radio Log page.',
               'Or reset everything at once from the Danger zone at the bottom of this page.'
             ]
+          },
+          {
+            heading: 'Attachments and space',
+            text: 'Under Data safety: "Attachments: 41 MB of 512 MB (8%)" is always shown, with the setting for how much the mission may use. Past 80% the Entry page shows it beside Attach too. Back up mission also saves an attachments file beside the backup when there are any (locked with the same passphrase); Restore takes the backup, the attachments file, or both together, and checks every file against its fingerprint.'
           },
           {
             heading: 'Flag on map',
