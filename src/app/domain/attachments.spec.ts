@@ -133,7 +133,7 @@ describe('attachments (D-60)', () => {
       expect(isSmallerCopy(ref('s', { compressed: note('sender') }))).toBeTrue()
     })
 
-    it('labels the sender's and the receiver's copies', () => {
+    it('labels the copies a sender and a receiver make', () => {
       expect(smallerCopyLabel(ref('s'))).toBe('')
       expect(smallerCopyLabel(ref('s', { compressed: note('sender') }))).toBe("Smaller copy, made on K7ABC's phone from 4.2 MB")
       expect(smallerCopyLabel(ref('s', { compressed: note('receiver', 'N7XYZ') })))
