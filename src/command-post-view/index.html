@@ -139,6 +139,7 @@
   }
   .file-btn img { width: 100%; height: 3rem; object-fit: cover; display: block; }
   .file-btn .icon { font-size: 1.2rem; }
+  .file-btn .smaller-tag { display: block; font-size: 0.65rem; opacity: 0.85; }
   .more-btn { border: none; background: none; color: var(--accent); font: inherit; font-size: 0.8rem; cursor: pointer; text-decoration: underline; }
 
   #overlay { position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(0, 0, 0, 0.7); }
@@ -344,7 +345,10 @@
     var inner = typeof a.thumb === 'string' && THUMB_RE.test(a.thumb)
       ? '<img src="' + a.thumb + '" alt="' + escAttr(a.name || 'attachment') + '">'
       : '<span class="icon" aria-hidden="true">' + iconFor(a.type || '') + '</span><span>' + label + '</span>';
-    return '<button type="button" class="file-btn" data-sha="' + escAttr(a.sha256) + '" title="' + escAttr(a.name || '') + '">' + inner + '</button>';
+    // A smaller copy says so: the scribe's device sends the label with the reference (D-60 item 2, revised).
+    var kind = typeof a.smallerCopy === 'string' && a.smallerCopy ? a.smallerCopy : '';
+    var tag = kind ? '<span class="smaller-tag">smaller copy</span>' : '';
+    return '<button type="button" class="file-btn" data-sha="' + escAttr(a.sha256) + '" title="' + escAttr(kind || a.name || '') + '">' + inner + tag + '</button>';
   }
 
   function filesCell(r) {
@@ -508,7 +512,7 @@
     var token = ovToken;
     var started = Date.now();
     ov.root.hidden = false;
-    ov.title.textContent = att.name || 'Attachment';
+    ov.title.textContent = (att.name || 'Attachment') + (typeof att.smallerCopy === 'string' && att.smallerCopy ? ' - ' + att.smallerCopy : '');
     ov.status.className = '';
     ov.status.textContent = 'Fetching from the scribe…';
     ov.close.focus();

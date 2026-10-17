@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/d
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 
-import { formatBytes, formatFingerprint, isGone, isSmallerCopy } from '../../domain/attachments'
+import { formatBytes, formatFingerprint, isGone, isSmallerCopy, smallerCopyLabelIn } from '../../domain/attachments'
 import type { AttachmentRef } from '../../domain/attachments'
 import { AttachmentStoreService } from '../services/attachment-store.service'
 import { LogService } from '../services/log.service'
@@ -125,6 +125,8 @@ export class AttachmentViewerComponent implements OnDestroy {
   shortFingerprint(sha: string): string { return formatFingerprint(sha) }
   sizeText(bytes: number): string { return formatBytes(bytes) }
   gone(ref: AttachmentRef): boolean { return isGone(ref) }
+  /** "Smaller copy, made on K7ABC's phone from 4.2 MB", or '' for an original. */
+  smallerLabel(ref: AttachmentRef): string { const e = this.entry(); return e ? smallerCopyLabelIn(e, ref) : '' }
 
   kind(ref: AttachmentRef): 'image' | 'video' | 'audio' | 'other' {
     if (ref.type.startsWith('image/')) return 'image'
@@ -217,16 +219,18 @@ export class AttachmentViewerComponent implements OnDestroy {
 
   // ── actions ──────────────────────────────────────────────────────────
 
-  async onCopyFingerprint(): Promise<void> {
+  /** Copies a fingerprint: this file's own (the default) or, for a smaller copy, the original's. */
+  async onCopyFingerprint(sha256?: string): Promise<void> {
     const ref = this.current()
-    if (!ref) return
+    const value = sha256 ?? ref?.sha256
+    if (!value) return
     try {
-      await navigator.clipboard.writeText(ref.sha256)
+      await navigator.clipboard.writeText(value)
       this.copied.set(true)
       setTimeout(() => this.copied.set(false), 2000)
     } catch {
       // Clipboard blocked: show the full value so it can be copied by hand.
-      prompt('Fingerprint (SHA-256), select and copy:', ref.sha256)
+      prompt('Fingerprint (SHA-256), select and copy:', value)
     }
   }
 

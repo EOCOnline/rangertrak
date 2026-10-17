@@ -17,11 +17,15 @@
     <button type="button" role="tab" class="rt-attach-viewer__thumb"
       [class.rt-attach-viewer__thumb--selected]="i === index()"
       [class.rt-attach-viewer__thumb--removed]="gone(ref)" [attr.aria-selected]="i === index()"
-      [attr.aria-label]="ref.name + (ref.replaced ? ' (replaced)' : ref.removed ? ' (removed)' : '')" [title]="ref.name" (click)="select(i)">
+      [attr.aria-label]="ref.name + (ref.replaced ? ' (replaced)' : ref.removed ? ' (removed)' : '') + (ref.compressed ? ' (smaller copy)' : '')"
+      [title]="ref.compressed ? smallerLabel(ref) : ref.name" (click)="select(i)">
       @if (!gone(ref) && thumbs()[ref.sha256]) {
       <img [src]="thumbs()[ref.sha256]" alt="" />
       } @else {
       <mat-icon aria-hidden="true">{{ gone(ref) ? 'block' : iconFor(ref) }}</mat-icon>
+      }
+      @if (ref.compressed) {
+      <span class="rt-attach-viewer__tag" aria-hidden="true" data-testid="attachment-smaller-tag">smaller copy</span>
       }
     </button>
     }
@@ -63,6 +67,9 @@
     }
   </div>
 
+  @if (ref.compressed) {
+  <p class="rt-attach-viewer__kind" data-testid="attachment-kind">{{ smallerLabel(ref) }}</p>
+  }
   <dl class="rt-attach-viewer__meta">
     <dt>Name</dt>
     <dd>{{ ref.name }}</dd>
@@ -81,6 +88,15 @@
         {{ copied() ? 'Copied' : 'Copy' }}
       </button>
     </dd>
+    @if (ref.compressed; as c) {
+    <dt>Original's fingerprint</dt>
+    <dd>
+      <code data-testid="attachment-original-fingerprint" [title]="c.fromSha256">{{ shortFingerprint(c.fromSha256) }}</code>
+      <button matButton type="button" (click)="onCopyFingerprint(c.fromSha256)" title="Copy the full SHA-256 fingerprint of the original this was made from">
+        Copy
+      </button>
+    </dd>
+    }
   </dl>
   }
   }

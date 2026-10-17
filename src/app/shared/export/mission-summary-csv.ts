@@ -79,7 +79,7 @@ export function buildSummaryCsv(summary: MissionSummary, stamp: SummaryStamp): s
       e.status,
       e.notes,
       // E-194: name and short fingerprint of each live attachment.
-      printAttachments(e).map(a => `${a.name} (${a.fingerprint})`).join('; '),
+      printAttachments(e).map(a => `${a.name}${a.smallerCopy ? ' (smaller copy)' : ''} (${a.fingerprint})`).join('; '),
     ]))
   section('AAR notes', ['Area', 'Noted at', 'Observation', 'Recommendation', 'Owner'],
     summary.aar.groups.flatMap(g => g.notes.map(n => [

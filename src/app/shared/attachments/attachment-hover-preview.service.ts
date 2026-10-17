@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core'
 
+import { smallerCopyLabelIn } from '../../domain/attachments'
 import { ATTACH_CHIP_CLASS } from './attachment-chip-html'
 import { placePreview, previewRefs } from './attachment-hover-preview'
 import { AttachmentStoreService } from '../services/attachment-store.service'
@@ -121,6 +122,15 @@ export class AttachmentHoverPreviewService {
       name.textContent = ref.name
       name.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px'
       tile.append(name)
+      const label = smallerCopyLabelIn(entry!, ref)
+      if (label) {
+        const tag = document.createElement('div')
+        tag.textContent = 'smaller copy'
+        tag.title = label
+        tag.setAttribute('data-testid', 'attachment-smaller-tag')
+        tag.style.cssText = 'margin-top:2px;font-size:.75em;color:var(--rt-ink-2,#444);border:1px solid currentColor;border-radius:999px;display:inline-block;padding:0 6px'
+        tile.append(tag)
+      }
       row.append(tile)
     }
 

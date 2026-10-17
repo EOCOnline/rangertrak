@@ -1,6 +1,6 @@
 import {
   budgetUsage, formatFingerprint, isGone, isSmallerCopy, liveRefs, mergeAttachmentRefs, orphans, printAttachments,
-  referencedFingerprints, removedOnly, smallerCopyLabel,
+  nameWithKind, referencedFingerprints, removedOnly, smallerCopyLabel, smallerCopyLabelIn,
 } from './attachments'
 import type { AttachmentRef } from './attachments'
 
@@ -168,6 +168,19 @@ describe('attachments (D-60)', () => {
       expect(liveRefs(entries[0]).map(r => r.sha256)).toEqual([sha('s')])
       expect(removedOnly([sha('o'), sha('s')], entries)).toEqual([sha('o')])
       expect(budgetUsage(entries, { [sha('o')]: 90, [sha('s')]: 10 }, 100).usedBytes).toBe(10)
+    })
+
+    it('the label in an entry says whether the original was kept or replaced', () => {
+      const copy = ref('s', { compressed: note('receiver', 'N7XYZ') })
+      const kept = { attachments: [ref('o'), copy] }
+      const replaced = { attachments: [ref('o', { replaced: replacedAt('2026-10-17T11:00:00Z') }), copy] }
+      expect(smallerCopyLabelIn(kept, copy)).toContain('original kept')
+      expect(smallerCopyLabelIn(replaced, copy)).toContain('original replaced')
+    })
+
+    it('a name for a CSV says "(smaller copy)" for a copy only', () => {
+      expect(nameWithKind(ref('o'))).toBe('o.jpg')
+      expect(nameWithKind(ref('s', { compressed: note('sender') }))).toBe('s.jpg (smaller copy)')
     })
 
     it('a print line carries the label for a smaller copy only', () => {

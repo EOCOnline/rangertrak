@@ -31,7 +31,7 @@ import type { MissionType } from '../services/mission.interface'
  * form's own page is untouched. `thumbJpeg` is the stored, EXIF-free thumbnail of an image
  * (video and audio are listed without one).
  */
-export type Ics213Attachment = { name: string, fingerprint: string, thumbJpeg?: Uint8Array }
+export type Ics213Attachment = { name: string, fingerprint: string, thumbJpeg?: Uint8Array, smallerCopy?: string }
 
 /** Every fillable text field on the real form, exactly as named in the PDF's own AcroForm. */
 export const ICS213_FIELDS = [
@@ -129,7 +129,7 @@ async function appendAttachmentPages(pdf: PDFDocument, attachments: readonly Ics
       try { thumb = await pdf.embedJpg(a.thumbJpeg) } catch { /* an unreadable thumbnail is simply left off */ }
     }
     const scale = thumb ? Math.min(1, thumbMax / Math.max(thumb.width, thumb.height)) : 0
-    const needed = 16 + (thumb ? thumb.height * scale + 6 : 0)
+    const needed = 16 + (a.smallerCopy ? 13 : 0) + (thumb ? thumb.height * scale + 6 : 0)
     if (y - needed < margin) {
       page = pdf.addPage([width, height])
       y = height - margin
@@ -137,6 +137,10 @@ async function appendAttachmentPages(pdf: PDFDocument, attachments: readonly Ics
     }
     page.drawText(`${a.name}  (${a.fingerprint})`, { x: margin, y, size: 10, font, color: rgb(0, 0, 0), maxWidth: width - 2 * margin })
     y -= 16
+    if (a.smallerCopy) {
+      page.drawText(a.smallerCopy, { x: margin, y, size: 9, font, color: rgb(0, 0, 0), maxWidth: width - 2 * margin })
+      y -= 13
+    }
     if (thumb) {
       page.drawImage(thumb, { x: margin, y: y - thumb.height * scale + 4, width: thumb.width * scale, height: thumb.height * scale })
       y -= thumb.height * scale + 6

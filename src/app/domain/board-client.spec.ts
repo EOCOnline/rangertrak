@@ -165,6 +165,17 @@ describe('Board snapshot attachments (D-60 item 6)', () => {
     expect('thumb' in out.attachments[1]).toBe(false)
   })
 
+  it('a smaller copy carries its label; an original carries none; a replaced original is not sent', () => {
+    const copy = ref(SHA_B, { compressed: { fromSha256: SHA_A, fromSize: 4_404_019, fromType: 'image/png', at: '2026-10-17T10:00:00Z', by: 'K7ABC', where: 'sender' } })
+    const out = attachmentFields({ attachments: [ref(SHA_A), copy] }, true, thumbs) as { attachments: BoardAttachment[] }
+    expect('smallerCopy' in out.attachments[0]).toBe(false)
+    expect(out.attachments[1].smallerCopy).toBe("Smaller copy, made on K7ABC's phone from 4.2 MB")
+    const replaced = ref(SHA_A, { replaced: { at: '2026-10-17T11:00:00Z', by: 'N7XYZ', bySha256: SHA_B } })
+    const after = attachmentFields({ attachments: [replaced, { ...copy, compressed: { ...copy.compressed!, where: 'receiver', by: 'N7XYZ' } }] }, true, thumbs) as { attachments: BoardAttachment[] }
+    expect(after.attachments.map(a => a.sha256)).toEqual([SHA_B])
+    expect(after.attachments[0].smallerCopy).toBe('Smaller copy made by N7XYZ from 4.2 MB; original replaced')
+  })
+
   it('no live attachments adds nothing', () => {
     expect(attachmentFields({}, true, thumbs)).toEqual({})
     expect(attachmentFields({ attachments: [] }, false, thumbs)).toEqual({})

@@ -1,4 +1,4 @@
-import { liveRefs } from './attachments'
+import { liveRefs, smallerCopyLabelIn } from './attachments'
 import type { AttachmentRef } from './attachments'
 
 /**
@@ -172,7 +172,8 @@ function clockOf(iso: string): string {
 /** Past this much thumbnail text the oldest reports lose theirs, well under the server's 25 MB body. */
 export const THUMB_BUDGET_BYTES = 15 * 1024 * 1024
 
-export type BoardAttachment = { sha256: string, name: string, type: string, size: number, thumb?: string }
+/** `smallerCopy` is the label that says which kind a file is ("Smaller copy, made on K7ABC's phone from 4.2 MB"); absent for an original. */
+export type BoardAttachment = { sha256: string, name: string, type: string, size: number, thumb?: string, smallerCopy?: string }
 
 /** The attachment fields of one published report: a count only, or the references. */
 export type BoardAttachmentFields =
@@ -194,7 +195,8 @@ export function attachmentFields(
   return {
     attachments: live.map((a): BoardAttachment => {
       const thumb = thumbs.get(a.sha256)
-      return { sha256: a.sha256, name: a.name, type: a.type, size: a.size, ...(thumb ? { thumb } : {}) }
+      const smallerCopy = smallerCopyLabelIn(entry, a)
+      return { sha256: a.sha256, name: a.name, type: a.type, size: a.size, ...(thumb ? { thumb } : {}), ...(smallerCopy ? { smallerCopy } : {}) }
     }),
   }
 }

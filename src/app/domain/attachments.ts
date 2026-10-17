@@ -104,6 +104,20 @@ export function isSmallerCopy(ref: Pick<AttachmentRef, 'compressed'>): boolean {
 }
 
 /**
+ * The same label, for a reference in its entry: it says "original replaced" when a receiver replaced
+ * the original this copy was made from, and "original kept" otherwise.
+ */
+export function smallerCopyLabelIn(entry: HasAttachments, ref: Pick<AttachmentRef, 'sha256' | 'compressed'>): string {
+  const kept = !(entry.attachments ?? []).some(r => r.replaced?.bySha256 === ref.sha256)
+  return smallerCopyLabel(ref, kept)
+}
+
+/** A file name with "(smaller copy)" after it when it is one: for CSV files and lists that show names alone. */
+export function nameWithKind(ref: Pick<AttachmentRef, 'name' | 'compressed'>): string {
+  return ref.compressed ? `${ref.name} (smaller copy)` : ref.name
+}
+
+/**
  * The line that says which kind a file is, wherever it is shown (viewer, hover preview, prints,
  * Board). '' for an original. The sender's names whose phone made it; the receiver's says the
  * original was kept (or, when replaced, that it was not).
@@ -178,7 +192,7 @@ export type PrintAttachment = { name: string, fingerprint: string, sha256: strin
 export function printAttachments(entry: HasAttachments): PrintAttachment[] {
   return liveRefs(entry).map(r => ({
     name: r.name, fingerprint: formatFingerprint(r.sha256), sha256: r.sha256, isImage: r.type.startsWith('image/'),
-    ...(r.compressed ? { smallerCopy: smallerCopyLabel(r) } : {}),
+    ...(r.compressed ? { smallerCopy: smallerCopyLabelIn(entry, r) } : {}),
   }))
 }
 

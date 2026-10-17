@@ -49,7 +49,7 @@ import * as packageJson from '../../../package.json'
 import { describeRangerMerge } from '../domain/ranger-migration'
 import { describeLocationMerge } from '../domain/location-merge'
 import { buildHandoverFile } from '../shared/export/handover-file'
-import { liveRefs } from '../domain/attachments'
+import { liveRefs, nameWithKind } from '../domain/attachments'
 import type { AttachmentFile } from '../shared/export/attachments-zip'
 import type { HandoverDialogResult } from './handover-dialog/handover-dialog.component'
 // E-122 Phase 2a: reloadPage() below awaits this before reloading - see its own doc comment.
@@ -359,7 +359,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       },
       {
         colId: 'attachmentFiles', headerName: 'Attachment files', hide: true, suppressColumnsToolPanel: true,
-        valueGetter: (params: { data: RadioLogEntryType }) => liveRefs(params.data ?? {}).map(r => r.name).join('; '),
+        valueGetter: (params: { data: RadioLogEntryType }) => liveRefs(params.data ?? {}).map(nameWithKind).join('; '),
       },
       // E-11 (2026-08-26): evidenceLocation was captured on Entry and visible nowhere
       // afterward - not the main map, not here. This is the other of the two places the

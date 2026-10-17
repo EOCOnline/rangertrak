@@ -18,7 +18,7 @@ export async function ics213AttachmentsFor(
       const blob = await store.getThumb(a.sha256).catch(() => undefined)
       if (blob) thumbJpeg = new Uint8Array(await blob.arrayBuffer())
     }
-    out.push({ name: a.name, fingerprint: a.fingerprint, ...(thumbJpeg ? { thumbJpeg } : {}) })
+    out.push({ name: a.name, fingerprint: a.fingerprint, ...(a.smallerCopy ? { smallerCopy: a.smallerCopy } : {}), ...(thumbJpeg ? { thumbJpeg } : {}) })
   }
   return out
 }
