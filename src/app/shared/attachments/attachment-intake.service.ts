@@ -5,11 +5,20 @@ import type { AttachmentRef } from '../../domain/attachments'
 import { AttachmentStoreService } from '../services/attachment-store.service'
 import { AttachmentBudgetService } from './attachment-budget.service'
 import { LogService } from '../services/log.service'
+import { ALREADY_SMALL_NOTE } from './compress/compress-types'
+import { SmallerCopyService } from './smaller-copy.service'
 import { OperatorNameService } from '../services/operator-name.service'
 import { RadioLogService } from '../services/radio-log.service'
 
 /** A single file this size or larger asks before it is stored (D-60 item 7). */
 export const LARGE_FILE_BYTES = 100 * 1024 * 1024
+
+/**
+ * A picked file waiting to be stored. `offer` is whether a smaller copy can be made here at all
+ * (the choice is hidden when not); `smaller` is the choice, and "Keep original" is the default
+ * (D-60 item 2, revised). `estimate` is the rough size of a video's smaller copy, when known.
+ */
+export type PendingAttachment = { file: File, offer: boolean, smaller: boolean, estimate?: number }
 
 /**
  * The questions asked before files are stored, and the act of attaching them to a saved entry.
@@ -28,6 +37,7 @@ export class AttachmentIntakeService {
   private radioLog = inject(RadioLogService)
   private operator = inject(OperatorNameService)
   private log = inject(LogService)
+  private smallerCopy = inject(SmallerCopyService)
 
   /**
    * Asks about each file in turn and returns the ones to go ahead with. `pendingBytes` is what
@@ -65,6 +75,15 @@ export class AttachmentIntakeService {
     return accepted
   }
 
+  /** Wraps picked files for the chip row: Keep original selected, a smaller copy offered where it can be made. */
+  async pend(files: readonly File[]): Promise<PendingAttachment[]> {
+    return Promise.all(files.map(async file => {
+      const offer = await this.smallerCopy.canOffer(file).catch(() => false)
+      const estimate = offer ? await this.smallerCopy.estimate(file).catch(() => undefined) : undefined
+      return { file, offer, smaller: false, ...(estimate ? { estimate } : {}) }
+    }))
+  }
+
   /** Who is attaching or removing: the operator typed on Entry this session, else blank. */
   operatorName(): string { return this.operator.name().trim() }
 
@@ -73,20 +92,39 @@ export class AttachmentIntakeService {
    * that already existed before this action (D-47: stamps `revisedAt`), false for the entry the
    * scribe has only just saved. A file that cannot be stored is named in `failed`; the rest still
    * go on.
+   *
+   * A file chosen "Smaller copy" (the sender's choice; only files from this device's own picker or
+   * camera come here) is fingerprinted first, then made smaller, and ONLY the smaller copy is
+   * stored, with `compressed` recording the original's fingerprint, size and type, when and by whom
+   * (D-60 item 2, revised). If the copy cannot be made, is cancelled, or is no smaller, the original
+   * is stored instead and `notes` says so.
    */
-  async attach(uid: string, files: readonly File[], revise: boolean): Promise<{ added: AttachmentRef[], failed: string[] }> {
+  async attach(uid: string, items: readonly PendingAttachment[], revise: boolean): Promise<{ added: AttachmentRef[], failed: string[], notes: string[] }> {
     const added: AttachmentRef[] = []
     const failed: string[] = []
-    for (const file of files) {
+    const notes: string[] = []
+    for (const item of items) {
       try {
-        added.push(await this.store.add(file, this.operatorName()))
+        let toStore = item.file
+        let compressed: Pick<NonNullable<AttachmentRef['compressed']>, 'fromSha256' | 'fromSize' | 'fromType'> | undefined
+        if (item.smaller && item.offer) {
+          const made = await this.smallerCopy.make(item.file)
+          if (typeof made === 'object') { toStore = made.file; compressed = made.compressed }
+          else notes.push(made === 'not-smaller' ? ALREADY_SMALL_NOTE
+            : made === 'cancelled' ? 'The smaller copy was cancelled; the original was kept.'
+              : 'A smaller copy could not be made; the original was kept.')
+        }
+        const ref = await this.store.add(toStore, this.operatorName())
+        added.push(compressed
+          ? { ...ref, compressed: { ...compressed, at: new Date().toISOString(), by: this.operatorName(), where: 'sender' } }
+          : ref)
       } catch (e: any) {
         // The file's name stays out of the log: it can describe the content (rule 5).
         this.log.error(`Could not store an attachment: ${e?.message ?? e}`, this.id)
-        failed.push(file.name)
+        failed.push(item.file.name)
       }
     }
     if (added.length) this.radioLog.mergeEntryAttachments(uid, added, revise)
-    return { added, failed }
+    return { added, failed, notes }
   }
 }

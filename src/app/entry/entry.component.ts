@@ -30,8 +30,10 @@ import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
 import { ics213AttachmentsFor } from '../shared/attachments/attachment-print'
 import { AttachmentIntakeService } from '../shared/attachments/attachment-intake.service'
+import type { PendingAttachment } from '../shared/attachments/attachment-intake.service'
+import { PendingAttachmentsComponent } from '../shared/attachments/pending-attachments.component'
+import { SmallerCopyProgressComponent } from '../shared/attachments/smaller-copy-progress.component'
 import { AttachmentBudgetService } from '../shared/attachments/attachment-budget.service'
-import { formatBytes } from '../domain/attachments'
 import { TimePickerComponent } from '../shared/time-picker/time-picker.component'
 import { DDToDDM } from '../domain/coordinate'
 import {
@@ -78,6 +80,8 @@ import { PHOTOS_LEFT_OUT_MESSAGE } from '../domain/report-packet-files'
     MiniMapLeafletComponent,
     EvidenceLocationComponent,
     DemoPickerComponent,
+    PendingAttachmentsComponent,
+    SmallerCopyProgressComponent,
   ],
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
@@ -396,9 +400,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // E-194 / D-60: files picked for the entry being typed. Held as plain Files and hashed and
   // stored when the entry is saved, not on pick. Cleared by a reset.
-  readonly pendingFiles = signal<File[]>([])
+  readonly pendingFiles = signal<PendingAttachment[]>([])
   readonly attachReason = this.attachmentStore.unavailableReason()
-  readonly formatBytes = formatBytes
 
   constructor(
     private rangerService: RangerService,
@@ -1219,17 +1222,17 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     const files = Array.from(input.files ?? [])
     input.value = ''   // allow picking the same file again
     if (!files.length) return
-    const pendingBytes = this.pendingFiles().reduce((sum, f) => sum + f.size, 0)
+    const pendingBytes = this.pendingFiles().reduce((sum, p) => sum + p.file.size, 0)
     const accepted = await this.attachmentIntake.vet(files, pendingBytes)
-    if (accepted.length) this.pendingFiles.update(list => [...list, ...accepted])
+    if (accepted.length) {
+      const pended = await this.attachmentIntake.pend(accepted)
+      this.pendingFiles.update(list => [...list, ...pended])
+    }
   }
 
-  onRemovePending(index: number): void {
-    this.pendingFiles.update(list => list.filter((_, i) => i !== index))
-  }
-
-  private async attachPicked(uid: string, files: File[]): Promise<void> {
-    const { added, failed } = await this.attachmentIntake.attach(uid, files, false)
+  private async attachPicked(uid: string, files: PendingAttachment[]): Promise<void> {
+    const { added, failed, notes } = await this.attachmentIntake.attach(uid, files, false)
+    if (notes.length) alert([...new Set(notes)].join('\n'))
     if (failed.length) {
       alert(`The entry was saved, but ${failed.length === 1 ? 'this file' : 'these files'} could not be attached: `
         + `${failed.join(', ')}.`)

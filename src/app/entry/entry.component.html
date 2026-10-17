@@ -399,7 +399,7 @@
 
       <!-- E-194 / D-60: photos, video and audio for this entry. Picked files wait here as chips and
            are hashed and stored when the entry is saved. Take photo / video is touch devices only
-           (capture opens the camera directly). Never altered: the original is kept as received. -->
+           (capture opens the camera directly). "Keep original" is the default; "Smaller copy" is the sender's choice (D-60 item 2). -->
       <div class="enter__attach">
         <input #attachInput type="file" accept="image/*,video/*,audio/*" multiple hidden
           data-testid="entry-attach-file" (change)="onAttachPicked(attachInput)" />
@@ -427,17 +427,8 @@
           {{ attachmentBudget.line() }}
         </small>
         }
-        @if (pendingFiles().length) {
-        <ul class="enter__attach-list" aria-label="Files waiting to be attached">
-          @for (file of pendingFiles(); track $index) {
-          <li class="enter__attach-item">
-            {{ file.name }} ({{ formatBytes(file.size) }})
-            <button type="button" class="enter__attach-remove" [attr.aria-label]="'Do not attach ' + file.name"
-              (click)="onRemovePending($index)">&times;</button>
-          </li>
-          }
-        </ul>
-        }
+        <rangertrak-smaller-copy-progress />
+        <rangertrak-pending-attachments [(items)]="pendingFiles" />
       </div>
 
       <!-- E-41 phase 1: "the 213 stays opt-in per entry" - data collection only, no

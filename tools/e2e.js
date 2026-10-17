@@ -3546,7 +3546,7 @@ async function entrySaveWithAttachments(callsign, files) {
   await sleep(600)
   await setFileInput('[data-testid="entry-attach-file"]', files)
   await sleep(1200)
-  const waiting = await evaluate(`document.querySelectorAll('.enter__attach-item').length`)
+  const waiting = await evaluate(`document.querySelectorAll('[data-testid="pending-attachment"]').length`)
   await evaluate(`document.querySelector('.enter__Submit-button').click()`)
   return waiting
 }

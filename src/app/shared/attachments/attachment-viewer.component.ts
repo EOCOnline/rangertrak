@@ -12,6 +12,9 @@ import { RadioLogService } from '../services/radio-log.service'
 import type { RadioLogEntryType } from '../services/radio-log-entry.interface'
 import { UsageStateService } from '../services/usage-state.service'
 import { AttachmentIntakeService } from './attachment-intake.service'
+import type { PendingAttachment } from './attachment-intake.service'
+import { PendingAttachmentsComponent } from './pending-attachments.component'
+import { SmallerCopyProgressComponent } from './smaller-copy-progress.component'
 
 /** What opens the viewer: the entry (by its permanent uid) and, optionally, which file to show first. */
 export interface AttachmentViewerData {
@@ -36,7 +39,7 @@ const SWIPE_PX = 50
 @Component({
   selector: 'rangertrak-attachment-viewer',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatIconModule],
+  imports: [MatDialogModule, MatButtonModule, MatIconModule, PendingAttachmentsComponent, SmallerCopyProgressComponent],
   templateUrl: './attachment-viewer.component.html',
   styleUrls: ['./attachment-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -67,6 +70,8 @@ export class AttachmentViewerComponent implements OnDestroy {
   readonly copied = signal(false)
   readonly busy = signal(false)
   readonly message = signal('')
+  /** Files just picked with Add, waiting for the sender's choice (Keep original / Smaller copy). */
+  readonly pending = signal<PendingAttachment[]>([])
 
   readonly canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function'
 
@@ -244,6 +249,11 @@ export class AttachmentViewerComponent implements OnDestroy {
     }
   }
 
+  /**
+   * Add: the same questions as Entry's Attach, then the sender's choice. Where no picked file can be
+   * made smaller here there is nothing to choose, so they are attached at once; otherwise they wait
+   * as chips until "Attach" (D-60 item 2, revised: "Keep original" is the default).
+   */
   async onAdd(input: HTMLInputElement): Promise<void> {
     const entry = this.entry()
     const files = Array.from(input.files ?? [])
@@ -252,16 +262,38 @@ export class AttachmentViewerComponent implements OnDestroy {
     this.busy.set(true)
     this.message.set('')
     try {
-      const accepted = await this.intake.vet(files)
-      const { added, failed } = await this.intake.attach(entry.uid, accepted, true)
-      if (failed.length) this.message.set(`Could not attach: ${failed.join(', ')}.`)
-      const first = added[0]
-      if (first) {
-        const at = this.refs().findIndex(r => r.sha256 === first.sha256)
-        if (at >= 0) this.index.set(at)
-      }
+      const accepted = await this.intake.vet(files, this.pending().reduce((sum, p) => sum + p.file.size, 0))
+      const pended = await this.intake.pend(accepted)
+      if (pended.some(p => p.offer)) this.pending.update(list => [...list, ...pended])
+      else await this.attachNow(entry.uid, pended)
     } finally {
       this.busy.set(false)
+    }
+  }
+
+  async onAttachPending(): Promise<void> {
+    const entry = this.entry()
+    const items = this.pending()
+    if (!entry?.uid || !items.length) return
+    this.busy.set(true)
+    this.message.set('')
+    try {
+      this.pending.set([])
+      await this.attachNow(entry.uid, items)
+    } finally {
+      this.busy.set(false)
+    }
+  }
+
+  private async attachNow(uid: string, items: PendingAttachment[]): Promise<void> {
+    const { added, failed, notes } = await this.intake.attach(uid, items, true)
+    const lines = [...new Set(notes)]
+    if (failed.length) lines.push(`Could not attach: ${failed.join(', ')}.`)
+    this.message.set(lines.join(' '))
+    const first = added[0]
+    if (first) {
+      const at = this.refs().findIndex(r => r.sha256 === first.sha256)
+      if (at >= 0) this.index.set(at)
     }
   }
 

@@ -79,6 +79,15 @@
   }
   }
 
+  <rangertrak-smaller-copy-progress />
+  @if (pending().length) {
+  <rangertrak-pending-attachments [(items)]="pending" />
+  <p>
+    <button matButton="filled" type="button" [disabled]="busy()" (click)="onAttachPending()"
+      data-testid="attachment-viewer-attach">Attach {{ pending().length === 1 ? 'this file' : 'these files' }}</button>
+  </p>
+  }
+
   @if (message()) {
   <p class="rt-attach-viewer__note" role="alert">{{ message() }}</p>
   }
