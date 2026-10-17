@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.55-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.54-alpha...v0.99.55-alpha) (2026-10-17)
+
+
+### Features
+
+* **board:** D-60 attachments on the Board - count or thumbnails, originals only on request ([4d0b753](https://github.com/SteadyEOC/RangerTrak/commit/4d0b7537805b792d922343b16cd8817857f043bb))
+* **board:** D-61 / D-60 claim, key, password and attachment endpoints ([feb1684](https://github.com/SteadyEOC/RangerTrak/commit/feb168422286fa608cb045055e63c38faa84c3b7))
+* **board:** D-61 / D-60 view page - password prompt, claim line, attachments with fingerprint check ([49eb332](https://github.com/SteadyEOC/RangerTrak/commit/49eb332226788a17b01be401f878b79106e287d1))
+* **board:** D-61 listen on private addresses only; test:board script ([722e79a](https://github.com/SteadyEOC/RangerTrak/commit/722e79ac0e11692775eaa8e7b1bc29840435082b))
+* **board:** D-61 mDNS responder for rangertrak-board.local ([b7dbcf5](https://github.com/SteadyEOC/RangerTrak/commit/b7dbcf56e5940551fbddb1a04410c13b5ce63024))
+* **board:** D-61 port 443 with 8080 fallback, local-network listeners, name in the certificate, rewritten console ([016ecc1](https://github.com/SteadyEOC/RangerTrak/commit/016ecc186b384eddb911bc37b11c25b1ea6ee994))
+* **board:** D-61 publish client - claim, key, re-claim after a restart, replaced and Take over ([168dfc1](https://github.com/SteadyEOC/RangerTrak/commit/168dfc1740808b25466d1cf8bcd500da5521ce11))
+* **board:** D-61 viewer QR code - terminal after a claim, /qr for this laptop only ([d6f5892](https://github.com/SteadyEOC/RangerTrak/commit/d6f5892b15f6aed05c9185cea61157accd257942))
+* **report-packet:** D-60 Report Packet with files - originals beside the .txt, fingerprint-matched on load ([01e2f65](https://github.com/SteadyEOC/RangerTrak/commit/01e2f65aad59beaec7b9b003bfbe753a023166dc))
+* **settings:** D-61 / D-60 Board password and attachments switch (E-194) ([8f117c0](https://github.com/SteadyEOC/RangerTrak/commit/8f117c076443bba4a1dd66d42c3e05a4cb2e7aa5))
+
+
+### Bug Fixes
+
+* **board:** D-61 an automatic re-claim never takes over ([aa75f18](https://github.com/SteadyEOC/RangerTrak/commit/aa75f18ab094cf44a6955304e19c6cc7f5388e8c))
+* **board:** D-61 don't reveal the Board's holder to a caller without a credential ([d7ab6fd](https://github.com/SteadyEOC/RangerTrak/commit/d7ab6fdf45e94b499dadb58eaa0bd71614b9e77f))
+
 ### [0.99.54-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.53-alpha...v0.99.54-alpha) (2026-10-17)
 
 
