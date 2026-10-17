@@ -452,7 +452,7 @@ whose key has left the source fails. Add the row in the same commit as the key.
 | 15 | IndexedDB `rangertrak-records` / `kv` | `radioLog-BAD` | `radio-log.service.ts` | no | yes | none; quarantine copy of an unreadable log |
 | 16 | IndexedDB `rangertrak-records` / `kv` | `locations` | `mission-location.service.ts` | yes | no | `mission-location-migration.ts`, schema 1 |
 | 17 | IndexedDB `rangertrak-records` / `kv` | `aarNotes` | `aar-note.service.ts` | yes | yes | `aar-note-migration.ts`, schema 1 |
-| 18a | IndexedDB `rangertrak-records` / `kv` | `secrets` (`{ googleGeocodingApiKey }`, 2026-10-01) | `mission.service.ts` | yes, as `settings.googleGeocodingApiKey`, passphrase-protected backups only | yes | one-time move out of `appSettings` on load |
+| 18a | IndexedDB `rangertrak-records` / `kv` | `secrets` (`{ googleGeocodingApiKey, boardPassword }`, 2026-10-01; `boardPassword` added 2026-10-16, D-61) | `mission.service.ts` | yes, as `settings.googleGeocodingApiKey` and `settings.boardPassword`, passphrase-protected backups only (a Setup file carries the geocoding key but never the Board password) | yes | one-time move out of `appSettings` on load; `boardPassword` is a backfilled mission field, no schema bump |
 | 18 | IndexedDB `rangertrak-records` / `kv` | `__encryption` | `shared/storage/record-store.ts` | no | no (it is the key marker) | none |
 | 19 | IndexedDB `rangertrak-photos` / `photos` | one per ranger (by call sign) | `ranger-photo.service.ts` | yes (`photos`, base64; restoring replaces the device's photos) and in setup files | yes | none |
 | 20 | IndexedDB `rangertrak-custom-pmtiles` / `files` | `active` | `custom-pmtiles.service.ts` | no | no | none |
@@ -467,7 +467,11 @@ Notes for the storage freeze:
 - The optional Google geocoding API key is no longer in `appSettings` (2026-10-01): it lives in
   the `secrets` record, encrypted when device encryption is on. A plain backup omits it, a
   passphrase-protected one keeps it, and restoring a backup with no key keeps the device's key.
-  Setup files still carry it by the 2026-08-31 decision.
+  Setup files still carry it by the 2026-08-31 decision. The Board password (D-61) rides the
+  same record and rules, except that a Setup file never carries it either (D-61 item 8).
+- The Board publish key (row 25) is device-only on purpose. It is replaced by whatever the Board
+  returns on each claim, so a restored backup or a copied Setup file can never put one key on two
+  devices.
 - Mission mode (`missionMode`, E-168a) is a field inside `appSettings`, not a key of its own, so it
   rides in backups. The demo record (row 3) is device-only on purpose: it records which rows the
   demo loader created, which means nothing on another device.

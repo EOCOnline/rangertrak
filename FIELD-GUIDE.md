@@ -342,11 +342,18 @@ report over the network by itself. Every report saves on the phone straight away
 reports** bundles them into one file and opens the phone's share sheet, and the ranger picks
 the route: email or a messaging app over cell data or WiFi, or AirDrop / Quick Share to a
 station device nearby. At the command post, **Load Report Packet** on the Radio Log page
-merges it, skipping reports it already has. With no data path, read the report over the radio
+merges it, skipping reports it already has. Photos, audio and video attached to a report travel in
+the same share, beside the file; if the phone's share sheet can't take them (too big), only the
+packet goes and the app says so, and the photos then go separately or in a hand-over file. At the
+command post, pick the packet and the photos together in **Load Report Packet**: each is stored
+only if it matches a report in the packet, and the app tells you how many were added and how
+many are still on the ranger's phone. With no data path, read the report over the radio
 as always. Do the same for anything urgent, because the phone gets no receipt. Install the
 app on each phone from rangertrak.org **before** heading out. **RangerTrak Board** is not a
 third mode. It is an option on the command post's app that shows a read-only copy of the log
-to anyone on the station's WiFi; phones cannot send reports through it.
+to anyone on the station's WiFi, behind an optional password you set on the Mission page; phones
+cannot send reports through it. Only one device publishes to it at a time, and another device with
+the password can take it over.
 
 **Handing over to the next scribe.** When a mission runs past one scribe, or a second scribe is
 logging at another radio, the other device usually has entries of its own already. On the Radio
