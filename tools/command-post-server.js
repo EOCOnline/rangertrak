@@ -1,5 +1,7 @@
 // E-87 Stage 1 (2026-08-31) - "Command Post Server: serving the mission to nearby devices".
 // See `E-87 Command Post Server.md` in the private docs for the full scoping this implements.
+// Revised for D-61 (the Board's name, port, local-network-only listening, viewer password and
+// single publisher) and D-60 (full-size attachments on request).
 //
 // Read-only mirror, not a sync server: the PWA running on a scribe's own device POSTs a
 // redacted snapshot of the radio log here whenever it changes (opt-in, see MissionType's
@@ -8,6 +10,10 @@
 // no write-back, no identity, no conflict resolution - one writer, many readers, matching the
 // "structurally simpler read problem" the 2026-08-15 exercise actually validated a need for.
 //
+// Where things live: this file starts the servers and serves the static viewer; tools/board/
+// holds the pieces with their own tests - net.js (which addresses may be listened on),
+// mdns.js (the rangertrak-board.local name) and protocol.js (the API, the claim, the secrets).
+//
 // Forked from tools/serve-dist.js rather than extending it in place (the scoping doc's own
 // §5 flagged this as a five-minute call either way, not worth blocking on): that file is a
 // dev-only local-preview convenience nobody ships; this one is a real end-user feature with a
@@ -15,6 +21,11 @@
 // file risked the two drifting into each other by accident. Static-file serving below is
 // intentionally the same logic, not a shared module - see that file if this ever needs to be
 // reconciled with it.
+//
+//   node tools/command-post-server.js [--port N] [--name label] [--allow-public]
+//     --port N        (or the PORT env var) use exactly this port, no fallback
+//     --name label    ask for <label>.local instead of rangertrak-board.local
+//     --allow-public  also listen on public addresses (never the default - D-61 item 3)
 const https = require('https');
 const fs = require('fs');
 const os = require('os');
@@ -24,18 +35,18 @@ const { execSync, spawnSync } = require('child_process');
 // bundle) - same exception this doc's own scoping already accepted for a QR code. See
 // getOrCreateCert() below for why this server needs to generate a certificate at all.
 const selfsigned = require('selfsigned');
+const { privateAddresses } = require('./board/net');
+const { createResponder, sanitizeLabel } = require('./board/mdns');
+const { createBoard } = require('./board/protocol');
 
 const ROOT = path.join(__dirname, '..', 'dist', 'rangertrak', 'browser');
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
+const DEFAULT_LABEL = 'rangertrak-board';
+const PREFERRED_PORT = 443;
+const FALLBACK_PORT = 8080;
 // Never committed - see .gitignore's existing `/non-distributed` entry, reused here rather
 // than inventing a second "local, not for git" convention. A private key belongs here even
 // though it is self-signed and low-stakes: no reason to make a habit of committing one.
 const CERT_DIR = path.join(__dirname, '..', 'non-distributed', 'command-post-cert');
-
-// In-memory only, on purpose - see this file's own header comment. Never written to disk:
-// the mission may carry field-report notes and coordinates, and this process has no reason
-// to persist operator data past its own runtime (D-35).
-let latestMission = null;
 
 const MIME = {
   '.html': 'text/html', '.js': 'application/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
@@ -124,150 +135,48 @@ function fallbackToSpaShell(res) {
   });
 }
 
-// The PWA runs on its own origin (rangertrak.org, or localhost:4200 in dev) - a different
-// origin from this server even when both happen to run on the same laptop, since the port
-// differs at minimum. That makes the publish POST a cross-origin request; without these
-// headers the browser blocks it before it ever reaches the handlers below. No credentials
-// are involved (no cookies, no auth) so a wildcard origin is the simplest correct answer,
-// not a shortcut - see command-post-publish.service.ts's own header comment on why there is
-// no join-code/auth model in this v1 for a wildcard to weaken.
-function setCorsHeaders(res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-}
-
-function readJsonBody(req, maxBytes) {
-  return new Promise((resolve, reject) => {
-    let received = 0;
-    const chunks = [];
-    req.on('data', (chunk) => {
-      received += chunk.length;
-      if (received > maxBytes) {
-        reject(new Error('Request body too large'));
-        req.destroy();
-        return;
-      }
-      chunks.push(chunk);
-    });
-    req.on('end', () => {
-      try {
-        resolve(JSON.parse(Buffer.concat(chunks).toString('utf8')));
-      } catch (e) {
-        reject(e);
-      }
-    });
-    req.on('error', reject);
-  });
-}
-
-// A plain function now, not `http.createServer(...)`'s inline callback - the server itself
-// is created in start() below, once the cert is ready, since https.createServer() needs the
-// key/cert up front and getOrCreateCert() is async.
-function requestHandler(req, res) {
-  const urlPath = req.url.split('?')[0];
-
-  if (urlPath === '/api/mission') {
-    setCorsHeaders(res);
-
-    if (req.method === 'OPTIONS') {
-      res.writeHead(204);
-      res.end();
-      return;
-    }
-
-    if (req.method === 'POST') {
-      // 25MB is generous for a JSON radio-log snapshot (no roster, no photos - see
-      // command-post-publish.service.ts's own payload shape) and cheap insurance against a
-      // misbehaving or malicious client filling this process's memory.
-      readJsonBody(req, 25 * 1024 * 1024)
-        .then((body) => {
-          latestMission = body;
-          console.log(`[${new Date().toLocaleTimeString()}] Published: "${body.mission || '(unnamed)'}" - ${(body.reports || []).length} report(s).`);
-          res.writeHead(204);
-          res.end();
-        })
-        .catch((e) => {
-          res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: `Invalid request body: ${e.message}` }));
-        });
-      return;
-    }
-
-    if (req.method === 'GET') {
-      if (!latestMission) {
-        res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'No mission has published yet.' }));
-        return;
-      }
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(latestMission));
-      return;
-    }
-
-    res.writeHead(405, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Method not allowed' }));
-    return;
-  }
-
-  serveStaticFile(req, res);
-}
-
-// Every non-internal IPv4 address this machine has, not just one guess - a laptop at a
-// command post commonly has more than one active interface (WiFi + a wired uplink, or a
-// USB-tethered phone hotspot) and there is no reliable way to know which one the field
-// devices will actually be able to reach. Also feeds the cert's own SAN list below - a
-// self-signed cert whose Subject Alternative Names don't include the address a device is
-// actually connecting to gets a HOSTNAME-MISMATCH warning on top of the expected
-// self-signed one, which is a strictly worse experience than one warning.
-function getLanAddresses() {
-  const nets = os.networkInterfaces();
-  const addresses = [];
-  for (const name of Object.keys(nets)) {
-    for (const net of nets[name] || []) {
-      if (net.family === 'IPv4' && !net.internal) {
-        addresses.push(net.address);
-      }
-    }
-  }
-  return addresses;
-}
-
 /**
  * 2026-08-31 (live discussion, same day as Stage 1 shipped): `CommandPostPublishService`'s
  * `fetch()` POST is blocked by mixed content on the real `https://rangertrak.org` deployment
  * - a browser refuses an HTTPS page's own fetch()/XHR to a plain HTTP endpoint outright, a
- * different mechanism than CORS (already handled, see setCorsHeaders()) and one this
+ * different mechanism than CORS (handled in tools/board/protocol.js) and one this
  * feature's original scoping never checked. Self-signed HTTPS fixes it: once a device visits
  * this server's HTTPS URL directly and accepts the one-time "not private" warning (the same
  * pattern router admin pages / Plex / Synology already use), the browser trusts this exact
  * certificate for this exact host going forward, which satisfies mixed-content policy for
  * every subsequent fetch() too - not just the one direct visit. See `E-87 Command Post
- * Server.md`'s own dated banner for the full reasoning and what this does NOT fix
- * (authentication - still just the WiFi password, unchanged from Stage 1).
+ * Server.md`'s own dated banner for the full reasoning. (Authentication is the claim and the
+ * optional viewer password now - D-61 - not this certificate.)
  *
  * Cached to disk (not regenerated every run) so a routine restart does not force every
  * already-trusted device to click through the warning again - but ONLY reused when its own
- * recorded address list still covers every address this run actually discovered. A laptop
+ * recorded address and name lists still cover everything this run actually needs. A laptop
  * commonly joins a DIFFERENT hotspot at the next incident, and an IP missing from the cert's
  * SAN list produces a hostname-mismatch warning regardless of caching, so correctness for
  * TODAY's network wins over reuse when the two conflict. IP-address SANs cannot be
  * wildcarded (unlike DNS-name SANs), so "cover every possible LAN IP" is not an option -
  * this is why the check exists at all, not just an optimization.
+ *
+ * D-61: the SAN list also carries the `.local` name actually taken (rangertrak-board.local, or
+ * -2 / -3 if another Board already held it). The same coverage rule applies: a cached cert that
+ * lacks today's name is replaced. The cache file used to be a bare array of addresses; that
+ * old shape reads as "addresses, no names", so the first run after upgrading regenerates once.
  */
-async function getOrCreateCert(addresses) {
-  const keyPath = path.join(CERT_DIR, 'key.pem');
-  const certPath = path.join(CERT_DIR, 'cert.pem');
-  const metaPath = path.join(CERT_DIR, 'addresses.json');
+async function getOrCreateCert(addresses, names = [], certDir = CERT_DIR) {
+  const keyPath = path.join(certDir, 'key.pem');
+  const certPath = path.join(certDir, 'cert.pem');
+  const metaPath = path.join(certDir, 'addresses.json');
 
   if (fs.existsSync(keyPath) && fs.existsSync(certPath) && fs.existsSync(metaPath)) {
     try {
-      const cachedAddresses = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
-      const stillCovered = addresses.every((a) => cachedAddresses.includes(a));
+      const cached = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+      const cachedAddresses = Array.isArray(cached) ? cached : cached.addresses || [];
+      const cachedNames = Array.isArray(cached) ? [] : cached.names || [];
+      const stillCovered = addresses.every((a) => cachedAddresses.includes(a)) && names.every((n) => cachedNames.includes(n));
       if (stillCovered) {
         return { key: fs.readFileSync(keyPath, 'utf8'), cert: fs.readFileSync(certPath, 'utf8') };
       }
-      console.log('Network address changed since the last cached certificate - generating a new one (every device will need to accept it once more).');
+      console.log('Network address or Board name changed since the last cached certificate - generating a new one (every device will need to accept it once more).');
     } catch (e) {
       console.log(`Cached certificate unreadable (${e.message}) - generating a new one.`);
     }
@@ -275,6 +184,7 @@ async function getOrCreateCert(addresses) {
 
   const altNames = [
     { type: 2, value: 'localhost' }, // type 2 = DNS name
+    ...names.map((value) => ({ type: 2, value })),
     { type: 7, ip: '127.0.0.1' },    // type 7 = IP address
     ...addresses.map((ip) => ({ type: 7, ip })),
   ];
@@ -290,24 +200,74 @@ async function getOrCreateCert(addresses) {
     }
   );
 
-  fs.mkdirSync(CERT_DIR, { recursive: true });
+  fs.mkdirSync(certDir, { recursive: true });
   fs.writeFileSync(keyPath, pems.private);
   fs.writeFileSync(certPath, pems.cert);
-  fs.writeFileSync(metaPath, JSON.stringify(addresses));
+  fs.writeFileSync(metaPath, JSON.stringify({ addresses, names }));
 
   return { key: pems.private, cert: pems.cert };
 }
 
 /**
+ * One https server per address, all sharing one handler and one certificate (D-61 item 3: the
+ * Board listens on the addresses it chose, not on 0.0.0.0). If ANY address fails to bind, the
+ * ones already open are closed and the error is thrown, so the caller can retry everything on
+ * another port rather than run half-open. Exported so the protocol tests can start a real
+ * instance on a random port with a throwaway certificate.
+ *
+ * `port` 0 asks the OS for a free one - only meaningful with a single address, since each
+ * address would otherwise get a different port.
+ */
+async function createServer({ port, cert, addresses = ['127.0.0.1'], name = '', log = console.log, boardOptions = {} }) {
+  const { handle, board } = createBoard({ log, name, ...boardOptions });
+  const handler = (req, res) => (req.url.startsWith('/api/') ? handle(req, res) : serveStaticFile(req, res));
+  const servers = [];
+  const closeAll = () => Promise.all(servers.map((s) => new Promise((resolve) => {
+    s.close(() => resolve());
+    s.closeAllConnections(); // keep-alive connections would otherwise hold close() open
+  })));
+
+  try {
+    for (const address of addresses) {
+      const server = https.createServer({ key: cert.key, cert: cert.cert }, handler);
+      // Node's default gives a request five minutes to finish. A scribe uploading a 400 MB
+      // video over weak Wi-Fi can need longer, and the body size is already capped.
+      server.requestTimeout = 0;
+      await new Promise((resolve, reject) => {
+        server.once('error', reject);
+        server.listen(port, address, () => { server.removeListener('error', reject); resolve(); });
+      });
+      servers.push(server);
+    }
+  } catch (e) {
+    await closeAll();
+    throw e;
+  }
+  return { servers, port: servers[0].address().port, board, close: closeAll };
+}
+
+// 443 is the clean address (no port to type), but it needs privileges on Linux/macOS and is
+// often taken on a laptop that also runs a web server. Either way the answer is 8080, and the
+// address printed afterwards is the one that actually worked (D-61 item 2). A port forced with
+// --port / PORT is never second-guessed: it fails plainly if busy.
+async function listenWithFallback(opts, forcedPort) {
+  if (forcedPort) return createServer({ ...opts, port: forcedPort });
+  try {
+    return await createServer({ ...opts, port: PREFERRED_PORT });
+  } catch (e) {
+    if (e.code !== 'EADDRINUSE' && e.code !== 'EACCES') throw e;
+    console.log(`Port ${PREFERRED_PORT} is ${e.code === 'EACCES' ? 'not permitted' : 'already in use'} on ${e.address || 'this machine'} - using ${FALLBACK_PORT} instead.`);
+    return createServer({ ...opts, port: FALLBACK_PORT });
+  }
+}
+
+/**
  * Raised live 2026-08-31: "does the user still have to get the server address and plug it
- * into our server field - manually?" - yes, still, but this closes the copy-it-out half:
- * whoever is AT THIS LAPTOP can paste the primary address straight into Mission Setup's
- * "Server address" field instead of retyping it from the console. Does not help a coordinator
- * setting up a DIFFERENT device (a scribe's own phone/laptop) - that address still has to be
- * read off this console and typed there by hand; there is no discovery mechanism (mDNS or
- * similar) for the PWA to find this server on its own, and browsers have no API for that
- * regardless. Best-effort and silent on failure - a clipboard miss should never be treated as
- * the server itself failing to start.
+ * into our server field - manually?" - this closes the copy-it-out half: whoever is AT THIS
+ * LAPTOP can paste the address straight into Mission Setup's "Server address" field instead of
+ * retyping it from the console. (Other devices read it off this screen, or type the .local
+ * name; the browser has no API to discover a server by itself.) Best-effort and silent on
+ * failure - a clipboard miss should never be treated as the server itself failing to start.
  */
 function copyToClipboard(text) {
   try {
@@ -329,31 +289,43 @@ function copyToClipboard(text) {
   }
 }
 
-function printLanUrls(addresses) {
-  const primaryUrl = `https://${addresses[0] || 'localhost'}:${PORT}`;
+function printBoardUrls({ name, label, port, addresses, skipped }) {
+  const hostPort = (host) => (port === 443 ? host : `${host}:${port}`);
+  const nameUrl = name ? `https://${hostPort(name)}` : null;
+  const primaryUrl = nameUrl || `https://${hostPort(addresses[0] || 'localhost')}`;
 
   console.log('');
   console.log('RangerTrak Board');
   console.log('================');
   console.log(`Serving ${ROOT}`);
   console.log('');
+  if (skipped.length > 0) {
+    console.log(`Not listening on public address${skipped.length > 1 ? 'es' : ''} ${skipped.join(', ')} - the Board is for the local network only.`);
+    console.log('');
+  }
+  if (!name) {
+    console.log(`Couldn't announce ${label}.local; use the address below.`);
+    console.log('');
+  }
   console.log('Give teams this address to view the live comms log:');
   console.log('');
-  if (addresses.length === 0) {
-    console.log('  (no non-internal network interface found - check your WiFi/hotspot connection)');
-  }
+  if (nameUrl) console.log(`  ${nameUrl}/view`);
   for (const addr of addresses) {
-    console.log(`  https://${addr}:${PORT}/view`);
+    console.log(`  https://${hostPort(addr)}/view${nameUrl && addr === addresses[0] ? '   (if the name does not open, e.g. on an older Android phone)' : ''}`);
   }
-  console.log(`  https://localhost:${PORT}/view   (this machine only)`);
+  console.log(`  https://${hostPort('localhost')}/view   (this machine only)`);
+  if (name && name !== `${label}.local`) {
+    console.log('');
+    console.log(`Note: ${label}.local was already taken on this network, so this Board is ${name}.`);
+  }
   console.log('');
   console.log('FIRST VISIT ON EACH DEVICE: the browser will warn "Your connection is not');
-  console.log('private" - that is expected for a private server with no public certificate');
-  console.log('authority, the same warning router admin pages show. Click Advanced, then');
-  console.log('Proceed. Needed ONCE per device; the browser remembers it after that.');
+  console.log(`private" for ${name || 'this address'} - that is expected for a private server with no public`);
+  console.log('certificate authority, the same warning router admin pages show. Click Advanced,');
+  console.log('then Proceed. Needed ONCE per device and name; the browser remembers it after that.');
   console.log('');
   console.log('In RangerTrak\'s own Mission Setup, turn on "Publish to Command Post Server" and');
-  console.log(`set the server address to one of the URLs above (without /view), e.g.:`);
+  console.log('set the server address to the first address above (without /view), e.g.:');
   console.log(`  ${primaryUrl}`);
   console.log('(Visit that address directly in THIS device\'s own browser first, and accept the');
   console.log('warning, before turning the toggle on - publishing fails silently otherwise.)');
@@ -361,17 +333,74 @@ function printLanUrls(addresses) {
   if (copyToClipboard(primaryUrl)) {
     console.log('');
     console.log(`Copied to the clipboard on THIS computer: ${primaryUrl}`);
-    console.log('(Other devices still need to read it off this screen - there is no way for');
-    console.log('their browsers to discover it automatically.)');
   }
+  console.log('');
+  console.log('Waiting for the scribe\'s device to publish. Press Ctrl+C to stop.');
   console.log('');
 }
 
-async function start() {
-  const addresses = getLanAddresses();
-  const { key, cert } = await getOrCreateCert(addresses);
-  const server = https.createServer({ key, cert }, requestHandler);
-  server.listen(PORT, () => printLanUrls(addresses));
+function parseArgs(argv) {
+  const args = { allowPublic: false, port: process.env.PORT ? parseInt(process.env.PORT, 10) : 0, label: DEFAULT_LABEL };
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--allow-public') args.allowPublic = true;
+    else if (argv[i] === '--port') args.port = parseInt(argv[++i], 10);
+    else if (argv[i] === '--name') args.label = sanitizeLabel(argv[++i] || '') || DEFAULT_LABEL;
+  }
+  if (args.port && !(args.port > 0 && args.port < 65536)) {
+    console.log('The port must be a number from 1 to 65535.');
+    process.exit(1);
+  }
+  return args;
 }
 
-start();
+async function start() {
+  const args = parseArgs(process.argv.slice(2));
+  const found = privateAddresses(os.networkInterfaces());
+
+  if (found.lan.length === 0 && !args.allowPublic) {
+    console.log('No private network address found, so there is nothing safe to serve on.');
+    console.log('The Board only serves the local network (10.x, 172.16-31.x, 192.168.x or 169.254.x).');
+    console.log('Connect to the Wi-Fi or hotspot and start it again. To listen on a public address');
+    console.log('anyway, start with --allow-public.');
+    if (found.skipped.length > 0) console.log(`(Only public address${found.skipped.length > 1 ? 'es' : ''} found: ${found.skipped.join(', ')})`);
+    process.exit(1);
+  }
+  const listenOn = args.allowPublic ? [...found.listen, ...found.skipped] : found.listen;
+  const reachable = args.allowPublic ? [...found.lan, ...found.skipped] : found.lan;
+  const skipped = args.allowPublic ? [] : found.skipped;
+
+  // The name must be settled BEFORE the certificate (it goes in the SAN list) and the server
+  // is not announced until it is actually listening, so mDNS is claimed first and announced last.
+  const responder = createResponder({ label: args.label, addresses: reachable.length ? reachable : found.lan, log: console.log });
+  const name = reachable.length ? await responder.claim() : null;
+  if (name && name !== `${args.label}.local`) console.log(`${args.label}.local was already taken on this network; this Board is ${name}.`);
+
+  let running;
+  try {
+    const cert = await getOrCreateCert(reachable, name ? [name] : []);
+    running = await listenWithFallback({ cert, addresses: listenOn, name: name || '', log: console.log }, args.port);
+  } catch (e) {
+    await responder.stop();
+    const where = e.address ? ` on ${e.address}` : '';
+    console.log(`Could not start the Board${where}: ${e.code === 'EADDRINUSE' ? `port ${args.port || FALLBACK_PORT} is already in use` : e.code === 'EACCES' ? `not permitted to use port ${args.port || FALLBACK_PORT}` : e.message}`);
+    process.exit(1);
+  }
+
+  responder.announce();
+  printBoardUrls({ name, label: args.label, port: running.port, addresses: reachable, skipped });
+
+  let stopping = false;
+  const shutdown = async () => {
+    if (stopping) return;
+    stopping = true;
+    await responder.stop(); // sends the goodbye so neighbours forget the name at once
+    await running.close();
+    process.exit(0);
+  };
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
+}
+
+module.exports = { createServer, getOrCreateCert };
+
+if (require.main === module) start();
