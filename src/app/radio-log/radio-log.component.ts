@@ -5,7 +5,7 @@ import { DEFAULT_CHECK_IN_INTERVAL_MIN, elapsedMinutes, overdueBand } from '../d
 import { Observable, subscribeOn, Subscription } from 'rxjs'
 
 import { CommonModule, DOCUMENT, formatDate } from '@angular/common'
-import { AfterViewInit, Component, Inject, OnDestroy, OnInit, Pipe, PipeTransform, ElementRef, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { AfterViewInit, Component, inject, Inject, OnDestroy, OnInit, Pipe, PipeTransform, ElementRef, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 
 import { AgGridAngular } from 'ag-grid-angular';
 import { PageComponent } from '../shared/page/page.component';
@@ -32,6 +32,7 @@ import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 import { rangerColorFor } from '../shared/mapping/ranger-marker'
 import { buildIcs309Log, Ics309Log } from '../shared/export/ics309-log'
 import { formatStation } from '../domain/station-label'
+import { AttachmentStoreService } from '../shared/services/attachment-store.service'
 import { parseReportPacket, REPORT_PACKET_SCHEMA_VERSION } from '../shared/export/report-packet'
 import {
   RadioLogService, RadioLogStatusType, RadioLogType, RadioLogEntryType, LogService,
@@ -443,6 +444,8 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     // set rowData to null or undefined to show loading panel by default
     rowData: null,
   }
+
+  private attachmentStore = inject(AttachmentStoreService)
 
   constructor(
     private radioLogService: RadioLogService,
@@ -1115,10 +1118,12 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     return `${d.toLocaleDateString()} ${this.formatLogTime(d)}`
   }
 
-  onBtnClearRadioLog() {
-    if (Utility.getConfirmation('Delete radio log entries and messages? This cannot be undone.')) {
+  async onBtnClearRadioLog() {
+    // E-194: says how many attachments go with the entries, when there are any.
+    const attachmentNote = await this.attachmentStore.deletionNotice([])
+    if (Utility.getConfirmation(`Delete radio log entries and messages? This cannot be undone.${attachmentNote}`)) {
       this.log.info("Removing all radio log entries from local storage...", this.id)
-      this.radioLogService.deleteAllRadioLogEntries()
+      await this.radioLogService.deleteAllRadioLogEntries()
       this.refreshGrid()
       this.reloadPage()
     }

@@ -13,6 +13,7 @@ import { migrateRadioLog } from '../../domain/radio-log-migration'
 import { normalizeLocationUids } from '../../domain/mission-location-migration'
 import { migrateAarNotes } from '../../domain/aar-note-migration'
 import { recordStore } from '../storage/record-store'
+import { AttachmentStoreService } from './attachment-store.service'
 import { clearActiveDemoScenario } from '../mapping/demo-map'
 import type { LayerRecord } from '../../domain/layers'
 
@@ -86,6 +87,7 @@ export class BackupService {
   ) { }
 
   private injector = inject(Injector)
+  private attachmentStore = inject(AttachmentStoreService)
 
   /** Loaded on demand: layers are Rangers/Map-page code, kept out of the always-loaded bundle. */
   private async layerService() {
@@ -213,6 +215,9 @@ export class BackupService {
     this.rangerService.replaceAllRangers(normalizeRangerIds(payload.rangers).rangers)
     this.radioLogService.replaceAllRadioLog(
       migrateRadioLog(payload.radioLog) ?? payload.radioLog)
+    // E-194 / D-60 item 8: bytes the old entries named and the restored ones do not are swept,
+    // after the entries are in. Bytes a restored reference still names stay.
+    await this.attachmentStore.sweepOrphans(this.radioLogService.getCurrentRadioLog().logEntries)
     // Missing on a pre-D-49 export (2026-08-30) - defaults to an empty list rather than
     // rejecting the import, same tolerance every other additive field in this app gets.
     this.locationService.replaceAllLocations(normalizeLocationUids(payload.locations ?? []))

@@ -2,7 +2,7 @@ import { Observable, Observer, of, ReplaySubject, Subscription, throwError } fro
 
 import { HttpClient } from '@angular/common/http'
 import {
-  Injectable, OnDestroy, OnInit, Optional, Pipe, PipeTransform, signal, SkipSelf, WritableSignal
+  inject, Injectable, OnDestroy, OnInit, Optional, Pipe, PipeTransform, signal, SkipSelf, WritableSignal
 } from '@angular/core'
 
 import {
@@ -19,6 +19,8 @@ import { EntryMergeOptions, EntryMergeResult, mergeEntries } from '../../domain/
 // is unresolvable to the compiler ("no suitable injection token") - the same reason
 // rangers.component.ts imports RangerPhotoService directly instead of via './'.
 import { RangerService } from './ranger.service'
+// E-194: deleting every entry also sweeps the attachment bytes nothing refers to any more.
+import { AttachmentStoreService } from './attachment-store.service'
 // E-122 Phase 2a: radio log entries are PII, and now live behind RecordStore (in-memory +
 // IndexedDB) rather than directly in localStorage. Direct import, same reasoning as the
 // RangerService import above.
@@ -48,6 +50,8 @@ import * as packageJson from '../../../../package.json'
 export class RadioLogService {
 
   private id = 'Radio Log Service'
+
+  private attachmentStore = inject(AttachmentStoreService)
 
   private radioLog!: RadioLogType
   // radioLogSignal is the single source of truth for state.
@@ -447,7 +451,7 @@ export class RadioLogService {
     return this.selectedRadioLog
   }
 
-  public deleteAllRadioLogEntries() {
+  public async deleteAllRadioLogEntries(): Promise<void> {
     // TODO: reset header properties too?!
     this.radioLog.logEntries = []
     recordStore.removeItem(this.storageLocalName)
@@ -456,6 +460,9 @@ export class RadioLogService {
     // an old display number after a clear-all - confusing on its own, worse once a printed/
     // cited 213 could reference "entry 3" meaning two different reports at different times.
     // Left monotonic per device instead - decided in the roadmap's E-114 write-up.
+
+    // E-194 / D-60 item 8: no entry names any attachment now, so none of their bytes stay.
+    await this.attachmentStore.sweepOrphans([])
   }
 
 

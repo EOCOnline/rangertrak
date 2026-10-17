@@ -11,6 +11,7 @@ import { LogService, MissionService, UsageStateService } from '../services'
 import {
   DEFAULT_SAMPLE_SCENARIO, SAMPLE_SCENARIOS, SampleScenarioId
 } from '../services/sample-scenarios'
+import { AttachmentStoreService } from '../services/attachment-store.service'
 import { activeDemoScenario } from '../mapping/demo-map'
 import { confirmReplaceMission } from './replace-guard'
 
@@ -88,6 +89,8 @@ export class DemoPickerComponent implements OnInit {
     const label = this.scenarios.find(s => s.id === scenario)?.label ?? scenario
     const state = this.usage.state()
 
+    const attachmentNote = await this.injector.get(AttachmentStoreService).deletionNotice([])
+
     // An empty device has nothing to replace, so no question (the Entry welcome panel's old
     // behaviour); every other state confirms, and a live mission confirms hard.
     if (state !== 'empty' && !confirmReplaceMission({
@@ -97,7 +100,7 @@ export class DemoPickerComponent implements OnInit {
         + `This REPLACES all rangers, radio log entries and locations currently on this device with `
         + `demonstration data, renames the mission to make that obvious, and moves the mission's `
         + `default location to the demo's command post.\n\n`
-        + `This cannot be undone - back up the current mission first if you want to keep it.`,
+        + `This cannot be undone - back up the current mission first if you want to keep it.${attachmentNote}`,
     })) {
       this.log.verbose('onLoad: user cancelled.', this.id)
       return false

@@ -1,5 +1,6 @@
 import { recordStore } from './record-store'
 import { clearActiveDemoScenario } from '../mapping/demo-map'
+import { ATTACHMENTS_DB_NAME } from '../services/attachment-store.service'
 import { RANGER_PHOTOS_DB_NAME } from '../services/ranger-photo.service'
 
 /**
@@ -93,14 +94,14 @@ export function runUnlockGate(): Promise<void> {
     forgotBtn.addEventListener('click', () => {
       const confirmed = confirm(
         'Erase this device’s mission data?\n\n'
-        + 'This deletes the roster, radio log entries, after-action notes and ranger photos stored on THIS device - '
+        + 'This deletes the roster, radio log entries, after-action notes, ranger photos and attachments stored on THIS device - '
         + 'not any backup file you have elsewhere. There is no undo.\n\n'
         + 'Afterward, restore a backup from Mission > Danger zone if you have one.')
       if (!confirmed) return
 
       forgotBtn.disabled = true
       clearActiveDemoScenario() // E-124: nothing left on the device is a demo
-      Promise.all([recordStore.eraseEncryptedRecords(), eraseRangerPhotosDb()])
+      Promise.all([recordStore.eraseEncryptedRecords(), eraseRangerPhotosDb(), eraseAttachmentsDb()])
         .catch(err => {
           // Still proceed to boot: an empty, unlocked device beats a permanently stuck one.
           console.error('RecordStore: erase-on-forgot did not fully complete:', err)
@@ -115,15 +116,23 @@ export function runUnlockGate(): Promise<void> {
 }
 
 /**
- * Ranger photos are a separate IndexedDB database owned by `RangerPhotoService` - a service
- * that does not exist yet at this point in boot (see this file's own header comment), so
- * there is nothing to inject and call. Deleting the whole database directly is equivalent to
- * `RangerPhotoService.clear()` and needs no instance to do it.
+ * Ranger photos and attachments (E-194) are separate IndexedDB databases owned by
+ * `RangerPhotoService` / `AttachmentStoreService` - services that do not exist yet at this
+ * point in boot (see this file's own header comment), so there is nothing to inject and call.
+ * Deleting the whole database directly is equivalent to their `clear()` and needs no instance.
  */
 function eraseRangerPhotosDb(): Promise<void> {
+  if (typeof indexedDB === 'undefined') return Promise.resolve()
+  return eraseDb(indexedDB.deleteDatabase(RANGER_PHOTOS_DB_NAME))
+}
+
+function eraseAttachmentsDb(): Promise<void> {
+  if (typeof indexedDB === 'undefined') return Promise.resolve()
+  return eraseDb(indexedDB.deleteDatabase(ATTACHMENTS_DB_NAME))
+}
+
+function eraseDb(req: IDBOpenDBRequest): Promise<void> {
   return new Promise(resolve => {
-    if (typeof indexedDB === 'undefined') { resolve(); return }
-    const req = indexedDB.deleteDatabase(RANGER_PHOTOS_DB_NAME)
     req.onsuccess = () => resolve()
     req.onerror = () => resolve()
     req.onblocked = () => resolve()

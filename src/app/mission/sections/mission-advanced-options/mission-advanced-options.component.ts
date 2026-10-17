@@ -17,6 +17,8 @@ import { DemoPickerComponent } from '../../../shared/demo-picker/demo-picker.com
 import { SetupFileComponent } from '../setup-file/setup-file.component'
 // E-122 Phase 2b: the DI wrapper, not the module-level singleton - see record-store.ts's own
 // comment on why this is the one Angular consumer that reaches encryption this way.
+import { AttachmentStoreService } from '../../../shared/services/attachment-store.service'
+import type { RadioLogEntryType } from '../../../shared/services/radio-log-entry.interface'
 import { RecordStore } from '../../../shared/storage/record-store'
 
 /** Enable requires a backup finished within this long - see BackupService.lastBackupCompletedAt. */
@@ -87,6 +89,7 @@ export class MissionAdvancedOptionsComponent {
     public storagePersistence: StoragePersistenceService,
     private recordStore: RecordStore,
     private rangerPhotoService: RangerPhotoService,
+    private attachmentStore: AttachmentStoreService,
     private rangerService: RangerService,
     private radioLogService: RadioLogService,
     private fieldMode: FieldModeService,
@@ -209,13 +212,20 @@ export class MissionAdvancedOptionsComponent {
     } catch (error: any) {
       errors.push(error.message)
     }
+    // E-194: attachments are the third encrypted store, after the photos.
+    try {
+      const key = this.recordStore.getEncryptionKey()
+      if (key) await this.attachmentStore.encryptAll(key)
+    } catch (error: any) {
+      errors.push(error.message)
+    }
 
     if (errors.length) {
       this.log.error(`onBtnEnableEncryption: on, with errors: ${errors.join(' | ')}`, this.id)
       alert(`Device encryption is on, but not everything was encrypted yet:\n\n${errors.join('\n\n')}`)
       return
     }
-    this.log.warn('Device encryption turned on: roster, radio log entries and photos are now encrypted at rest.', this.id)
+    this.log.warn('Device encryption turned on: roster, radio log entries, photos and attachments are now encrypted at rest.', this.id)
     alert('Device encryption is on. You will be asked for this passphrase on your next visit '
       + 'and after every app update.')
   }
@@ -229,7 +239,7 @@ export class MissionAdvancedOptionsComponent {
     if (!this.encryptionEnabled()) return
 
     if (!confirm(`Turn off device encryption?\n\n`
-      + `The roster, radio log entries, after-action notes and ranger photos on this device go back to being stored `
+      + `The roster, radio log entries, after-action notes, ranger photos and attachments on this device go back to being stored `
       + `unencrypted, exactly as before.`)) {
       this.log.verbose('onBtnDisableEncryption: user cancelled.', this.id)
       return
@@ -253,8 +263,10 @@ export class MissionAdvancedOptionsComponent {
       // IndexedDB, which only works while RecordStore still reports a key - see
       // RangerPhotoService.decryptAll()'s own comment on why the order matters here.
       await this.rangerPhotoService.decryptAll(key)
+      // E-194: attachments the same way, for the same reason, before the key is cleared.
+      await this.attachmentStore.decryptAll(key)
       await this.recordStore.disableEncryption()
-      this.log.warn('Device encryption turned off: roster, radio log entries and photos are stored unencrypted again.', this.id)
+      this.log.warn('Device encryption turned off: roster, radio log entries, photos and attachments are stored unencrypted again.', this.id)
       alert('Device encryption is off.')
     } catch (error: any) {
       this.log.error(`onBtnDisableEncryption: failed: ${error.message}`, this.id)
@@ -334,9 +346,10 @@ export class MissionAdvancedOptionsComponent {
           + `${payload.exportedAt}, with ${payload.rangers.length} rangers and `
           + `${payload.radioLog.logEntries.length} radio log entries.`
 
+        const attachmentNote = await this.attachmentStore.deletionNotice(payload.radioLog.logEntries as RadioLogEntryType[])
         if (!confirm(`Restore this mission?\n\n${summary}\n\n`
           + `This REPLACES all current settings, rangers, and radio log entries on this device. `
-          + `This cannot be undone - back up the current mission first if you want to keep it.`)) {
+          + `This cannot be undone - back up the current mission first if you want to keep it.${attachmentNote}`)) {
           this.log.verbose('onImportFileSelected: user cancelled restore.', this.id)
           return
         }

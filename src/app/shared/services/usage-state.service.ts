@@ -6,6 +6,7 @@ import { setQuiet } from '../quiet-flag'
 import { clearActiveDemoScenario, demoRecord } from '../mapping/demo-map'
 import { recordStore } from '../storage/record-store'
 import { AarNoteService } from './aar-note.service'
+import { AttachmentStoreService } from './attachment-store.service'
 import { MissionLocationService } from './mission-location.service'
 import { FieldModeService } from './field-mode.service'
 import { LogService } from './log.service'
@@ -77,6 +78,7 @@ export class UsageStateService {
   readonly quiet = computed(() => this.state() === 'live')
 
   private router = inject(Router)
+  private attachmentStore = inject(AttachmentStoreService)
 
   constructor(
     private missionService: MissionService,
@@ -117,7 +119,7 @@ export class UsageStateService {
    */
   async startRealMission(mode?: MissionModeType): Promise<void> {
     this.rangerService.deleteAllRangers()
-    this.radioLogService.deleteAllRadioLogEntries()
+    await this.radioLogService.deleteAllRadioLogEntries()
     this.locationService.deleteAllLocations()
     this.aarNoteService.deleteAllNotes()
     this.missionService.ResetDefaults()
@@ -142,10 +144,11 @@ export class UsageStateService {
     if (this.mode() === 'demo') {
       // 2026-10-05, John: "I clicked Exercise and it asked whether to start a real mission" - the
       // question names the mode picked; "real" read as Incident.
+      const attachmentNote = await this.attachmentStore.deletionNotice([])
       const start = mode === 'exercise' ? 'Leave the demo and start an exercise?' : 'Leave the demo and start a real incident?'
       if (!confirm(start + '\n\nThis clears the demo data (rangers, radio log entries and '
         + 'locations) and resets the mission settings to their defaults. Demo data is not '
-        + 'carried over.')) return
+        + 'carried over.' + attachmentNote)) return
       await this.startRealMission(mode)
       window.location.reload()
       return

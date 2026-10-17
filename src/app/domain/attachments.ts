@@ -114,3 +114,17 @@ export function budgetUsage(
 export function formatFingerprint(sha: string): string {
   return sha.length <= 12 ? sha : `${sha.slice(0, 8)}…${sha.slice(-4)}`
 }
+
+/** Bytes per megabyte: the budget setting is in MB and so is every figure shown beside it. */
+export const BYTES_PER_MB = 1024 * 1024
+
+/** "412 KB", "41 MB", "1.2 GB": short, for confirms and the budget line. */
+export function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < BYTES_PER_MB) return `${Math.round(bytes / 1024)} KB`
+  if (bytes < 1024 * BYTES_PER_MB) {
+    const mb = bytes / BYTES_PER_MB
+    return `${mb < 10 ? mb.toFixed(1) : Math.round(mb)} MB`
+  }
+  return `${(bytes / (1024 * BYTES_PER_MB)).toFixed(1)} GB`
+}

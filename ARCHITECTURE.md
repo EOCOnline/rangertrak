@@ -459,6 +459,7 @@ whose key has left the source fails. Add the row in the same commit as the key.
 | 21 | IndexedDB `leaflet.offline` / `tileStore` | map tiles | the `leaflet.offline` library | no | no | library's own |
 | 22 | Cache Storage `rangertrak-pmtiles-warm` | map file URLs | `shared/mapping/demo-map.ts`, service worker | no | no | pruned by `pruneWarmCache()` |
 | 23 | localStorage | `rt-import-mappings` (E-187, 2026-10-15: which spreadsheet column became which roster field, per set of column headings; at most 20, oldest dropped; heading names only, never cell values; phase B: places sheets share the key under a `places:` prefix on the heading set, with their own column words) | `device-prefs.service.ts` (pure logic in `domain/roster-sheet.ts`) | no | no | none; new key, read defensively (bad JSON reads as none) |
+| 24 | IndexedDB `rangertrak-attachments` / `originals`, `thumbs` | one per file, keyed by its SHA-256 (E-194, D-60; the original bytes exactly as received, plus a 240 px EXIF-free JPEG thumbnail for images) | `shared/services/attachment-store.service.ts` (pure rules in `domain/attachments.ts`) | the backup JSON carries only the references on each entry; the bytes go in a companion `-attachments.zip`, and in setup files (`attachments/` folder) | yes (same record shape and key as the photos; the keys are plaintext fingerprints) | none; entries gain an optional `attachments` field, no schema bump |
 
 Notes for the storage freeze:
 

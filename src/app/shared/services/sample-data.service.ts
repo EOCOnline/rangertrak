@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
 
 import {
   RadioLogService, RadioLogType, RadioLogEntryType, LogService, RangerService, RangerType,
@@ -10,6 +10,7 @@ import type { TacticalCallType } from './mission.interface'
 import { recordStore } from '../storage/record-store'
 import { setActiveDemoScenario } from '../mapping/demo-map'
 import { DEFAULT_SAMPLE_SCENARIO, SampleScenarioId } from './sample-scenarios'
+import { AttachmentStoreService } from './attachment-store.service'
 
 // Re-exported so the spec keeps one import. Anything that must stay out of the eager bundle
 // imports sample-scenarios.ts directly (E-192).
@@ -135,6 +136,8 @@ export class SampleDataService {
     return `${yyyy}-${mm}-Search`
   }
 
+  private attachmentStore = inject(AttachmentStoreService)
+
   constructor(
     private missionService: MissionService,
     private rangerService: RangerService,
@@ -204,6 +207,8 @@ export class SampleDataService {
     this.rangerService.recordImport(`sample mission (${scenario})`, 'replace')
     const radioLog = this.assembleRadioLog(data.rows, rangers, data.event, tacticalCalls)
     this.radioLogService.replaceAllRadioLog(radioLog)
+    // E-194 / D-60 item 8: a demo replaces the entries, so bytes the old ones named go.
+    await this.attachmentStore.sweepOrphans(radioLog.logEntries)
     this.missionLocationService.replaceAllLocations(data.locations)
 
     this.log.warn(

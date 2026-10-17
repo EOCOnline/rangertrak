@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http'
 import {
   AfterViewInit, Component, computed, ElementRef, EventEmitter, Inject, Input, NgZone, OnDestroy,
   OnInit, Output, signal, ViewChild, QueryList, ViewChildren,
-  ChangeDetectionStrategy, effect
+  ChangeDetectionStrategy, effect, inject
 } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { form, FormField } from '@angular/forms/signals'
@@ -27,6 +27,7 @@ import { AlertsComponent } from '../shared/alerts/alerts.component'
 import { PageComponent } from '../shared/page/page.component'
 // Direct path, not the shared/services barrel - see the note in rangers.component.ts.
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
+import { AttachmentStoreService } from '../shared/services/attachment-store.service'
 import { TimePickerComponent } from '../shared/time-picker/time-picker.component'
 import { DDToDDM } from '../domain/coordinate'
 import {
@@ -379,6 +380,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // https://material.angular.io/components/autocomplete/examples#autocomplete-overview; also Ang Dev with TS, pg 140ff; Must be in OnInit, once component properties initialized
 
 
+  private attachmentStore = inject(AttachmentStoreService)
+
   constructor(
     private rangerService: RangerService,
     private photos: RangerPhotoService,
@@ -514,10 +517,11 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   /** The demo card's "Start a real mission": clears the demo, confirms first (a demo is
    *  replaceable, but anything typed on top of it is not). */
   async onStartRealMission(): Promise<void> {
+    const attachmentNote = await this.attachmentStore.deletionNotice([])
     if (!confirm('Start a real mission?\n\n'
       + 'This clears the demo data - rangers, radio log entries and locations - and resets the '
       + 'mission settings to their defaults. Anything you added on top of the demo goes too. '
-      + 'Back up the mission first if you want to keep it.')) return
+      + 'Back up the mission first if you want to keep it.' + attachmentNote)) return
     await this.usage.startRealMission()
     // 2026-10-02, John: reloading Entry put the empty-device demo offer straight back in front of
     // him ("came back to the home page still showing the demo bar"). A real mission starts with
