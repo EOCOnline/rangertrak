@@ -263,10 +263,26 @@ are stored when you save the entry; a saved entry shows a **📎 N** chip that o
 viewer you can **Add** more, **Save** or **Share** the original, and **Remove** one - which deletes it
 from this device but leaves "Removed 14:02 by K7ABC" on the entry.
 
-- **The original is never altered.** It is stored exactly as it arrived and given a SHA-256
-  fingerprint, shown in short form with a Copy button. A copy of the file can later be shown to be
-  identical. Backups and hand-overs carry the references, and re-check every file against its
+- **Keep original is the default.** The original is stored exactly as it arrived and given a
+  SHA-256 fingerprint, shown in short form with a Copy button. A copy of the file can later be shown
+  to be identical. Backups and hand-overs carry the references, and re-check every file against its
   fingerprint when they open it.
+- **Smaller copy (your choice, per file).** Each photo, video or audio file you pick also offers
+  **Smaller copy**: it sends much faster over a field network, but fine detail, and the file's own
+  location and camera data, are not kept. Only the smaller copy is stored, and the entry notes the
+  original's fingerprint, size, who made it and when. The viewer always says which kind a file is
+  ("Smaller copy, made on K7ABC's phone from 4.2 MB") and shows two fingerprints: this file's, and
+  the original's. A long video takes a while; **Cancel** keeps the original. If a copy would not be
+  smaller, the original is kept. If your browser cannot make one, the choice is not shown.
+- **If you receive a file, think before you shrink it.** In the viewer, **Make a smaller copy...**
+  warns you that the fingerprint proves the file is exactly what was sent and a copy will not match
+  it. **Keep both** (the default) adds the copy beside the original. **Replace the original** needs
+  you to type REPLACE; the entry then shows "Replaced by a smaller copy 14:02 by N7XYZ" and the
+  original is deleted from this device.
+- **Hover to peek.** On the Radio Log, hold the pointer over a **📎 N** chip to see small pictures
+  of the entry's files; click to open. A smaller copy carries a small "smaller copy" tag.
+- **Tip for long videos.** Set the camera to 720p before you record: the file is far smaller to
+  begin with, and a smaller copy of it is quicker to make.
 - **Originals keep the camera's hidden details, GPS position included.** The small pictures used
   in lists and printouts do not. Think before sharing an original outside the team.
 - **An iPhone may convert a HEIC photo to JPEG** before RangerTrak sees it. RangerTrak fingerprints

@@ -21,9 +21,11 @@ import { decryptPhoto, encryptPhoto } from '../storage/record-encryption'
  * 1. **Nothing is loaded up front.** A mission may hold gigabytes of video. Bytes are read one
  *    at a time (`getOriginal`) when the viewer shows them, and lists use the small stored
  *    thumbnails (`getThumb`), only for entries on screen. Do not copy `loadAll()`.
- * 2. **Originals are never altered.** The fingerprint is taken over the bytes exactly as the
+ * 2. **This store never alters bytes.** The fingerprint is taken over the bytes exactly as the
  *    `File` gave them, and they are stored exactly as given: no downscale, no re-encode, EXIF
- *    and GPS included. Only the thumbnail goes through a canvas, so only it is EXIF-free.
+ *    and GPS included. Only the thumbnail goes through a canvas, so only it is EXIF-free. A
+ *    smaller copy (D-60 item 2, revised) is made BEFORE it gets here, by `SmallerCopyService`,
+ *    and arrives as an ordinary file with its own fingerprint.
  * 3. **The one place bytes are deleted is `sweepOrphans()`**, which asks `orphans()` (domain).
  *    `remove()` is its low-level helper, not a second rule.
  *

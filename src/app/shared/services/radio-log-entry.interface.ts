@@ -222,7 +222,8 @@ export type RadioLogEntryType = {
   /**
    * E-194 / ADR D-60: photos, video and audio attached to this entry. References only (the
    * fingerprint, name, type, size and who/when); the bytes sit in the `rangertrak-attachments`
-   * IndexedDB, keyed by `sha256`, and are never altered. Optional/additive, no schema bump: an
+   * IndexedDB, keyed by `sha256`, and are never altered once stored (a smaller copy is its own file,
+   * noted by `compressed`). Optional/additive, no schema bump: an
    * entry without it has none. Merges take the union by fingerprint and never drop one; a
    * removed reference stays, marked, so the removal is on the record.
    */
