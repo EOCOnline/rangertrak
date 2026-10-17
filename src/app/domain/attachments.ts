@@ -92,6 +92,20 @@ export function orphans(storedKeys: Iterable<string>, entries: readonly HasAttac
 }
 
 /**
+ * The stored fingerprints that only REMOVED references name: nothing live wants the bytes any
+ * more. D-60 item 5 ("the bytes go, the reference stays") is carried out by deleting exactly
+ * these, when a person removes an attachment or a merge brings a removal in. Never a fingerprint
+ * with no reference at all (that is `orphans()`'s, with its own reasons) and never one a live
+ * reference still names.
+ */
+export function removedOnly(storedKeys: Iterable<string>, entries: readonly HasAttachments[]): string[] {
+  const named = referencedFingerprints(entries)
+  const live = new Set<string>()
+  for (const e of entries) for (const r of liveRefs(e)) live.add(r.sha256)
+  return [...storedKeys].filter(k => named.has(k) && !live.has(k))
+}
+
+/**
  * Space used against the mission budget. Each stored fingerprint counts once, however many
  * entries name it, and only fingerprints a live reference names count (removed ones have no
  * bytes). Level 'warn80' from 80%, 'over' from 100%.

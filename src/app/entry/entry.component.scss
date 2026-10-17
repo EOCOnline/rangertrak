@@ -810,3 +810,42 @@ mat-chip-option.enter__source-selected {
   gap        : 8px;
   margin-top : 6px;
 }
+
+// E-194 / D-60: the Attach row under Notes.
+.enter__attach {
+  align-items: center;
+  display    : flex;
+  flex-wrap  : wrap;
+  gap        : 0.5em;
+  margin     : 0 0 0.75em;
+}
+
+.enter__attach-note {
+  color: var(--rt-muted, #666);
+}
+
+.enter__attach-list {
+  display   : flex;
+  flex-wrap : wrap;
+  gap       : 0.4em;
+  list-style: none;
+  margin    : 0;
+  padding   : 0;
+  width     : 100%;
+}
+
+.enter__attach-item {
+  border       : 1px solid currentColor;
+  border-radius: 999px;
+  font-size    : 0.85em;
+  padding      : 0 0.25em 0 0.75em;
+}
+
+.enter__attach-remove {
+  background: transparent;
+  border    : 0;
+  color     : inherit;
+  cursor    : pointer;
+  font-size : 1.1em;
+  padding   : 0 0.4em;
+}

@@ -33,6 +33,9 @@ import { rangerColorFor } from '../shared/mapping/ranger-marker'
 import { buildIcs309Log, Ics309Log } from '../shared/export/ics309-log'
 import { formatStation } from '../domain/station-label'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
+import { AttachmentChipComponent } from '../shared/attachments/attachment-chip.component'
+import { attachmentChipHtml, attachmentChipUid } from '../shared/attachments/attachment-chip-html'
+import { AttachmentViewerService } from '../shared/attachments/attachment-viewer.service'
 import { parseReportPacket, REPORT_PACKET_SCHEMA_VERSION } from '../shared/export/report-packet'
 import {
   RadioLogService, RadioLogStatusType, RadioLogType, RadioLogEntryType, LogService,
@@ -75,6 +78,7 @@ export class myUnusedPipe implements PipeTransform {
     RouterLink,
     ExpandableSectionComponent,
     FilterChipsComponent,
+    AttachmentChipComponent,
     MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule
   ],
   templateUrl: './radio-log.component.html',
@@ -446,6 +450,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
   }
 
   private attachmentStore = inject(AttachmentStoreService)
+  private attachmentViewer = inject(AttachmentViewerService)
 
   constructor(
     private radioLogService: RadioLogService,
@@ -545,7 +550,22 @@ export class RadioLogComponent implements OnInit, OnDestroy {
 
   notesCellRenderer = (params: { data: RadioLogEntryType }) => {
     let title = `Note: ${params.data.notes}`
-    return `<span aria-hidden title="${title}"> ${params.data.notes}</span>`
+    // E-194: the 📎 N chip rides inside the notes cell (no new wide column); its click is caught
+    // by onGridClick() below, since a cell renderer here is a string.
+    return `<span aria-hidden title="${title}"> ${params.data.notes}</span>${attachmentChipHtml(params.data)}`
+  }
+
+  /** E-194: opens the viewer for the ONE selected row, the way to add files to an entry that has none yet. */
+  onBtnAttachments(): void {
+    const rows = this.gridApi?.getSelectedNodes() ?? []
+    if (rows.length !== 1) return
+    void this.attachmentViewer.open((rows[0].data as RadioLogEntryType).uid)
+  }
+
+  /** E-194: a click on a 📎 chip inside the grid opens the viewer for that row's entry. */
+  onGridClick(event: Event): void {
+    const uid = attachmentChipUid(event)
+    if (uid) void this.attachmentViewer.open(uid)
   }
 
   /** E-11: a compact flag icon when this report has an evidence/clue location, blank otherwise. */

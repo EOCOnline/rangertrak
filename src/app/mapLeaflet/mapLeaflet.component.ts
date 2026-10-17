@@ -49,6 +49,10 @@ import {
 } from '../shared/services'
 import { LocationDialogComponent } from '../map/location-dialog/location-dialog.component'
 import { MapEngineService } from '../map/map-engine.service'
+import { liveRefs } from '../domain/attachments'
+import { attachmentChipHtml, attachmentChipUid } from '../shared/attachments/attachment-chip-html'
+import { AttachmentViewerService } from '../shared/attachments/attachment-viewer.service'
+import { AttachmentStoreService } from '../shared/services/attachment-store.service'
 import { MapPrintFurnitureComponent } from '../map/map-print/map-print-furniture.component'
 import { MapPrintLegendComponent } from '../map/map-print/map-print-legend.component'
 
@@ -119,6 +123,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   private readonly cdr = inject(ChangeDetectorRef)
   /** E-187 phase B: where the Map page's Export places card learns what this map is showing. */
   private readonly engineService = inject(MapEngineService)
+  private readonly attachmentStore = inject(AttachmentStoreService)
+  private readonly attachmentViewer = inject(AttachmentViewerService)
 
   private lMap!: L.Map
   private overviewMapLeaflet!: L.Map
@@ -887,6 +893,39 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     this.badgeMarkers.clear()
   }
 
+  /**
+   * E-194: an entry's popup is its title plus, when it has live attachments, the 📎 N chip and the
+   * first image's stored thumbnail (read once the popup opens). The chip opens the viewer. Built
+   * when the popup opens, so no thumbnail is read for a marker nobody clicks. MapLibre (D-56,
+   * second-class) gets no chip in this phase.
+   */
+  private entryPopup(entry: RadioLogEntryType, title: string, marker: L.Layer): HTMLElement {
+    const box = document.createElement('div')
+    box.append(title)
+    const chip = attachmentChipHtml(entry)
+    if (!chip) return box
+    const holder = document.createElement('div')
+    holder.innerHTML = chip
+    box.append(holder)
+    box.addEventListener('click', event => {
+      const uid = attachmentChipUid(event)
+      if (uid) void this.attachmentViewer.open(uid)
+    })
+    const first = liveRefs(entry).find(r => r.type.startsWith('image/'))
+    if (first) {
+      void this.attachmentStore.thumbUrl(first.sha256).then(url => {
+        if (!url) return
+        const img = document.createElement('img')
+        img.src = url
+        img.alt = ''
+        img.style.cssText = 'display:block;max-width:160px;max-height:120px;margin-top:6px'
+        img.onload = () => marker.getPopup()?.update()   // the popup was sized before the image arrived
+        box.append(img)
+      }).catch(() => { /* a missing thumbnail is not worth a message */ })
+    }
+    return box
+  }
+
   override displayMarkers() {
     super.displayMarkers()
 
@@ -920,7 +959,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
         let marker = L.marker(new L.LatLng(i.location.lat, i.location.lng), {
           title: title, icon: rangerIconFor(i.rangerUid || i.callsign, statusColor)
         })
-        marker.bindPopup(title)
+        marker.bindPopup(layer => this.entryPopup(i, title, layer))
         this.entryMarkers.set(i, marker)
         this.myMarkerCluster.addLayer(marker);
 

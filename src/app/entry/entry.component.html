@@ -397,6 +397,44 @@
           [attr.tabindex]="notesTabIndex"></textarea>
       </mat-form-field>
 
+      <!-- E-194 / D-60: photos, video and audio for this entry. Picked files wait here as chips and
+           are hashed and stored when the entry is saved. Take photo / video is touch devices only
+           (capture opens the camera directly). Never altered: the original is kept as received. -->
+      <div class="enter__attach">
+        <input #attachInput type="file" accept="image/*,video/*,audio/*" multiple hidden
+          data-testid="entry-attach-file" (change)="onAttachPicked(attachInput)" />
+        <input #captureInput type="file" accept="image/*,video/*" capture="environment" hidden
+          data-testid="entry-capture-file" (change)="onAttachPicked(captureInput)" />
+        <button matButton="outlined" type="button" data-testid="entry-attach" [tabIndex]="attachTabIndex"
+          [disabled]="!!attachReason" (click)="attachInput.click()"
+          title="Attach photos, video or audio to this entry">
+          <mat-icon>attach_file</mat-icon>
+          Attach
+        </button>
+        @if (isTouchFirstDevice) {
+        <button matButton="outlined" type="button" data-testid="entry-capture"
+          [disabled]="!!attachReason" (click)="captureInput.click()"
+          title="Open the camera to take a photo or video for this entry">
+          <mat-icon>photo_camera</mat-icon>
+          Take photo / video
+        </button>
+        }
+        @if (attachReason) {
+        <small class="enter__attach-note">{{ attachReason }}</small>
+        }
+        @if (pendingFiles().length) {
+        <ul class="enter__attach-list" aria-label="Files waiting to be attached">
+          @for (file of pendingFiles(); track $index) {
+          <li class="enter__attach-item">
+            {{ file.name }} ({{ formatBytes(file.size) }})
+            <button type="button" class="enter__attach-remove" [attr.aria-label]="'Do not attach ' + file.name"
+              (click)="onRemovePending($index)">&times;</button>
+          </li>
+          }
+        </ul>
+        }
+      </div>
+
       <!-- E-41 phase 1: "the 213 stays opt-in per entry" - data collection only, no
            export/reporting logic yet (that's phases 2-3). Asking only what the maintainer
            named as the 213's initial-version requirement, not a full ICS-213 form - see the

@@ -1163,7 +1163,8 @@ async function checkEntryTabOrder() {
   // all three changes, and the walkthrough just above for the full, current 1..47 accounting.
   // 48, not 47: E-165 (2026-09-30) added the To station box right after the From box (stop 2),
   // pushing Location and everything after it down by one.
-  check('Entry exposes the expected number of keyboard stops', r.count, 48)
+  // 49, not 48: E-194 (2026-10-16) added the Attach button as one stop right after Notes.
+  check('Entry exposes the expected number of keyboard stops', r.count, 49)
 }
 
 async function checkEntryAutofocusAndReset() {

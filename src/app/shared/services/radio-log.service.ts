@@ -14,6 +14,8 @@ import {
 import { migrateRadioLog, RADIO_LOG_ENTRY_DATE_FIELDS } from '../../domain/radio-log-migration'
 import { rehydrateDateFields } from '../../domain/json-dates'
 import { newUid } from '../../domain/uid'
+import { mergeAttachmentRefs } from '../../domain/attachments'
+import type { AttachmentRef } from '../../domain/attachments'
 import { EntryMergeOptions, EntryMergeResult, mergeEntries } from '../../domain/entry-merge'
 // Direct path, not the barrel: a SERVICE used as a DI token through shared/services/index.ts
 // is unresolvable to the compiler ("no suitable injection token") - the same reason
@@ -425,6 +427,22 @@ export class RadioLogService {
   public saveEditedRadioLog() {
     this.recalcRadioLogBounds(this.radioLog)
     this.updateRadioLogAndPublish()
+  }
+
+  /**
+   * E-194 / D-60: adds attachment references to a saved entry, or marks some removed. The union
+   * by fingerprint (sticky removal) is the same rule a merge uses, so an add can never drop a
+   * reference. `stampRevised` for an add or removal on an existing entry (D-47): `revisedAt`
+   * is what lets the change travel in a hand-over. A new entry's own first attachments do not
+   * stamp it. Returns the entry, or undefined when no entry has this uid.
+   */
+  public mergeEntryAttachments(uid: string, refs: readonly AttachmentRef[], stampRevised: boolean): RadioLogEntryType | undefined {
+    const entry = this.radioLog.logEntries.find(e => e.uid === uid)
+    if (!entry) return undefined
+    entry.attachments = mergeAttachmentRefs(entry.attachments, refs)
+    if (stampRevised) entry.revisedAt = new Date()
+    this.saveEditedRadioLog()
+    return entry
   }
 
   public setSelectedRadioLogEntries(selection: RadioLogEntryType[]) {

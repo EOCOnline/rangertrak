@@ -344,3 +344,19 @@ rangertrak-footer {
     print-color-adjust        : exact;
   }
 }
+
+// E-194 / D-60: the 📎 N attachment chip. Global, because the Radio Log grid cell and the Leaflet
+// popup build it as a string (shared/attachments/attachment-chip-html.ts); component styles
+// would not reach it.
+.rt-attach-chip {
+  background   : transparent;
+  border       : 1px solid currentColor;
+  border-radius: 999px;
+  color        : inherit;
+  cursor       : pointer;
+  font         : inherit;
+  font-size    : 0.85em;
+  line-height  : 1.4;
+  margin-left  : 0.4em;
+  padding      : 0 0.5em;
+}

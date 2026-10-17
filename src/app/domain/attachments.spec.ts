@@ -1,4 +1,4 @@
-import { budgetUsage, formatFingerprint, liveRefs, mergeAttachmentRefs, orphans, referencedFingerprints } from './attachments'
+import { budgetUsage, formatFingerprint, liveRefs, mergeAttachmentRefs, orphans, referencedFingerprints, removedOnly } from './attachments'
 import type { AttachmentRef } from './attachments'
 
 /** ADR D-60 / E-194: the pure rules for attachment references. */
@@ -83,6 +83,14 @@ describe('attachments (D-60)', () => {
       expect(orphans([sha('a')], [])).toEqual([sha('a')])
     })
   })
+
+  it('removedOnly() finds fingerprints only removed references name', () => {
+    const entries = [
+      { attachments: [ref('a', { removed: removedAt('2026-10-16T11:00:00Z') }), ref('b', { removed: removedAt('2026-10-16T11:00:00Z') })] },
+      { attachments: [ref('b')] },
+    ];
+    expect(removedOnly([sha('a'), sha('b'), sha('z')], entries)).toEqual([sha('a')]);
+  });
 
   describe('budgetUsage', () => {
     const budget = 100

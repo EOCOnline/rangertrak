@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core'
 
-import { formatBytes, orphans } from '../../domain/attachments'
+import { formatBytes, orphans, removedOnly } from '../../domain/attachments'
 import type { AttachmentRef } from '../../domain/attachments'
 import { LogService } from './log.service'
 import { StoragePersistenceService } from './storage-persistence.service'
@@ -265,6 +265,25 @@ export class AttachmentStoreService {
     for (const sha of gone) this.forget(sha)
     this.bump()
     this.log.info(`Removed ${gone.length} attachments nothing refers to from this device.`, this.id)
+    return gone.length
+  }
+
+  /**
+   * D-60 item 5, "the bytes go, the reference stays": deletes the bytes only REMOVED references
+   * still name (nothing live wants them). Run after a person removes an attachment and after a
+   * merge brings a removal in. A fingerprint with no reference at all is sweepOrphans()'s.
+   * Logs the count only. Returns how many fingerprints went.
+   */
+  async releaseRemoved(entries: readonly Pick<AttachmentHolder, 'attachments'>[]): Promise<number> {
+    await this.ready
+    if (!this.db) return 0
+    const keys = (await this.tx<IDBValidKey[]>(ORIGINALS, 'readonly', s => s.getAllKeys())).map(String)
+    const gone = removedOnly(keys, entries)
+    if (!gone.length) return 0
+    await this.txMulti([ORIGINALS, THUMBS], s => { for (const sha of gone) s.delete(sha) })
+    for (const sha of gone) this.forget(sha)
+    this.bump()
+    this.log.info(`Deleted ${gone.length} removed attachments' bytes from this device.`, this.id)
     return gone.length
   }
 

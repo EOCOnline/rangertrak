@@ -120,6 +120,21 @@ describe('AttachmentStoreService', () => {
     expect(await service.sizes()).toEqual({});
   });
 
+  it('releaseRemoved() deletes bytes only removed references name, never ones a live reference still names', async () => {
+    const removedOnlyRef = await service.add(wav('a.wav'), 'K7ABC');
+    const stillLive = await service.add(new File([new Uint8Array([9, 9, 9])], 'b.wav', { type: 'audio/wav' }), 'K7ABC');
+    const mark = { at: '2026-10-16T12:00:00Z', by: 'K7ABC' };
+    const entries = [
+      { attachments: [{ ...removedOnlyRef, removed: mark }, { ...stillLive, removed: mark }] },
+      { attachments: [stillLive] },
+    ];
+
+    expect(await service.releaseRemoved(entries)).toBe(1);
+
+    expect(await service.has(removedOnlyRef.sha256)).toBeFalse();
+    expect(await service.has(stillLive.sha256)).toBeTrue();
+  });
+
   it('deletionNotice() says how many attachments would go, and nothing when none would', async () => {
     const ref = await service.add(wav(), 'K7ABC');
     expect(await service.deletionNotice([{ attachments: [ref] }])).toBe('');

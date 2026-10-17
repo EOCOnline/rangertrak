@@ -28,6 +28,8 @@ import { PageComponent } from '../shared/page/page.component'
 // Direct path, not the shared/services barrel - see the note in rangers.component.ts.
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
+import { AttachmentIntakeService } from '../shared/attachments/attachment-intake.service'
+import { formatBytes } from '../domain/attachments'
 import { TimePickerComponent } from '../shared/time-picker/time-picker.component'
 import { DDToDDM } from '../domain/coordinate'
 import {
@@ -179,7 +181,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // Location/TimePicker's own TAB_SLOT_COUNT already relies on for a variable field count).
   sourceTabIndex = this.statusTabIndex + 1
   notesTabIndex = this.sourceTabIndex + 1
-  generates213TabIndex = this.notesTabIndex + 1
+  // E-194: the Attach button is one stop, right after Notes. The touch-only Take photo / video
+  // button beside it is left in natural order (a touch device has no tab key to plan for).
+  attachTabIndex = this.notesTabIndex + 1
+  generates213TabIndex = this.attachTabIndex + 1
   replyRequested213TabIndex = this.generates213TabIndex + 1
   // E-103: the per-mission definable recipients213 checkbox list is a runtime-variable-length
   // group, not a fixed set of fields - it gets ONE reserved tab stop for the whole group, the
@@ -381,6 +386,13 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   private attachmentStore = inject(AttachmentStoreService)
+  private attachmentIntake = inject(AttachmentIntakeService)
+
+  // E-194 / D-60: files picked for the entry being typed. Held as plain Files and hashed and
+  // stored when the entry is saved, not on pick. Cleared by a reset.
+  readonly pendingFiles = signal<File[]>([])
+  readonly attachReason = this.attachmentStore.unavailableReason()
+  readonly formatBytes = formatBytes
 
   constructor(
     private rangerService: RangerService,
@@ -1001,6 +1013,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.operatorModel().operator.trim()) {
       this.operatorEditing.set(false)
     }
+    this.pendingFiles.set([])
     this.callsignCtrl.reset('')
     this.toCtrl.reset('')
     this.entryControlsForm.reset({
@@ -1159,6 +1172,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let newReport = this.radioLogService.addRadioLogEntry(formDataJSON)
     this.log.info(`Report id # ${newReport.id} has been added`, this.id)
+    // E-194: the entry is saved first, then its files are stored and attached, so a slow or failed
+    // file can never cost the log entry. Not awaited: the form resets at once, like the 213 print.
+    const picked = this.pendingFiles()
+    if (picked.length && newReport.uid) void this.attachPicked(newReport.uid, picked)
 
     if (this.submitInfo) {
       // The KEPT confirmation: a fading line beside the Submit button, right where the
@@ -1197,6 +1214,33 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.resetEntryForm()  // std reset just blanks values, doesn't initialize the various form fields...
+  }
+
+  // ── E-194 / D-60: attachments ──────────────────────────────────────────
+
+  /** A pick from either file input: ask about big files, then hold them until the entry is saved. */
+  async onAttachPicked(input: HTMLInputElement): Promise<void> {
+    const files = Array.from(input.files ?? [])
+    input.value = ''   // allow picking the same file again
+    if (!files.length) return
+    const pendingBytes = this.pendingFiles().reduce((sum, f) => sum + f.size, 0)
+    const accepted = await this.attachmentIntake.vet(files, pendingBytes)
+    if (accepted.length) this.pendingFiles.update(list => [...list, ...accepted])
+  }
+
+  onRemovePending(index: number): void {
+    this.pendingFiles.update(list => list.filter((_, i) => i !== index))
+  }
+
+  private async attachPicked(uid: string, files: File[]): Promise<void> {
+    const { added, failed } = await this.attachmentIntake.attach(uid, files, false)
+    if (failed.length) {
+      alert(`The entry was saved, but ${failed.length === 1 ? 'this file' : 'these files'} could not be attached: `
+        + `${failed.join(', ')}.`)
+    }
+    if (this.submitInfo && added.length) {
+      this.submitInfo.innerText += ` - ${added.length} attachment${added.length === 1 ? '' : 's'} stored`
+    }
   }
 
   ngOnDestroy() {

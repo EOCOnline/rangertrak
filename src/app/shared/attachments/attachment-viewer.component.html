@@ -1,0 +1,118 @@
+<h2 mat-dialog-title>
+  Attachments
+  @if (entry(); as e) {
+  <span class="rt-attach-viewer__entry">entry # {{ e.id }}</span>
+  }
+</h2>
+
+<div mat-dialog-content class="rt-attach-viewer" tabindex="0" (keydown)="onKeydown($event)"
+  (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)" data-testid="attachment-viewer">
+
+  @if (refs().length === 0) {
+  <p>No attachments on this entry.</p>
+  } @else {
+
+  <div class="rt-attach-viewer__strip" role="tablist" aria-label="Attachments on this entry">
+    @for (ref of refs(); track ref.sha256; let i = $index) {
+    <button type="button" role="tab" class="rt-attach-viewer__thumb"
+      [class.rt-attach-viewer__thumb--selected]="i === index()"
+      [class.rt-attach-viewer__thumb--removed]="!!ref.removed" [attr.aria-selected]="i === index()"
+      [attr.aria-label]="ref.name + (ref.removed ? ' (removed)' : '')" [title]="ref.name" (click)="select(i)">
+      @if (!ref.removed && thumbs()[ref.sha256]) {
+      <img [src]="thumbs()[ref.sha256]" alt="" />
+      } @else {
+      <mat-icon aria-hidden="true">{{ ref.removed ? 'block' : iconFor(ref) }}</mat-icon>
+      }
+    </button>
+    }
+  </div>
+
+  @if (current(); as ref) {
+  <div class="rt-attach-viewer__stage" aria-live="polite">
+    @switch (state()) {
+    @case ('removed') {
+    <p class="rt-attach-viewer__note" data-testid="attachment-removed">
+      Removed {{ clock(ref.removed!.at) }} by {{ ref.removed!.by || '(operator not recorded)' }}
+    </p>
+    }
+    @case ('elsewhere') {
+    <p class="rt-attach-viewer__note" data-testid="attachment-elsewhere">
+      On another device. This entry names the file, but its bytes are not on this device.
+    </p>
+    }
+    @case ('error') {
+    <p class="rt-attach-viewer__note">This file could not be opened.</p>
+    }
+    @case ('ready') {
+    @switch (kind(ref)) {
+    @case ('image') { <img class="rt-attach-viewer__media" [src]="mediaUrl()" [alt]="ref.name" /> }
+    @case ('video') { <video class="rt-attach-viewer__media" [src]="mediaUrl()" controls playsinline></video> }
+    @case ('audio') { <audio class="rt-attach-viewer__audio" [src]="mediaUrl()" controls></audio> }
+    @default { <p class="rt-attach-viewer__note">No preview for this kind of file. Use Save.</p> }
+    }
+    }
+    @default {
+    <p class="rt-attach-viewer__note">Opening…</p>
+    }
+    }
+  </div>
+
+  <dl class="rt-attach-viewer__meta">
+    <dt>Name</dt>
+    <dd>{{ ref.name }}</dd>
+    <dt>Size, type</dt>
+    <dd>{{ sizeText(ref.size) }}, {{ ref.type }}</dd>
+    @if (ref.capturedAt) {
+    <dt>Captured</dt>
+    <dd>{{ when(ref.capturedAt) }}</dd>
+    }
+    <dt>Added</dt>
+    <dd>{{ when(ref.addedAt) }} by {{ ref.addedBy || '(operator not recorded)' }}</dd>
+    <dt>Fingerprint</dt>
+    <dd>
+      <code data-testid="attachment-fingerprint" [title]="ref.sha256">{{ shortFingerprint(ref.sha256) }}</code>
+      <button matButton type="button" (click)="onCopyFingerprint()" title="Copy the full SHA-256 fingerprint">
+        {{ copied() ? 'Copied' : 'Copy' }}
+      </button>
+    </dd>
+  </dl>
+  }
+  }
+
+  @if (message()) {
+  <p class="rt-attach-viewer__note" role="alert">{{ message() }}</p>
+  }
+</div>
+
+<div mat-dialog-actions class="rt-attach-viewer__actions">
+  <input #addInput type="file" accept="image/*,video/*,audio/*" multiple hidden data-testid="attachment-viewer-file"
+    (change)="onAdd(addInput)" />
+  <button matButton="outlined" type="button" [disabled]="busy()" (click)="addInput.click()"
+    title="Attach more files to this entry">
+    <mat-icon>add</mat-icon>
+    Add
+  </button>
+  @if (current(); as ref) {
+  @if (!ref.removed && state() === 'ready') {
+  <button matButton="outlined" type="button" (click)="onSave()" title="Download the original file">
+    <mat-icon>download</mat-icon>
+    Save
+  </button>
+  @if (canShare) {
+  <button matButton="outlined" type="button" (click)="onShare()" title="Share the original file">
+    <mat-icon>share</mat-icon>
+    Share
+  </button>
+  }
+  }
+  @if (!ref.removed) {
+  <button matButton="outlined" type="button" [disabled]="busy()" (click)="onRemove()" data-testid="attachment-remove"
+    title="Remove this file from the entry and delete it from this device">
+    <mat-icon>delete</mat-icon>
+    Remove
+  </button>
+  }
+  }
+  <span class="rt-attach-viewer__spacer"></span>
+  <button matButton type="button" mat-dialog-close>Close</button>
+</div>

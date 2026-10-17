@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs'
 
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 
 import { PageComponent } from '../shared/page/page.component'
@@ -20,6 +20,8 @@ import { formatStation } from '../domain/station-label'
 // there is on Entry.
 import { printIcs213 } from '../shared/export/ics213-print'
 import { PrintCopiesService } from '../shared/services/print-copies.service'
+import { AttachmentChipComponent } from '../shared/attachments/attachment-chip.component'
+import { AttachmentViewerService } from '../shared/attachments/attachment-viewer.service'
 import {
   RadioLogService, RadioLogEntryType, LogService, MissionService, MissionType
 } from '../shared/services'
@@ -53,13 +55,14 @@ import {
 @Component({
   selector: 'rangertrak-messages',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageComponent, MatFormFieldModule, MatInputModule, MatButtonModule, MatCardModule, MatCheckboxModule],
+  imports: [CommonModule, FormsModule, PageComponent, AttachmentChipComponent, MatFormFieldModule, MatInputModule, MatButtonModule, MatCardModule, MatCheckboxModule],
   templateUrl: './messages.component.html',
   styleUrls: ['./messages.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class MessagesComponent implements OnInit, OnDestroy {
   private id = 'Messages'
+  private attachmentViewer = inject(AttachmentViewerService)
   title = 'Messages — ICS-213s'
   pageDescr = 'ICS-213 general messages generated from radio log entries.'
 
@@ -159,6 +162,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
     this.editRecipients.set((report.recipients213 ?? []).join(', '))
     this.editReplyRequested.set(!!report.replyRequested213)
     this.editing.set(true)
+  }
+
+  /** E-194: opens the attachment viewer for this message's entry (its Add attaches more). */
+  onOpenAttachments(report: RadioLogEntryType): void {
+    void this.attachmentViewer.open(report.uid)
   }
 
   onCancelEdit(): void {

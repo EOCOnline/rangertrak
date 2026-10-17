@@ -56,6 +56,15 @@
                 }
                 <dt>Message</dt>
                 <dd class="messages__message-text">{{ m.message213 }}</dd>
+                <!-- E-194: the way to add files to an entry already saved (D-47) when it has none yet,
+                     so there is no chip to open. Opens the same viewer, whose Add does the work. -->
+                <dt>Attachments</dt>
+                <dd>
+                  <rangertrak-attachment-chip [entry]="m" />
+                  <button matButton type="button" data-testid="messages-attachments" (click)="onOpenAttachments(m)">
+                    {{ m.attachments?.length ? 'Open' : 'Add' }}
+                  </button>
+                </dd>
                 <dt>Operator</dt>
                 <dd>{{ m.operator || '(none recorded)' }}</dd>
               </dl>

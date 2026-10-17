@@ -19,6 +19,7 @@
     @if (!isPhone()) {
       <rangertrak-filter-chips [chips]="filterChips()" (clear)="onClearFilter($event)" (clearAll)="onClearAllFilters()" />
       <ag-grid-angular #reportsGrid rowAnimation style="width: 100%;" [style.height]="gridHeight()" (gridReady)="onGridReady($event)"
+        (click)="onGridClick($event)"
         [gridOptions]="gridOptions" [rowData]="radioLogEntries()" [columnDefs]="columnDefs"
         [tooltipShowDelay]="300">
         <!--
@@ -33,6 +34,15 @@
           [showToolPanel]="showToolPanel"
         -->
       </ag-grid-angular>
+      <!-- E-194: attachments for the one selected row (an entry with none has no chip to click). -->
+      <div class="radio-log__attach-bar">
+        <button matButton="outlined" type="button" data-testid="radiolog-attachments"
+          [disabled]="selectedRows() !== 1" (click)="onBtnAttachments()"
+          title="Open the attachments of the selected entry, or add some. Select exactly one row first.">
+          <mat-icon>attach_file</mat-icon>
+          Attachments for the selected entry
+        </button>
+      </div>
       <!-- ══ 5. ACTION BAR ══ Material-M3 pass, 2026-08-26. Was three separate rows below
            the grid - a selection/paging line, then a bare <br>, then an export line mixing a
            native button, a native <select> and a checkbox-in-a-label. One `.rt-action-bar`
@@ -261,6 +271,7 @@
                 <span class="radio-log-cards__origin"
                   title="Merged in from another device - not typed on this device">📦</span>
               }
+              <rangertrak-attachment-chip [entry]="report" />
               <span class="radio-log-cards__status" [style.background-color]="statusFill(report.status)"
                 [style.color]="statusInk(report.status)">{{ report.status }}</span>
             </header>
