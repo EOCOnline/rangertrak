@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core'
 
-import { formatBytes, formatFingerprint, orphans, removedOnly } from '../../domain/attachments'
+import { formatBytes, formatFingerprint, isGone, orphans, removedOnly } from '../../domain/attachments'
 import type { AttachmentRef } from '../../domain/attachments'
 import { LogService } from './log.service'
 import { StoragePersistenceService } from './storage-persistence.service'
@@ -300,7 +300,7 @@ export class AttachmentStoreService {
     entries: readonly Pick<AttachmentHolder, 'attachments'>[],
   ): Promise<{ stored: number, alreadyHere: number, unreferenced: number, mismatched: string[] }> {
     const refs = new Map<string, AttachmentRef>()
-    for (const e of entries) for (const r of e.attachments ?? []) if (!r.removed && !refs.has(r.sha256)) refs.set(r.sha256, r)
+    for (const e of entries) for (const r of e.attachments ?? []) if (!isGone(r) && !refs.has(r.sha256)) refs.set(r.sha256, r)
     let stored = 0
     let alreadyHere = 0
     let unreferenced = 0

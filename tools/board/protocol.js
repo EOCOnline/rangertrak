@@ -184,7 +184,7 @@ function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, upl
     for (const report of Array.isArray(mission.reports) ? mission.reports : []) {
       for (const a of report && Array.isArray(report.attachments) ? report.attachments : []) {
         const sha = a && typeof a.sha256 === 'string' ? a.sha256.toLowerCase() : '';
-        if (!SHA_RE.test(sha) || a.removed || found.has(sha)) continue;
+        if (!SHA_RE.test(sha) || a.removed || a.replaced || found.has(sha)) continue;
         found.set(sha, { size: Number(a.size), type: a.type });
       }
     }

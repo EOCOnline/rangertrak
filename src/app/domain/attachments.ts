@@ -24,6 +24,18 @@ export type AttachmentRef = {
   addedBy: string
   /** Set when removed: the bytes are gone but the trace stays (D-60 item 5). Sticky in merges. */
   removed?: { at: string, by: string }
+  /**
+   * Set when this file was made smaller (D-60 item 2, revised 2026-10-17). The reference names the
+   * smaller copy's own bytes; `fromSha256` is the original's fingerprint, taken first, so a
+   * camera-roll copy can still be matched to it. `where` says who made it: the sender at Attach,
+   * or a receiver from the viewer. Additive and optional: no migration.
+   */
+  compressed?: { fromSha256: string, fromSize: number, fromType: string, at: string, by: string, where: 'sender' | 'receiver' }
+  /**
+   * Set on an ORIGINAL a receiver replaced with a smaller copy (typed REPLACE). It counts like
+   * `removed` (not live, bytes released) and is sticky in merges. `bySha256` is the copy's fingerprint.
+   */
+  replaced?: { at: string, by: string, bySha256: string }
 }
 
 export type BudgetLevel = 'ok' | 'warn80' | 'over'
@@ -49,8 +61,9 @@ function byAddedThenSha(a: AttachmentRef, b: AttachmentRef): number {
 }
 
 /**
- * Union by `sha256`. Never drops a reference. `removed` is sticky: removed on either side means
- * removed, and the earlier mark is kept. Where both sides name the same file, the one added
+ * Union by `sha256`. Never drops a reference. `removed` and `replaced` are sticky: marked on either
+ * side means marked, and the earlier mark is kept. A smaller copy and its original are different
+ * fingerprints, so they are two references and the union keeps both. Where both sides name the same file, the one added
  * first supplies `name`/`addedAt`/`addedBy` (a tie keeps `a`'s). Stable order: `addedAt`, then
  * `sha256`. Inputs are not mutated.
  */
@@ -65,14 +78,43 @@ export function mergeAttachmentRefs(
     const base = earlier(ref.addedAt, seen.addedAt) ? { ...ref } : seen
     const marks = [seen.removed, ref.removed].filter((m): m is NonNullable<AttachmentRef['removed']> => !!m)
     if (marks.length) base.removed = { ...marks.reduce((x, y) => (earlier(y.at, x.at) ? y : x)) }
+    const swaps = [seen.replaced, ref.replaced].filter((m): m is NonNullable<AttachmentRef['replaced']> => !!m)
+    if (swaps.length) base.replaced = { ...swaps.reduce((x, y) => (earlier(y.at, x.at) ? y : x)) }
+    // First seen wins, as for `name`; a side that has no note does not erase the other's.
+    const note = base.compressed ?? seen.compressed ?? ref.compressed
+    if (note) base.compressed = { ...note }
     bySha.set(ref.sha256, base)
   }
   return [...bySha.values()].sort(byAddedThenSha)
 }
 
-/** The references not marked removed. */
+/** Removed, or replaced by a smaller copy: the reference stays as a trace, the bytes do not. */
+export function isGone(ref: Pick<AttachmentRef, 'removed' | 'replaced'>): boolean {
+  return !!ref.removed || !!ref.replaced
+}
+
+/** The references not marked removed or replaced. */
 export function liveRefs(entry: HasAttachments): AttachmentRef[] {
-  return (entry.attachments ?? []).filter(r => !r.removed)
+  return (entry.attachments ?? []).filter(r => !isGone(r))
+}
+
+/** Whether this reference is a smaller copy of something (made by the sender or a receiver). */
+export function isSmallerCopy(ref: Pick<AttachmentRef, 'compressed'>): boolean {
+  return !!ref.compressed
+}
+
+/**
+ * The line that says which kind a file is, wherever it is shown (viewer, hover preview, prints,
+ * Board). '' for an original. The sender's names whose phone made it; the receiver's says the
+ * original was kept (or, when replaced, that it was not).
+ */
+export function smallerCopyLabel(ref: Pick<AttachmentRef, 'compressed'>, originalKept = true): string {
+  const c = ref.compressed
+  if (!c) return ''
+  const from = formatBytes(c.fromSize)
+  const who = c.by.trim()
+  if (c.where === 'sender') return who ? `Smaller copy, made on ${who}'s phone from ${from}` : `Smaller copy, made on the sender's phone from ${from}`
+  return `Smaller copy made by ${who || 'the operator'} from ${from}${originalKept ? '; original kept' : '; original replaced'}`
 }
 
 /** Every fingerprint any entry names, live and removed: the set whose bytes must be kept. */
@@ -130,12 +172,13 @@ export function formatFingerprint(sha: string): string {
 }
 
 /** One live attachment as a printout lists it: its name, the short fingerprint, and whether a thumbnail applies. */
-export type PrintAttachment = { name: string, fingerprint: string, sha256: string, isImage: boolean }
+export type PrintAttachment = { name: string, fingerprint: string, sha256: string, isImage: boolean, smallerCopy?: string }
 
 /** What a print (ICS-213, ICS-309, summary) lists for an entry: each live attachment, in the entry's stable order. */
 export function printAttachments(entry: HasAttachments): PrintAttachment[] {
   return liveRefs(entry).map(r => ({
     name: r.name, fingerprint: formatFingerprint(r.sha256), sha256: r.sha256, isImage: r.type.startsWith('image/'),
+    ...(r.compressed ? { smallerCopy: smallerCopyLabel(r) } : {}),
   }))
 }
 

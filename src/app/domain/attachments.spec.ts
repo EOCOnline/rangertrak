@@ -1,4 +1,7 @@
-import { budgetUsage, formatFingerprint, liveRefs, mergeAttachmentRefs, orphans, referencedFingerprints, removedOnly } from './attachments'
+import {
+  budgetUsage, formatFingerprint, isGone, isSmallerCopy, liveRefs, mergeAttachmentRefs, orphans, printAttachments,
+  referencedFingerprints, removedOnly, smallerCopyLabel,
+} from './attachments'
 import type { AttachmentRef } from './attachments'
 
 /** ADR D-60 / E-194: the pure rules for attachment references. */
@@ -117,6 +120,60 @@ describe('attachments (D-60)', () => {
     it('a zero budget with bytes is over, and empty is ok', () => {
       expect(budgetUsage([{ attachments: [ref('a')] }], { [sha('a')]: 1 }, 0).level).toBe('over')
       expect(budgetUsage([], {}, 0).level).toBe('ok')
+    })
+  })
+
+  describe('smaller copies (D-60 item 2, revised)', () => {
+    const note = (where: 'sender' | 'receiver', by = 'K7ABC') =>
+      ({ fromSha256: sha('o'), fromSize: 4_404_019, fromType: 'image/png', at: '2026-10-17T10:00:00Z', by, where })
+    const replacedAt = (at: string) => ({ at, by: 'N7XYZ', bySha256: sha('s') })
+
+    it('isSmallerCopy follows the note', () => {
+      expect(isSmallerCopy(ref('s'))).toBeFalse()
+      expect(isSmallerCopy(ref('s', { compressed: note('sender') }))).toBeTrue()
+    })
+
+    it('labels the sender's and the receiver's copies', () => {
+      expect(smallerCopyLabel(ref('s'))).toBe('')
+      expect(smallerCopyLabel(ref('s', { compressed: note('sender') }))).toBe("Smaller copy, made on K7ABC's phone from 4.2 MB")
+      expect(smallerCopyLabel(ref('s', { compressed: note('receiver', 'N7XYZ') })))
+        .toBe('Smaller copy made by N7XYZ from 4.2 MB; original kept')
+      expect(smallerCopyLabel(ref('s', { compressed: note('receiver', 'N7XYZ') }), false))
+        .toBe('Smaller copy made by N7XYZ from 4.2 MB; original replaced')
+      expect(smallerCopyLabel(ref('s', { compressed: note('sender', ' ') }))).toContain("the sender's phone")
+    })
+
+    it('an original and its copy are two references, and the union keeps both', () => {
+      const original = ref('o')
+      const copy = ref('s', { compressed: note('receiver') })
+      expect(mergeAttachmentRefs([original], [copy]).map(r => r.sha256)).toEqual([sha('o'), sha('s')])
+    })
+
+    it('keeps the compressed note, first seen wins, and a side without one does not erase it', () => {
+      const early = ref('s', { addedAt: '2026-10-17T09:00:00Z', compressed: note('sender', 'K7ABC') })
+      const late = ref('s', { addedAt: '2026-10-17T11:00:00Z', compressed: note('receiver', 'N7XYZ') })
+      expect(mergeAttachmentRefs([late], [early])[0].compressed?.by).toBe('K7ABC')
+      const bare = ref('s', { addedAt: '2026-10-17T08:00:00Z' })
+      expect(mergeAttachmentRefs([bare], [late])[0].compressed?.where).toBe('receiver')
+    })
+
+    it('replaced is sticky, keeps the earlier mark, and counts like removed', () => {
+      const merged = mergeAttachmentRefs(
+        [ref('o', { replaced: replacedAt('2026-10-17T12:00:00Z') })],
+        [ref('o'), ref('o', { replaced: replacedAt('2026-10-17T11:00:00Z') })],
+      )
+      expect(merged[0].replaced?.at).toBe('2026-10-17T11:00:00Z')
+      expect(isGone(merged[0])).toBeTrue()
+      const entries = [{ attachments: [ref('o', { replaced: replacedAt('2026-10-17T11:00:00Z') }), ref('s')] }]
+      expect(liveRefs(entries[0]).map(r => r.sha256)).toEqual([sha('s')])
+      expect(removedOnly([sha('o'), sha('s')], entries)).toEqual([sha('o')])
+      expect(budgetUsage(entries, { [sha('o')]: 90, [sha('s')]: 10 }, 100).usedBytes).toBe(10)
+    })
+
+    it('a print line carries the label for a smaller copy only', () => {
+      const [a, b] = printAttachments({ attachments: [ref('a'), ref('s', { compressed: note('sender') })] })
+      expect(a.smallerCopy).toBeUndefined()
+      expect(b.smallerCopy).toContain('Smaller copy')
     })
   })
 
