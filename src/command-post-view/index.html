@@ -15,8 +15,11 @@
   CDN (the whole point is working on a LAN with no guaranteed upstream Internet - see
   artifact-capabilities-style reasoning in the scoping doc), no framework.
 
-  Read-only. No write-back, no auth beyond the WiFi/hotspot's own password (see
-  command-post-publish.service.ts's own header comment on why no join code exists yet in v1).
+  Read-only. No write-back. ADR D-61 (2026-10-16): the scribe may set a viewers' password; this
+  page keeps it in sessionStorage only (taken from the #code= part of the QR link, which the
+  browser never sends to the server) and sends it as X-Board-Password. D-60: a report may carry
+  attachments; a thumbnail click asks the scribe's device for the full-size file, and the page
+  re-checks its SHA-256 itself before calling it verified.
 -->
 <style>
   :root {
@@ -119,15 +122,52 @@
      reflow columns - simplest thing that can't silently widen the page the way this app's own
      Entry page overflow bug did. */
   .table-scroll { overflow-x: auto; }
+
+  .meta--small { font-size: 0.8rem; }
+  .notice { margin: 0 0 0.75rem; padding: 0.6rem 0.8rem; border-inline-start: 4px solid var(--accent); background: var(--surface); }
+  .notice--warn { border-inline-start-color: var(--warn); }
+  #pwForm { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  #pwForm input { padding: 0.5rem 0.75rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); font-size: 1rem; }
+  #pwForm button { padding: 0.5rem 0.9rem; border: 1px solid var(--accent); border-radius: 6px; background: var(--surface); color: var(--accent); font-size: 0.95rem; cursor: pointer; }
+
+  .files { display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; min-width: 5rem; }
+  .file-btn {
+    display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 3.2rem; min-height: 3.2rem; padding: 0.15rem; overflow: hidden;
+    border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink);
+    font-size: 0.65rem; cursor: pointer; word-break: break-all;
+  }
+  .file-btn img { width: 100%; height: 3rem; object-fit: cover; display: block; }
+  .file-btn .icon { font-size: 1.2rem; }
+  .more-btn { border: none; background: none; color: var(--accent); font: inherit; font-size: 0.8rem; cursor: pointer; text-decoration: underline; }
+
+  #overlay { position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(0, 0, 0, 0.7); }
+  #overlay[hidden] { display: none; }
+  .dialog { max-width: min(95vw, 60rem); max-height: 95vh; overflow: auto; padding: 1rem; border-radius: 8px; background: var(--surface); color: var(--ink); }
+  .dialog img, .dialog video { max-width: 100%; max-height: 70vh; display: block; margin: 0.5rem 0; }
+  .dialog audio { width: 100%; margin: 0.5rem 0; }
+  .dialog h2 { font-size: 1rem; margin: 0 0 0.5rem; word-break: break-all; }
+  .dialog .actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: 0.5rem; }
+  .verified { color: light-dark(#1a6b1a, #6fd97f); font-weight: 600; }
+  .mismatch { color: var(--warn); font-weight: 600; }
 </style>
 </head>
 <body>
 
 <header>
   <h1>RangerTrak Board</h1>
-  <span id="missionMeta" class="meta">Waiting for the mission to publish…</span>
+  <span id="missionMeta" class="meta">Waiting for the scribe…</span>
   <span id="statusBadge" class="badge badge--none">no data yet</span>
 </header>
+<p id="claimLine" class="meta" hidden></p>
+
+<form id="pwForm" class="notice" hidden>
+  <label for="pwInput">This Board has a password.</label>
+  <input id="pwInput" type="password" autocomplete="off" autocapitalize="off" spellcheck="false">
+  <button type="submit">Open</button>
+  <span id="pwNote" role="status"></span>
+</form>
+<p id="notice" class="notice notice--warn" role="status" hidden></p>
 
 <div class="controls">
   <input id="filterInput" type="search" placeholder="Filter by callsign, status, or message…" autocomplete="off">
@@ -144,12 +184,22 @@
         <th>Status</th>
         <th>Source</th>
         <th>Message</th>
+        <th>Files</th>
       </tr>
     </thead>
     <tbody id="rows"></tbody>
   </table>
 </div>
 <p id="emptyState" class="empty" hidden>No reports match.</p>
+
+<div id="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="ovTitle">
+  <div class="dialog">
+    <h2 id="ovTitle"></h2>
+    <p id="ovStatus" role="status"></p>
+    <div id="ovBody"></div>
+    <div class="actions"><span id="ovDownload"></span><button id="ovClose" type="button">Close</button></div>
+  </div>
+</div>
 
 <script>
 (function () {
@@ -160,16 +210,66 @@
   // both correct and the only thing that could ever work (see the file header on why this
   // page can't be the real Angular app, and therefore can't share its origin either).
   var POLL_MS = 15000;
+  var FETCH_POLL_MS = 2000;
+  var FETCH_GIVE_UP_MS = 2 * 60 * 1000;
   var newestFirst = true;
   var filterText = '';
   var latest = null;
+  var password = '';
+  var expanded = {}; // report id -> true when "+N more" was pressed
 
   var rowsEl = document.getElementById('rows');
   var emptyEl = document.getElementById('emptyState');
   var metaEl = document.getElementById('missionMeta');
   var badgeEl = document.getElementById('statusBadge');
+  var claimEl = document.getElementById('claimLine');
+  var noticeEl = document.getElementById('notice');
+  var pwForm = document.getElementById('pwForm');
+  var pwInput = document.getElementById('pwInput');
+  var pwNote = document.getElementById('pwNote');
   var filterEl = document.getElementById('filterInput');
   var sortBtn = document.getElementById('sortToggle');
+
+  // ---- the viewers' password (D-61) ----
+  // From the QR link's #code=, kept for this tab only, and the hash removed so it is not left
+  // in the address bar, the history or a shared screenshot.
+  try {
+    var m = /(?:^#|&)code=([^&]*)/.exec(location.hash);
+    if (m) {
+      var given = decodeURIComponent(m[1]);
+      try { sessionStorage.setItem('boardPassword', given); } catch (e) { password = given; }
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+  } catch (e) { /* a malformed hash: carry on without one */ }
+  try { password = sessionStorage.getItem('boardPassword') || password; } catch (e) { /* storage refused: the prompt will ask */ }
+
+  function api(path, opts) {
+    opts = opts || {};
+    opts.cache = 'no-store';
+    opts.headers = opts.headers || {};
+    if (password) { opts.headers['X-Board-Password'] = password; }
+    return fetch(path, opts);
+  }
+
+  pwForm.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    password = pwInput.value;
+    try { sessionStorage.setItem('boardPassword', password); } catch (e) { /* kept in memory only */ }
+    pwInput.value = '';
+    pwNote.textContent = '';
+    poll();
+  });
+
+  function askPassword(note) {
+    pwForm.hidden = false;
+    pwNote.textContent = note || '';
+    if (document.activeElement !== pwInput) { pwInput.focus(); }
+  }
+
+  function showNotice(text) {
+    noticeEl.hidden = !text;
+    noticeEl.textContent = text || '';
+  }
 
   filterEl.addEventListener('input', function () {
     filterText = filterEl.value.trim().toLowerCase();
@@ -189,6 +289,11 @@
     return d.innerHTML;
   }
 
+  // For a value inside a double-quoted attribute: esc() leaves quotes alone.
+  function escAttr(s) {
+    return esc(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   function fmtTime(iso) {
     try {
       // 24-hour clock throughout RangerTrak's own UI - matched here for consistency,
@@ -199,11 +304,86 @@
     } catch (e) { return iso; }
   }
 
+  function fmtClock(iso) {
+    try {
+      return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    } catch (e) { return iso; }
+  }
+
+  // "Fernhollow Search, op period 2: published by K7ABC (Chrome on Windows), 14:02"
+  function claimText(board) {
+    var by = board.by || {};
+    var text = (by.mission || '(unnamed mission)') + ', op period ' + (by.opPeriod || '?')
+      + ': published by ' + (by.scribe || '(unnamed)') + (by.agent ? ' (' + by.agent + ')' : '')
+      + (board.at ? ', ' + fmtClock(board.at) : '');
+    if (board.previous && board.previous.by) {
+      text += ' (took over from ' + (board.previous.by.scribe || 'another device') + ')';
+    }
+    return text;
+  }
+
+  function renderClaim(board) {
+    if (!board) { claimEl.hidden = true; return; }
+    claimEl.hidden = false;
+    claimEl.innerHTML = esc(claimText(board)) + ' <span class="meta--small">· '
+      + (board.open ? 'Open to this network' : 'Password required') + '</span>';
+  }
+
+  // ---- attachments in a row (D-60) ----
+  var THUMB_RE = /^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
+  var SHA_RE = /^[0-9a-f]{64}$/;
+
+  function iconFor(type) {
+    if (/^audio\//.test(type)) { return '🔊'; }
+    if (/^video\//.test(type)) { return '🎬'; }
+    return '📄';
+  }
+
+  function fileButton(a) {
+    var label = esc(a.name || 'file');
+    var inner = typeof a.thumb === 'string' && THUMB_RE.test(a.thumb)
+      ? '<img src="' + a.thumb + '" alt="' + escAttr(a.name || 'attachment') + '">'
+      : '<span class="icon" aria-hidden="true">' + iconFor(a.type || '') + '</span><span>' + label + '</span>';
+    return '<button type="button" class="file-btn" data-sha="' + escAttr(a.sha256) + '" title="' + escAttr(a.name || '') + '">' + inner + '</button>';
+  }
+
+  function filesCell(r) {
+    if (Array.isArray(r.attachments)) {
+      var valid = r.attachments.filter(function (a) { return a && SHA_RE.test(a.sha256 || ''); });
+      var shown = expanded[r.id] ? valid : valid.slice(0, 4);
+      var more = valid.length - shown.length;
+      return '<div class="files">' + shown.map(fileButton).join('')
+        + (more > 0 ? '<button type="button" class="more-btn" data-more="' + escAttr(r.id) + '">+' + more + ' more</button>' : '')
+        + '</div>';
+    }
+    if (r.attachmentCount > 0) { return '📎 ' + esc(r.attachmentCount); }
+    return '';
+  }
+
+  function findAttachment(sha) {
+    var reports = (latest && latest.reports) || [];
+    for (var i = 0; i < reports.length; i++) {
+      var list = reports[i].attachments || [];
+      for (var j = 0; j < list.length; j++) { if (list[j].sha256 === sha) { return list[j]; } }
+    }
+    return null;
+  }
+
+  rowsEl.addEventListener('click', function (ev) {
+    var t = ev.target;
+    var btn = t && t.closest ? t.closest('button') : null;
+    if (!btn) { return; }
+    if (btn.hasAttribute('data-more')) { expanded[btn.getAttribute('data-more')] = true; render(); return; }
+    var sha = btn.getAttribute('data-sha');
+    var a = sha && findAttachment(sha);
+    if (a) { openOverlay(a); }
+  });
+
   function render() {
     if (!latest) {
       rowsEl.innerHTML = '';
       emptyEl.hidden = false;
-      emptyEl.textContent = 'No mission has published to this server yet.';
+      emptyEl.textContent = 'Waiting for the scribe…';
       return;
     }
 
@@ -240,6 +420,7 @@
         + '<td>' + (r.status ? '<span class="status-pill">' + esc(r.status) + '</span>' : '') + '</td>'
         + '<td>' + esc(r.source) + '</td>'
         + '<td>' + esc(r.notes) + '</td>'
+        + '<td>' + filesCell(r) + '</td>'
         + '</tr>';
     }).join('');
   }
@@ -256,20 +437,37 @@
   }
 
   function poll() {
-    fetch('/api/mission', { cache: 'no-store' })
+    api('/api/mission')
       .then(function (res) {
-        if (res.status === 404) {
+        if (res.status === 401) {
           latest = null;
-          setBadge('none', 'no data yet');
+          renderClaim(null);
+          setBadge('none', 'password needed');
+          askPassword(password ? 'That password did not work.' : '');
+          showNotice('');
           render();
           return;
         }
+        if (res.status === 429) {
+          setBadge('none', 'wait');
+          askPassword('');
+          showNotice('Too many wrong passwords. Wait a minute.');
+          return;
+        }
         if (!res.ok) { throw new Error('HTTP ' + res.status); }
-        return res.json();
+        return res.json().then(function (data) { pwForm.hidden = true; showNotice(''); return data; });
       })
       .then(function (data) {
         if (!data) { return; }
+        if (data.waiting) {
+          latest = null;
+          renderClaim(null);
+          setBadge('none', 'waiting');
+          render();
+          return;
+        }
         latest = data;
+        renderClaim(data.board);
         var ageMs = Date.now() - new Date(data.publishedAt).getTime();
         setBadge(ageMs < 60000 ? 'live' : 'stale',
           ageMs < 60000 ? 'live' : ('last update ' + Math.round(ageMs / 60000) + 'm ago'));
@@ -279,6 +477,103 @@
         setBadge('none', 'server unreachable');
         console.warn('Command Post view: could not reach /api/mission -', e);
       });
+  }
+
+  // ---- the full-size file (D-60): ask the scribe, wait, check the fingerprint, then show ----
+  var ov = {
+    root: document.getElementById('overlay'), title: document.getElementById('ovTitle'),
+    status: document.getElementById('ovStatus'), body: document.getElementById('ovBody'),
+    download: document.getElementById('ovDownload'), close: document.getElementById('ovClose')
+  };
+  var ovToken = 0; // a new open (or a close) cancels whatever the last one was waiting on
+  var ovUrl = '';
+
+  function closeOverlay() {
+    ovToken++;
+    ov.root.hidden = true;
+    ov.body.innerHTML = '';
+    ov.download.innerHTML = '';
+    if (ovUrl) { URL.revokeObjectURL(ovUrl); ovUrl = ''; }
+  }
+  ov.close.addEventListener('click', closeOverlay);
+  ov.root.addEventListener('click', function (ev) { if (ev.target === ov.root) { closeOverlay(); } });
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && !ov.root.hidden) { closeOverlay(); } });
+
+  function hex(buffer) {
+    return Array.prototype.map.call(new Uint8Array(buffer), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+  }
+
+  function openOverlay(att) {
+    closeOverlay();
+    var token = ovToken;
+    var started = Date.now();
+    ov.root.hidden = false;
+    ov.title.textContent = att.name || 'Attachment';
+    ov.status.className = '';
+    ov.status.textContent = 'Fetching from the scribe…';
+    ov.close.focus();
+
+    function fail(text) { if (token === ovToken) { ov.status.textContent = text; } }
+
+    function fetchOnce() {
+      if (token !== ovToken) { return; }
+      api('/api/attachments/' + att.sha256).then(function (res) {
+        if (token !== ovToken) { return; }
+        if (res.status === 200) {
+          var type = res.headers.get('Content-Type') || att.type || 'application/octet-stream';
+          return res.arrayBuffer().then(function (bytes) { show(bytes, type); });
+        }
+        if (res.status === 202) { again(); return; }
+        if (res.status === 401 || res.status === 429) { fail('The Board needs its password again. Close this and try once more.'); return; }
+        fail('The scribe’s device no longer has this file.');
+      }).catch(function () { again(); });
+    }
+
+    function again() {
+      if (Date.now() - started > FETCH_GIVE_UP_MS) {
+        fail('The scribe’s device did not send it. It may be offline, or may not hold this file. Try again later.');
+        return;
+      }
+      setTimeout(fetchOnce, FETCH_POLL_MS);
+    }
+
+    function show(bytes, type) {
+      if (token !== ovToken) { return; }
+      // Never trust the scribe's device or the network to have delivered the right file: hash it here.
+      var check = window.crypto && crypto.subtle
+        ? crypto.subtle.digest('SHA-256', bytes).then(function (d) { return hex(d) === att.sha256; })
+        : Promise.resolve(null);
+      check.then(function (ok) {
+        if (token !== ovToken) { return; }
+        if (ok === true) {
+          ov.status.className = 'verified';
+          ov.status.textContent = '✓ Verified';
+        } else {
+          ov.status.className = 'mismatch';
+          ov.status.textContent = ok === false
+            ? '⚠ Doesn’t match the scribe’s fingerprint: don’t rely on this copy'
+            : '⚠ This browser can’t check the fingerprint here: don’t rely on this copy';
+        }
+        ovUrl = URL.createObjectURL(new Blob([bytes], { type: type }));
+        var el = null;
+        if (/^image\//.test(type)) { el = document.createElement('img'); el.alt = att.name || ''; }
+        else if (/^video\//.test(type)) { el = document.createElement('video'); el.controls = true; }
+        else if (/^audio\//.test(type)) { el = document.createElement('audio'); el.controls = true; }
+        if (el) { el.src = ovUrl; ov.body.appendChild(el); }
+        var a = document.createElement('a');
+        a.href = ovUrl;
+        a.download = att.name || 'attachment';
+        a.textContent = 'Download';
+        ov.download.appendChild(a);
+      });
+    }
+
+    api('/api/request/' + att.sha256, { method: 'POST' }).then(function (res) {
+      if (token !== ovToken) { return; }
+      if (res.status === 200 || res.status === 202) { fetchOnce(); return; }
+      if (res.status === 404) { fail('That file is no longer on the Board.'); return; }
+      fail('The Board could not ask for that file (HTTP ' + res.status + ').');
+    }).catch(function () { fail('The Board could not be reached.'); });
   }
 
   poll();
