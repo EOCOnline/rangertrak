@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.54-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.53-alpha...v0.99.54-alpha) (2026-10-17)
+
+
+### Features
+
+* **attachments:** E-194 / D-60 domain: refs, merge by fingerprint, orphans, budget ([4a78af9](https://github.com/SteadyEOC/RangerTrak/commit/4a78af9da309aaf146f8e50617deacb966450fa8))
+* **attachments:** E-194 / D-60 entry form, 📎 chip and one lazy viewer ([dca6875](https://github.com/SteadyEOC/RangerTrak/commit/dca6875d7f5d821de7c4be25b510b38d159e923a))
+* **attachments:** E-194 / D-60 per-mission attachment budget ([074907b](https://github.com/SteadyEOC/RangerTrak/commit/074907b4a6a703852694f5e867e1a95be3f1263b))
+* **attachments:** E-194 / D-60 prints and CSV ([b892ee8](https://github.com/SteadyEOC/RangerTrak/commit/b892ee8c346f757f0eca95de683f68bd25d48732))
+* **attachments:** E-194 / D-60 store: IndexedDB by SHA-256, encryption in Data safety, orphan sweep ([ad05f2e](https://github.com/SteadyEOC/RangerTrak/commit/ad05f2ef7607b9af97883d5844a621172089eaae))
+* **attachments:** E-194 / D-60 travel: backup companion zip and hand-over attachments folder ([685b86e](https://github.com/SteadyEOC/RangerTrak/commit/685b86e52ea01a8167cf6233ae59a9d315a9e9e9))
+* **attachments:** E-194 hover a 📎 chip to preview its images ([ba273e1](https://github.com/SteadyEOC/RangerTrak/commit/ba273e1c155bae0d6b4193e6e1b414c094faeebf))
+
 ### [0.99.53-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.52-alpha...v0.99.53-alpha) (2026-10-16)
 
 ### [0.99.52-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.51-alpha...v0.99.52-alpha) (2026-10-16)
