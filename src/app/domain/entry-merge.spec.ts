@@ -1,4 +1,5 @@
 import type { RadioLogEntryType } from '../shared/services/radio-log-entry.interface';
+import type { AttachmentRef } from './attachments';
 import { mergeEntries } from './entry-merge';
 
 /** ADR D-59: the seven cases the E-188 brief requires, plus the validation moved here. */
@@ -165,6 +166,49 @@ describe('entry-merge (D-59)', () => {
       expect(r.rejected).toBe(3);
       expect(r.rejectedNotes.map(n => n.uid)).toEqual(['bad', 'bad2', 'bad3']);
       expect(b.entries.map(e => e.uid)).toEqual(['good']);
+    });
+  });
+
+  describe('attachments (D-60)', () => {
+    const att = (c: string, over: Partial<AttachmentRef> = {}): AttachmentRef => ({
+      sha256: c.repeat(64), name: c + '.jpg', type: 'image/jpeg', size: 10,
+      addedAt: '2026-10-16T10:00:00.000Z', addedBy: 'K7AAA', ...over,
+    });
+
+    it('an older revisedAt side still contributes its attachments', () => {
+      const b = new Device([entry({ uid: 'u1', revisedAt: new Date('2026-10-15T12:00:00Z'), attachments: [att('a')] })], 1);
+      const r = b.receive(viaFile([entry({ uid: 'u1', notes: 'older', revisedAt: new Date('2026-10-15T11:00:00Z'), attachments: [att('b')] })]));
+      expect(b.entries[0].notes).toBe('n');
+      expect(b.entries[0].attachments!.map(a => a.sha256[0])).toEqual(['a', 'b']);
+      expect(r.updated).toBe(1);
+    });
+
+    it('a later revisedAt side wins its fields but keeps this device attachments', () => {
+      const b = new Device([entry({ uid: 'u1', attachments: [att('a')] })], 1);
+      b.receive(viaFile([entry({ uid: 'u1', notes: 'later', revisedAt: new Date('2026-10-15T12:00:00Z') })]));
+      expect(b.entries[0].notes).toBe('later');
+      expect(b.entries[0].attachments!.map(a => a.sha256[0])).toEqual(['a']);
+    });
+
+    it('same attachments both sides stays unchanged, and merging twice adds nothing', () => {
+      const b = new Device([entry({ uid: 'u1', attachments: [att('a')] })], 1);
+      const file = viaFile([entry({ uid: 'u1', attachments: [att('a'), att('b')] })]);
+      expect(b.receive(file).updated).toBe(1);
+      expect(b.receive(file)).toEqual(jasmine.objectContaining({ updated: 0, unchanged: 1 }));
+    });
+
+    it('a removal on either side sticks', () => {
+      const b = new Device([entry({ uid: 'u1', attachments: [att('a')] })], 1);
+      b.receive(viaFile([entry({ uid: 'u1', attachments: [att('a', { removed: { at: '2026-10-16T11:00:00Z', by: 'K7BBB' } })] })]));
+      expect(b.entries[0].attachments![0].removed?.by).toBe('K7BBB');
+      b.receive(viaFile([entry({ uid: 'u1', attachments: [att('a')] })]));
+      expect(b.entries[0].attachments![0].removed?.by).toBe('K7BBB');
+    });
+
+    it('an entry with no attachments on either side gets no attachments field', () => {
+      const b = new Device([entry({ uid: 'u1' })], 1);
+      b.receive(viaFile([entry({ uid: 'u1' })]));
+      expect('attachments' in b.entries[0]).toBeFalse();
     });
   });
 

@@ -1,3 +1,4 @@
+import type { AttachmentRef } from '../../domain/attachments'
 import { LocationType } from './location.interface'
 
 // 2026-08-31: renamed from field-report.interface.ts / FieldReportType / FieldReportsType /
@@ -218,6 +219,14 @@ export type RadioLogEntryType = {
   // "when was it last printed." Drives the "you're editing a message that may have already
   // been sent" warning - D-47's own "warning, not a block" policy, not a new one.
   printedAt?: Date,
+  /**
+   * E-194 / ADR D-60: photos, video and audio attached to this entry. References only (the
+   * fingerprint, name, type, size and who/when); the bytes sit in the `rangertrak-attachments`
+   * IndexedDB, keyed by `sha256`, and are never altered. Optional/additive, no schema bump: an
+   * entry without it has none. Merges take the union by fingerprint and never drop one; a
+   * removed reference stays, marked, so the removal is on the record.
+   */
+  attachments?: AttachmentRef[],
 }
 
 /**

@@ -1,5 +1,6 @@
 import { rehydrateDateFields } from './json-dates'
 import { RADIO_LOG_ENTRY_DATE_FIELDS } from './radio-log-migration'
+import { mergeAttachmentRefs } from './attachments'
 import { newUid } from './uid'
 import type { RadioLogEntryType } from '../shared/services/radio-log-entry.interface'
 
@@ -17,7 +18,10 @@ import type { RadioLogEntryType } from '../shared/services/radio-log-entry.inter
  * **A match.** Same `revisedAt` or both missing: unchanged. The incoming one revised later (an
  * entry never revised counts as older than any revision): the existing entry is updated in
  * place and keeps its display `id`, its `uid` and its merged-in mark. The existing one revised
- * later: unchanged. The revisedAt rule applies to uid matches only; a `sourceUid` match is
+ * later: unchanged. Attachments (ADR D-60, E-194) are the exception to "the later copy wins": on
+ * any match they become the union by fingerprint (`mergeAttachmentRefs`), so a merge never drops
+ * one and a removal sticks. An entry otherwise unchanged whose merged attachments differ counts
+ * as updated. The revisedAt rule applies to uid matches only; a `sourceUid` match is
  * always "unchanged", as E-114 behaved.
  *
  * **No match.** Appended with a new display `id` from `nextId`, the incoming `uid` kept (or a
@@ -126,11 +130,21 @@ export function mergeEntries(
     const matchIndex = entry.uid ? byUid.get(entry.uid) : undefined
     if (matchIndex !== undefined) {
       const current = entries[matchIndex]
+      const attachments = mergeAttachmentRefs(current.attachments, entry.attachments)
+      const attachmentsChanged = JSON.stringify(attachments)
+        !== JSON.stringify(mergeAttachmentRefs(current.attachments, []))
+      const withAttachments = (e: RadioLogEntryType): RadioLogEntryType =>
+        (attachments.length ? { ...e, attachments } : e)
       if (revisedMs(entry) > revisedMs(current)) {
         // Keep this device's display id, uid and merged-in mark; take the rest from the later copy.
-        entries[matchIndex] = { ...entry, id: current.id, uid: current.uid, sourceUid: current.sourceUid }
+        entries[matchIndex] = withAttachments({ ...entry, id: current.id, uid: current.uid, sourceUid: current.sourceUid })
         updated++
         updatedNotes.push({ id: current.id, uid: current.uid ?? '', callsign: entry.callsign })
+      } else if (attachmentsChanged) {
+        // The other side's fields lose, but its attachments still arrive.
+        entries[matchIndex] = withAttachments(current)
+        updated++
+        updatedNotes.push({ id: current.id, uid: current.uid ?? '', callsign: current.callsign, reason: 'attachments' })
       } else {
         unchanged++
       }
