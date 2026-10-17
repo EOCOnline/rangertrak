@@ -62,7 +62,7 @@ const KEEP_OPEN = args.includes('--keep-open')
 // page or functionality, so all need not run." Quiet is the default: only failures print (each
 // under its section heading) plus the final count. --verbose prints every PASS and note again.
 // --only=map,entry runs just those groups (see want() at each call in main()); groups: shell,
-// entry, map, radiolog, roster, mission, backup, attachments. Combines with --full and --read-only.
+// entry, map, radiolog, roster, mission, backup, attachments, board. Combines with --full and --read-only.
 const VERBOSE = args.includes('--verbose')
 const ONLY = arg('only', '').split(',').map(g => g.trim()).filter(Boolean)
 const want = group => !ONLY.length || ONLY.includes(group)
@@ -4230,6 +4230,180 @@ async function checkDeviceEncryption() {
 
 // ── runner ───────────────────────────────────────────────────────────────────
 
+/**
+ * D-61 / D-60: the Board end to end. Starts the real Board server in this process on
+ * 127.0.0.1:8095 (never 8081) with a throwaway certificate, so Chrome must be started with
+ * --ignore-certificate-errors: main() adds that flag when the board group is asked for, and
+ * only then. Nothing here touches the network beyond loopback, and nothing is announced over mDNS.
+ *
+ * Covers: publish with a password and the viewer at /view#code=... (claim line, rows, hash
+ * removed); a thumbnail click ending in "Verified"; a wrong password asking for one; a second
+ * browser context taking over and the first showing "Another device publishes..."; Take over
+ * from the first; and a server restart re-claimed by the holder within ~10 s, without the
+ * replaced device taking the Board back.
+ */
+async function checkBoard(downloads) {
+  console.log('\nD-61 / D-60: the Board - password, viewer, attachment fingerprint, takeover, restart')
+  const https = require('https')
+  const crypto = require('crypto')
+  const selfsigned = require('selfsigned')
+  const { createServer } = require('./command-post-server')
+  const BOARD_PORT = 8095
+  const BOARD = `https://127.0.0.1:${BOARD_PORT}`
+  const PASS = 'e2e-board-pass'
+  await send('Emulation.setDeviceMetricsOverride', { width: 1400, height: 900, deviceScaleFactor: 1, mobile: false })
+
+  const fixtures = path.join(downloads, '..', 'board-fixtures')
+  fs.mkdirSync(fixtures, { recursive: true })
+  const pngPath = path.join(fixtures, 'e2e-board.png')
+  fs.writeFileSync(pngPath, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'))
+  const pngSha = crypto.createHash('sha256').update(fs.readFileSync(pngPath)).digest('hex')
+
+  const pems = await selfsigned.generate([{ name: 'commonName', value: 'e2e board' }], { days: 1, keySize: 2048, algorithm: 'sha256' })
+  const cert = { key: pems.private, cert: pems.cert }
+  const startBoard = () => createServer({ port: BOARD_PORT, cert, addresses: ['127.0.0.1'], name: '', log: () => { } })
+  let server = await startBoard()
+  const agent = new https.Agent({ rejectUnauthorized: false, keepAlive: false })
+  const boardGet = (p, password = PASS) => new Promise(resolve => {
+    https.get({ host: '127.0.0.1', port: BOARD_PORT, path: p, agent, headers: password ? { 'X-Board-Password': password } : {} }, res => {
+      const chunks = []
+      res.on('data', c => chunks.push(c))
+      res.on('end', () => {
+        let json
+        try { json = JSON.parse(Buffer.concat(chunks).toString('utf8')) } catch { }
+        resolve({ status: res.statusCode, json })
+      })
+    }).on('error', () => resolve({ status: 0 }))
+  })
+  const boardNow = async () => (await boardGet('/api/mission')).json
+  // Polls the server until the snapshot satisfies `ok`, up to `seconds`.
+  async function boardUntil(ok, seconds = 20) {
+    let last
+    for (let i = 0; i < seconds * 2; i++) {
+      last = await boardNow()
+      if (last && !last.waiting && ok(last)) return last
+      await sleep(500)
+    }
+    return last
+  }
+
+  // The settings a device needs to publish to this Board; the password goes where the app keeps it (the 'secrets' record).
+  const seedExpr = (o) => `(async () => {
+    const s = JSON.parse(localStorage.getItem('appSettings') || 'null');
+    if (!s) return 'no-settings';
+    Object.assign(s, ${JSON.stringify({ commandPostEnabled: true, commandPostServerUrl: BOARD, mission: o.mission, opPeriod: '2', boardShowAttachments: o.show })});
+    localStorage.setItem('appSettings', JSON.stringify(s));
+    await new Promise(res => {
+      const req = indexedDB.open('rangertrak-records');
+      req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains('kv')) req.result.createObjectStore('kv'); };
+      req.onsuccess = () => { const db = req.result; const tx = db.transaction('kv', 'readwrite');
+        tx.objectStore('kv').put(${JSON.stringify(JSON.stringify({ boardPassword: PASS }))}, 'secrets');
+        tx.oncomplete = () => { db.close(); res(); }; tx.onerror = () => { db.close(); res(); }; };
+      req.onerror = () => res();
+    });
+    return 'ok';
+  })()`
+
+  // Each "device" is its own browser context (its own window, so every page counts as visible - the
+  // app pauses its Board polling while hidden - and its own storage). Contexts are made over a
+  // browser-level connection; the page-level one then attaches to what they create.
+  const version = await (await fetch(`http://localhost:${PORT}/json/version`)).json()
+  const bws = new WebSocket(version.webSocketDebuggerUrl)
+  await new Promise((resolve, reject) => { bws.onopen = resolve; bws.onerror = reject })
+  const bpending = new Map()
+  let bnext = 1
+  bws.onmessage = ev => {
+    const m = JSON.parse(ev.data)
+    if (m.id && bpending.has(m.id)) { const r = bpending.get(m.id); bpending.delete(m.id); r(m) }
+  }
+  const browserSend = (method, params = {}) => new Promise((resolve, reject) => {
+    const id = bnext++
+    bpending.set(id, m => (m.error ? reject(new Error(JSON.stringify(m.error))) : resolve(m.result)))
+    bws.send(JSON.stringify({ id, method, params }))
+  })
+  const contexts = []
+  async function openDevice(url) {
+    const { browserContextId } = await browserSend('Target.createBrowserContext')
+    contexts.push(browserContextId)
+    const { targetId } = await browserSend('Target.createTarget', { url: 'about:blank', browserContextId })
+    const { sessionId } = await send('Target.attachToTarget', { targetId, flatten: true })
+    await send('Page.enable', {}, sessionId); await send('Runtime.enable', {}, sessionId)
+    await send('Page.navigate', { url }, sessionId)
+    await sleep(3500)
+    return { targetId, sessionId, browserContextId }
+  }
+
+  try {
+    // ── device A: password set, attachments shown ──────────────────────────────
+    await goto('/'); await evaluate(`localStorage.clear()`); await idbClearAll(); await attachmentsWipe()
+    await goto('/')
+    check('settings were written by the first load (precondition)', await evaluate(seedExpr({ mission: 'E2E Board', show: true })), 'ok')
+    await goto('/')
+    await entrySaveWithAttachments('E2E-BRD', [pngPath])
+    await sleep(1500)
+
+    const first = await boardUntil(b => (b.reports || []).some(r => (r.attachments || []).length), 25)
+    check('the Board holds the report, claimed by device A with the password', [first?.board?.by?.mission, first?.board?.open], ['E2E Board', false])
+    check('the snapshot carries the attachment reference and a JPEG thumbnail',
+      [first?.reports?.[0]?.attachments?.[0]?.sha256, String(first?.reports?.[0]?.attachments?.[0]?.thumb || '').startsWith('data:image/jpeg;base64,')], [pngSha, true])
+    check('a viewer with no password is refused', (await boardGet('/api/mission', '')).status, 401)
+
+    // ── the viewer, arriving by the QR link ────────────────────────────────────
+    const v = await openDevice(`${BOARD}/view#code=${PASS}`)
+    const claimLine = await evaluate(`document.getElementById('claimLine').textContent`, v.sessionId)
+    check('the viewer shows the claim line', /E2E Board, op period 2: published by .*\(.+ on .+\)/.test(claimLine) && /Password required/.test(claimLine), true)
+    check('...the password is gone from the address bar', await evaluate(`location.hash`, v.sessionId), '')
+    check('...and the report row has a thumbnail button', await evaluate(`document.querySelectorAll('#rows .file-btn img').length`, v.sessionId), 1)
+    await evaluate(`document.querySelector('#rows .file-btn').click()`, v.sessionId)
+    const verified = await pollUntil(() => evaluate(`document.getElementById('ovStatus').textContent`, v.sessionId), t => /Verified|match/.test(t), 40, 500)
+    check('clicking the thumbnail fetches the original from the scribe and says Verified', verified, '✓ Verified')
+    check('...and shows the picture with a Download link', await evaluate(`!!document.querySelector('#ovBody img') && !!document.querySelector('#ovDownload a')`, v.sessionId), true)
+    await closeTarget(v.targetId)
+
+    // ── a wrong password asks for one ──────────────────────────────────────────
+    const w = await openDevice(`${BOARD}/view#code=not-the-password`)
+    check('a wrong password shows the prompt and no rows', await evaluate(`!document.getElementById('pwForm').hidden && document.querySelectorAll('#rows tr').length === 0`, w.sessionId), true)
+    await evaluate(`(() => { document.getElementById('pwInput').value = ${JSON.stringify(PASS)}; document.getElementById('pwForm').requestSubmit(); })()`, w.sessionId)
+    const rowsAfter = await pollUntil(() => evaluate(`document.querySelectorAll('#rows tr').length`, w.sessionId), n => n > 0, 20, 300)
+    check('...and the right one opens the Board', rowsAfter > 0, true)
+    await closeTarget(w.targetId)
+
+    // ── device B, in its own browser context, takes over ──────────────────────
+    const { sessionId } = await openDevice(BASE + '/')
+    check('device B settings seeded (precondition)', await evaluate(seedExpr({ mission: 'E2E Board B', show: false }), sessionId), 'ok')
+    await send('Page.navigate', { url: BASE + '/' }, sessionId); await sleep(3500)
+
+    const taken = await boardUntil(b => b.board?.by?.mission === 'E2E Board B', 20)
+    check('device B takes the Board over with the password', [taken?.board?.by?.mission, taken?.board?.previous?.by?.mission], ['E2E Board B', 'E2E Board'])
+
+    const seenReplaced = await pollUntil(
+      () => evaluate(`document.body.innerText.includes('Another device publishes to this Board now')`),
+      v2 => v2 === true, 30, 500)
+    check('device A stops and says another device publishes now', seenReplaced, true)
+    await navigateInApp('Mission', 3000)
+    check('...and Mission offers Take over', await evaluate(`[...document.querySelectorAll('button')].some(b => /^\\s*Take over\\s*$/.test(b.textContent))`), true)
+
+    // ── the server restarts; the holder (B) re-claims, the replaced device (A) does not ──
+    await server.close()
+    server = await startBoard()
+    check('the restarted Board starts empty', (await boardNow())?.waiting, true)
+    const reclaimed = await boardUntil(b => b.board?.by?.mission === 'E2E Board B', 25)
+    check('device B re-claims the restarted Board by itself', [reclaimed?.board?.by?.mission, reclaimed?.board?.previous], ['E2E Board B', undefined])
+    await sleep(8000)
+    check('...and the replaced device A did not take it back', (await boardNow())?.board?.by?.mission, 'E2E Board B')
+
+    // ── Take over from A ───────────────────────────────────────────────────────
+    await evaluate(`[...document.querySelectorAll('button')].find(b => /^\\s*Take over\\s*$/.test(b.textContent))?.click()`)
+    const back = await boardUntil(b => b.board?.by?.mission === 'E2E Board', 20)
+    check('Take over on device A claims the Board back, naming who it took over from', [back?.board?.by?.mission, back?.board?.previous?.by?.mission], ['E2E Board', 'E2E Board B'])
+  } finally {
+    for (const id of contexts) await browserSend('Target.disposeBrowserContext', { browserContextId: id }).catch(() => { })
+    try { bws.close() } catch { }
+    await server.close().catch(() => { })
+    await goto('/'); await evaluate(`localStorage.clear()`); await idbClearAll(); await attachmentsWipe()
+  }
+}
+
 function findChrome() {
   if (process.env.CHROME_BIN && fs.existsSync(process.env.CHROME_BIN)) return process.env.CHROME_BIN
   const candidates = process.platform === 'win32'
@@ -4255,7 +4429,10 @@ async function main() {
 
   const chrome = spawn(findChrome(), [
     '--headless=new', `--remote-debugging-port=${PORT}`, `--user-data-dir=${profile}`,
-    '--no-first-run', '--no-default-browser-check', '--window-size=1400,1000', 'about:blank',
+    '--no-first-run', '--no-default-browser-check', '--window-size=1400,1000',
+    // The board group talks to a Board with a throwaway certificate. Only when that group is asked for by name.
+    ...(ONLY.includes('board') ? ['--ignore-certificate-errors'] : []),
+    'about:blank',
   ], { stdio: 'ignore' })
 
   const cleanup = () => {
@@ -4374,6 +4551,7 @@ async function main() {
       if (want('mission')) await checkMissionAddRowsPersist()
       if (want('mission')) await checkAarNotes()
       if (want('attachments')) await checkAttachments(downloads) // E-194; wipes storage
+      if (want('board')) await checkBoard(downloads) // D-61; needs Chrome's --ignore-certificate-errors, see main(); wipes storage
       if (want('entry')) await checkEntryUsesNewMissionDefault()
       if (want('mission')) await checkStatusColorMigration()
       if (want('mission')) await checkStatusColorsBothSchemes()
