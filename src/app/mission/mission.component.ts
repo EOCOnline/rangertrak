@@ -84,6 +84,8 @@ const blankMission: MissionType = {
   tacticalCalls: [],
   extraCopies213: 1,
   attachmentBudgetMB: 512,
+  boardPassword: '',
+  boardShowAttachments: false,
 }
 
 @Component({

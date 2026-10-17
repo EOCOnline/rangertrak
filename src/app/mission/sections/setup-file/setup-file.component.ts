@@ -95,7 +95,8 @@ export class SetupFileComponent {
 
       const locations = includePlaces ? this.locationService.getCurrentLocations() : undefined
       const contents = {
-        ...(includeSettings ? { settings: this.missionService.settings } : {}),
+        // D-61 item 8: the Board password travels only in an encrypted backup, never in a Setup file.
+        ...(includeSettings ? { settings: { ...this.missionService.settings, boardPassword: '' } } : {}),
         ...(includeRangers ? { rangers } : {}),
         ...(includePlaces ? { locations } : {}),
       }
@@ -215,7 +216,10 @@ export class SetupFileComponent {
     const parts: string[] = []
 
     if (manifest.settings) {
-      this.missionService.updateMission(migrateMission(manifest.settings, this.missionService.initMission()))
+      const incoming = migrateMission(manifest.settings, this.missionService.initMission())
+      // A Setup file carries no Board password (D-61): keep this device's.
+      if (!incoming.boardPassword) incoming.boardPassword = this.missionService.settings.boardPassword
+      this.missionService.updateMission(incoming)
       parts.push('settings applied')
     }
 

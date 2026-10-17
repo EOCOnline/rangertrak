@@ -115,8 +115,8 @@ export class BackupService {
    * exportMission() so the actual export contents are easy to test.
    *
    * 2026-10-01, John: async because photos are read from their blobs. `includeSecrets` is true
-   * only for a passphrase-protected backup: the Google geocoding key is otherwise written as ''
-   * so a plain file never carries it. (Setup files still carry it - mission-zip.ts.)
+   * only for a passphrase-protected backup: the Google geocoding key and the Board password (D-61) are otherwise
+   * written as '' so a plain file never carries them. (Setup files still carry it - mission-zip.ts.)
    */
   async buildExportPayload(includeSecrets = false): Promise<MissionExport> {
     const currentFieldReports = this.radioLogService.getCurrentRadioLog()
@@ -132,7 +132,7 @@ export class BackupService {
       appVersion,
       settings: includeSecrets
         ? this.missionService.settings
-        : { ...this.missionService.settings, googleGeocodingApiKey: '' },
+        : { ...this.missionService.settings, googleGeocodingApiKey: '', boardPassword: '' },
       rangers: this.rangerService.rangers,
       radioLog: fieldReportsSansBounds,
       locations: this.locationService.getCurrentLocations(),
@@ -326,6 +326,8 @@ export class BackupService {
     // 2026-10-01, John: a plain backup carries no geocoding key. Restoring one must not wipe
     // the key this device already has.
     if (!incoming.googleGeocodingApiKey) incoming.googleGeocodingApiKey = this.missionService.settings.googleGeocodingApiKey
+    // D-61: the Board password travels the same way - only in a passphrase-protected backup.
+    if (!incoming.boardPassword) incoming.boardPassword = this.missionService.settings.boardPassword
     this.missionService.updateMission(incoming)
     // Same reasoning as the settings migration above, for the same reason it is easy to
     // miss: an imported roster can predate D-42/D-43 entirely, so it may carry no uid and no

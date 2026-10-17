@@ -11,6 +11,9 @@ import {
   MISSION_SCHEMA_VERSION, DEFAULT_OP_PERIOD_HOURS, BUNDLED_IMAGE_DIRECTORY, migrateMission
 } from '../../domain/mission-migration'
 
+/** The record kept apart from appSettings, encrypted when device encryption is on. */
+type SecretsType = { googleGeocodingApiKey: string, boardPassword: string }
+
 @Injectable({ providedIn: 'root' })
 export class MissionService implements OnInit {
 
@@ -174,9 +177,11 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
     // loaded here (main.ts awaits load() before bootstrap), so the startup geocoder choice in
     // app.config.ts still sees the key.
     const legacyKey = this.settings.googleGeocodingApiKey
-    const storedKey = this.readSecretKey()
-    if (legacyKey && !storedKey) this.writeSecretKey(legacyKey)
-    this.settings.googleGeocodingApiKey = storedKey || legacyKey || ''
+    const stored = this.readSecrets()
+    if (legacyKey && !stored.googleGeocodingApiKey) this.writeSecrets({ ...stored, googleGeocodingApiKey: legacyKey })
+    this.settings.googleGeocodingApiKey = stored.googleGeocodingApiKey || legacyKey || ''
+    // D-61: the Board password lives in the same record, for the same reason.
+    this.settings.boardPassword = stored.boardPassword
 
     // Deliberately AFTER the localStorage load above: a loaded settings object carries
     // whatever version it was stamped with, and this always overwrites it with the app's own
@@ -332,6 +337,9 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       extraCopies213: 1,
       // E-194 / D-60: half a gigabyte of attachments before the app starts asking.
       attachmentBudgetMB: 512,
+      // E-194 / D-61: no Board password, and no attachments on the Board, until the mission opts in.
+      boardPassword: '',
+      boardShowAttachments: false,
     }
   }
 
@@ -342,8 +350,9 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
     // Do any needed sanity/validation here
     //debugger
     // 2026-10-01, John: the geocoding key goes to the `secrets` record, never into appSettings.
-    localStorage.setItem(this.storageLocalName, JSON.stringify({ ...newMission, googleGeocodingApiKey: '' }))
-    this.writeSecretKey(newMission.googleGeocodingApiKey)
+    // D-61: and so does the Board password.
+    localStorage.setItem(this.storageLocalName, JSON.stringify({ ...newMission, googleGeocodingApiKey: '', boardPassword: '' }))
+    this.writeSecrets({ googleGeocodingApiKey: newMission.googleGeocodingApiKey, boardPassword: newMission.boardPassword })
     this.setMission(newMission)
     // 2026-10-16: no longer logs the settings object - it carries the Google geocoding key in
     // memory, and the Log page exports to CSV.
@@ -352,15 +361,20 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
     //window.location.reload() creates endless cycle!
   }
 
-  private readSecretKey(): string {
+  private readSecrets(): SecretsType {
     try {
       const raw = recordStore.getItem('secrets')
-      return raw ? String(JSON.parse(raw).googleGeocodingApiKey ?? '') : ''
-    } catch { return '' }
+      const parsed = raw ? JSON.parse(raw) : {}
+      return {
+        googleGeocodingApiKey: String(parsed.googleGeocodingApiKey ?? ''),
+        boardPassword: String(parsed.boardPassword ?? ''),
+      }
+    } catch { return { googleGeocodingApiKey: '', boardPassword: '' } }
   }
 
-  private writeSecretKey(key: string | undefined) {
-    if (key) recordStore.setItem('secrets', JSON.stringify({ googleGeocodingApiKey: key }))
+  private writeSecrets(secrets: Partial<SecretsType>) {
+    const kept = Object.fromEntries(Object.entries(secrets).filter(([, v]) => !!v))
+    if (Object.keys(kept).length) recordStore.setItem('secrets', JSON.stringify(kept))
     else if (recordStore.getItem('secrets') !== null) recordStore.removeItem('secrets')
   }
 

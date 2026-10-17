@@ -59,6 +59,21 @@
           automatically - or copy it again from here later.</mat-hint>
       </mat-form-field>
 
+      <!-- D-61: the viewers' password. A text field, not a masked one: the scribe reads it out or
+           shows the QR code to the people who need it. Blank = open to the Wi-Fi. -->
+      <mat-form-field class="mission-command-post__url" floatLabel="always">
+        <mat-label>Board password</mat-label>
+        <input matInput type="text" [formField]="form.boardPassword" autocomplete="off"
+          autocapitalize="off" spellcheck="false" />
+        <mat-hint>Blank: anyone on this Wi-Fi can read the Board.</mat-hint>
+      </mat-form-field>
+
+      <!-- D-60 item 6: off by default. Off sends only a count of attachments per report. -->
+      <mat-slide-toggle class="mission-command-post__attachments" [checked]="form.boardShowAttachments().value()"
+        (change)="form.boardShowAttachments().value.set($event.checked)">
+        Show attachments on the Board
+      </mat-slide-toggle>
+
       <!-- Catches the one mistake this codebase now knows is silently fatal - see
            entersPlainHttp()'s own doc comment. -->
       @if (entersPlainHttp()) {

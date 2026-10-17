@@ -121,6 +121,26 @@ describe('migrateMission', () => {
     })
   })
 
+  describe('Board settings backfill (D-61 / D-60)', () => {
+    const defaults = { ...v0Settings(), boardPassword: '', boardShowAttachments: false } as unknown as MissionType
+
+    it('gives a returning user no password and attachments off, keeping everything else', () => {
+      const stored = { ...v0Settings(), mission: 'Kept', commandPostEnabled: true, commandPostServerUrl: 'https://x:8080' } as unknown as MissionType
+      expect('boardPassword' in stored).withContext('precondition: field absent').toBe(false)
+      const out = migrateMission(stored, defaults)
+      expect(out.boardPassword).toBe('')
+      expect(out.boardShowAttachments).toBe(false)
+      expect(out.mission).toBe('Kept')
+      expect(out.commandPostEnabled).toBe(true)
+      expect(out.commandPostServerUrl).toBe('https://x:8080')
+    })
+
+    it('does not overwrite saved values', () => {
+      const stored = { ...v0Settings(), boardShowAttachments: true } as unknown as MissionType
+      expect(migrateMission(stored, defaults).boardShowAttachments).toBe(true)
+    })
+  })
+
   describe('extraCopies213 backfill (E-150)', () => {
     it('hands 1 to settings or older backups saved before the field existed', () => {
       const stored = v0Settings()

@@ -353,6 +353,27 @@ describe('BackupService', () => {
       expect(mission.settings.googleGeocodingApiKey).toBe(KEY)
     })
 
+    it('keeps the Board password out of a plain payload and a plain restore (D-61)', async () => {
+      const mission = TestBed.inject(MissionService)
+      const backup = TestBed.inject(BackupService)
+      const PW = 'board-pw-test'
+      mission.updateMission({ ...mission.settings, boardPassword: PW })
+      expect((await backup.buildExportPayload()).settings.boardPassword).toBe('')
+      expect((await backup.buildExportPayload(true)).settings.boardPassword).toBe(PW)
+      await backup.importMission(await backup.buildExportPayload())
+      expect(mission.settings.boardPassword).toBe(PW)
+    })
+
+    it('stores the Board password in secrets beside the geocoding key, not in appSettings (D-61)', async () => {
+      const mission = TestBed.inject(MissionService)
+      const PW = 'board-pw-test'
+      mission.updateMission({ ...mission.settings, googleGeocodingApiKey: KEY, boardPassword: PW })
+      expect(localStorage.getItem('appSettings')).not.toContain(PW)
+      const secrets = JSON.parse(recordStore.getItem('secrets')!)
+      expect(secrets.boardPassword).toBe(PW)
+      expect(secrets.googleGeocodingApiKey).toBe(KEY)
+    })
+
     it('stores the key in secrets, not in appSettings', async () => {
       const mission = TestBed.inject(MissionService)
       mission.updateMission({ ...mission.settings, googleGeocodingApiKey: KEY })
