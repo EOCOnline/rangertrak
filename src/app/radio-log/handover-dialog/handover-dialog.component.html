@@ -119,6 +119,20 @@
           </ul>
         }
       }
+      @if (attachmentPreview(); as a) {
+        <h3 class="rid__h">Attachments</h3>
+        <p class="rid__counts" role="status" data-testid="handover-attachment-counts">
+          <span><strong>Added {{ a.toAdd }}</strong></span>
+          <span><strong>Already here {{ a.alreadyHere }}</strong></span>
+          <span><strong>Do not match {{ a.mismatched }}</strong></span>
+        </p>
+        @if (a.mismatched) {
+          <p class="rid__warn" role="alert">
+            {{ a.mismatched }} file{{ a.mismatched === 1 ? '' : 's' }} in this hand-over do not match their fingerprint.
+            They will not be stored.
+          </p>
+        }
+      }
     }
     <p class="rid__safe">
       Merging adds what is new and updates what the file corrects. Nothing here is replaced or removed.

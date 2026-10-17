@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core'
 
-import { formatBytes, orphans, removedOnly } from '../../domain/attachments'
+import { formatBytes, formatFingerprint, orphans, removedOnly } from '../../domain/attachments'
 import type { AttachmentRef } from '../../domain/attachments'
 import { LogService } from './log.service'
 import { StoragePersistenceService } from './storage-persistence.service'
@@ -285,6 +285,40 @@ export class AttachmentStoreService {
     this.bump()
     this.log.info(`Deleted ${gone.length} removed attachments' bytes from this device.`, this.id)
     return gone.length
+  }
+
+  /**
+   * Stores bytes that arrived in a file someone moved (a backup's companion zip, a hand-over's
+   * `attachments/` folder) for the references these entries carry. Only a fingerprint a LIVE
+   * reference names is stored; the rest is counted as unreferenced and ignored, so a stray file
+   * can never become an orphan. Every file is re-hashed (`putVerified`): a mismatch is listed
+   * by name in the result and nothing is stored for it. Returns counts and the mismatched names;
+   * logs counts only.
+   */
+  async restoreVerified(
+    files: readonly { sha256: string, name?: string, type?: string, bytes: Uint8Array }[],
+    entries: readonly Pick<AttachmentHolder, 'attachments'>[],
+  ): Promise<{ stored: number, alreadyHere: number, unreferenced: number, mismatched: string[] }> {
+    const refs = new Map<string, AttachmentRef>()
+    for (const e of entries) for (const r of e.attachments ?? []) if (!r.removed && !refs.has(r.sha256)) refs.set(r.sha256, r)
+    let stored = 0
+    let alreadyHere = 0
+    let unreferenced = 0
+    const mismatched: string[] = []
+    for (const file of files) {
+      const ref = refs.get(file.sha256)
+      if (!ref) { unreferenced++; continue }
+      if (await this.has(file.sha256)) { alreadyHere++; continue }
+      try {
+        await this.putVerified(file.sha256, file.bytes, ref.type || file.type || '')
+        stored++
+      } catch (e) {
+        if (e instanceof FingerprintMismatchError) mismatched.push(ref.name || file.name || formatFingerprint(file.sha256))
+        else throw e
+      }
+    }
+    this.log.info(`Restored ${stored} attachments to this device; ${mismatched.length} did not match their fingerprint.`, this.id)
+    return { stored, alreadyHere, unreferenced, mismatched }
   }
 
   /** How many attachments and bytes a sweep would delete if these entries replaced the current ones. */

@@ -1,12 +1,13 @@
 import { decryptBytes, encryptBytes } from '../crypto/encrypted-file'
 import { HANDOVER_KIND, readEnvelope } from './handover-kind'
 export * from './handover-kind'
+import type { AttachmentFile } from './attachments-zip'
 import { RadioLogEntryType } from '../services/radio-log-entry.interface'
 import { MissionLocationType } from '../services/mission-location.interface'
 import { RangerType } from '../services/ranger.interface'
 import {
   buildMissionZipBytes, extractMissionZip, handoverFilename, layerFor, MISSION_ZIP_SCHEMA_VERSION,
-  MissionZipManifest, MissionZipPhoto,
+  MissionZipAttachment, MissionZipManifest, MissionZipPhoto,
 } from './mission-zip'
 
 /**
@@ -28,6 +29,8 @@ export type HandoverBuildInput = {
   locations: readonly MissionLocationType[]
   entries: readonly RadioLogEntryType[]
   photos: readonly { stem: string, blob: Blob }[]
+  /** E-194: the bytes of every live attachment this device holds (removed ones are not sent). */
+  attachments?: readonly AttachmentFile[]
   /** Blank or missing writes the file unencrypted (like Mission -> Back up). */
   passphrase?: string
   now?: Date
@@ -60,7 +63,7 @@ export async function buildHandoverFile(input: HandoverBuildInput): Promise<Hand
     layer: layerFor(contents, name, exportedAt.slice(0, 10), 'handover'),
   }
 
-  const zip = await buildMissionZipBytes(manifest, input.photos)
+  const zip = await buildMissionZipBytes(manifest, input.photos, input.attachments ?? [])
   const passphrase = input.passphrase ?? ''
   if (!passphrase) {
     return {
@@ -83,7 +86,7 @@ export async function buildHandoverFile(input: HandoverBuildInput): Promise<Hand
  */
 export async function openHandoverFile(
   bytes: Uint8Array, passphrase?: string,
-): Promise<{ manifest: MissionZipManifest, photos: MissionZipPhoto[] }> {
+): Promise<{ manifest: MissionZipManifest, photos: MissionZipPhoto[], attachments: MissionZipAttachment[] }> {
   const envelope = readEnvelope(bytes)
   if (!envelope) {
     return extractMissionZip(bytes)

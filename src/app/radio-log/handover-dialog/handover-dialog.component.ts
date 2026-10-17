@@ -10,7 +10,8 @@ import { LocationMergeResult, mergeLocations } from '../../domain/location-merge
 import { mergeRangers, RangerMergeResult } from '../../domain/ranger-migration'
 import type { EntryMergeResult } from '../../domain/entry-merge'
 import { openHandoverFile, readEnvelope } from '../../shared/export/handover-file'
-import { layerName, MissionZipManifest, MissionZipPhoto } from '../../shared/export/mission-zip'
+import { layerName, MissionZipAttachment, MissionZipManifest, MissionZipPhoto } from '../../shared/export/mission-zip'
+import { AttachmentStoreService, sha256Hex } from '../../shared/services/attachment-store.service'
 import {
   MissionLocationService, MissionService, RadioLogService, RangerService,
 } from '../../shared/services'
@@ -25,6 +26,8 @@ export type HandoverDialogData = {
 export type HandoverDialogResult = {
   manifest: MissionZipManifest
   photos: MissionZipPhoto[]
+  /** E-194: the bytes in the file's `attachments/` folder; the Radio Log page re-hashes and stores them. */
+  attachments: MissionZipAttachment[]
   rangerMerge: RangerMergeResult | null
   locationMerge: LocationMergeResult | null
 }
@@ -57,6 +60,7 @@ export class HandoverDialogComponent {
   private locationService = inject(MissionLocationService)
   private radioLogService = inject(RadioLogService)
   private missionService = inject(MissionService)
+  private attachmentStore = inject(AttachmentStoreService)
 
   step = signal<Step>('preview')
   busy = signal(false)
@@ -67,6 +71,9 @@ export class HandoverDialogComponent {
 
   manifest = signal<MissionZipManifest | null>(null)
   photos = signal<MissionZipPhoto[]>([])
+  attachments = signal<MissionZipAttachment[]>([])
+  /** E-194: what the file's attachments would do here. Fingerprints are checked now, so a bad file is flagged before anything is stored. */
+  attachmentPreview = signal<{ inFile: number, toAdd: number, alreadyHere: number, mismatched: number } | null>(null)
   rangerMerge = signal<RangerMergeResult | null>(null)
   locationMerge = signal<LocationMergeResult | null>(null)
   entryMerge = signal<EntryMergeResult | null>(null)
@@ -86,8 +93,8 @@ export class HandoverDialogComponent {
     this.busy.set(true)
     this.passphraseError.set('')
     try {
-      const { manifest, photos } = await openHandoverFile(this.data.bytes, this.passphrase())
-      this.buildPreview(manifest, photos)
+      const { manifest, photos, attachments } = await openHandoverFile(this.data.bytes, this.passphrase())
+      this.buildPreview(manifest, photos, attachments)
       this.step.set('preview')
     } catch (e: unknown) {
       if (e instanceof DecryptionFailedError) {
@@ -103,9 +110,11 @@ export class HandoverDialogComponent {
     }
   }
 
-  private buildPreview(manifest: MissionZipManifest, photos: MissionZipPhoto[]): void {
+  private buildPreview(manifest: MissionZipManifest, photos: MissionZipPhoto[], attachments: MissionZipAttachment[]): void {
     this.manifest.set(manifest)
     this.photos.set(photos)
+    this.attachments.set(attachments)
+    void this.previewAttachments(attachments)
     this.fromName.set(layerName(manifest))
 
     const rangerMerge = manifest.rangers
@@ -129,6 +138,21 @@ export class HandoverDialogComponent {
       if (differs(there.opPeriod, here?.opPeriod)) out.push(`operational period is "${there.opPeriod}" in the file, "${here.opPeriod}" here`)
     }
     this.mismatches.set(out)
+  }
+
+  /** Counts only; the fingerprint of every file in the folder is checked against its name. */
+  private async previewAttachments(attachments: MissionZipAttachment[]): Promise<void> {
+    if (!attachments.length) { this.attachmentPreview.set(null); return }
+    let toAdd = 0
+    let alreadyHere = 0
+    let mismatched = 0
+    for (const file of attachments) {
+      const buffer = file.bytes.buffer.slice(file.bytes.byteOffset, file.bytes.byteOffset + file.bytes.byteLength) as ArrayBuffer
+      if (await sha256Hex(buffer) !== file.sha256) mismatched++
+      else if (await this.attachmentStore.has(file.sha256)) alreadyHere++
+      else toAdd++
+    }
+    this.attachmentPreview.set({ inFile: attachments.length, toAdd, alreadyHere, mismatched })
   }
 
   get hasEntries(): boolean {
@@ -163,7 +187,7 @@ export class HandoverDialogComponent {
     const manifest = this.manifest()
     if (!manifest) return
     this.ref.close({
-      manifest, photos: this.photos(),
+      manifest, photos: this.photos(), attachments: this.attachments(),
       rangerMerge: this.rangerMerge(), locationMerge: this.locationMerge(),
     })
   }

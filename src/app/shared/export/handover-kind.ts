@@ -9,6 +9,9 @@ import type { EncryptedFile } from '../crypto/encrypted-file'
 /** The envelope's plain `hint.kind` for a hand-over, so any screen can recognise one without the passphrase. */
 export const HANDOVER_KIND = 'handover'
 
+/** E-194: the plain `hint.kind` of an encrypted attachments companion, so it is not mistaken for an encrypted backup. */
+export const ATTACHMENTS_KIND = 'attachments'
+
 export const HANDOVER_NOT_A_BACKUP_MESSAGE =
   'This is a scribe hand-over file, not a mission backup. Merge it from Radio Log → Hand over to another scribe.'
 export const LOCKED_FILE_MESSAGE =

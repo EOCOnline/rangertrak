@@ -1,5 +1,7 @@
 import { unzipSync, zipSync, Zippable } from 'fflate'
 
+import { AttachmentFile, attachmentsFromUnzipped, attachmentZipEntries, isAttachmentPath } from './attachments-zip'
+
 import { MissionType } from '../services/mission.interface'
 import { MissionLocationType } from '../services/mission-location.interface'
 import { RadioLogEntryType } from '../services/radio-log-entry.interface'
@@ -68,6 +70,12 @@ import { RangerType } from '../services/ranger.interface'
  * to another scribe). Same rule as every category: presence of the key means "apply." The other
  * Setup-file openers (Mission's Setup file card, Rangers, Map) apply only their own part and tell the person the
  * entries merge from Radio Log. No schema bump: it is an additive key a reader can see.
+ *
+ * **E-194 (2026-10-16, ADR D-60): an `attachments/` folder** of `<sha256><ext>` files (stored, not
+ * compressed) holding the bytes of every live attachment the sending device has, for a hand-over.
+ * The entries already carry the references. NO schema bump: the folder is not in the manifest,
+ * an older reader never looks inside it (and now skips it when it hunts for photos), and a newer
+ * reader of an older file simply finds none. Merge in re-hashes every file (putVerified).
  *
  * Photo matching reuses `RangerPhotoService`'s own filename-stem convention (a ranger's `id`
  * if set, else `callsign`, uppercased) - not reinvented here. "A wrong photo is worse than no
@@ -141,6 +149,9 @@ export function layerName(manifest: Pick<MissionZipManifest, 'layer'>): string {
 
 export type MissionZipPhoto = { filename: string; bytes: Uint8Array }
 
+/** E-194: an attachment's bytes as read from a hand-over's `attachments/` folder (type is a guess from the extension). */
+export type MissionZipAttachment = { sha256: string, type: string, bytes: Uint8Array }
+
 const MANIFEST_ENTRY = 'mission-zip.json'
 const PHOTOS_DIR = 'photos'
 
@@ -155,6 +166,7 @@ const basename = (path: string) => path.split(/[/\\]/).pop() || path
 export async function buildMissionZipBytes(
   manifest: MissionZipManifest,
   photos: readonly { stem: string; blob: Blob }[],
+  attachments: readonly AttachmentFile[] = [],
 ): Promise<Uint8Array> {
   const files: Zippable = {
     [MANIFEST_ENTRY]: new TextEncoder().encode(JSON.stringify(manifest, null, 2)),
@@ -164,6 +176,9 @@ export async function buildMissionZipBytes(
   for (const { stem, blob } of photos) {
     files[`${PHOTOS_DIR}/${stem}${extensionFor(blob.type)}`] = new Uint8Array(await blob.arrayBuffer())
   }
+
+  // E-194: stored at level 0 per file; the photos and manifest keep the archive's level 6.
+  Object.assign(files, attachmentZipEntries(attachments))
 
   return zipSync(files, { level: 6 })
 }
@@ -177,7 +192,7 @@ export async function buildMissionZipBytes(
  * trusting them, since a Setup file built by an older app version needs exactly the same
  * upgrade path a Mission Export does.
  */
-export function extractMissionZip(bytes: Uint8Array): { manifest: MissionZipManifest; photos: MissionZipPhoto[] } {
+export function extractMissionZip(bytes: Uint8Array): { manifest: MissionZipManifest; photos: MissionZipPhoto[]; attachments: MissionZipAttachment[] } {
   let entries: Record<string, Uint8Array>
   try {
     entries = unzipSync(bytes)
@@ -217,10 +232,11 @@ export function extractMissionZip(bytes: Uint8Array): { manifest: MissionZipMani
   }
 
   const photos: MissionZipPhoto[] = Object.keys(entries)
-    .filter(k => !/[/\\]$/.test(k) && /\.(jpe?g|png|gif|webp)$/i.test(basename(k)))
+    // E-194: an attachment named <sha>.jpg is not a ranger photo.
+    .filter(k => !/[/\\]$/.test(k) && !isAttachmentPath(k) && /\.(jpe?g|png|gif|webp)$/i.test(basename(k)))
     .map(k => ({ filename: basename(k), bytes: entries[k] }))
 
-  return { manifest, photos }
+  return { manifest, photos, attachments: attachmentsFromUnzipped(entries) }
 }
 
 /**

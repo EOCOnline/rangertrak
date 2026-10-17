@@ -235,11 +235,12 @@
            matButton> here silently did nothing, same bug found on Rangers. -->
       <button matButton="outlined" type="button" class="mission__danger-button"
         (click)="importMissionFile.click()"
-        title="Restore a mission from a previously backed-up JSON file - replaces everything currently on this device">
+        title="Restore a mission from a previously backed-up file (and its attachments file, if there is one) - replaces everything currently on this device">
         <mat-icon>restore</mat-icon>
         Restore mission &mdash; replaces everything
       </button>
-      <input #importMissionFile id="importMissionFile" type="file" accept="application/json,.json"
+      <input #importMissionFile id="importMissionFile" type="file" multiple
+        accept="application/json,.json,application/zip,.zip"
         (change)="onImportFileSelected($event)" class="mission__file-input" />
 
       <!-- E-168 (2026-10-01): the picker and its button are one shared component now (Entry,

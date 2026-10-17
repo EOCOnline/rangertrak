@@ -62,7 +62,7 @@ const KEEP_OPEN = args.includes('--keep-open')
 // page or functionality, so all need not run." Quiet is the default: only failures print (each
 // under its section heading) plus the final count. --verbose prints every PASS and note again.
 // --only=map,entry runs just those groups (see want() at each call in main()); groups: shell,
-// entry, map, radiolog, roster, mission, backup. Combines with --full and --read-only.
+// entry, map, radiolog, roster, mission, backup, attachments. Combines with --full and --read-only.
 const VERBOSE = args.includes('--verbose')
 const ONLY = arg('only', '').split(',').map(g => g.trim()).filter(Boolean)
 const want = group => !ONLY.length || ONLY.includes(group)
@@ -378,7 +378,7 @@ async function navigateInApp(linkText, settleMs = 2500) {
  * Same fix, and same reasoning, as the three fixed sleep()s Sprint E replaced with polls:
  * wait for the real condition, don't guess a duration.
  */
-async function setFileInput(selector, filePath) {
+async function setFileInput(selector, filePath) { // filePath: one path, or an array of paths
   let nodeId = 0
   for (let i = 0; i < 20 && !nodeId; i++) {
     if (i) await sleep(250)
@@ -389,7 +389,7 @@ async function setFileInput(selector, filePath) {
     nodeId = node.nodeId
   }
   if (!nodeId) throw new Error(`no element matching ${selector}`)
-  await send('DOM.setFileInputFiles', { files: [filePath], nodeId })
+  await send('DOM.setFileInputFiles', { files: [].concat(filePath), nodeId })
 }
 
 // ── result tracking ──────────────────────────────────────────────────────────
@@ -3438,18 +3438,22 @@ async function checkBackupFixturesRestore() {
 
   for (const release of releases) {
     const expected = JSON.parse(fs.readFileSync(path.join(root, release, 'expect.json'), 'utf8'))
-    for (const [file, answers] of [
-      ['backup.json', [true, true]], // confirm the restore, then the "restored" alert
-      ['backup-encrypted.json', [expected.passphrase, true, true]], // passphrase first
+    for (const [file, answers, companion] of [
+      ['backup.json', [true, true], 'backup-attachments.zip'], // confirm the restore, then the "restored" alert
+      ['backup-encrypted.json', [expected.passphrase, true, true], 'backup-encrypted-attachments.rtenc.zip'], // passphrase first (once: it covers the companion too)
     ]) {
       const label = `${release}/${file}`
       await goto('/mission')
       await evaluate(`localStorage.clear()`)
       await idbClearAll()
+      await attachmentsWipe() // E-194
       await goto('/mission')
       dialogQueue.length = 0 // 2026-10-02: one fixture's unused answers must not leak into the next
       queueDialogs(...answers)
-      await setFileInput('#importMissionFile', path.join(root, release, file))
+      // E-194 / D-53: a release whose fixture carries an attachment restores the JSON and its companion zip together.
+      const companionPath = path.join(root, release, companion)
+      const withAttachment = !!expected.attachments && fs.existsSync(companionPath)
+      await setFileInput('#importMissionFile', withAttachment ? [path.join(root, release, file), companionPath] : path.join(root, release, file))
       await sleep(2500) // the restore reloads the page
 
       const rangersRaw = await pollUntil(
@@ -3470,6 +3474,11 @@ async function checkBackupFixturesRestore() {
         e.callsign === expected.sampleEntry.callsign && e.status === expected.sampleEntry.status), true)
       check(`${label}: Location count`, locations.length, expected.locations)
       check(`${label}: a named Location came back`, locations.some(l => l.name === expected.sampleLocationName), true)
+      if (withAttachment) {
+        check(`${label}: its entry carries the attachment reference`, entries.some(e => (e.attachments || []).some(a => a.sha256 === expected.attachmentSha256)), true)
+        check(`${label}: the attachment's bytes came back, fingerprint intact`,
+          await pollUntil(attachmentKeys, k => k.includes(expected.attachmentSha256)), [expected.attachmentSha256])
+      }
     }
   }
 
@@ -3477,6 +3486,266 @@ async function checkBackupFixturesRestore() {
   await evaluate(`localStorage.clear()`)
   await idbClearAll()
   await goto('/mission')
+}
+
+// ── E-194 / ADR D-60: attachments ─────────────────────────────────────────────
+
+/** The fingerprints currently in the attachments store's `originals` (never creates the database). */
+function attachmentKeys() {
+  return evaluate(`(new Promise(res => {
+    const req = indexedDB.open('rangertrak-attachments');
+    req.onupgradeneeded = () => req.transaction.abort();
+    req.onsuccess = () => { const db = req.result;
+      if (!db.objectStoreNames.contains('originals')) { db.close(); return res([]); }
+      const g = db.transaction('originals', 'readonly').objectStore('originals').getAllKeys();
+      g.onsuccess = () => { db.close(); res(g.result.map(String).sort()); };
+      g.onerror = () => { db.close(); res([]); };
+    };
+    req.onerror = () => res([]);
+  }))`)
+}
+
+/** Whether a stored original is an encrypted record or a plain one. */
+function attachmentRaw(sha) {
+  return evaluate(`(new Promise(res => {
+    const req = indexedDB.open('rangertrak-attachments');
+    req.onupgradeneeded = () => req.transaction.abort();
+    req.onsuccess = () => { const db = req.result;
+      const g = db.transaction('originals', 'readonly').objectStore('originals').get(${JSON.stringify(sha)});
+      g.onsuccess = () => { db.close(); const v = g.result; res(v ? { encrypted: v.encrypted === true, plain: v.blob instanceof Blob } : null); };
+      g.onerror = () => { db.close(); res(null); };
+    };
+    req.onerror = () => res(null);
+  }))`)
+}
+
+/** Empties the attachments store, as a wiped profile would be. */
+function attachmentsWipe() {
+  return evaluate(`(new Promise(res => {
+    const req = indexedDB.open('rangertrak-attachments');
+    req.onupgradeneeded = () => req.transaction.abort();
+    req.onsuccess = () => { const db = req.result;
+      if (!db.objectStoreNames.contains('originals')) { db.close(); return res(null); }
+      const tx = db.transaction(['originals', 'thumbs'], 'readwrite');
+      tx.objectStore('originals').clear(); tx.objectStore('thumbs').clear();
+      tx.oncomplete = () => { db.close(); res(null); };
+      tx.onerror = () => { db.close(); res(null); };
+    };
+    req.onerror = () => res(null);
+  }))`)
+}
+
+/** Types a call sign on Entry, attaches `files` through the hidden input, and presses "Add to radio log". */
+async function entrySaveWithAttachments(callsign, files) {
+  await goto('/')
+  await evaluate(`(() => {
+    const input = document.getElementById('enter__Callsign-input');
+    Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(input, ${JSON.stringify(callsign)});
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  })()`)
+  await sleep(600)
+  await setFileInput('[data-testid="entry-attach-file"]', files)
+  await sleep(1200)
+  const waiting = await evaluate(`document.querySelectorAll('.enter__attach-item').length`)
+  await evaluate(`document.querySelector('.enter__Submit-button').click()`)
+  return waiting
+}
+
+/** Opens the viewer from the first 📎 chip on the Radio Log grid; returns whether it opened. */
+async function openAttachmentViewerFromGrid() {
+  // The chip lives in the Notes cell, the last column: AG Grid draws only the columns in view, so
+  // checkAttachments() widens the window first (see there).
+  const chip = await pollUntil(
+    () => evaluate(`document.querySelector('.rt-attach-chip')?.textContent.trim() ?? ''`),
+    v => v.length > 0, 25, 300)
+  await evaluate(`document.querySelector('.rt-attach-chip')?.click()`)
+  const opened = await pollUntil(() => evaluate(`!!document.querySelector('[data-testid="attachment-viewer"]')`), v => v === true, 20, 250)
+  return { chip, opened }
+}
+
+/** The full fingerprint the viewer shows for the selected item. */
+const viewerFingerprint = () => evaluate(`document.querySelector('[data-testid="attachment-fingerprint"]')?.title ?? ''`)
+
+async function closeAttachmentViewer() {
+  await evaluate(`[...document.querySelectorAll('.rt-attach-viewer__actions button')].find(b => /^\\s*Close\\s*$/.test(b.textContent))?.click()`)
+  await sleep(500)
+}
+
+async function checkAttachments(downloads) {
+  console.log('\nE-194 / D-60: attachments - attach, chip, viewer, backup and restore, tamper, encryption, Remove, real mission')
+  const crypto = require('crypto')
+  const { unzipSync, zipSync } = require('fflate')
+  const PASS = 'e2e-attachments-passphrase'
+  await send('Emulation.setDeviceMetricsOverride', { width: 3200, height: 900, deviceScaleFactor: 1, mobile: false })
+
+  // Two tiny fixtures whose fingerprints this test computes itself, in Node.
+  const fixtures = path.join(downloads, '..', 'attachment-fixtures')
+  fs.mkdirSync(fixtures, { recursive: true })
+  const pngPath = path.join(fixtures, 'e2e-clue.png')
+  const wavPath = path.join(fixtures, 'e2e-memo.wav')
+  fs.writeFileSync(pngPath, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'))
+  const wav = Buffer.alloc(44 + 200)
+  wav.write('RIFF', 0); wav.writeUInt32LE(36 + 200, 4); wav.write('WAVEfmt ', 8); wav.writeUInt32LE(16, 16)
+  wav.writeUInt16LE(1, 20); wav.writeUInt16LE(1, 22); wav.writeUInt32LE(8000, 24); wav.writeUInt32LE(8000, 28)
+  wav.writeUInt16LE(1, 32); wav.writeUInt16LE(8, 34); wav.write('data', 36); wav.writeUInt32LE(200, 40)
+  fs.writeFileSync(wavPath, wav)
+  const sha = p => crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')
+  const pngSha = sha(pngPath)
+  const wavSha = sha(wavPath)
+  const both = [pngSha, wavSha].sort()
+
+  // ── attach on Entry, save, chip, viewer ────────────────────────────────
+  await goto('/'); await evaluate(`localStorage.clear()`); await idbClearAll(); await attachmentsWipe()
+  const waiting = await entrySaveWithAttachments('E2E-ATT', [pngPath, wavPath])
+  check('Entry holds the two picked files as chips before saving', waiting, 2)
+  check('both originals are stored, keyed by their SHA-256 computed here',
+    await pollUntil(attachmentKeys, k => k.length === 2), both)
+  check('the stored original is the plain Blob record (device encryption is off)', await attachmentRaw(pngSha), { encrypted: false, plain: true })
+
+  await goto('/radio-log')
+  const grid = await openAttachmentViewerFromGrid()
+  check('the Radio Log row shows the chip with 2', /2/.test(grid.chip), true)
+  check('the chip opens the viewer', grid.opened, true)
+  const first = await pollUntil(viewerFingerprint, v => v.length === 64)
+  await evaluate(`document.querySelectorAll('.rt-attach-viewer__thumb')[1]?.click()`)
+  await sleep(600)
+  const second = await viewerFingerprint()
+  check('the viewer shows both fingerprints, matching the ones computed in the test', [first, second].sort(), both)
+  const media = await pollUntil(
+    () => evaluate(`!!document.querySelector('.rt-attach-viewer__media, .rt-attach-viewer__audio')`), v => v === true)
+  check('the selected item is playing/showing from its stored bytes', media, true)
+  await closeAttachmentViewer()
+
+  // ── back up: JSON plus companion zip, then restore both on a wiped profile ──
+  await goto('/mission')
+  const before = new Set(fs.readdirSync(downloads))
+  queueDialogs(true, '')
+  await evaluate(`[...document.querySelectorAll('button')].find(b => /Back up mission/i.test(b.textContent))?.click()`)
+  let made = []
+  for (let i = 0; i < 60 && made.length < 2; i++) {
+    await sleep(250)
+    made = fs.readdirSync(downloads).filter(f => !before.has(f) && !f.endsWith('.crdownload'))
+  }
+  const jsonFile = made.find(f => f.endsWith('.json'))
+  const zipFile = made.find(f => f.endsWith('-attachments.zip'))
+  check('Back up mission wrote the JSON and a -attachments.zip companion', !!jsonFile && !!zipFile, true)
+  if (!jsonFile || !zipFile) return
+  const backupJson = path.join(downloads, jsonFile)
+  const backupZip = path.join(downloads, zipFile)
+  check('the backup JSON holds no attachment bytes (references only)',
+    fs.readFileSync(backupJson, 'utf8').includes(pngSha) && !fs.readFileSync(backupJson, 'utf8').includes('iVBORw0KGgo'), true)
+  const unz = unzipSync(new Uint8Array(fs.readFileSync(backupZip)))
+  check('the zip holds attachments/<sha256><ext> for both files and an attachments.json',
+    Object.keys(unz).sort(), [`attachments/${pngSha}.png`, `attachments/${wavSha}.wav`, 'attachments.json'].sort())
+
+  await goto('/mission'); await evaluate(`localStorage.clear()`); await idbClearAll(); await attachmentsWipe()
+  await goto('/mission')
+  dialogQueue.length = 0
+  queueDialogs(true, true)   // the restore confirm, then the "restored" alert
+  await setFileInput('#importMissionFile', [backupJson, backupZip])
+  await sleep(2500)
+  check('after a wipe, restoring both files brings both originals back',
+    await pollUntil(attachmentKeys, k => k.length === 2), both)
+  check('and the restore alert says so', dialogs.some(d => /2 attachments restored/.test(d)), true)
+  await goto('/radio-log')
+  const restored = await openAttachmentViewerFromGrid()
+  check('the restored entry shows the chip and opens the viewer', restored.opened, true)
+  check('the restored fingerprint still matches the one computed in the test', both.includes(await pollUntil(viewerFingerprint, v => v.length === 64)), true)
+  await closeAttachmentViewer()
+
+  // ── a tampered zip is flagged, and not stored ─────────────────────────
+  await attachmentsWipe()
+  const tamperedEntries = { ...unz }
+  const pngKey = `attachments/${pngSha}.png`
+  const flipped = new Uint8Array(tamperedEntries[pngKey]); flipped[flipped.length - 1] ^= 0xff
+  tamperedEntries[pngKey] = flipped
+  const tamperedZip = path.join(downloads, '..', 'attachment-fixtures', 'tampered-attachments.zip')
+  fs.writeFileSync(tamperedZip, Buffer.from(zipSync(tamperedEntries)))
+  await goto('/mission')
+  dialogs.length = 0
+  dialogQueue.length = 0
+  queueDialogs(true)
+  await setFileInput('#importMissionFile', tamperedZip)
+  await sleep(2500)
+  check('a tampered zip is flagged in the restore message', dialogs.some(d => /did not match their fingerprint/.test(d)), true)
+  check('only the untouched file was stored; the tampered one never was', await attachmentKeys(), [wavSha])
+  await goto('/radio-log')
+  await openAttachmentViewerFromGrid()
+  await pollUntil(viewerFingerprint, v => v.length === 64)
+  const elsewhere = await evaluate(`(async () => {
+    const thumbs = [...document.querySelectorAll('.rt-attach-viewer__thumb')];
+    for (const t of thumbs) { t.click(); await new Promise(r => setTimeout(r, 500));
+      if (document.querySelector('[data-testid="attachment-elsewhere"]')) return true; }
+    return false;
+  })()`)
+  check('the reference with no bytes here says "On another device"', elsewhere, true)
+  await closeAttachmentViewer()
+
+  // Put the PNG back through the honest zip so the next steps have both files.
+  await goto('/mission')
+  dialogQueue.length = 0
+  queueDialogs(true)
+  await setFileInput('#importMissionFile', backupZip)
+  await sleep(2500)
+  check('the honest zip alone adds the missing bytes to references already here',
+    await pollUntil(attachmentKeys, k => k.length === 2), both)
+
+  // ── device encryption on, then off, with attachments present ──────────
+  await goto('/mission')
+  await evaluate(`[...document.querySelectorAll('button')].find(b => /Back up mission/i.test(b.textContent))?.click()`)
+  await sleep(1500)
+  queueDialogs(true, PASS, PASS)
+  await evaluate(`[...document.querySelectorAll('button')].find(b => /Turn on device encryption/i.test(b.textContent))?.click()`)
+  await pollUntil(() => evaluate(`!![...document.querySelectorAll('button')].find(b => /Turn off device encryption/i.test(b.textContent))`), v => v === true)
+  check('with encryption on, the stored attachments are encrypted records',
+    [await attachmentRaw(pngSha), await attachmentRaw(wavSha)], [{ encrypted: true, plain: false }, { encrypted: true, plain: false }])
+  await navigateInApp('Radio Log')
+  const underKey = await openAttachmentViewerFromGrid()
+  check('encrypted attachments still open in the viewer', underKey.opened, true)
+  check('and show their media', await pollUntil(
+    () => evaluate(`!!document.querySelector('.rt-attach-viewer__media, .rt-attach-viewer__audio')`), v => v === true), true)
+  await closeAttachmentViewer()
+
+  await navigateInApp('Mission')
+  queueDialogs(true, PASS)
+  await evaluate(`[...document.querySelectorAll('button')].find(b => /Turn off device encryption/i.test(b.textContent))?.click()`)
+  await pollUntil(() => evaluate(`!![...document.querySelectorAll('button')].find(b => /Turn on device encryption/i.test(b.textContent))`), v => v === true)
+  check('with encryption off again, the attachments are plain records',
+    [await attachmentRaw(pngSha), await attachmentRaw(wavSha)], [{ encrypted: false, plain: true }, { encrypted: false, plain: true }])
+  await navigateInApp('Radio Log')
+  const afterOff = await openAttachmentViewerFromGrid()
+  check('and they still open', afterOff.opened, true)
+  check('and still show their media', await pollUntil(
+    () => evaluate(`!!document.querySelector('.rt-attach-viewer__media, .rt-attach-viewer__audio')`), v => v === true), true)
+
+  // ── Remove leaves the mark and deletes the bytes ─────────────────────
+  const removing = await viewerFingerprint()
+  queueDialogs('REMOVE')   // the typed confirm in Incident mode; a plain confirm accepts it too
+  await evaluate(`document.querySelector('[data-testid="attachment-remove"]')?.click()`)
+  const marked = await pollUntil(
+    () => evaluate(`document.querySelector('[data-testid="attachment-removed"]')?.textContent.trim() ?? ''`), v => /^Removed/.test(v))
+  check('Remove leaves "Removed hh:mm by ..." in the viewer', /^Removed \d{2}:\d{2} by/.test(marked), true)
+  check('and the removed file\'s bytes are gone, the other stays',
+    await pollUntil(attachmentKeys, k => k.length === 1), both.filter(s => s !== removing))
+  await closeAttachmentViewer()
+
+  // ── Start a real mission leaves the store empty ──────────────────────
+  await goto('/'); await evaluate(`localStorage.clear()`); await idbClearAll(); await attachmentsWipe()
+  await goto('/')
+  await evaluate(`document.querySelector('rangertrak-demo-picker mat-select')?.click()`)
+  await sleep(600)
+  await evaluate(`[...document.querySelectorAll('mat-option')].find(o => /Grand Canyon/.test(o.textContent))?.click()`)
+  await sleep(4000)
+  await entrySaveWithAttachments('E2E-REAL', [wavPath])
+  check('on a demo, an attachment is stored', await pollUntil(attachmentKeys, k => k.length === 1), [wavSha])
+  await goto('/')
+  await evaluate(`window.confirm = () => true; document.querySelector('.rt-mode-choice[data-mode="exercise"]')?.click()`)
+  await sleep(4000)   // startRealMission() clears the demo, sweeps, and reloads
+  await goto('/')
+  check('Start a real mission leaves the attachments store empty', await attachmentKeys(), [])
+
+  await evaluate(`localStorage.clear()`); await idbClearAll(); await attachmentsWipe()
+  await send('Emulation.setDeviceMetricsOverride', { width: 1360, height: 900, deviceScaleFactor: 1, mobile: false })
 }
 
 async function checkMissionRoundTrip(downloads) {
@@ -4093,6 +4362,7 @@ async function main() {
       if (want('mission')) await checkMissionUnsavedChangesGuard()
       if (want('mission')) await checkMissionAddRowsPersist()
       if (want('mission')) await checkAarNotes()
+      if (want('attachments')) await checkAttachments(downloads) // E-194; wipes storage
       if (want('entry')) await checkEntryUsesNewMissionDefault()
       if (want('mission')) await checkStatusColorMigration()
       if (want('mission')) await checkStatusColorsBothSchemes()

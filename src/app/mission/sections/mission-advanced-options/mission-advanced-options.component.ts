@@ -336,21 +336,46 @@ export class MissionAdvancedOptionsComponent {
    * Destructive - replaces current settings/rangers/radio log entries entirely -
    * so this confirms with the user before applying.
    */
-  onImportFileSelected(event: Event) {
+  async onImportFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement
-    const file = input.files?.[0]
+    const files = Array.from(input.files ?? [])
     input.value = '' // allow re-selecting the same file later
 
-    if (!file) {
+    if (!files.length) {
       return
     }
 
-    this.backupService.readFileAsMissionExport(file, hint => prompt(
-      `"${file.name}" is encrypted.\n\n`
-      + (hint?.exportedAt ? `Backed up ${hint.exportedAt}` : 'Backed up on an unknown date')
-      + (hint?.appVersion ? ` by RangerTrak ${hint.appVersion}` : '') + `.\n\n`
-      + `Enter its passphrase to restore it.`))
-      .then(async payload => {
+    // E-194 / D-60 item 6: one picker takes the backup JSON, its attachments companion zip, or
+    // both. The zip alone adds bytes for references already on this device.
+    let backupFile: File | undefined
+    let attachmentsFile: File | undefined
+    try {
+      for (const f of files) {
+        if (await this.backupService.classifyRestoreFile(f) === 'attachments') attachmentsFile ??= f
+        else backupFile ??= f
+      }
+    } catch (error: any) {
+      alert(`Could not read the files you picked: ${error.message}`)
+      return
+    }
+
+    // One passphrase covers both files: whatever was typed for the backup is offered to the zip.
+    let typedPassphrase: string | null = null
+    const askFor = (file: File, what: string) => (hint?: { exportedAt?: string, appVersion?: string }) => {
+      if (typedPassphrase !== null) return typedPassphrase
+      const answer = prompt(
+        `"${file.name}" is encrypted.\n\n`
+        + (hint?.exportedAt ? `Backed up ${hint.exportedAt}` : 'Backed up on an unknown date')
+        + (hint?.appVersion ? ` by RangerTrak ${hint.appVersion}` : '') + `.\n\n`
+        + `Enter its passphrase to restore ${what}.`)
+      if (answer !== null) typedPassphrase = answer
+      return answer
+    }
+
+    try {
+      let restoredMission = false
+      if (backupFile) {
+        const payload = await this.backupService.readFileAsMissionExport(backupFile, askFor(backupFile, 'it'))
         const summary = `Mission "${payload.settings.mission || '(unnamed)'}" backed up `
           + `${payload.exportedAt}, with ${payload.rangers.length} rangers and `
           + `${payload.radioLog.logEntries.length} radio log entries.`
@@ -367,13 +392,30 @@ export class MissionAdvancedOptionsComponent {
         // locations have actually committed to IndexedDB (RecordStore.flush()), which the
         // reload() right below depends on. See importMission()'s own doc comment.
         await this.backupService.importMission(payload)
-        this.log.warn(`Restored mission from ${file.name}.`, this.id)
-        alert('Mission restored. Reloading to refresh every screen with the new data...')
+        this.log.warn(`Restored mission from ${backupFile.name}.`, this.id)
+        restoredMission = true
+      }
+
+      // After the entries are in, so the bytes find the references they belong to.
+      let attachmentsLine = ''
+      if (attachmentsFile) {
+        const result = await this.backupService.restoreAttachmentsFile(attachmentsFile, askFor(attachmentsFile, 'its attachments'))
+        attachmentsLine = this.backupService.describeAttachmentsRestore(result)
+      } else if (restoredMission) {
+        // A backup alone: say how many references are still waiting for their bytes.
+        attachmentsLine = this.backupService.describeAttachmentsRestore(await this.backupService.attachmentsStatus())
+      }
+
+      if (restoredMission) {
+        alert(`Mission restored.${attachmentsLine ? ' ' + attachmentsLine : ''} Reloading to refresh every screen with the new data...`)
         window.location.reload()
-      })
-      .catch(error => {
-        this.log.error(`onImportFileSelected: failed to restore ${file.name}: ${error.message}`, this.id)
-        alert(`Could not restore "${file.name}": ${error.message}`)
-      })
+      } else {
+        alert(attachmentsLine || 'Nothing in that file belongs to an attachment on this device.')
+      }
+    } catch (error: any) {
+      const name = (backupFile ?? attachmentsFile)?.name ?? ''
+      this.log.error(`onImportFileSelected: failed to restore: ${error.message}`, this.id)
+      alert(`Could not restore "${name}": ${error.message}`)
+    }
   }
 }

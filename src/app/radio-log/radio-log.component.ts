@@ -47,6 +47,8 @@ import * as packageJson from '../../../package.json'
 import { describeRangerMerge } from '../domain/ranger-migration'
 import { describeLocationMerge } from '../domain/location-merge'
 import { buildHandoverFile } from '../shared/export/handover-file'
+import { liveRefs } from '../domain/attachments'
+import type { AttachmentFile } from '../shared/export/attachments-zip'
 import type { HandoverDialogResult } from './handover-dialog/handover-dialog.component'
 // E-122 Phase 2a: reloadPage() below awaits this before reloading - see its own doc comment.
 import { RecordStore } from '../shared/storage/record-store'
@@ -904,6 +906,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
         locations: this.locationService.getCurrentLocations(),
         entries,
         photos: await this.photoService.allPhotoBlobs(),
+        attachments: await this.attachmentBytesFor(entries),
         passphrase,
       })
       const blob = new Blob([file.bytes as BlobPart], { type: file.mime })
@@ -923,6 +926,25 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     } finally {
       this.handoverBusy.set(false)
     }
+  }
+
+  /**
+   * E-194: the bytes of every live attachment this device holds, once per fingerprint, for the
+   * hand-over's `attachments/` folder. Removed ones are not sent (their bytes are gone anyway).
+   * Read one at a time and held for the zip, which is built in memory.
+   */
+  private async attachmentBytesFor(entries: readonly RadioLogEntryType[]): Promise<AttachmentFile[]> {
+    const out: AttachmentFile[] = []
+    const seen = new Set<string>()
+    for (const entry of entries) {
+      for (const ref of liveRefs(entry)) {
+        if (seen.has(ref.sha256) || !(await this.attachmentStore.has(ref.sha256))) continue
+        seen.add(ref.sha256)
+        const blob = await this.attachmentStore.getOriginal(ref.sha256)
+        out.push({ sha256: ref.sha256, name: ref.name, type: ref.type, bytes: new Uint8Array(await blob.arrayBuffer()) })
+      }
+    }
+    return out
   }
 
   /** Reads a picked hand-over file, previews it in a dialog, and on confirm merges people, places, then entries. */
@@ -987,6 +1009,18 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       bits.push(`${entries.rejected} could not be read (${entries.rejectedNotes.map(n => n.callsign || '?').join(', ')})`)
     }
     parts.push(`radio log entries: ${bits.join('; ')}`)
+
+    // E-194 / D-60: the bytes for the merged references, each re-hashed (putVerified) so a bad file
+    // is named and never stored; then the bytes a merged-in removal made unwanted go.
+    if (result.attachments.length) {
+      const merged = this.radioLogService.getCurrentRadioLog().logEntries
+      const att = await this.attachmentStore.restoreVerified(result.attachments, merged)
+      await this.attachmentStore.releaseRemoved(merged)
+      parts.push(`${att.stored} attachment${att.stored === 1 ? '' : 's'} stored`
+        + (att.mismatched.length ? `, ${att.mismatched.length} did not match their fingerprint and were NOT stored (${att.mismatched.join(', ')})` : ''))
+    } else {
+      await this.attachmentStore.releaseRemoved(this.radioLogService.getCurrentRadioLog().logEntries)
+    }
 
     const summary = `Merged "${fileName}": ${parts.join('. ')}.`
     this.log.warn(summary, this.id)

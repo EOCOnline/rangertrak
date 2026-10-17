@@ -7,6 +7,7 @@ One folder per release, each holding a mission backup made **by that release**:
 | `backup.json` | A plain "Back up mission" file |
 | `backup-encrypted.json` | The same mission, backed up with a passphrase |
 | `expect.json` | What a restore must bring back, and the fixture passphrase |
+| `backup-attachments.zip`, `backup-encrypted-attachments.rtenc.zip` | From the first release with attachments (E-194): the attachments companion of each backup, holding the one tiny fake attachment `expect.json` names. Restore opens the JSON and its companion together. Releases before attachments have neither file |
 
 `tools/e2e.js --full` (`checkBackupFixturesRestore`) restores **every** folder here into the
 current build, and checks each value in `expect.json`. That is the 1.0.0-rc.1 gate: a backup

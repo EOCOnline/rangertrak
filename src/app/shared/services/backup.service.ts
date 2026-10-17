@@ -1,12 +1,14 @@
 import { inject, Injectable, Injector, signal } from '@angular/core'
-import { EncryptedFile, DecryptionFailedError, decryptBytes, encryptJson, isEncryptedFile } from '../crypto/encrypted-file'
-import { HANDOVER_KIND, HANDOVER_NOT_A_BACKUP_MESSAGE, looksLikeZip } from '../export/handover-kind'
+import { EncryptedFile, DecryptionFailedError, decryptBytes, encryptBytes, encryptJson, isEncryptedFile } from '../crypto/encrypted-file'
+import { ATTACHMENTS_KIND, HANDOVER_KIND, HANDOVER_NOT_A_BACKUP_MESSAGE, looksLikeZip } from '../export/handover-kind'
 
 import * as packageJson from '../../../../package.json'
 import {
   RadioLogType, RadioLogService, LogService, RangerService, RangerType, MissionService,
   MissionType, MissionLocationService, MissionLocationType, AarNoteService, AarNoteType, RangerPhotoService
 } from './'
+import { liveRefs } from '../../domain/attachments'
+import type { AttachmentRef } from '../../domain/attachments'
 import { migrateMission } from '../../domain/mission-migration'
 import { normalizeRangerIds } from '../../domain/ranger-migration'
 import { migrateRadioLog } from '../../domain/radio-log-migration'
@@ -54,6 +56,19 @@ export type MissionExport = {
 }
 
 export const MISSION_EXPORT_SCHEMA_VERSION = 1
+
+/**
+ * What restoring an attachments companion did (E-194): counts, never content. `mismatched` are
+ * names of files whose bytes did not match their fingerprint (shown to the operator, never
+ * logged); `elsewhere` are references still without bytes on this device.
+ */
+export type AttachmentsRestoreResult = {
+  restored: number
+  alreadyHere: number
+  unreferenced: number
+  mismatched: string[]
+  elsewhere: number
+}
 
 /**
  * Exports/imports a full mission (settings + rangers + radio log entries) as a
@@ -170,7 +185,111 @@ export class BackupService {
 
     this.log.info(`Exported mission to ${filename}`
       + `${encrypted ? ' (encrypted)' : ' (NOT encrypted)'}`, this.id)
+
+    // E-194 / D-60 item 6: attachment bytes never go in the JSON (references only, so every D-53
+    // fixture stays valid). When any live reference has bytes here, they follow in a companion
+    // zip under the same passphrase. Sequenced after the JSON, so a failure here cannot cost
+    // the backup itself.
+    await this.exportAttachments(payload, missionLabel, passphrase)
     this.lastBackupCompletedAt.set(Date.now())
+  }
+
+  /**
+   * The backup's companion file `rangertrak-<mission>-<date>-attachments.zip` (`.rtenc.zip` when
+   * encrypted): `attachments/<sha256><ext>` stored without compression, plus `attachments.json`.
+   * Written only when some live reference has bytes on this device. The zip is built in memory,
+   * and encrypted as one block like the backup itself, with the same passphrase.
+   * Returns how many files it holds.
+   */
+  private async exportAttachments(payload: MissionExport, missionLabel: string, passphrase?: string): Promise<number> {
+    const refs = new Map<string, AttachmentRef>()
+    for (const entry of payload.radioLog.logEntries) {
+      for (const ref of liveRefs(entry)) if (!refs.has(ref.sha256)) refs.set(ref.sha256, ref)
+    }
+    const files: { sha256: string, name: string, type: string, bytes: Uint8Array }[] = []
+    for (const ref of refs.values()) {
+      if (!(await this.attachmentStore.has(ref.sha256))) continue
+      const blob = await this.attachmentStore.getOriginal(ref.sha256)
+      files.push({ sha256: ref.sha256, name: ref.name, type: ref.type, bytes: new Uint8Array(await blob.arrayBuffer()) })
+    }
+    if (!files.length) return 0
+
+    const { buildAttachmentsZipBytes } = await import('../export/attachments-zip')
+    const zip = buildAttachmentsZipBytes(files, payload.exportedAt) as Uint8Array<ArrayBuffer>
+    const encrypted = !!passphrase
+    const body = encrypted
+      ? new TextEncoder().encode(JSON.stringify(await encryptBytes(zip, passphrase!,
+        { exportedAt: payload.exportedAt, appVersion: payload.appVersion, kind: ATTACHMENTS_KIND }), null, 2))
+      : zip
+    const filename = `rangertrak-${missionLabel}-${payload.exportedAt.slice(0, 10)}-attachments.${encrypted ? 'rtenc.zip' : 'zip'}`
+    const url = URL.createObjectURL(new Blob([body as BlobPart], { type: encrypted ? 'application/json' : 'application/zip' }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
+    this.log.info(`Exported ${files.length} attachments to a companion file`
+      + `${encrypted ? ' (encrypted)' : ' (NOT encrypted)'}.`, this.id)
+    return files.length
+  }
+
+  /** Which kind of file a Restore pick is: the backup JSON, or its attachments companion (plain zip or encrypted). */
+  async classifyRestoreFile(file: File): Promise<'backup' | 'attachments'> {
+    if (looksLikeZip(new Uint8Array(await file.slice(0, 2).arrayBuffer()))) return 'attachments'
+    try {
+      const parsed = JSON.parse(await file.text())
+      if (isEncryptedFile(parsed) && parsed.hint?.kind === ATTACHMENTS_KIND) return 'attachments'
+    } catch { /* not JSON: readFileAsMissionExport will say so */ }
+    return 'backup'
+  }
+
+  /**
+   * Opens an attachments companion and restores the bytes for references already on this device
+   * (the backup JSON first when both were picked, so its entries are in). Every file is
+   * re-hashed; mismatches are listed in the result and never stored. The zip alone is fine: it
+   * adds bytes for references the device already holds.
+   */
+  async restoreAttachmentsFile(
+    file: File, getPassphrase?: (hint?: EncryptedFile['hint']) => string | null,
+  ): Promise<AttachmentsRestoreResult> {
+    let bytes: Uint8Array = new Uint8Array(await file.arrayBuffer())
+    if (!looksLikeZip(bytes)) {
+      const parsed = JSON.parse(new TextDecoder().decode(bytes))
+      if (!isEncryptedFile(parsed)) throw new Error('This is not an attachments file.')
+      if (!getPassphrase) throw new Error('This attachments file is encrypted, and no passphrase was supplied.')
+      const passphrase = getPassphrase(parsed.hint)
+      if (passphrase === null) throw new Error('Cancelled - an encrypted attachments file cannot be opened without its passphrase.')
+      bytes = await decryptBytes(parsed, passphrase)
+    }
+    const { readAttachmentsZip } = await import('../export/attachments-zip')
+    const zip = readAttachmentsZip(bytes)
+    const entries = this.radioLogService.getCurrentRadioLog().logEntries
+    const result = await this.attachmentStore.restoreVerified(zip.files, entries)
+    return {
+      restored: result.stored, alreadyHere: result.alreadyHere, unreferenced: result.unreferenced,
+      mismatched: result.mismatched, elsewhere: (await this.attachmentsStatus()).elsewhere,
+    }
+  }
+
+  /** Nothing restored: just how many live references have no bytes on this device ("on another device"). */
+  async attachmentsStatus(): Promise<AttachmentsRestoreResult> {
+    const sizes = await this.attachmentStore.sizes()
+    const missing = new Set<string>()
+    for (const entry of this.radioLogService.getCurrentRadioLog().logEntries) {
+      for (const ref of liveRefs(entry)) if (!(ref.sha256 in sizes)) missing.add(ref.sha256)
+    }
+    return { restored: 0, alreadyHere: 0, unreferenced: 0, mismatched: [], elsewhere: missing.size }
+  }
+
+  /** The restore line for a result, e.g. "3 attachments restored, 2 still on another device." '' when there is nothing to say. */
+  describeAttachmentsRestore(r: AttachmentsRestoreResult): string {
+    if (!r.restored && !r.elsewhere && !r.mismatched.length && !r.alreadyHere) return ''
+    const parts = [`${r.restored} attachment${r.restored === 1 ? '' : 's'} restored`]
+    if (r.elsewhere) parts.push(`${r.elsewhere} still on another device`)
+    if (r.mismatched.length) {
+      parts.push(`${r.mismatched.length} did not match their fingerprint and were NOT restored (${r.mismatched.join(', ')})`)
+    }
+    return parts.join(', ') + '.'
   }
 
   /**

@@ -14,11 +14,15 @@
  *   1. Loads the Grand Canyon demo (Mission > Danger zone > Load sample mission). FAKE DATA
  *      ONLY: the roster holds PII in real use, and these files are committed to a public repo.
  *   2. Names the mission FIXTURE-<version> and saves.
+ *   2b. E-194 (D-53, ADR D-60): saves one radio log entry with ONE tiny attachment (a 1x1 PNG,
+ *      fake) through Entry's Attach button, so the fixture carries a reference and its bytes.
  *   3. Takes a plain backup and an encrypted one (fixed passphrase below - fake data, so it is
  *      fine in the repo), exactly as a scribe would with "Back up mission".
  *   4. Writes expect.json from the plain backup the app actually produced: the counts and one
  *      named sample of each part that a restore must bring back.
  *
+ * E-194: each backup also writes its attachments companion zip, kept beside the JSON as
+ * backup-attachments.zip and backup-encrypted-attachments.rtenc.zip.
  * Refuses to write anything if the backup carries a geocoding API key.
  * Kills only the server and Chrome it started itself. Exits non-zero on failure.
  */
@@ -115,6 +119,19 @@ const clickButton = (b, pattern) => b.evaluate(`(() => {
   return !!btn
 })()`)
 
+/** Waits for a settled file in `dir` whose name matches `pattern` (and is not still downloading); returns its path. */
+async function waitForFile(dir, pattern) {
+  for (let i = 0; i < 60; i++) {
+    await sleep(250)
+    const files = fs.readdirSync(dir).filter(f => pattern.test(f) && !f.endsWith('.crdownload'))
+    if (files.length === 1) return path.join(dir, files[0])
+  }
+  throw new Error(`no download matching ${pattern} arrived`)
+}
+
+// A real 1x1 PNG. Fake data, like everything in a fixture.
+const FIXTURE_PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64')
+
 /** Waits for exactly one settled .json in `dir` and returns its path. */
 async function waitForDownload(dir) {
   for (let i = 0; i < 60; i++) {
@@ -168,6 +185,29 @@ async function waitForDownload(dir) {
     if (!named) throw new Error('no Mission # field')
     await sleep(2500) // past the autosave delay
 
+    // 2b. One entry with one attachment, through the real Attach button (E-194). The file's bytes are
+    //     hashed and stored when the entry is saved; give that a moment.
+    const pngPath = path.join(tmp, 'fixture-clue.png')
+    fs.writeFileSync(pngPath, FIXTURE_PNG)
+    await goto(b, '/')
+    const typed = await b.evaluate(`(() => {
+      const input = document.getElementById('enter__Callsign-input')
+      if (!input) return false
+      Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(input, 'FIXTURE-ATT')
+      input.dispatchEvent(new Event('input', { bubbles: true }))
+      return true
+    })()`)
+    if (!typed) throw new Error('no callsign field on Entry')
+    await sleep(600)
+    await b.send('DOM.enable')
+    const doc = await b.send('DOM.getDocument', { depth: -1 })
+    const picker = await b.send('DOM.querySelector', { nodeId: doc.root.nodeId, selector: '[data-testid="entry-attach-file"]' })
+    if (!picker.nodeId) throw new Error('no Attach file input on Entry')
+    await b.send('DOM.setFileInputFiles', { files: [pngPath], nodeId: picker.nodeId })
+    await sleep(1200)
+    if (!await clickButton(b, '/Add to radio log/i')) throw new Error('no "Add to radio log" button')
+    await sleep(3000)
+
     fs.mkdirSync(OUT, { recursive: true })
 
     // 3a. Plain backup: confirm, then a blank passphrase.
@@ -178,6 +218,7 @@ async function waitForDownload(dir) {
     const plainPath = await waitForDownload(downloads)
     const plain = JSON.parse(fs.readFileSync(plainPath, 'utf8'))
     moveFile(plainPath, path.join(OUT, 'backup.json'))
+    moveFile(await waitForFile(downloads, /-attachments\.zip$/), path.join(OUT, 'backup-attachments.zip'))
 
     // 3b. Encrypted backup: confirm, passphrase, passphrase again.
     b.resetQueue()
@@ -188,10 +229,13 @@ async function waitForDownload(dir) {
     // and throws every later check's dialog answers out of step.
     if (!JSON.parse(fs.readFileSync(encPath, 'utf8')).ciphertext) throw new Error('the "encrypted" backup came out unencrypted - dialog answers out of step?')
     moveFile(encPath, path.join(OUT, 'backup-encrypted.json'))
+    moveFile(await waitForFile(downloads, /-attachments\.rtenc\.zip$/), path.join(OUT, 'backup-encrypted-attachments.rtenc.zip'))
 
     // 4. What a restore must bring back, read from what the app actually wrote.
     if (plain.settings?.googleGeocodingApiKey) throw new Error('the backup carries a geocoding API key - refusing to write a public fixture')
     if (plain.settings?.mission !== 'FIXTURE-' + version) throw new Error(`mission name did not save (got "${plain.settings?.mission}")`)
+    const attached = plain.radioLog.logEntries.find(e => e.attachments?.length)?.attachments?.[0]
+    if (!attached) throw new Error('the backup carries no attachment reference - did the Attach step run?')
     const expect = {
       version,
       madeAt: plain.exportedAt,
@@ -204,6 +248,10 @@ async function waitForDownload(dir) {
       sampleEntry: { callsign: plain.radioLog.logEntries[0]?.callsign, status: plain.radioLog.logEntries[0]?.status },
       locations: (plain.locations ?? []).length,
       sampleLocationName: plain.locations?.[0]?.name,
+      // E-194: the reference the JSON carries, and the fingerprint the companion zip must bring back.
+      attachments: 1,
+      attachmentSha256: attached.sha256,
+      attachmentName: attached.name,
     }
     if (!expect.rangers || !expect.radioLogEntries || !expect.locations) {
       throw new Error(`the demo did not load fully: ${JSON.stringify(expect)}`)

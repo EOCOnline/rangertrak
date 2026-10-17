@@ -90,6 +90,63 @@ describe('handover file', () => {
     });
   });
 
+  describe('attachments folder (E-194)', () => {
+    const sha = 'ab'.repeat(32);
+    const file = (bytes: Uint8Array, over = {}) => ({ sha256: sha, name: 'wash.jpg', type: 'image/jpeg', bytes, ...over });
+
+    it('carries the bytes in attachments/, stored not compressed, and reads them back', async () => {
+      const bytes = new Uint8Array(4096).fill(7);   // very compressible on purpose
+      const built = await buildHandoverFile(input({ attachments: [file(bytes)] }));
+
+      const { attachments, manifest } = await openHandoverFile(built.bytes);
+
+      expect(attachments.length).toBe(1);
+      expect(attachments[0].sha256).toBe(sha);
+      expect(attachments[0].type).toBe('image/jpeg');
+      expect([...attachments[0].bytes]).toEqual([...bytes]);
+      // Level 0: the zip is at least as big as the bytes it holds (a compressed zip would be tiny).
+      expect(built.bytes.length).toBeGreaterThan(bytes.length);
+      // No manifest change, so no schema bump for the folder alone.
+      expect(manifest.schemaVersion).toBe(MISSION_ZIP_SCHEMA_VERSION);
+    });
+
+    it('a file in attachments/ is never mistaken for a ranger photo', async () => {
+      const built = await buildHandoverFile(input({ attachments: [file(new Uint8Array([1, 2, 3]))] }));
+
+      const { photos } = await openHandoverFile(built.bytes);
+
+      expect(photos.map(p => p.filename)).toEqual(['REW-1.jpg']);
+    });
+
+    it('a hand-over with none reads back an empty list', async () => {
+      expect((await openHandoverFile((await buildHandoverFile(input())).bytes)).attachments).toEqual([]);
+    });
+
+    it('round-trips through the passphrase envelope', async () => {
+      const bytes = new Uint8Array([9, 8, 7, 6]);
+      const built = await buildHandoverFile(input({ attachments: [file(bytes)], passphrase: 'pw' }));
+
+      const { attachments } = await openHandoverFile(built.bytes, 'pw');
+
+      expect([...attachments[0].bytes]).toEqual([...bytes]);
+    });
+
+    it('LARGE: a 64 MB attachment survives a plain and an encrypted hand-over byte for byte', async () => {
+      const big = new Uint8Array(64 * 1024 * 1024);
+      for (let i = 0; i < big.length; i += 4096) big[i] = (i / 4096) & 0xff;
+      const check = async (passphrase?: string) => {
+        const built = await buildHandoverFile(input({ attachments: [file(big, { type: 'video/mp4', name: 'run.mp4' })], passphrase }));
+        const { attachments } = await openHandoverFile(built.bytes, passphrase);
+        expect(attachments[0].bytes.length).toBe(big.length);
+        expect(attachments[0].bytes[4096 * 100]).toBe(100);
+        return built.bytes.length;
+      };
+
+      expect(await check()).toBeGreaterThan(big.length);
+      expect(await check('pw')).toBeGreaterThan(big.length);
+    }, 120000);
+  });
+
   describe('encrypted hand-over (the backup\'s envelope around the zip)', () => {
     it('round-trips with the right passphrase', async () => {
       const file = await buildHandoverFile(input({ passphrase: 'correct horse' }));
