@@ -135,8 +135,8 @@ test('takeover: needs the password, issues a new key, old key gets 403 replaced'
   const refused = await b.call('POST', '/api/claim', { json: { password: 'bad', by: { ...BY, scribe: 'Sam' } } });
   assert.strictEqual(refused.status, 403);
   assert.strictEqual(refused.json.error, 'claimed');
-  assert.deepStrictEqual(refused.json.by, BY);
-  assert.ok(refused.json.at);
+  assert.strictEqual(refused.json.needPassword, true);
+  assert.ok(!('by' in refused.json) && !('at' in refused.json), 'a wrong-password takeover learns nothing about the holder');
   assert.strictEqual((await publish(b, oldKey, { mission: 'still me', reports: [] })).status, 204); // a failed takeover changes nothing
 
   const took = await b.call('POST', '/api/claim', { json: { password: 'pw', by: { ...BY, scribe: 'Sam' } } });
@@ -154,6 +154,31 @@ test('takeover: needs the password, issues a new key, old key gets 403 replaced'
   const read = await b.call('GET', '/api/mission', { headers: { 'X-Board-Password': 'pw' } });
   assert.strictEqual(read.json.board.by.scribe, 'Sam');
   assert.strictEqual(read.json.board.previous.by.scribe, 'Pat');
+}));
+
+test('replaced: details only for a superseded key or an open Board', withBoard(async (b) => {
+  const oldKey = await claim(b, 'pw');
+  await publish(b, oldKey, { mission: 'M', reports: [] });
+  // Protected, current key: a wrong or missing key learns nothing.
+  const wrong = await publish(b, 'not-a-key', {});
+  assert.deepStrictEqual(wrong.json, { state: 'replaced' });
+  const missing = await b.call('GET', '/api/requests');
+  assert.strictEqual(missing.status, 403);
+  assert.deepStrictEqual(missing.json, { state: 'replaced' });
+  // After a takeover the old key is recognised and told who has it now.
+  await b.call('POST', '/api/claim', { json: { password: 'pw', by: { ...BY, scribe: 'Sam' } } });
+  const old = await publish(b, oldKey, {});
+  assert.strictEqual(old.json.state, 'replaced');
+  assert.strictEqual(old.json.by.scribe, 'Sam');
+  assert.ok(old.json.at);
+  assert.deepStrictEqual((await publish(b, 'still-not-a-key', {})).json, { state: 'replaced' });
+}));
+
+test('replaced on an open Board still names the holder', withBoard(async (b) => {
+  await claim(b);
+  const r = await publish(b, 'not-a-key', {});
+  assert.strictEqual(r.status, 403);
+  assert.deepStrictEqual(r.json.by, BY);
 }));
 
 test('takeover of an open Board needs nothing; a new password in the body is adopted', withBoard(async (b) => {

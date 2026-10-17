@@ -84,6 +84,7 @@ function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, upl
   const requests = new Set();
   const originals = new Map(); // sha -> Buffer; Map keeps insertion order, so the first key is the oldest
   let originalsBytes = 0;
+  const retiredKeys = []; // SHA-256 hex of keys superseded by a takeover, newest last, capped
   const attempts = new Map(); // remote address -> { fails: number[], blockedUntil }
   const board = { name };
 
@@ -136,7 +137,11 @@ function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, upl
     if (!claim) { send(res, 409, { state: 'unclaimed' }); return false; }
     const key = req.headers['x-board-key'];
     if (typeof key !== 'string' || !safeEqual(key, claim.key)) {
-      send(res, 403, { state: 'replaced', by: claim.by, at: claim.at });
+      // Who holds the Board is told only to a device that provably held it (its key was
+      // superseded by a takeover) or when the Board is open anyway. Any other key gets no details,
+      // so a stranger on the network learns nothing from a password-protected Board.
+      const known = typeof key === 'string' && retiredKeys.includes(digest(key).toString('hex'));
+      send(res, 403, !claim.password || known ? { state: 'replaced', by: claim.by, at: claim.at } : { state: 'replaced' });
       return false;
     }
     return true;
@@ -202,12 +207,14 @@ function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, upl
       if (retry) { sendBlocked(res, retry); return; }
       if (!safeEqual(password, claim.password)) {
         recordFailure(addr);
-        send(res, 403, { error: 'claimed', by: claim.by, at: claim.at });
+        send(res, 403, { error: 'claimed', needPassword: true });
         return;
       }
       attempts.delete(addr);
     }
     const previous = { by: claim.by, at: claim.at };
+    retiredKeys.push(digest(claim.key).toString('hex'));
+    if (retiredKeys.length > 20) retiredKeys.shift();
     claim = {
       key: crypto.randomBytes(32).toString('base64url'),
       password: password !== '' ? password : claim.password,
