@@ -3536,7 +3536,7 @@ function attachmentsWipe() {
 }
 
 /** Types a call sign on Entry, attaches `files` through the hidden input, and presses "Add to radio log". */
-async function entrySaveWithAttachments(callsign, files) {
+async function entrySaveWithAttachments(callsign, files, beforeSubmit) {
   await goto('/')
   await evaluate(`(() => {
     const input = document.getElementById('enter__Callsign-input');
@@ -3547,6 +3547,7 @@ async function entrySaveWithAttachments(callsign, files) {
   await setFileInput('[data-testid="entry-attach-file"]', files)
   await sleep(1200)
   const waiting = await evaluate(`document.querySelectorAll('[data-testid="pending-attachment"]').length`)
+  if (beforeSubmit) await beforeSubmit()
   await evaluate(`document.querySelector('.enter__Submit-button').click()`)
   return waiting
 }
@@ -3754,6 +3755,152 @@ async function checkAttachments(downloads) {
   await sleep(4000)   // startRealMission() clears the demo, sweeps, and reloads
   await goto('/')
   check('Start a real mission leaves the attachments store empty', await attachmentKeys(), [])
+
+  await evaluate(`localStorage.clear()`); await idbClearAll(); await attachmentsWipe()
+  await send('Emulation.setDeviceMetricsOverride', { width: 1360, height: 900, deviceScaleFactor: 1, mobile: false })
+}
+
+// ── E-194 / ADR D-60 item 2 (revised 2026-10-17): smaller copies ──────────────
+
+/** A valid RGB PNG of noisy gradient, written with Node's zlib only: big enough that a JPEG copy is much smaller. */
+function writeBigPng(file, width, height, seed) {
+  const zlib = require('zlib')
+  const crcTable = new Int32Array(256).map((_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c })
+  const crc = buf => { let c = -1; for (const b of buf) c = crcTable[(c ^ b) & 255] ^ (c >>> 8); return (c ^ -1) >>> 0 }
+  const chunk = (type, data) => {
+    const body = Buffer.concat([Buffer.from(type), data])
+    const out = Buffer.alloc(12 + data.length)
+    out.writeUInt32BE(data.length, 0); body.copy(out, 4); out.writeUInt32BE(crc(body), 8 + data.length)
+    return out
+  }
+  const raw = Buffer.alloc(height * (1 + width * 3))
+  let s = seed
+  for (let y = 0; y < height; y++) {
+    const row = y * (1 + width * 3)
+    for (let x = 0; x < width; x++) {
+      s = (s * 1103515245 + 12345) & 0x7fffffff
+      const n = (s % 9) - 4
+      raw[row + 1 + x * 3] = (x * 255 / width + n) & 255
+      raw[row + 2 + x * 3] = (y * 255 / height + n) & 255
+      raw[row + 3 + x * 3] = (seed + n) & 255
+    }
+  }
+  const ihdr = Buffer.alloc(13); ihdr.writeUInt32BE(width, 0); ihdr.writeUInt32BE(height, 4); ihdr[8] = 8; ihdr[9] = 2
+  fs.writeFileSync(file, Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', ihdr), chunk('IDAT', zlib.deflateSync(raw, { level: 1 })), chunk('IEND', Buffer.alloc(0))]))
+}
+
+/** The byte length of every stored original, by fingerprint. */
+function attachmentSizes() {
+  return evaluate(`(new Promise(res => {
+    const req = indexedDB.open('rangertrak-attachments');
+    req.onupgradeneeded = () => req.transaction.abort();
+    req.onsuccess = () => { const db = req.result;
+      const out = {}; const c = db.transaction('originals', 'readonly').objectStore('originals').openCursor();
+      c.onsuccess = () => { const cur = c.result; if (!cur) { db.close(); return res(out); } out[String(cur.key)] = cur.value.blob ? cur.value.blob.size : -1; cur.continue(); };
+      c.onerror = () => { db.close(); res(out); };
+    };
+    req.onerror = () => res({});
+  }))`)
+}
+
+async function checkSmallerCopies(downloads) {
+  console.log('\nE-194 / D-60 item 2: smaller copies - the sender at Attach, the receiver in the viewer')
+  const crypto = require('crypto')
+  await send('Emulation.setDeviceMetricsOverride', { width: 3200, height: 900, deviceScaleFactor: 1, mobile: false })
+  const fixtures = path.join(downloads, '..', 'attachment-fixtures')
+  fs.mkdirSync(fixtures, { recursive: true })
+  const sha = p => crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')
+  const pngs = [1, 2, 3].map(i => {
+    const p = path.join(fixtures, `e2e-big-${i}.png`)
+    writeBigPng(p, 2400, 1600, 40 * i)
+    return { path: p, sha: sha(p), size: fs.statSync(p).size }
+  })
+  const wipe = async () => { await goto('/'); await evaluate(`localStorage.clear()`); await idbClearAll(); await attachmentsWipe() }
+  const strip = () => evaluate(`document.querySelectorAll('.rt-attach-viewer__thumb').length`)
+  const text = sel => evaluate(`document.querySelector(${JSON.stringify(sel)})?.textContent.replace(/\\s+/g, ' ').trim() ?? ''`)
+
+  // ── the sender: Keep original is the default; Smaller copy stores only the copy ──
+  await wipe()
+  const facts = {}
+  await entrySaveWithAttachments('E2E-SMALL', [pngs[0].path], async () => {
+    facts.keepChecked = await evaluate(`document.querySelector('[data-testid="pending-keep"]')?.classList.contains('mat-button-toggle-checked') ?? null`)
+    facts.noteBefore = await evaluate(`!!document.querySelector('[data-testid="pending-smaller-note"]')`)
+    await evaluate(`document.querySelector('[data-testid="pending-smaller"] button')?.click()`)
+    await sleep(400)
+    facts.smallerChecked = await evaluate(`document.querySelector('[data-testid="pending-smaller"]')?.classList.contains('mat-button-toggle-checked') ?? null`)
+    facts.note = await text('[data-testid="pending-smaller-note"]')
+  })
+  check('the chip offers the choice, and Keep original is selected by default', facts.keepChecked, true)
+  check('the explanation shows only once Smaller copy is chosen', [facts.noteBefore, facts.smallerChecked], [false, true])
+  check('the note is mild and says what is not kept',
+    /Sends much faster over a field network\. Fine detail, and the photo's own location and camera data, aren't kept\./.test(facts.note), true)
+  const stored = await pollUntil(attachmentKeys, k => k.length === 1)
+  check('only the smaller copy is stored, never the original', stored.length === 1 && stored[0] !== pngs[0].sha, true)
+  const sizes = await attachmentSizes()
+  check('and the stored size is smaller than the original', Object.values(sizes)[0] > 0 && Object.values(sizes)[0] < pngs[0].size, true)
+
+  await goto('/radio-log')
+  const mine = await openAttachmentViewerFromGrid()
+  check('the viewer opens on the entry', mine.opened, true)
+  await pollUntil(viewerFingerprint, v => v.length === 64)
+  check("the viewer says it is a smaller copy, made on the sender's phone, from a size",
+    /^Smaller copy, made on .+ phone from \d/.test(await text('[data-testid="attachment-kind"]')), true)
+  check("it shows both fingerprints: this file's, and the original's",
+    [await viewerFingerprint() === stored[0],
+      await evaluate(`document.querySelector('[data-testid="attachment-original-fingerprint"]')?.title ?? ''`) === pngs[0].sha], [true, true])
+  check('a smaller copy is not offered a further smaller copy',
+    await evaluate(`!document.querySelector('[data-testid="attachment-smaller"]')`), true)
+  await closeAttachmentViewer()
+
+  // ── the receiver: Keep both adds a second reference beside the original ──
+  await wipe()
+  await entrySaveWithAttachments('E2E-KEEP', [pngs[1].path])
+  check('Keep original (the default) stores the original as received', await pollUntil(attachmentKeys, k => k.length === 1), [pngs[1].sha])
+  await goto('/radio-log')
+  await openAttachmentViewerFromGrid()
+  await pollUntil(viewerFingerprint, v => v.length === 64)
+  await pollUntil(() => evaluate(`!!document.querySelector('[data-testid="attachment-smaller"]')`), v => v === true, 20, 250)
+  await evaluate(`document.querySelector('[data-testid="attachment-smaller"]')?.click()`)
+  await pollUntil(() => evaluate(`!!document.querySelector('[data-testid="smaller-copy-warning"]')`), v => v === true, 20, 200)
+  const warning = await text('[data-testid="smaller-copy-warning"]')
+  check("the receiver's warning is stronger: the fingerprint proves it, a copy will not match",
+    /Its fingerprint proves it is exactly the file they sent\. A smaller copy won't match that fingerprint/.test(warning)
+    && /The original is kept unless you choose to replace it\./.test(warning), true)
+  await evaluate(`document.querySelector('[data-testid="smaller-copy-keep"]')?.click()`)
+  check('Keep both leaves two references on the entry', await pollUntil(strip, n => n === 2, 40, 250), 2)
+  check('and both are stored: the original and the copy', (await pollUntil(attachmentKeys, k => k.length === 2)).includes(pngs[1].sha), true)
+  const kind = await pollUntil(() => text('[data-testid="attachment-kind"]'), v => v.length > 0)
+  check('the copy says it was made by the operator, from a size, with the original kept',
+    /^Smaller copy made by .+ from \d.*; original kept$/.test(kind), true)
+  check("the copy's \"Original's fingerprint\" is the first file's",
+    await evaluate(`document.querySelector('[data-testid="attachment-original-fingerprint"]')?.title ?? ''`), pngs[1].sha)
+  await closeAttachmentViewer()
+
+  // ── the receiver: Replace needs a typed REPLACE; the original is then marked and its bytes freed ──
+  await wipe()
+  await entrySaveWithAttachments('E2E-REPL', [pngs[2].path])
+  check('the third original is stored', await pollUntil(attachmentKeys, k => k.length === 1), [pngs[2].sha])
+  await goto('/radio-log')
+  await openAttachmentViewerFromGrid()
+  await pollUntil(viewerFingerprint, v => v.length === 64)
+  await pollUntil(() => evaluate(`!!document.querySelector('[data-testid="attachment-smaller"]')`), v => v === true, 20, 250)
+  await evaluate(`document.querySelector('[data-testid="attachment-smaller"]')?.click()`)
+  await pollUntil(() => evaluate(`!!document.querySelector('[data-testid="smaller-copy-replace"]')`), v => v === true, 20, 200)
+  await evaluate(`document.querySelector('[data-testid="smaller-copy-replace"]')?.click()`)
+  await pollUntil(() => evaluate(`!!document.querySelector('[data-testid="smaller-copy-replace-input"]')`), v => v === true, 20, 200)
+  check('Replace stays disabled until REPLACE is typed',
+    await evaluate(`document.querySelector('[data-testid="smaller-copy-replace-go"]')?.disabled`), true)
+  await evaluate(`(() => { const i = document.querySelector('[data-testid="smaller-copy-replace-input"]'); i.value = 'REPLACE'; i.dispatchEvent(new Event('input', { bubbles: true })); })()`)
+  await sleep(300)
+  check('and goes live once it is', await evaluate(`document.querySelector('[data-testid="smaller-copy-replace-go"]')?.disabled`), false)
+  await evaluate(`document.querySelector('[data-testid="smaller-copy-replace-go"]')?.click()`)
+  check('Replace leaves two references: the original, marked, and the copy', await pollUntil(strip, n => n === 2, 40, 250), 2)
+  const after = await pollUntil(attachmentKeys, k => k.length === 1 && !k.includes(pngs[2].sha))
+  check("the original's bytes are freed; only the copy is stored", after.length === 1 && !after.includes(pngs[2].sha), true)
+  await evaluate(`document.querySelectorAll('.rt-attach-viewer__thumb')[0]?.click()`)
+  const replaced = await pollUntil(() => text('[data-testid="attachment-replaced"]'), v => v.length > 0)
+  check('the original shows "Replaced by a smaller copy hh:mm by ..."', /^Replaced by a smaller copy \d{2}:\d{2} by/.test(replaced), true)
+  await closeAttachmentViewer()
 
   await evaluate(`localStorage.clear()`); await idbClearAll(); await attachmentsWipe()
   await send('Emulation.setDeviceMetricsOverride', { width: 1360, height: 900, deviceScaleFactor: 1, mobile: false })
@@ -4551,6 +4698,7 @@ async function main() {
       if (want('mission')) await checkMissionAddRowsPersist()
       if (want('mission')) await checkAarNotes()
       if (want('attachments')) await checkAttachments(downloads) // E-194; wipes storage
+      if (want('attachments')) await checkSmallerCopies(downloads) // E-194 item 2 (revised); wipes storage
       if (want('board')) await checkBoard(downloads) // D-61; needs Chrome's --ignore-certificate-errors, see main(); wipes storage
       if (want('entry')) await checkEntryUsesNewMissionDefault()
       if (want('mission')) await checkStatusColorMigration()
