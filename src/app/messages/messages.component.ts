@@ -21,6 +21,8 @@ import { formatStation } from '../domain/station-label'
 import { printIcs213 } from '../shared/export/ics213-print'
 import { PrintCopiesService } from '../shared/services/print-copies.service'
 import { AttachmentChipComponent } from '../shared/attachments/attachment-chip.component'
+import { ics213AttachmentsFor } from '../shared/attachments/attachment-print'
+import { AttachmentStoreService } from '../shared/services/attachment-store.service'
 import { AttachmentViewerService } from '../shared/attachments/attachment-viewer.service'
 import {
   RadioLogService, RadioLogEntryType, LogService, MissionService, MissionType
@@ -63,6 +65,7 @@ import {
 export class MessagesComponent implements OnInit, OnDestroy {
   private id = 'Messages'
   private attachmentViewer = inject(AttachmentViewerService)
+  private attachmentStore = inject(AttachmentStoreService)
   title = 'Messages — ICS-213s'
   pageDescr = 'ICS-213 general messages generated from radio log entries.'
 
@@ -218,7 +221,8 @@ export class MessagesComponent implements OnInit, OnDestroy {
       throw new Error(`Fetching the ICS-213 template failed: ${res.status}`)
     }
     const templateBytes = new Uint8Array(await res.arrayBuffer())
-    return fillIcs213Pdf(templateBytes, ics213FieldsFromReport(report, this.settings), true, this.settings?.missionMode === 'exercise')
+    return fillIcs213Pdf(templateBytes, ics213FieldsFromReport(report, this.settings), true, this.settings?.missionMode === 'exercise',
+      await ics213AttachmentsFor(report, this.attachmentStore))
   }
 
   /**

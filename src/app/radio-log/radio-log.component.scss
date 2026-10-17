@@ -289,3 +289,16 @@
   margin: 0 0 0.75em;
   color : var(--rt-ink-2);
 }
+
+// E-194: an attachment listed under a 309 row (name, short fingerprint, and a thumbnail for images).
+.ics309-attach {
+  display  : block;
+  font-size: 0.7rem;
+
+  img {
+    display   : block;
+    margin-top: 2px;
+    max-height: 24mm;
+    max-width : 40mm;
+  }
+}

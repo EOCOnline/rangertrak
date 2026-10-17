@@ -26,6 +26,13 @@ import type { MissionType } from '../services/mission.interface'
  * `normalizeRangerIds()` refuses for a credential number.
  */
 
+/**
+ * E-194 / ADR D-60: an attachment as the 213 lists it on the extra page(s) after the form. The
+ * form's own page is untouched. `thumbJpeg` is the stored, EXIF-free thumbnail of an image
+ * (video and audio are listed without one).
+ */
+export type Ics213Attachment = { name: string, fingerprint: string, thumbJpeg?: Uint8Array }
+
 /** Every fillable text field on the real form, exactly as named in the PDF's own AcroForm. */
 export const ICS213_FIELDS = [
   '1 Incident Name Optional',
@@ -56,6 +63,8 @@ export async function fillIcs213Pdf(
   flatten = true,
   /** E-168: stamp EXERCISE across the top of the page (the mission is in Exercise mode). */
   exercise = false,
+  /** E-194: listed on extra page(s) after the form; the printed list may run to several pages. */
+  attachments: readonly Ics213Attachment[] = [],
 ): Promise<Uint8Array> {
   const pdf = await PDFDocument.load(templateBytes)
   const form = pdf.getForm()
@@ -93,7 +102,46 @@ export async function fillIcs213Pdf(
     page.drawText(text, { x, y, size, font, color: rgb(0, 0, 0) })
   }
 
+  if (attachments.length) await appendAttachmentPages(pdf, attachments, exercise)
+
   return pdf.save()
+}
+
+/** The attachments list: one line each (name and short fingerprint), a thumbnail under an image, new pages as needed. */
+async function appendAttachmentPages(pdf: PDFDocument, attachments: readonly Ics213Attachment[], exercise: boolean): Promise<void> {
+  const font = await pdf.embedFont(StandardFonts.Helvetica)
+  const bold = await pdf.embedFont(StandardFonts.HelveticaBold)
+  const { width, height } = pdf.getPage(0).getSize()
+  const margin = 54
+  const thumbMax = 110
+  let page = pdf.addPage([width, height])
+  let y = height - margin
+  const heading = (cont: boolean) => {
+    page.drawText(`Attachments (${attachments.length})${cont ? ' - continued' : ''}`, { x: margin, y, size: 13, font: bold, color: rgb(0, 0, 0) })
+    if (exercise) page.drawText('EXERCISE', { x: width - margin - 70, y, size: 12, font: bold, color: rgb(0, 0, 0) })
+    y -= 24
+  }
+  heading(false)
+
+  for (const a of attachments) {
+    let thumb: Awaited<ReturnType<PDFDocument['embedJpg']>> | undefined
+    if (a.thumbJpeg) {
+      try { thumb = await pdf.embedJpg(a.thumbJpeg) } catch { /* an unreadable thumbnail is simply left off */ }
+    }
+    const scale = thumb ? Math.min(1, thumbMax / Math.max(thumb.width, thumb.height)) : 0
+    const needed = 16 + (thumb ? thumb.height * scale + 6 : 0)
+    if (y - needed < margin) {
+      page = pdf.addPage([width, height])
+      y = height - margin
+      heading(true)
+    }
+    page.drawText(`${a.name}  (${a.fingerprint})`, { x: margin, y, size: 10, font, color: rgb(0, 0, 0), maxWidth: width - 2 * margin })
+    y -= 16
+    if (thumb) {
+      page.drawImage(thumb, { x: margin, y: y - thumb.height * scale + 4, width: thumb.width * scale, height: thumb.height * scale })
+      y -= thumb.height * scale + 6
+    }
+  }
 }
 
 /** The report fields `ics213FieldsFromReport()` below actually reads - narrower than the full

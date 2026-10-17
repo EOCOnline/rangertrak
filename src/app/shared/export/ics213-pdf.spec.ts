@@ -29,6 +29,21 @@ describe('fillIcs213Pdf', () => {
     expect((await PDFDocument.load(stamped)).getPageCount()).toBe(1)
   })
 
+  // E-194: attachments are listed after the form; the form's own page is untouched.
+  it('lists attachments on extra pages, running to more pages when the list is long (E-194)', async () => {
+    const fields = { '4 Subject': 'Road collapse' }
+    const some = Array.from({ length: 3 }, (_, i) => ({ name: `clue-${i}.jpg`, fingerprint: '3f9a12c0…b71e' }))
+    const many = Array.from({ length: 80 }, (_, i) => ({ name: `clue-${i}.jpg`, fingerprint: '3f9a12c0…b71e' }))
+
+    const none = await PDFDocument.load(await fillIcs213Pdf(templateBytes, fields, true, false, []))
+    const one = await PDFDocument.load(await fillIcs213Pdf(templateBytes, fields, true, false, some))
+    const long = await PDFDocument.load(await fillIcs213Pdf(templateBytes, fields, true, false, many))
+
+    expect(none.getPageCount()).toBe(1);
+    expect(one.getPageCount()).toBe(2);
+    expect(long.getPageCount()).toBeGreaterThan(2);
+  })
+
   it('fetched the real template, not an empty/missing response', () => {
     expect(templateBytes.length).toBeGreaterThan(1000)
   })

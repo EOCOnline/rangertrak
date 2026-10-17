@@ -1,5 +1,6 @@
 import { RadioLogEntryType } from '../services/radio-log-entry.interface'
 import { formatStation } from '../../domain/station-label'
+import { PrintAttachment, printAttachments } from '../../domain/attachments'
 
 /**
  * Shapes radio log entries into an ICS-309 (Communications Log) structure - the DATA, not a
@@ -59,6 +60,8 @@ export interface Ics309LogRow {
   // as a whole. Blank for anything filed before `source` existed (E-41 phase 1).
   source: string
   message: string
+  /** E-194: the entry's live attachments, listed under the message (the printout adds thumbnails for images). */
+  attachments: PrintAttachment[]
 }
 
 export interface Ics309Log {
@@ -100,6 +103,7 @@ export function buildIcs309Log(
       to: formatStation(r.toTactical, r.toCallsign),
       source: r.source ?? '',
       message: formatMessage(r),
+      attachments: printAttachments(r),
     }))
 
   return {

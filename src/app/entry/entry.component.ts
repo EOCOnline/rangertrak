@@ -28,6 +28,7 @@ import { PageComponent } from '../shared/page/page.component'
 // Direct path, not the shared/services barrel - see the note in rangers.component.ts.
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
+import { ics213AttachmentsFor } from '../shared/attachments/attachment-print'
 import { AttachmentIntakeService } from '../shared/attachments/attachment-intake.service'
 import { AttachmentBudgetService } from '../shared/attachments/attachment-budget.service'
 import { formatBytes } from '../domain/attachments'
@@ -1127,7 +1128,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       // Same eight-field mapping messages.component.ts's own manual "Print as ICS-213" uses -
       // lifted into ics213-pdf.ts's own ics213FieldsFromReport() so the two callers cannot
       // drift apart the way F29-47's blank Subject/Approved-by-Name once did.
-      const filled = await fillIcs213Pdf(templateBytes, ics213FieldsFromReport(report, this.settings), true, this.settings?.missionMode === 'exercise')
+      const filled = await fillIcs213Pdf(templateBytes, ics213FieldsFromReport(report, this.settings), true, this.settings?.missionMode === 'exercise',
+        await ics213AttachmentsFor(report, this.attachmentStore))
       const outcome = await printIcs213(filled, `ics-213-${report.callsign || 'message'}-${report.id}.pdf`, this.printCopies.totalCopies(), this.settings)
 
       // First print only - printedAt's own doc comment (radio-log-entry.interface.ts)
@@ -1178,7 +1180,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     // E-194: the entry is saved first, then its files are stored and attached, so a slow or failed
     // file can never cost the log entry. Not awaited: the form resets at once, like the 213 print.
     const picked = this.pendingFiles()
-    if (picked.length && newReport.uid) void this.attachPicked(newReport.uid, picked)
+    const attached = picked.length && newReport.uid ? this.attachPicked(newReport.uid, picked) : Promise.resolve()
 
     if (this.submitInfo) {
       // The KEPT confirmation: a fading line beside the Submit button, right where the
@@ -1213,7 +1215,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     // print sees; autoPrint213() only ever touches `this.submitInfo`'s text afterward, never
     // any form state.
     if (this.settings?.autoPrint213 && newReport.generates213) {
-      this.autoPrint213(newReport)
+      // E-194: after the files are attached, so the printed 213 lists them.
+      void attached.then(() => this.autoPrint213(newReport))
     }
 
     this.resetEntryForm()  // std reset just blanks values, doesn't initialize the various form fields...

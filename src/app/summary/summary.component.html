@@ -254,7 +254,11 @@
               <td class="nowrap">{{ fmt(e.date) }}</td>
               <td>{{ station(e) }}</td>
               <td><i class="rt-summary__status-swatch" [style.background-color]="statusFillFor(e.status)"></i>{{ e.status }}</td>
-              <td>{{ e.notes }}</td>
+              <td>{{ e.notes }}
+                @for (a of attachmentsOf(e); track a.sha256) {
+                <span class="rt-summary__attachment">📎 {{ a.name }} ({{ a.fingerprint }})@if (a.isImage && printThumbs()[a.sha256]) {<img [src]="printThumbs()[a.sha256]" alt="" />}</span>
+                }
+              </td>
             </tr>
             }
           </tbody>

@@ -160,6 +160,16 @@ describe('buildIcs309Log with reports that have been through JSON', () => {
     expect(() => buildIcs309Log(restored(['2026-08-26T14:00:00']), mission)).not.toThrow()
   })
 
+  it('lists each live attachment under its row, and not a removed one (E-194)', () => {
+    const sha = (c: string) => c.repeat(64)
+    const ref = (c: string, over = {}) => ({ sha256: sha(c), name: c + '.jpg', type: 'image/jpeg', size: 1, addedAt: '2026-10-16T10:00:00Z', addedBy: 'K7ABC', ...over })
+    const entry = { ...restored(['2026-08-26T14:00:00'])[0], attachments: [ref('a'), ref('b', { removed: { at: '2026-10-16T11:00:00Z', by: 'K7ABC' } })] }
+
+    const log = buildIcs309Log([entry], mission)
+
+    expect(log.rows[0].attachments).toEqual([{ name: 'a.jpg', fingerprint: 'aaaaaaaa…aaaa', sha256: sha('a'), isImage: true }])
+  })
+
   it('formats the operational period from a mission that has been through JSON', () => {
     // The same class of bug on the mission side: formatOperationalPeriod() calls
     // opPeriodStart.toLocaleString(), which throws on a string.

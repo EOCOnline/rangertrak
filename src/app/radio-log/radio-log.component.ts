@@ -349,6 +349,16 @@ export class RadioLogComponent implements OnInit, OnDestroy {
         headerTooltip: 'What was said, in your own words. Free text, and it can be blank. Double-click to edit.',
         tooltipField: "notes"
       },
+      // E-194: two columns that exist for the CSV export only (hidden on screen; the 📎 chip in the
+      // Notes cell is the on-screen face of the same data). onBtnExport() adds them to the export.
+      {
+        colId: 'attachmentCount', headerName: 'Attachments', hide: true, suppressColumnsToolPanel: true,
+        valueGetter: (params: { data: RadioLogEntryType }) => liveRefs(params.data ?? {}).length,
+      },
+      {
+        colId: 'attachmentFiles', headerName: 'Attachment files', hide: true, suppressColumnsToolPanel: true,
+        valueGetter: (params: { data: RadioLogEntryType }) => liveRefs(params.data ?? {}).map(r => r.name).join('; '),
+      },
       // E-11 (2026-08-26): evidenceLocation was captured on Entry and visible nowhere
       // afterward - not the main map, not here. This is the other of the two places the
       // gap named; see mapLeaflet.component.ts's displayMarkers() for the main-map marker.
@@ -822,6 +832,8 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     const params = this.getParams()
     this.gridApi.exportDataAsCsv({
       ...params,
+      // E-194: what the grid shows, plus the two hidden attachment columns.
+      columnKeys: [...this.gridApi.getAllDisplayedColumns().map((c: any) => c.getColId()), 'attachmentCount', 'attachmentFiles'],
       fileName: onlySelected ? params.fileName.replace(/\.csv$/, '-selected.csv') : params.fileName,
       exportedRows: this.allRows() ? 'all' : 'filteredAndSorted',
       onlySelected,
@@ -1086,7 +1098,10 @@ export class RadioLogComponent implements OnInit, OnDestroy {
    * printout" concept anywhere yet (`ics309-log.ts`'s own header comment says as much), and
    * inventing a value would be worse than leaving it blank for the recipient to hand-fill.
    */
-  onBtnPrint309() {
+  /** E-194: object URLs of the stored thumbnails for the attachments on the 309 being printed. */
+  public printThumbs = signal<Record<string, string>>({})
+
+  async onBtnPrint309() {
     const reports = this.reportsForPrintScope()
     if (!reports.length) {
       alert(this.printScope() === 'sincePrint' && !this.settings?.lastPrintedAt
@@ -1102,6 +1117,14 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       opPeriodStart: this.settings.opPeriodStart,
       opPeriodEnd: this.settings.opPeriodEnd,
     })
+    // E-194: images print their stored thumbnail beside the list; read before the block renders.
+    const thumbs: Record<string, string> = {}
+    for (const row of log.rows) {
+      for (const a of row.attachments) {
+        if (a.isImage && !(a.sha256 in thumbs)) thumbs[a.sha256] = await this.attachmentStore.thumbUrl(a.sha256).catch(() => '')
+      }
+    }
+    this.printThumbs.set(thumbs)
     this.ics309Log.set(log)
     this.log.info(`Printing ICS-309 log: ${reports.length} row(s), scope "${this.printScope()}".`, this.id)
 

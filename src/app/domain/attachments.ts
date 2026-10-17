@@ -129,6 +129,16 @@ export function formatFingerprint(sha: string): string {
   return sha.length <= 12 ? sha : `${sha.slice(0, 8)}…${sha.slice(-4)}`
 }
 
+/** One live attachment as a printout lists it: its name, the short fingerprint, and whether a thumbnail applies. */
+export type PrintAttachment = { name: string, fingerprint: string, sha256: string, isImage: boolean }
+
+/** What a print (ICS-213, ICS-309, summary) lists for an entry: each live attachment, in the entry's stable order. */
+export function printAttachments(entry: HasAttachments): PrintAttachment[] {
+  return liveRefs(entry).map(r => ({
+    name: r.name, fingerprint: formatFingerprint(r.sha256), sha256: r.sha256, isImage: r.type.startsWith('image/'),
+  }))
+}
+
 /** Bytes per megabyte: the budget setting is in MB and so is every figure shown beside it. */
 export const BYTES_PER_MB = 1024 * 1024
 

@@ -10,6 +10,8 @@ import {
   MissionSummary, NOT_RECORDED_LABEL, summarizeMission,
 } from '../domain/mission-summary'
 import { formatStation } from '../domain/station-label'
+import { printAttachments } from '../domain/attachments'
+import { AttachmentStoreService } from '../shared/services/attachment-store.service'
 import { MatIconModule } from '@angular/material/icon'
 import { MatButtonModule } from '@angular/material/button'
 import { MatButtonToggleModule } from '@angular/material/button-toggle'
@@ -166,7 +168,21 @@ export class SummaryComponent implements OnDestroy {
   readonly chartWidth = signal(CHART_MAX_WIDTH)
   readonly notRecorded = NOT_RECORDED_LABEL
 
+  // E-194: the needs-attention rows list their attachments (name, short fingerprint) and print the
+  // stored thumbnail for an image. Read for the rows on screen only.
+  private attachmentStore = inject(AttachmentStoreService)
+  readonly printThumbs = signal<Record<string, string>>({})
+  attachmentsOf = printAttachments
+
   constructor() {
+    effect(() => {
+      const shas = this.summary().attention.flatMap(e => printAttachments(e).filter(a => a.isImage).map(a => a.sha256))
+      void (async () => {
+        const out: Record<string, string> = {}
+        for (const sha of shas) out[sha] = await this.attachmentStore.thumbUrl(sha).catch(() => '')
+        this.printThumbs.set(out)
+      })()
+    })
     // Draw the charts at the width they are shown at, so their text stays readable on a phone.
     effect(onCleanup => {
       const el = this.chartBox()?.nativeElement

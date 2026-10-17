@@ -1,5 +1,6 @@
 import type { MissionSummary } from '../../domain/mission-summary'
 import { formatStation } from '../../domain/station-label'
+import { printAttachments } from '../../domain/attachments'
 import { csvRow } from './csv'
 
 /**
@@ -71,12 +72,14 @@ export function buildSummaryCsv(summary: MissionSummary, stamp: SummaryStamp): s
   section('By operator', ['Operator', 'Entries'], summary.byOperator.map(r => [r.label, r.count]))
   section('By status', ['Status', 'Entries'], summary.byStatus.map(r => [r.status, r.count]))
   section('By source', ['Source', 'Entries'], summary.bySource.map(r => [r.label, r.count]))
-  section('Needs attention', ['Time', 'Station', 'Status', 'Notes'],
+  section('Needs attention', ['Time', 'Station', 'Status', 'Notes', 'Attachments'],
     summary.attention.map(e => [
       localStamp(new Date(e.date)),
       formatStation(e.tacticalCall, e.callsign) || '(no call sign)',
       e.status,
       e.notes,
+      // E-194: name and short fingerprint of each live attachment.
+      printAttachments(e).map(a => `${a.name} (${a.fingerprint})`).join('; '),
     ]))
   section('AAR notes', ['Area', 'Noted at', 'Observation', 'Recommendation', 'Owner'],
     summary.aar.groups.flatMap(g => g.notes.map(n => [

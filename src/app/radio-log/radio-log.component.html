@@ -401,7 +401,7 @@
               <td></td>
               <td>{{ row.to }}</td>
               <td></td>
-              <td>{{ row.message }}@if (row.source) {<span class="ics309-form__via"> (via {{ row.source }})</span>}</td>
+              <td>{{ row.message }}@if (row.source) {<span class="ics309-form__via"> (via {{ row.source }})</span>}@for (a of row.attachments; track a.sha256) {<span class="ics309-attach">📎 {{ a.name }} ({{ a.fingerprint }})@if (a.isImage && printThumbs()[a.sha256]) {<img [src]="printThumbs()[a.sha256]" alt="" />}</span>}</td>
             </tr>
           }
           <!-- A few empty rows for traffic logged by hand after printing, as on the paper form. -->
@@ -456,7 +456,7 @@
               <td>{{ row.from }}</td>
               <td>{{ row.to }}</td>
               <td>{{ row.source }}</td>
-              <td>{{ row.message }}</td>
+              <td>{{ row.message }}@for (a of row.attachments; track a.sha256) {<span class="ics309-attach">📎 {{ a.name }} ({{ a.fingerprint }})@if (a.isImage && printThumbs()[a.sha256]) {<img [src]="printThumbs()[a.sha256]" alt="" />}</span>}</td>
             </tr>
           } @empty {
             <tr><td colspan="5">No reports in this range.</td></tr>
