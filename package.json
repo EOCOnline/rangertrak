@@ -10,6 +10,7 @@
     "build:profiling": "ng build --configuration profiling",
     "test": "ng test",
     "test:worker": "node --test worker/index.test.mjs",
+    "test:board": "node --test \"tools/board/*.test.js\"",
     "server": "node tools/serve-dist.js",
     "command-post": "node tools/command-post-server.js",
     "e2e": "node tools/e2e.js",
