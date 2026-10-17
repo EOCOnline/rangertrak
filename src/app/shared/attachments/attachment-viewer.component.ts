@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, OnDestroy, computed, effect, inject, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog'
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 
-import { formatBytes, formatFingerprint } from '../../domain/attachments'
+import { formatBytes, formatFingerprint, isGone, isSmallerCopy } from '../../domain/attachments'
 import type { AttachmentRef } from '../../domain/attachments'
 import { AttachmentStoreService } from '../services/attachment-store.service'
 import { LogService } from '../services/log.service'
@@ -14,6 +14,10 @@ import { UsageStateService } from '../services/usage-state.service'
 import { AttachmentIntakeService } from './attachment-intake.service'
 import type { PendingAttachment } from './attachment-intake.service'
 import { PendingAttachmentsComponent } from './pending-attachments.component'
+import { SmallerCopyDialogComponent } from './smaller-copy-dialog.component'
+import type { SmallerCopyChoice, SmallerCopyDialogData } from './smaller-copy-dialog.component'
+import { SmallerCopyService } from './smaller-copy.service'
+import { ALREADY_SMALL_NOTE } from './compress/compress-types'
 import { SmallerCopyProgressComponent } from './smaller-copy-progress.component'
 
 /** What opens the viewer: the entry (by its permanent uid) and, optionally, which file to show first. */
@@ -51,6 +55,8 @@ export class AttachmentViewerComponent implements OnDestroy {
   private store = inject(AttachmentStoreService)
   private radioLog = inject(RadioLogService)
   private intake = inject(AttachmentIntakeService)
+  private smallerCopy = inject(SmallerCopyService)
+  private dialog = inject(MatDialog)
   private usage = inject(UsageStateService)
   private log = inject(LogService)
 
@@ -59,8 +65,8 @@ export class AttachmentViewerComponent implements OnDestroy {
   readonly index = signal(0)
   readonly current = computed<AttachmentRef | undefined>(() => this.refs()[this.index()])
   private readonly currentSha = computed(() => this.current()?.sha256 ?? '')
-  private readonly currentRemoved = computed(() => !!this.current()?.removed)
-  private readonly stripKey = computed(() => this.refs().map(r => r.sha256 + (r.removed ? '-' : '+')).join(','))
+  private readonly currentRemoved = computed(() => { const c = this.current(); return !!c && isGone(c) })
+  private readonly stripKey = computed(() => this.refs().map(r => r.sha256 + (isGone(r) ? '-' : '+')).join(','))
 
   /** thumbnail object URLs by fingerprint ('' = none: show a type icon). */
   readonly thumbs = signal<Record<string, string>>({})
@@ -72,6 +78,9 @@ export class AttachmentViewerComponent implements OnDestroy {
   readonly message = signal('')
   /** Files just picked with Add, waiting for the sender's choice (Keep original / Smaller copy). */
   readonly pending = signal<PendingAttachment[]>([])
+
+  /** Whether the receiver's "Make a smaller copy..." is offered for the file on show (not already one, and this browser can do it). */
+  readonly canMakeSmaller = signal(false)
 
   readonly canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function'
 
@@ -115,6 +124,7 @@ export class AttachmentViewerComponent implements OnDestroy {
 
   shortFingerprint(sha: string): string { return formatFingerprint(sha) }
   sizeText(bytes: number): string { return formatBytes(bytes) }
+  gone(ref: AttachmentRef): boolean { return isGone(ref) }
 
   kind(ref: AttachmentRef): 'image' | 'video' | 'audio' | 'other' {
     if (ref.type.startsWith('image/')) return 'image'
@@ -172,7 +182,7 @@ export class AttachmentViewerComponent implements OnDestroy {
   private async loadThumbs(): Promise<void> {
     const out: Record<string, string> = {}
     for (const ref of this.refs()) {
-      if (ref.removed || out[ref.sha256] !== undefined) continue
+      if (isGone(ref) || out[ref.sha256] !== undefined) continue
       try { out[ref.sha256] = await this.store.thumbUrl(ref.sha256) } catch { out[ref.sha256] = '' }
     }
     this.thumbs.set(out)
@@ -181,9 +191,10 @@ export class AttachmentViewerComponent implements OnDestroy {
   private async loadMedia(): Promise<void> {
     const token = ++this.loadToken
     this.revokeMedia()
+    this.canMakeSmaller.set(false)
     const ref = this.current()
     if (!ref) { this.state.set('loading'); return }
-    if (ref.removed) { this.state.set('removed'); return }
+    if (isGone(ref)) { this.state.set('removed'); return }
     this.state.set('loading')
     try {
       if (!(await this.store.has(ref.sha256))) {
@@ -194,6 +205,10 @@ export class AttachmentViewerComponent implements OnDestroy {
       if (token !== this.loadToken) return
       this.mediaUrl.set(URL.createObjectURL(blob.type ? blob : new Blob([blob], { type: ref.type })))
       this.state.set('ready')
+      if (!isSmallerCopy(ref)) {
+        const can = await this.smallerCopy.canOffer(new File([blob], ref.name, { type: ref.type })).catch(() => false)
+        if (token === this.loadToken) this.canMakeSmaller.set(can)
+      }
     } catch (e: any) {
       this.log.error(`Could not open an attachment: ${e?.message ?? e}`, this.id)
       if (token === this.loadToken) this.state.set('error')
@@ -218,7 +233,7 @@ export class AttachmentViewerComponent implements OnDestroy {
   /** Downloads the original under its own name, byte for byte. */
   async onSave(): Promise<void> {
     const ref = this.current()
-    if (!ref || ref.removed) return
+    if (!ref || isGone(ref)) return
     try {
       const blob = await this.store.getOriginal(ref.sha256)
       const url = URL.createObjectURL(blob)
@@ -235,7 +250,7 @@ export class AttachmentViewerComponent implements OnDestroy {
 
   async onShare(): Promise<void> {
     const ref = this.current()
-    if (!ref || ref.removed) return
+    if (!ref || isGone(ref)) return
     try {
       const file = new File([await this.store.getOriginal(ref.sha256)], ref.name, { type: ref.type })
       if (navigator.canShare && !navigator.canShare({ files: [file] })) {
@@ -298,6 +313,59 @@ export class AttachmentViewerComponent implements OnDestroy {
   }
 
   /**
+   * The receiver's smaller copy (D-60 item 2, revised): behind a stronger warning, the default keeps
+   * the original and adds the copy beside it, and replacing needs a typed REPLACE in any mode. The
+   * original's own reference says who sent it (`addedBy`); the copy's note says who made it.
+   */
+  async onSmallerCopy(): Promise<void> {
+    const entry = this.entry()
+    const ref = this.current()
+    if (!entry?.uid || !ref || isGone(ref) || isSmallerCopy(ref)) return
+    const choice = await new Promise<SmallerCopyChoice | undefined>(resolve => {
+      const data: SmallerCopyDialogData = { from: ref.addedBy, kind: this.kind(ref) }
+      this.dialog.open(SmallerCopyDialogComponent, { data, autoFocus: false, maxWidth: '96vw' })
+        .afterClosed().subscribe(result => resolve(result))
+    })
+    if (!choice) return
+    this.busy.set(true)
+    this.message.set('')
+    try {
+      const original = new File([await this.store.getOriginal(ref.sha256)], ref.name, {
+        type: ref.type, ...(ref.capturedAt ? { lastModified: Date.parse(ref.capturedAt) } : {}),
+      })
+      const made = await this.smallerCopy.make(original)
+      if (typeof made !== 'object') {
+        this.message.set(made === 'not-smaller' ? ALREADY_SMALL_NOTE
+          : made === 'cancelled' ? 'The smaller copy was cancelled; the original was kept.'
+            : 'A smaller copy could not be made; the original was kept.')
+        return
+      }
+      const by = this.intake.operatorName()
+      const now = new Date().toISOString()
+      const copy: AttachmentRef = {
+        ...(await this.store.add(made.file, by)),
+        compressed: { ...made.compressed, at: now, by, where: 'receiver' },
+      }
+      const refs = choice === 'replace'
+        ? [copy, { ...ref, replaced: { at: now, by, bySha256: copy.sha256 } }]
+        : [copy]
+      this.radioLog.mergeEntryAttachments(entry.uid, refs, true)
+      if (choice === 'replace') {
+        const entries = this.radioLog.getCurrentRadioLog().logEntries
+        await this.store.releaseRemoved(entries)
+        await this.store.sweepOrphans(entries)
+      }
+      const at = this.refs().findIndex(r => r.sha256 === copy.sha256)
+      if (at >= 0) this.index.set(at)
+    } catch (e: any) {
+      this.log.error(`Could not make a smaller copy: ${e?.message ?? e}`, this.id)
+      this.message.set('Could not make a smaller copy.')
+    } finally {
+      this.busy.set(false)
+    }
+  }
+
+  /**
    * Removal leaves a trace (D-60 item 5): the reference stays, marked with when and by whom;
    * the bytes go (unless another live reference still names the same file). In Incident mode
    * the confirm is typed, like the other destructive confirms on live missions.
@@ -305,7 +373,7 @@ export class AttachmentViewerComponent implements OnDestroy {
   async onRemove(): Promise<void> {
     const entry = this.entry()
     const ref = this.current()
-    if (!entry?.uid || !ref || ref.removed) return
+    if (!entry?.uid || !ref || isGone(ref)) return
     const question = `Remove "${ref.name}" from this entry?\n\n`
       + `The file is deleted from this device. The entry keeps a note that it was removed, and when and by whom.`
     if (this.usage.mode() === 'incident') {

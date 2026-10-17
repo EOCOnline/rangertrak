@@ -16,12 +16,12 @@
     @for (ref of refs(); track ref.sha256; let i = $index) {
     <button type="button" role="tab" class="rt-attach-viewer__thumb"
       [class.rt-attach-viewer__thumb--selected]="i === index()"
-      [class.rt-attach-viewer__thumb--removed]="!!ref.removed" [attr.aria-selected]="i === index()"
-      [attr.aria-label]="ref.name + (ref.removed ? ' (removed)' : '')" [title]="ref.name" (click)="select(i)">
-      @if (!ref.removed && thumbs()[ref.sha256]) {
+      [class.rt-attach-viewer__thumb--removed]="gone(ref)" [attr.aria-selected]="i === index()"
+      [attr.aria-label]="ref.name + (ref.replaced ? ' (replaced)' : ref.removed ? ' (removed)' : '')" [title]="ref.name" (click)="select(i)">
+      @if (!gone(ref) && thumbs()[ref.sha256]) {
       <img [src]="thumbs()[ref.sha256]" alt="" />
       } @else {
-      <mat-icon aria-hidden="true">{{ ref.removed ? 'block' : iconFor(ref) }}</mat-icon>
+      <mat-icon aria-hidden="true">{{ gone(ref) ? 'block' : iconFor(ref) }}</mat-icon>
       }
     </button>
     }
@@ -31,9 +31,15 @@
   <div class="rt-attach-viewer__stage" aria-live="polite">
     @switch (state()) {
     @case ('removed') {
+    @if (ref.replaced; as r) {
+    <p class="rt-attach-viewer__note" data-testid="attachment-replaced">
+      Replaced by a smaller copy {{ clock(r.at) }} by {{ r.by || '(operator not recorded)' }}
+    </p>
+    } @else {
     <p class="rt-attach-viewer__note" data-testid="attachment-removed">
       Removed {{ clock(ref.removed!.at) }} by {{ ref.removed!.by || '(operator not recorded)' }}
     </p>
+    }
     }
     @case ('elsewhere') {
     <p class="rt-attach-viewer__note" data-testid="attachment-elsewhere">
@@ -102,7 +108,7 @@
     Add
   </button>
   @if (current(); as ref) {
-  @if (!ref.removed && state() === 'ready') {
+  @if (!gone(ref) && state() === 'ready') {
   <button matButton="outlined" type="button" (click)="onSave()" title="Download the original file">
     <mat-icon>download</mat-icon>
     Save
@@ -114,7 +120,14 @@
   </button>
   }
   }
-  @if (!ref.removed) {
+  @if (canMakeSmaller() && !gone(ref)) {
+  <button matButton="outlined" type="button" [disabled]="busy()" (click)="onSmallerCopy()" data-testid="attachment-smaller"
+    title="Make a smaller copy of this file, beside the original or in its place">
+    <mat-icon>compress</mat-icon>
+    Make a smaller copy…
+  </button>
+  }
+  @if (!gone(ref)) {
   <button matButton="outlined" type="button" [disabled]="busy()" (click)="onRemove()" data-testid="attachment-remove"
     title="Remove this file from the entry and delete it from this device">
     <mat-icon>delete</mat-icon>
