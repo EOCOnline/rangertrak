@@ -183,11 +183,11 @@
               </button>
 
               <button matButton="outlined" type="button" (click)="reportPacketFileInput.click()"
-                title="Merge in the reports from a Report Packet someone handed you - never replaces anything already here">
+                title="Merge in the reports from a Report Packet someone handed you, with any photos, audio or video that came with it - never replaces anything already here">
                 <mat-icon>upload</mat-icon>
                 Load Report Packet
               </button>
-              <input #reportPacketFileInput type="file" accept="text/plain,.txt,.json"
+              <input #reportPacketFileInput type="file" multiple accept="text/plain,.txt,.json,image/*,video/*,audio/*"
                 (change)="onReportPacketFileSelected($event)" hidden />
             </div>
           </mat-card-content>

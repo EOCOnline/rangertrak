@@ -22,7 +22,8 @@ import { EntryMergeOptions, EntryMergeResult, mergeEntries } from '../../domain/
 // rangers.component.ts imports RangerPhotoService directly instead of via './'.
 import { RangerService } from './ranger.service'
 // E-194: deleting every entry also sweeps the attachment bytes nothing refers to any more.
-import { AttachmentStoreService } from './attachment-store.service'
+import { AttachmentStoreService, sha256Hex } from './attachment-store.service'
+import { distinctLiveRefs, matchMedia, shareNames, stillRemote } from '../../domain/report-packet-files'
 // E-122 Phase 2a: radio log entries are PII, and now live behind RecordStore (in-memory +
 // IndexedDB) rather than directly in localStorage. Direct import, same reasoning as the
 // RangerService import above.
@@ -416,6 +417,55 @@ export class RadioLogService {
       filename: reportPacketFilename(packet.mission, packet.exportedAt),
       count: entries.length,
     }
+  }
+
+  /**
+   * D-60 item 6: the originals this device holds for the live attachments on its entries, as
+   * files named uniquely, to go beside the Report Packet's `.txt`. References whose bytes are on
+   * another device are simply not here.
+   */
+  public async reportPacketMedia(): Promise<File[]> {
+    const refs = distinctLiveRefs(this.getCurrentRadioLog().logEntries)
+    const names = shareNames(refs)
+    const out: File[] = []
+    for (const ref of refs) {
+      if (!(await this.attachmentStore.has(ref.sha256))) continue
+      const blob = await this.attachmentStore.getOriginal(ref.sha256)
+      out.push(new File([blob], names.get(ref.sha256) ?? ref.name, { type: ref.type || blob.type }))
+    }
+    return out
+  }
+
+  /**
+   * D-60 item 6: files that arrived with (or after) a Report Packet. Each is hashed, and stored
+   * through `putVerified` only when a live reference on this device names that fingerprint - so
+   * run this AFTER the packet's entries are merged in. `packetEntries` are the entries of the
+   * packet loaded with them, if any: their live references with no bytes here are the ones
+   * "still on the ranger's phone". Counts only; nothing about the files is logged.
+   */
+  public async storePacketMedia(
+    files: readonly File[], packetEntries?: readonly RadioLogEntryType[],
+  ): Promise<{ added: number, unmatched: number, remote: number }> {
+    const live = new Set(distinctLiveRefs(this.getCurrentRadioLog().logEntries).map(r => r.sha256))
+    const hashed: { name: string, sha256: string, file: File }[] = []
+    for (const file of files) hashed.push({ name: file.name, sha256: await sha256Hex(await file.arrayBuffer()), file })
+    const { matched, unmatched } = matchMedia(hashed, live)
+    let added = 0
+    for (const m of matched) {
+      if (await this.attachmentStore.has(m.sha256)) continue
+      const file = hashed.find(h => h.sha256 === m.sha256)!.file
+      await this.attachmentStore.putVerified(m.sha256, await file.arrayBuffer(), file.type)
+      added++
+    }
+    let remote = 0
+    if (packetEntries) {
+      const held = new Set<string>()
+      const refs = distinctLiveRefs(packetEntries)
+      for (const r of refs) if (await this.attachmentStore.has(r.sha256)) held.add(r.sha256)
+      remote = stillRemote(refs, held)
+    }
+    this.log.info(`Report Packet files: ${added} stored, ${unmatched.length} unmatched, ${remote} still elsewhere.`, this.id)
+    return { added, unmatched: unmatched.length, remote }
   }
 
   /**

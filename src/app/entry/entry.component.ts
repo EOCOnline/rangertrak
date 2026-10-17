@@ -57,6 +57,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete'
 import { LocationComponent } from './location.component'
 import { EvidenceLocationComponent } from './evidence-location.component'
 import { MiniMapLeafletComponent } from './mini-mapLeaflet.component'
+import { sendReportPacket } from '../shared/export/report-packet-send'
+import { PHOTOS_LEFT_OUT_MESSAGE } from '../domain/report-packet-files'
 
 // TODO: IDEA: use https://material.angular.io/components/badge/ ???
 
@@ -593,28 +595,16 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       return
     }
     const { text, filename, count } = built
-    const file = new File([text], filename, { type: 'text/plain' })
-
-    if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], title: 'RangerTrak Report Packet' })
-        this.log.info(`Shared Report Packet: ${filename} (${count} reports).`, this.id)
-        return
-      } catch (e: any) {
-        // AbortError = the ranger cancelled the share sheet - not a failure, just fall
-        // through to the plain download so they still have a way to get the file.
-        this.log.warn(`Report Packet share cancelled or failed, falling back to download: ${e?.message ?? e}`, this.id)
-      }
+    // D-60 item 6: this phone's photos go beside the .txt, in the same share.
+    const media = await this.radioLogService.reportPacketMedia()
+    const outcome = await sendReportPacket(text, filename, media, this.document,
+      (why) => this.log.warn(`Report Packet share cancelled or failed, falling back to download: ${why}`, this.id))
+    if (outcome === 'downloaded') {
+      this.log.info(`Downloaded Report Packet: ${filename} (${count} reports, ${media.length} files).`, this.id)
+      return
     }
-
-    const blob = new Blob([text], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = this.document.createElement('a')
-    a.href = url
-    a.download = filename
-    a.click()
-    URL.revokeObjectURL(url)
-    this.log.info(`Downloaded Report Packet: ${filename} (${count} reports).`, this.id)
+    this.log.info(`Shared Report Packet: ${filename} (${count} reports, ${outcome === 'shared' ? media.length : 0} files).`, this.id)
+    if (outcome === 'shared-text-only') alert(PHOTOS_LEFT_OUT_MESSAGE)
   }
 
   ngOnInit(): void {

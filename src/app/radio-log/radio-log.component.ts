@@ -37,6 +37,8 @@ import { AttachmentChipComponent } from '../shared/attachments/attachment-chip.c
 import { attachmentChipHtml, attachmentChipUid } from '../shared/attachments/attachment-chip-html'
 import { AttachmentViewerService } from '../shared/attachments/attachment-viewer.service'
 import { parseReportPacket, REPORT_PACKET_SCHEMA_VERSION } from '../shared/export/report-packet'
+import { sendReportPacket } from '../shared/export/report-packet-send'
+import { mediaSummary, PHOTOS_LEFT_OUT_MESSAGE } from '../domain/report-packet-files'
 import {
   RadioLogService, RadioLogStatusType, RadioLogType, RadioLogEntryType, LogService,
   RangerService, MissionService, MissionType, statusColorValue, statusInkValue,
@@ -861,28 +863,16 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       return
     }
     const { text, filename, count } = built
-    const file = new File([text], filename, { type: 'text/plain' })
-
-    if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], title: 'RangerTrak Report Packet' })
-        this.log.info(`Shared Report Packet: ${filename} (${count} reports).`, this.id)
-        return
-      } catch (e: any) {
-        // AbortError = the operator cancelled the share sheet - not a failure, just fall
-        // through to the plain download so they still have a way to get the file.
-        this.log.warn(`Report Packet share cancelled or failed, falling back to download: ${e?.message ?? e}`, this.id)
-      }
+    // D-60 item 6: the originals this device holds go beside the .txt, in the same share.
+    const media = await this.radioLogService.reportPacketMedia()
+    const outcome = await sendReportPacket(text, filename, media, this.document,
+      (why) => this.log.warn(`Report Packet share cancelled or failed, falling back to download: ${why}`, this.id))
+    if (outcome === 'downloaded') {
+      this.log.info(`Downloaded Report Packet: ${filename} (${count} reports, ${media.length} files).`, this.id)
+      return
     }
-
-    const blob = new Blob([text], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = this.document.createElement('a')
-    a.href = url
-    a.download = filename
-    a.click()
-    URL.revokeObjectURL(url)
-    this.log.info(`Downloaded Report Packet: ${filename} (${count} reports).`, this.id)
+    this.log.info(`Shared Report Packet: ${filename} (${count} reports, ${outcome === 'shared' ? media.length : 0} files).`, this.id)
+    if (outcome === 'shared-text-only') alert(PHOTOS_LEFT_OUT_MESSAGE)
   }
 
   // ── E-188 scribe hand-over (ADR D-59) ────────────────────────────────────────────────────
@@ -1041,16 +1031,28 @@ export class RadioLogComponent implements OnInit, OnDestroy {
 
   /** Reads a picked Report Packet file and hands it to `mergeIncomingEntries()` (E-114 Phase
    *  0). No confirm() dialog needed - a merge only ADDS new entries and never touches an
-   *  existing one, unlike every other import on this page's own Danger Zone. */
+   *  existing one, unlike every other import on this page's own Danger Zone.
+   *
+   *  D-60 item 6: the picker takes the `.txt` and the photos, audio and video that came with it
+   *  together. The entries are merged first; then each other file is hashed and stored only if a
+   *  live reference on this device names its fingerprint. Media alone (they arrived later) also
+   *  works. */
   async onReportPacketFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement
-    const file = input.files?.[0]
+    const picked = Array.from(input.files ?? [])
     input.value = '' // so re-picking the same file still fires a change event
-    if (!file) {
+    if (!picked.length) {
       return
     }
+    const isPacket = (f: File) => f.type === 'text/plain' || f.type === 'application/json' || /\.(txt|json)$/i.test(f.name)
+    const file = picked.find(isPacket)
+    const media = picked.filter(f => f !== file)
 
     try {
+      if (!file) {
+        alert(this.mediaOnlyMessage(await this.radioLogService.storePacketMedia(media)))
+        return
+      }
       const text = await file.text()
       const packet = parseReportPacket(text)
       if (packet.schemaVersion > REPORT_PACKET_SCHEMA_VERSION) {
@@ -1071,6 +1073,9 @@ export class RadioLogComponent implements OnInit, OnDestroy {
 
       const { added, skipped, rejected } = this.radioLogService.mergeIncomingEntries(packet.entries, packet.operator)
       const lines = [`Merged ${added} new report${added === 1 ? '' : 's'} from "${file.name}".`]
+      if (media.length || packet.entries.some(e => e.attachments?.length)) {
+        lines.push(...mediaSummary(await this.radioLogService.storePacketMedia(media, packet.entries)))
+      }
       if (skipped) {
         lines.push(`${skipped} already present on this device were skipped.`)
       }
@@ -1079,9 +1084,15 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       }
       alert(lines.join('\n'))
     } catch (e: any) {
-      this.log.error(`Could not read "${file.name}" as a Report Packet: ${e?.message ?? e}`, this.id)
-      alert(`Could not read "${file.name}".\n\n${e?.message ?? e}`)
+      const label = file?.name ?? 'those files'
+      this.log.error(`Could not read "${label}" as a Report Packet: ${e?.message ?? e}`, this.id)
+      alert(`Could not read "${label}".\n\n${e?.message ?? e}`)
     }
+  }
+
+  /** The words for files loaded with no packet: nothing to merge, just attachments to match up. */
+  private mediaOnlyMessage(r: { added: number, unmatched: number, remote: number }): string {
+    return mediaSummary({ ...r, remote: 0 }).join('\n') || 'Nothing was added.'
   }
 
   /**
