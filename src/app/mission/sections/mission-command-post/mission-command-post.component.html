@@ -59,6 +59,18 @@
           automatically - or copy it again from here later.</mat-hint>
       </mat-form-field>
 
+      <!-- D-61: where publishing stands. `replaced` keeps the switch on but stops sending, and offers
+           Take over, which claims the Board back with the password above. -->
+      @if (boardStatus() || publisher.message()) {
+        <p class="mission-command-post__status" role="status"
+          [class.mission-command-post__status--stopped]="publisher.state() === 'replaced' || publisher.state() === 'error'">
+          {{ boardStatus() }} {{ publisher.message() }}
+        </p>
+      }
+      @if (publisher.state() === 'replaced') {
+        <button mat-flat-button type="button" (click)="publisher.takeOver()">Take over</button>
+      }
+
       <!-- D-61: the viewers' password. A text field, not a masked one: the scribe reads it out or
            shows the QR code to the people who need it. Blank = open to the Wi-Fi. -->
       <mat-form-field class="mission-command-post__url" floatLabel="always">

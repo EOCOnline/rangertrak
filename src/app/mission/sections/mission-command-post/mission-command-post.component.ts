@@ -3,6 +3,8 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy, signal } from '@a
 import { FieldTree, FormField } from '@angular/forms/signals'
 
 import { LogService, MissionType } from '../../../shared/services/'
+import { CommandPostPublishService } from '../../../shared/services/command-post-publish.service'
+import { replacedMessage } from '../../../domain/board-client'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatIconModule } from '@angular/material/icon'
@@ -31,7 +33,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 export class MissionCommandPostComponent implements OnDestroy {
   @Input({ required: true }) form!: FieldTree<MissionType>
 
-  constructor(private log: LogService) {
+  constructor(private log: LogService, public publisher: CommandPostPublishService) {
     this.phoneMediaQuery.addEventListener('change', this.onPhoneMediaChange)
   }
 
@@ -50,6 +52,16 @@ export class MissionCommandPostComponent implements OnDestroy {
   private phoneMediaQuery = window.matchMedia('(max-width: 575px)')
   isPhone = signal(this.phoneMediaQuery.matches)
   private onPhoneMediaChange = (e: MediaQueryListEvent) => this.isPhone.set(e.matches)
+
+  /** D-61: what the Board is doing, in words, for the line under the switch. */
+  boardStatus(): string {
+    switch (this.publisher.state()) {
+      case 'claiming': return 'Connecting to the Board...'
+      case 'publishing': return 'Publishing to the Board.'
+      case 'replaced': return replacedMessage(this.publisher.holder())
+      default: return ''
+    }
+  }
 
   ngOnDestroy(): void {
     this.phoneMediaQuery.removeEventListener('change', this.onPhoneMediaChange)

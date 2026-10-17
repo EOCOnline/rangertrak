@@ -9,6 +9,15 @@ const LAST_COORDINATE_FORMAT_KEY = 'lastCoordinateFormat'
 const RANGERS_PRIVACY_DISMISSED_KEY = 'rangertrak.rangers.privacyNoticeDismissed'
 // E-187: remembered spreadsheet column mappings, keyed by header set. Header names only, never cell values.
 const IMPORT_MAPPINGS_KEY = 'rt-import-mappings'
+// D-61: this device's hold on a Board. See BoardPublisherPref.
+const BOARD_PUBLISHER_KEY = 'rt-board-publisher'
+
+/**
+ * D-61: what this device remembers about publishing to a Board. `key` is the hidden publish key the
+ * server issued at the last claim, `base` the server it belongs to. `replaced` is set once another
+ * device took the Board, so a restart does not claim it back. A secret: never exported, never logged.
+ */
+export type BoardPublisherPref = { base?: string, key?: string, replaced?: boolean }
 
 /**
  * Small per-device UI preferences that used to be read and written by components straight
@@ -53,6 +62,28 @@ export class DevicePrefsService {
   rememberImportMapping(headerKey: string, targets: readonly string[]): boolean {
     const next = rememberMapping(this.getImportMappings(), headerKey, targets)
     return this.write(IMPORT_MAPPINGS_KEY, JSON.stringify(next))
+  }
+
+  /** D-61: the publish key and replaced flag. Unreadable or missing data reads as nothing. */
+  getBoardPublisher(): BoardPublisherPref {
+    try {
+      const parsed = JSON.parse(this.read(BOARD_PUBLISHER_KEY) ?? '{}')
+      if (typeof parsed !== 'object' || parsed === null) return {}
+      return {
+        ...(typeof parsed.base === 'string' && typeof parsed.key === 'string' ? { base: parsed.base, key: parsed.key } : {}),
+        ...(parsed.replaced === true ? { replaced: true } : {}),
+      }
+    } catch {
+      return {}
+    }
+  }
+
+  /** An empty preference removes the entry. */
+  setBoardPublisher(pref: BoardPublisherPref): boolean {
+    if (!pref.key && !pref.replaced) {
+      try { localStorage.removeItem(BOARD_PUBLISHER_KEY); return true } catch { return false }
+    }
+    return this.write(BOARD_PUBLISHER_KEY, JSON.stringify(pref))
   }
 
   private read(key: string): string | null {

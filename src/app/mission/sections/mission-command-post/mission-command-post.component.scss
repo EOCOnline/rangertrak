@@ -47,3 +47,15 @@
   display: block;
   margin-top: 0.75rem;
 }
+
+.mission-command-post__status {
+  margin: 0.75rem 0 0.5rem;
+  font-size: var(--rt-type-body-sm-size);
+  line-height: var(--rt-type-body-sm-line);
+  color: var(--rt-ink-2);
+}
+
+.mission-command-post__status--stopped {
+  color: var(--rt-notice-ink);
+  font-weight: 600;
+}
