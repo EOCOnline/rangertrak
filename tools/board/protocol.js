@@ -6,6 +6,10 @@
 // requested originals. A restart forgets everything, on purpose; the scribe's device notices
 // (every keyed call answers 409 'unclaimed'), claims again and re-sends (D-61 item 6).
 //
+// A claim body may carry `reclaim: true`. The client sets it only for the AUTOMATIC re-claim after
+// a 409 (restart), never for a person's "Take over". A reclaim on an unclaimed Board is a normal
+// first claim; on a claimed Board it never takes over (409 'claimed') - see postClaim().
+//
 // Two secrets, never printed or logged anywhere in this file:
 //   - the viewer PASSWORD (optional; blank = the Wi-Fi is the boundary), sent by viewers in
 //     X-Board-Password;
@@ -200,6 +204,15 @@ function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, upl
       return;
     }
 
+    // An automatic re-claim (the client's answer to a 409 after a restart) never takes over: a
+    // device superseded before the restart may re-claim first-come, and must not then be able
+    // to swap the Board back and forth with the real publisher with nobody acting. Only a claim
+    // without reclaim - a person pressing "Take over" - falls through to the takeover below.
+    if (body.reclaim === true) {
+      const entitled = !claim.password || safeEqual(password, claim.password);
+      send(res, 409, entitled ? { error: 'claimed', by: claim.by, at: claim.at } : { error: 'claimed' });
+      return;
+    }
     // Takeover. With a password set, the claim body must carry it; with none, anyone may.
     if (claim.password) {
       const addr = req.socket.remoteAddress || '';

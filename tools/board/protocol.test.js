@@ -213,6 +213,28 @@ test('a restart forgets everything: keyed calls get 409 unclaimed, then a re-cla
   }
 });
 
+test('after a restart two devices re-claim: the first gets the Board, the second is refused, not given it', withBoard(async (b) => {
+  const first = await b.call('POST', '/api/claim', { json: { reclaim: true, by: BY } });
+  assert.strictEqual(first.status, 200);
+  const second = await b.call('POST', '/api/claim', { json: { reclaim: true, by: { ...BY, scribe: 'Sam' } } });
+  assert.strictEqual(second.status, 409);
+  assert.strictEqual(second.json.error, 'claimed');
+  assert.strictEqual(second.json.by.scribe, 'Pat'); // open Board: details are fine
+  assert.strictEqual((await publish(b, first.json.key, { mission: 'M', reports: [] })).status, 204, 'first key still works');
+  // A person's takeover (no reclaim) still works.
+  assert.strictEqual((await b.call('POST', '/api/claim', { json: { by: { ...BY, scribe: 'Sam' } } })).status, 200);
+}));
+
+test('a refused reclaim on a protected Board hides the holder unless the password matches', withBoard(async (b) => {
+  await b.call('POST', '/api/claim', { json: { reclaim: true, password: 'pw', by: BY } });
+  const blind = await b.call('POST', '/api/claim', { json: { reclaim: true, by: BY } });
+  assert.strictEqual(blind.status, 409);
+  assert.deepStrictEqual(blind.json, { error: 'claimed' });
+  const known = await b.call('POST', '/api/claim', { json: { reclaim: true, password: 'pw', by: BY } });
+  assert.strictEqual(known.status, 409);
+  assert.strictEqual(known.json.by.scribe, 'Pat');
+}));
+
 test('request and upload: the whole path, with every refusal', withBoard(async (b) => {
   const photo = { bytes: crypto.randomBytes(2048), type: 'image/png' };
   const other = { bytes: crypto.randomBytes(100) }; // never in the snapshot
