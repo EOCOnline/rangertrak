@@ -83,6 +83,7 @@ const blankMission: MissionType = {
   autoPrint213: false,
   tacticalCalls: [],
   extraCopies213: 1,
+  attachmentBudgetMB: 512,
 }
 
 @Component({

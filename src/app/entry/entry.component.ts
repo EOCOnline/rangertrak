@@ -29,6 +29,7 @@ import { PageComponent } from '../shared/page/page.component'
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
 import { AttachmentIntakeService } from '../shared/attachments/attachment-intake.service'
+import { AttachmentBudgetService } from '../shared/attachments/attachment-budget.service'
 import { formatBytes } from '../domain/attachments'
 import { TimePickerComponent } from '../shared/time-picker/time-picker.component'
 import { DDToDDM } from '../domain/coordinate'
@@ -387,6 +388,8 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private attachmentStore = inject(AttachmentStoreService)
   private attachmentIntake = inject(AttachmentIntakeService)
+  /** The budget line shows beside Attach once past 80% (D-60 item 7). */
+  readonly attachmentBudget = inject(AttachmentBudgetService)
 
   // E-194 / D-60: files picked for the entry being typed. Held as plain Files and hashed and
   // stored when the entry is saved, not on pick. Cleared by a reset.

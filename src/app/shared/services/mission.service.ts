@@ -330,6 +330,8 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       tacticalCalls: [],
       // E-150: see MissionType.extraCopies213 - one extra paper copy by default.
       extraCopies213: 1,
+      // E-194 / D-60: half a gigabyte of attachments before the app starts asking.
+      attachmentBudgetMB: 512,
     }
   }
 

@@ -824,6 +824,11 @@ mat-chip-option.enter__source-selected {
   color: var(--rt-muted, #666);
 }
 
+.enter__attach-note--warn {
+  color      : var(--rt-ink, inherit);
+  font-weight: 600;
+}
+
 .enter__attach-list {
   display   : flex;
   flex-wrap : wrap;

@@ -422,6 +422,11 @@
         @if (attachReason) {
         <small class="enter__attach-note">{{ attachReason }}</small>
         }
+        @if (attachmentBudget.usage().level !== 'ok') {
+        <small class="enter__attach-note enter__attach-note--warn" data-testid="entry-attach-budget">
+          {{ attachmentBudget.line() }}
+        </small>
+        }
         @if (pendingFiles().length) {
         <ul class="enter__attach-list" aria-label="Files waiting to be attached">
           @for (file of pendingFiles(); track $index) {

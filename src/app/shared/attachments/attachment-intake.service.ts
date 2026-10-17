@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core'
 import { formatBytes } from '../../domain/attachments'
 import type { AttachmentRef } from '../../domain/attachments'
 import { AttachmentStoreService } from '../services/attachment-store.service'
+import { AttachmentBudgetService } from './attachment-budget.service'
 import { LogService } from '../services/log.service'
 import { OperatorNameService } from '../services/operator-name.service'
 import { RadioLogService } from '../services/radio-log.service'
@@ -23,6 +24,7 @@ export class AttachmentIntakeService {
 
   private id = 'Attachment Intake Service'
   private store = inject(AttachmentStoreService)
+  private budget = inject(AttachmentBudgetService)
   private radioLog = inject(RadioLogService)
   private operator = inject(OperatorNameService)
   private log = inject(LogService)
@@ -43,6 +45,18 @@ export class AttachmentIntakeService {
       if (file.size >= LARGE_FILE_BYTES && !confirm(
         `"${file.name}" is ${formatBytes(file.size)}.\n\n`
         + `Large files use up the space on this device quickly. Attach it anyway?`)) {
+        continue
+      }
+      // The mission's budget (D-60 item 7): asks when this file would cross 80% or reach 100%,
+      // and again for each file while over. Never blocks; the answer is the operator's.
+      const after = this.budget.levelAfter(planned + file.size)
+      const before = this.budget.levelAfter(planned)
+      if ((after === 'over' || (after === 'warn80' && before === 'ok')) && !confirm(
+        `Attaching "${file.name}" takes this mission's attachments to `
+        + `${formatBytes(this.budget.usage().usedBytes + planned + file.size)} of `
+        + `${formatBytes(this.budget.budgetBytes())}, `
+        + (after === 'over' ? 'over' : 'past 80% of')
+        + ` the budget set on the Mission page.\n\nAttach it anyway?`)) {
         continue
       }
       accepted.push(file)

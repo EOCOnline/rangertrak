@@ -106,6 +106,21 @@ describe('migrateMission', () => {
     })
   })
 
+  describe('attachmentBudgetMB backfill (E-194)', () => {
+    it('hands 512 to settings or older backups saved before the field existed', () => {
+      const stored = v0Settings()
+      expect('attachmentBudgetMB' in stored).withContext('precondition: field absent').toBe(false)
+      const out = migrateMission(stored, { ...v0Settings(), attachmentBudgetMB: 512 } as unknown as MissionType)
+      expect(out.attachmentBudgetMB).toBe(512)
+    })
+
+    it('does not overwrite a saved value', () => {
+      const stored = { ...v0Settings(), attachmentBudgetMB: 2048 } as unknown as MissionType
+      const out = migrateMission(stored, { ...v0Settings(), attachmentBudgetMB: 512 } as unknown as MissionType)
+      expect(out.attachmentBudgetMB).toBe(2048)
+    })
+  })
+
   describe('extraCopies213 backfill (E-150)', () => {
     it('hands 1 to settings or older backups saved before the field existed', () => {
       const stored = v0Settings()

@@ -165,6 +165,14 @@ export type MissionType = {
   // user whose stored settings, or older backup, predate it.
   extraCopies213: number,
 
+  // E-194 / ADR D-60 (2026-10-16): how much of this device the mission's attachments (photos,
+  // video, audio on radio log entries) may use, in megabytes. A warning threshold, not a limit
+  // (D-46: capability, not policy): 80% and 100% warn and ask, and only the browser's own quota
+  // blocks. Default 512. Additive-only field, same reasoning as extraCopies213 above - no
+  // MISSION_SCHEMA_VERSION bump needed, backfillMissingFields supplies 512 (see initMission()) to
+  // any returning user whose stored settings, or older backup, predate it.
+  attachmentBudgetMB: number,
+
   // E-168a (2026-10-01, John): what this mission is being used for - 'demo', 'exercise' or
   // 'incident'. STORED CODES, not labels: the words shown to the operator may change later
   // without touching storage. Belongs to the mission (not a device key) so an exercise restored

@@ -62,6 +62,22 @@
       installing RangerTrak and backing up your mission are the real protection.
     </p>
 
+    <!-- E-194 / D-60: the attachment budget. The line is always shown; it warns at 80% and 100% when
+         files are added and never blocks. The setting waits for the page's autosave like the rest. -->
+    <h3 class="mission__subhead">Attachments</h3>
+    <p class="mission__status" data-testid="attachment-budget-line">
+      <mat-icon aria-hidden="true">{{ attachmentBudget.usage().level === 'ok' ? 'attach_file' : 'warning' }}</mat-icon>
+      {{ attachmentBudget.line() }}
+    </p>
+    <div class="mission__extra-copies">
+      <label title="Photos, video and audio attached to radio log entries are kept on this device. Past this size the app warns and asks before adding more; it never refuses.">
+        Attachments may use up to
+        <input type="number" min="1" step="1" data-testid="attachmentBudgetMB"
+          [ngModel]="form.attachmentBudgetMB().value()" (ngModelChange)="setAttachmentBudget($event)"
+          [ngModelOptions]="{standalone: true}" style="width: 6em"> MB on this device
+      </label>
+    </div>
+
     <!-- Style A ("Mission Backup"/"Mission Restore") - a `backup`/`restore` icon pair,
          distinct from Style B's shared `layers` icon (Rangers, the Setup file card) so the two families
          never look alike. No behavior change from the old "Export/Import mission" - see this

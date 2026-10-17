@@ -1,3 +1,4 @@
+import { FormsModule } from '@angular/forms'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, inject, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
@@ -17,6 +18,7 @@ import { DemoPickerComponent } from '../../../shared/demo-picker/demo-picker.com
 import { SetupFileComponent } from '../setup-file/setup-file.component'
 // E-122 Phase 2b: the DI wrapper, not the module-level singleton - see record-store.ts's own
 // comment on why this is the one Angular consumer that reaches encryption this way.
+import { AttachmentBudgetService } from '../../../shared/attachments/attachment-budget.service'
 import { AttachmentStoreService } from '../../../shared/services/attachment-store.service'
 import type { RadioLogEntryType } from '../../../shared/services/radio-log-entry.interface'
 import { RecordStore } from '../../../shared/storage/record-store'
@@ -46,7 +48,7 @@ const FRESH_BACKUP_WINDOW_MS = 10 * 60 * 1000
 @Component({
   selector: 'rangertrak-mission-advanced-options',
   standalone: true,
-  imports: [CommonModule, DemoPickerComponent, SetupFileComponent, ExpandableSectionComponent, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule],
+  imports: [CommonModule, FormsModule, DemoPickerComponent, SetupFileComponent, ExpandableSectionComponent, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule],
   templateUrl: './mission-advanced-options.component.html',
   styleUrls: ['./mission-advanced-options.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -90,6 +92,7 @@ export class MissionAdvancedOptionsComponent {
     private recordStore: RecordStore,
     private rangerPhotoService: RangerPhotoService,
     private attachmentStore: AttachmentStoreService,
+    public attachmentBudget: AttachmentBudgetService,
     private rangerService: RangerService,
     private radioLogService: RadioLogService,
     private fieldMode: FieldModeService,
@@ -125,6 +128,12 @@ export class MissionAdvancedOptionsComponent {
     this.fieldMode.enable()
     // Reloads for the same reason EntryComponent.onEnableFieldMode() does - see its comment.
     window.location.reload()
+  }
+
+  /** E-194: the mission's attachment budget, in MB. Saved with the mission settings. */
+  setAttachmentBudget(value: number | string): void {
+    const mb = Math.round(Number(value))
+    if (Number.isFinite(mb) && mb >= 1) this.form.attachmentBudgetMB().value.set(Math.min(mb, 1_000_000))
   }
 
   onBtnRequestPersistence() {
