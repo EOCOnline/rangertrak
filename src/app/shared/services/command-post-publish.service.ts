@@ -4,9 +4,11 @@ import { Injectable, signal } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
 import {
-  BoardAction, BoardEvent, BoardHolder, BoardState, boardStep, describeAgent, readClaimReply, readKeyedReply,
-  replacedMessage,
+  attachmentFields, BoardAction, BoardAttachment, BoardEvent, BoardHolder, BoardState, boardStep, describeAgent,
+  readClaimReply, readKeyedReply, replacedMessage, trimThumbs,
 } from '../../domain/board-client'
+import { liveRefs } from '../../domain/attachments'
+import { AttachmentStoreService } from './attachment-store.service'
 import { DevicePrefsService } from './device-prefs.service'
 import { LogService } from './log.service'
 import { MissionService } from './mission.service'
@@ -66,6 +68,10 @@ export type CommandPostReport = {
   source: string
   notes: string
   location: { lat: number; lng: number; address: string } | null
+  // D-60 item 6: one or the other, never both, and neither when the entry has no live attachment.
+  // Off sends a count; on sends the references, with a thumbnail where there is one.
+  attachmentCount?: number
+  attachments?: BoardAttachment[]
 }
 
 export type CommandPostMission = {
@@ -107,6 +113,11 @@ export class CommandPostPublishService {
   private pollTimer?: ReturnType<typeof setInterval>
   private publishing = false
   private publishAgain = false
+  /** fingerprint -> data URL of the stored thumbnail, read once. */
+  private thumbCache = new Map<string, string>()
+  /** Originals being uploaded or waiting to be: a fingerprint is never queued twice. */
+  private uploadQueue: string[] = []
+  private uploading = false
 
   constructor(
     private missionService: MissionService,
@@ -115,6 +126,7 @@ export class CommandPostPublishService {
     private prefs: DevicePrefsService,
     private operator: OperatorNameService,
     private snackBar: MatSnackBar,
+    private attachmentStore: AttachmentStoreService,
   ) {
     // Cached, not read fresh per publish: the radio-log subscription (below) is what
     // actually drives each publish attempt, and it needs to know the CURRENT settings at
@@ -309,7 +321,7 @@ export class CommandPostPublishService {
     this.publishing = true
     const usedKey = this.key
     try {
-      const payload = this.buildPayload(settings, this.radioLogService.getCurrentRadioLog())
+      const payload = await this.buildPayload(settings, this.radioLogService.getCurrentRadioLog())
       const reply = await this.call(base, 'POST', '/api/mission', {
         headers: { 'Content-Type': 'application/json' }, key: usedKey, body: JSON.stringify(payload),
       })
@@ -362,11 +374,77 @@ export class CommandPostPublishService {
     try {
       const reply = await this.call(base, 'GET', '/api/requests', { key: usedKey })
       const read = readKeyedReply(reply.status, reply.body)
-      if (read.kind === 'ok') return
+      if (read.kind === 'ok') {
+        const asked = (reply.body as { requests?: unknown } | null)?.requests
+        if (Array.isArray(asked)) this.queueUploads(asked, usedKey)
+        return
+      }
       if (read.kind !== 'other') this.onKeyedRefusal(read, usedKey)
     } catch {
       // Same as a failed publish: the server may simply be down for a moment. Nothing to say.
     }
+  }
+
+  // ---- attachments: the originals a viewer asked for (D-60 item 6) ----
+
+  private queueUploads(asked: unknown[], usedKey: string): void {
+    if (!this.settings?.boardShowAttachments) return // the server holds no fingerprint to ask for; ignore anything else
+    for (const sha of asked) {
+      if (typeof sha === 'string' && /^[0-9a-f]{64}$/.test(sha) && !this.uploadQueue.includes(sha)) this.uploadQueue.push(sha)
+    }
+    void this.drainUploads(usedKey)
+  }
+
+  /** One at a time. A file this device does not hold (a reference from another device) is skipped quietly. */
+  private async drainUploads(usedKey: string): Promise<void> {
+    if (this.uploading) return
+    this.uploading = true
+    try {
+      while (this.uploadQueue.length && this.stateSignal() === 'publishing') {
+        const sha = this.uploadQueue[0]
+        try {
+          await this.upload(sha, usedKey)
+        } catch (e) {
+          this.log.warn(`Board attachment not sent (${e})`, this.id)
+        }
+        this.uploadQueue.shift()
+      }
+    } finally {
+      this.uploading = false
+      if (this.stateSignal() !== 'publishing') this.uploadQueue = []
+    }
+  }
+
+  private async upload(sha: string, usedKey: string): Promise<void> {
+    const base = this.baseOf(this.settings)
+    if (!base || !(await this.attachmentStore.has(sha))) return
+    const bytes = await (await this.attachmentStore.getOriginal(sha)).arrayBuffer()
+    const reply = await this.call(base, 'POST', `/api/attachments/${sha}`, {
+      headers: { 'Content-Type': 'application/octet-stream' }, key: usedKey, body: bytes,
+    })
+    const read = readKeyedReply(reply.status, reply.body)
+    if (read.kind === 'ok') this.log.info('Sent 1 attachment to the Board.', this.id)
+    else if (read.kind === 'other') this.log.warn(`Board attachment refused (HTTP ${read.status}).`, this.id)
+    else this.onKeyedRefusal(read, usedKey)
+  }
+
+  /** The stored 240 px thumbnail as a data URL, read once per fingerprint. Images only; '' when none. */
+  private async thumbOf(sha: string, type: string): Promise<string> {
+    if (!type.startsWith('image/')) return ''
+    const known = this.thumbCache.get(sha)
+    if (known !== undefined) return known
+    let url = ''
+    try {
+      const blob = await this.attachmentStore.getThumb(sha)
+      if (blob) url = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(String(reader.result))
+        reader.onerror = () => reject(reader.error)
+        reader.readAsDataURL(blob)
+      })
+    } catch { /* no thumbnail: the row shows the file's name instead */ }
+    this.thumbCache.set(sha, url)
+    return url
   }
 
   // ---- the wire ----
@@ -396,8 +474,13 @@ export class CommandPostPublishService {
     }
   }
 
-  private buildPayload(settings: MissionType, radioLog: RadioLogType): CommandPostMission {
-    return {
+  private async buildPayload(settings: MissionType, radioLog: RadioLogType): Promise<CommandPostMission> {
+    const show = !!settings.boardShowAttachments
+    if (show) {
+      for (const r of radioLog.logEntries) for (const a of liveRefs(r)) await this.thumbOf(a.sha256, a.type)
+    }
+    const thumbs = new Map([...this.thumbCache].filter(([, url]) => url))
+    const payload: CommandPostMission = {
       publishedAt: new Date().toISOString(),
       mission: settings.mission,
       event: settings.event,
@@ -417,7 +500,14 @@ export class CommandPostPublishService {
         location: (r.location?.lat && r.location?.lng)
           ? { lat: r.location.lat, lng: r.location.lng, address: r.location.address ?? '' }
           : null,
+        ...attachmentFields(r, show, thumbs),
       })),
     }
+    if (show) {
+      // Oldest reports first, so the newest keep their thumbnails when the lot is too big.
+      const dropped = trimThumbs([...payload.reports].sort((a, b) => a.date.localeCompare(b.date)))
+      if (dropped) this.log.info(`Board snapshot: dropped ${dropped} thumbnail(s) to stay under the size limit.`, this.id)
+    }
+    return payload
   }
 }
