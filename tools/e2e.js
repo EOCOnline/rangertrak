@@ -3616,6 +3616,17 @@ async function checkAttachments(downloads) {
   check('the selected item is playing/showing from its stored bytes', media, true)
   await closeAttachmentViewer()
 
+  // ── hover the chip: a preview panel with the thumbnails, gone when the mouse leaves ──
+  const chipRect = await evaluate(`(() => { const r = document.querySelector('.rt-attach-chip').getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 } })()`)
+  await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: chipRect.x, y: chipRect.y })
+  const hoverImgs = await pollUntil(
+    () => evaluate(`document.querySelectorAll('[data-testid="attachment-hover-preview"] img').length`), v => v > 0, 20, 100)
+  check('hovering the chip shows the preview with one thumbnail (the PNG; the WAV is an icon tile)', hoverImgs, 1)
+  check('the preview is aria-hidden and says Click to open', await evaluate(`(() => { const p = document.querySelector('[data-testid="attachment-hover-preview"]'); return p?.getAttribute('aria-hidden') === 'true' && /Click to open/.test(p.textContent) })()`), true)
+  await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 5, y: 5 })
+  check('moving away removes the preview',
+    await pollUntil(() => evaluate(`document.querySelectorAll('[data-testid="attachment-hover-preview"]').length`), v => v === 0, 20, 100), 0)
+
   // ── back up: JSON plus companion zip, then restore both on a wiped profile ──
   await goto('/mission')
   const before = new Set(fs.readdirSync(downloads))

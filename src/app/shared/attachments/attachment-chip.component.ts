@@ -15,6 +15,7 @@ import { AttachmentViewerService } from './attachment-viewer.service'
   template: `
     @if (count() > 0) {
     <button type="button" class="rt-attach-chip" data-testid="attachment-chip"
+      [attr.data-entry-uid]="entry()?.uid"
       [attr.aria-label]="count() + (count() === 1 ? ' attachment' : ' attachments') + ', open'"
       (click)="open($event)">📎 {{ count() }}</button>
     }

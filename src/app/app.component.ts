@@ -11,6 +11,7 @@ import { AlertsComponent } from './shared/alerts/alerts.component'
 import { BackToTopComponent } from './shared/back-to-top/back-to-top.component'
 import { StaleOriginNoticeComponent } from './shared/stale-origin-notice/stale-origin-notice.component'
 import { GuideDrawerComponent } from './shared/guide/guide-drawer.component'
+import { AttachmentHoverPreviewService } from './shared/attachments/attachment-hover-preview.service'
 import { InstallUpdateComponent } from './shared/install-update/install-update.component'
 
 @Component({
@@ -53,7 +54,9 @@ export class AppComponent implements OnInit {
     // providedIn:'root' service to construct at app startup, same reason
     // storagePersistence is listed above. Its own constructor wires the subscriptions
     // that watch for commandPostEnabled and publish on every radio-log change.
-    private commandPostPublish: CommandPostPublishService) {
+    private commandPostPublish: CommandPostPublishService,
+    // E-194: never called; injected so the delegated 📎 chip hover listeners start once.
+    private attachmentHoverPreview: AttachmentHoverPreviewService) {
   }
 
 
