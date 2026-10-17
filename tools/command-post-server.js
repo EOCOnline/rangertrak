@@ -38,6 +38,7 @@ const selfsigned = require('selfsigned');
 const { privateAddresses } = require('./board/net');
 const { createResponder, sanitizeLabel } = require('./board/mdns');
 const { createBoard } = require('./board/protocol');
+const qr = require('./board/qr');
 
 const ROOT = path.join(__dirname, '..', 'dist', 'rangertrak', 'browser');
 const DEFAULT_LABEL = 'rangertrak-board';
@@ -219,9 +220,29 @@ async function getOrCreateCert(addresses, names = [], certDir = CERT_DIR) {
  * address would otherwise get a different port.
  */
 async function createServer({ port, cert, addresses = ['127.0.0.1'], name = '', log = console.log, boardOptions = {} }) {
-  const { handle, board } = createBoard({ log, name, ...boardOptions });
-  const handler = (req, res) => (req.url.startsWith('/api/') ? handle(req, res) : serveStaticFile(req, res));
   const servers = [];
+  // D-61 item 7: the address a phone should open, and the password if the Board has one.
+  const qrState = () => ({ host: name || addresses[0], port: servers[0].address().port, ...claimState() });
+  const printQr = async () => {
+    try {
+      const s = qrState();
+      log('');
+      log(`Scan to open the Board on a phone (${qr.plainUrl(s)}):`);
+      log(await qr.terminalQr(qr.viewUrl(s)));
+      log(`To show it full screen on this laptop, open https://localhost${s.port === 443 ? '' : ':' + s.port}/qr`);
+    } catch (e) {
+      log(`Could not draw the QR code (${e.message}); use the address above.`);
+    }
+  };
+  const { handle, board, claimState } = createBoard({ log, name, ...boardOptions, onClaim: printQr });
+  const handler = (req, res) => {
+    if (req.url.startsWith('/api/')) return handle(req, res);
+    if (req.url.split('?')[0] === '/qr') {
+      qr.handleQr(req, res, qrState).catch(() => { if (!res.headersSent) { res.writeHead(500); } res.end(); });
+      return undefined;
+    }
+    return serveStaticFile(req, res);
+  };
   const closeAll = () => Promise.all(servers.map((s) => new Promise((resolve) => {
     s.close(() => resolve());
     s.closeAllConnections(); // keep-alive connections would otherwise hold close() open
@@ -314,6 +335,9 @@ function printBoardUrls({ name, label, port, addresses, skipped }) {
     console.log(`  https://${hostPort(addr)}/view${nameUrl && addr === addresses[0] ? '   (if the name does not open, e.g. on an older Android phone)' : ''}`);
   }
   console.log(`  https://${hostPort('localhost')}/view   (this machine only)`);
+  console.log('');
+  console.log(`To show a QR code for phones full screen, open https://${hostPort('localhost')}/qr on this laptop.`);
+  console.log('(It is shown here too once the scribe turns on publishing. That page works from this laptop only.)');
   if (name && name !== `${label}.local`) {
     console.log('');
     console.log(`Note: ${label}.local was already taken on this network, so this Board is ${name}.`);

@@ -80,8 +80,10 @@ function safeContentType(type) {
  * @param {number}   [o.originalsCap]   total bytes of originals held (D-60 item 6: 500 MB)
  * @param {number}   [o.uploadCap]      largest single upload (500 MB)
  * @param {string}   [o.name]           the .local name actually taken, shown to viewers
+ * @param {function} [o.onClaim]        called after a claim, a takeover or a password change, so the
+ *                                      server can show the viewer QR code. Never given anything to log.
  */
-function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, uploadCap = MB500, name = '' } = {}) {
+function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, uploadCap = MB500, name = '', onClaim = () => {} } = {}) {
   let claim = null; // { key, password, by, at, previous? }
   let snapshot = null;
   let refs = new Map(); // sha -> { size, type }, the non-removed attachment refs in the snapshot
@@ -201,6 +203,7 @@ function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, upl
       log(`Board claimed: ${byLine(by)}, ${clock(now())}`);
       log(modeLine());
       send(res, 200, { key: claim.key });
+      onClaim();
       return;
     }
 
@@ -236,6 +239,7 @@ function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, upl
     log(`Publisher changed to ${byLine(by)}, ${clock(now())} (was ${previous.by.scribe || 'unnamed'}, ${previous.by.mission || 'unnamed mission'})`);
     log(modeLine());
     send(res, 200, { key: claim.key, tookOverFrom: previous });
+    onClaim();
   }
 
   async function postPassword(req, res) {
@@ -245,6 +249,7 @@ function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, upl
     claim.password = body && typeof body.password === 'string' ? body.password : '';
     log(modeLine());
     send(res, 204);
+    onClaim();
   }
 
   async function postMission(req, res) {
@@ -364,7 +369,10 @@ function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, upl
     });
   }
 
-  return { handle, board };
+  // For the QR code: whether anyone has claimed the Board, and the viewer password if there is one.
+  const claimState = () => ({ claimed: !!claim, password: claim ? claim.password : '' });
+
+  return { handle, board, claimState };
 }
 
 module.exports = { createBoard, SHA_RE };
