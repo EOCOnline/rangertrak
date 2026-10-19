@@ -323,6 +323,9 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       { headerName: "Full Name", headerTooltip: 'The ranger\'s full name. Double-click to edit.', field: "fullName", tooltipField: "FCC Licensee Name", minWidth: 150, maxWidth: 300 },
       { headerName: "Phone", field: "phone", singleClickEdit: true, maxWidth: 170,
         headerTooltip: 'Phone number, in any format you like (for example 206-555-0123). It is not checked. Click to edit.' },
+      // 2026-10-18, John: the team field was stored, imported, exported and printed by, but had no column.
+      { headerName: "Team", field: "team", minWidth: 110, maxWidth: 200,
+        headerTooltip: 'The ranger\'s team. Use one unique name per team; with mutual aid, include the town or department, such as Burien CERT 2. Double-click to edit.' },
       { headerName: "Role", field: "role", maxWidth: 200,
         headerTooltip: 'The ranger\'s job or position, such as Team Leader or Medic. Free text. Double-click to edit.' },
       {

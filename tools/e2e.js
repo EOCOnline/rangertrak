@@ -2234,7 +2234,7 @@ async function checkRangersFilterChips(fx) {
     cardTitle: 'Export roster', total: fx.rangers.length, selectRowText: ['E2E-AA1', 'E2E-BB2'],
     filters: [
       { colId: 'role', text: 'REW', chip: 'Role: REW', shown: 2 },
-      { colId: 'fullName', text: 'Alpha', chip: 'Full Name: Alpha', shown: 1 },
+      { colId: 'team', text: 'EOC', chip: 'Team: EOC', shown: 1 },
     ],
   })
 }
