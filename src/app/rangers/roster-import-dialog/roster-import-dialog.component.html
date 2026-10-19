@@ -1,5 +1,5 @@
 @if (step() === 'map') {
-  <h2 mat-dialog-title>Which column is which?</h2>
+  <h2 mat-dialog-title>Importing rangers: match your columns to RangerTrak&rsquo;s</h2>
   <mat-dialog-content>
     <p class="rid__lead">
       <strong>{{ data.fileName }}</strong>
@@ -30,11 +30,12 @@
         @for (h of headers(); track $index; let i = $index) {
           <div class="rid__col">
             <div class="rid__col-head">
+              <span class="rid__col-cap">In your sheet</span>
               <span class="rid__col-name">{{ h || '(no heading)' }}</span>
               <span class="rid__col-sample">{{ samples(i) || 'empty' }}</span>
             </div>
             <mat-form-field class="rid__col-pick" subscriptSizing="dynamic">
-              <mat-label>Import as</mat-label>
+              <mat-label>RangerTrak field</mat-label>
               <mat-select [value]="targets()[i]" (selectionChange)="setTarget(i, $event.value)">
                 @for (t of choices; track t) {
                   <mat-option [value]="t">{{ targetLabel(t) }}</mat-option>

@@ -42,7 +42,19 @@
   white-space  : nowrap;
 }
 
-.pid__col-pick { width: 100%; }
+.pid__col-cap {
+  color         : var(--rt-ink-2);
+  font-size     : 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+// RangerTrak's own field, set apart from the sheet's heading on the left.
+.pid__col-pick {
+  width      : 100%;
+  border-left: 3px solid var(--rt-accent);
+  padding-left: 0.5em;
+}
 
 .pid__status { display: block; margin-top: 0.75em; }
 
