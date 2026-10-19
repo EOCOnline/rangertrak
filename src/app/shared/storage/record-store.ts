@@ -97,7 +97,9 @@ export const STORE = 'kv'
 // (RangerService.recordImport()). New; nothing to migrate, listed so load() reads it.
 // 'layers' (2026-10-16, E-187 phase C): the layers the device holds (LayerService). New; nothing to
 // migrate, listed so load() reads it.
-export const MIGRATED_KEYS = ['rangers', 'radioLog', 'radioLog-BAD', 'locations', 'aarNotes', 'secrets', 'rangersImported', 'layers'] as const
+// 'importSafetyCopy' (2026-10-18, E-198 phase 1): the whole device as it was just before an import, kept
+// 24 hours so "Undo last import" can put it back (ImportSafetyService). New; nothing to migrate.
+export const MIGRATED_KEYS = ['rangers', 'radioLog', 'radioLog-BAD', 'locations', 'aarNotes', 'secrets', 'rangersImported', 'layers', 'importSafetyCopy'] as const
 
 /**
  * The real implementation, and the module-level singleton this file exports as `recordStore`.
@@ -602,13 +604,14 @@ class RecordStoreImpl {
   /**
    * Like `flush()`, but returns the set of keys whose write failed during this pass instead of
    * only logging them - used solely by `enableEncryption()`/`disableEncryption()`, which must
-   * fail loudly rather than report success while a record silently failed to (re)write. Safe to
+   * fail loudly rather than report success while a record silently failed to (re)write, and (E-198) by the
+   * import safety copy, which must say so when it could not be kept. Safe to
    * call right after synchronously queueing writes (as both of those do): `queueWrite()` always
    * runs `scheduleFlush()` first, so `flushQueued` is already true and the drain pass this
    * triggers is the one that will actually process them - nothing else runs in between in this
    * single-threaded flow to smuggle in unrelated pending entries.
    */
-  private async flushReportingFailures(): Promise<Set<string>> {
+  async flushReportingFailures(): Promise<Set<string>> {
     const failures = new Set<string>()
     if (this.flushQueued) {
       this.flushQueued = false

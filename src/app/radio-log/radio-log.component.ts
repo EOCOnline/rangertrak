@@ -33,6 +33,7 @@ import { rangerColorFor } from '../shared/mapping/ranger-marker'
 import { buildIcs309Log, Ics309Log } from '../shared/export/ics309-log'
 import { formatStation } from '../domain/station-label'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
+import { ImportSafetyService } from '../shared/services/import-safety.service'
 import { AttachmentChipComponent } from '../shared/attachments/attachment-chip.component'
 import { attachmentChipHtml, attachmentChipUid } from '../shared/attachments/attachment-chip-html'
 import { AttachmentViewerService } from '../shared/attachments/attachment-viewer.service'
@@ -464,6 +465,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
   }
 
   private attachmentStore = inject(AttachmentStoreService)
+  private importSafety = inject(ImportSafetyService)
   private attachmentViewer = inject(AttachmentViewerService)
 
   constructor(
@@ -1071,6 +1073,13 @@ export class RadioLogComponent implements OnInit, OnDestroy {
         }
       }
 
+      // E-198: the device as it is now, kept for 24 hours, before the merge changes anything.
+      const safetyCopy = await this.importSafety.ensureBeforeImport('report-packet', file.name)
+      if (safetyCopy === 'cancelled') {
+        this.log.verbose('onReportPacketFileSelected: no safety copy and the user chose not to continue.', this.id)
+        return
+      }
+
       const { added, skipped, rejected } = this.radioLogService.mergeIncomingEntries(packet.entries, packet.operator)
       const lines = [`Merged ${added} new report${added === 1 ? '' : 's'} from "${file.name}".`]
       if (media.length || packet.entries.some(e => e.attachments?.length)) {
@@ -1082,6 +1091,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       if (rejected) {
         lines.push(`${rejected} report${rejected === 1 ? '' : 's'} could not be read (bad timestamp or location) and were NOT imported - see the Log page for which.`)
       }
+      if (safetyCopy === 'kept') lines.push('Undo is in Mission > Data safety for 24 hours.')
       alert(lines.join('\n'))
     } catch (e: any) {
       const label = file?.name ?? 'those files'

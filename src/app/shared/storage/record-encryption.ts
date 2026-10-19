@@ -54,7 +54,9 @@ export const ENCRYPTION_MARKER_KEY = '__encryption'
 // names - but it describes the roster, so it is covered with it.
 // 'layers' added 2026-10-16 (E-187 phase C): which layers the device holds, as lists of roster and
 // place uids. The uids tie to PII, so it is covered with the roster.
-export const ENCRYPTED_KEYS = ['rangers', 'radioLog', 'radioLog-BAD', 'aarNotes', 'secrets', 'rangersImported', 'layers'] as const
+// 'importSafetyCopy' added 2026-10-18 (E-198 phase 1): a full copy of the device before an import - the
+// whole roster included (rule 5) - so it is covered exactly as the roster is.
+export const ENCRYPTED_KEYS = ['rangers', 'radioLog', 'radioLog-BAD', 'aarNotes', 'secrets', 'rangersImported', 'layers', 'importSafetyCopy'] as const
 
 const VERIFIER_PLAINTEXT = 'rangertrak-encryption-verifier-v1'
 const SALT_BYTES = 16

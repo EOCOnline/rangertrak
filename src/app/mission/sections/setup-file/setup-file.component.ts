@@ -13,6 +13,7 @@ import { describeRangerMerge, mergeRangers } from '../../../domain/ranger-migrat
 import { LOCKED_FILE_MESSAGE, readEnvelope } from '../../../shared/export/handover-kind'
 import type { MissionZipManifest, MissionZipPhoto } from '../../../shared/export/mission-zip'
 import { LogService, MissionLocationService, MissionService, RangerService, RangerType } from '../../../shared/services'
+import { ImportSafetyService } from '../../../shared/services/import-safety.service'
 import { RangerPhotoService } from '../../../shared/services/ranger-photo.service'
 // E-122 Phase 2a: reloadPage() awaits this before reloading - see RangersComponent.reloadPage().
 import { RecordStore } from '../../../shared/storage/record-store'
@@ -51,6 +52,7 @@ export class SetupFileComponent {
   private readonly photos = inject(RangerPhotoService)
   private readonly log = inject(LogService)
   private readonly recordStore = inject(RecordStore)
+  private readonly importSafety = inject(ImportSafetyService)
   private readonly document = inject(DOCUMENT)
 
   readonly building = signal(false)
@@ -199,8 +201,14 @@ export class SetupFileComponent {
     }
     this.applying.set(true)
     try {
+      // E-198: the device as it is now, kept for 24 hours, before the file is applied.
+      const safetyCopy = await this.importSafety.ensureBeforeImport('setup-file', file.fileName)
+      if (safetyCopy === 'cancelled') {
+        this.log.verbose(`Setup file ${file.fileName}: no safety copy and the user chose not to continue.`, this.id)
+        return
+      }
       const summary = await this.applyFile(file)
-      this.applied.set(`${file.fileName}: ${summary}`)
+      this.applied.set(`${file.fileName}: ${summary}${safetyCopy === 'kept' ? ' Undo is in Mission > Data safety for 24 hours.' : ''}`)
       this.log.warn(`Applied Setup file ${file.fileName}: ${summary}`, this.id)
     } catch (e: any) {
       this.log.error(`Failed to apply "${file.fileName}": ${e?.message ?? e}`, this.id)

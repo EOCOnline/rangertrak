@@ -7,6 +7,9 @@ import type { AttachmentRef } from './attachments'
  * IO is `shared/services/import-safety.service.ts`.
  */
 
+/** The RecordStore key the copy lives under (in MIGRATED_KEYS and ENCRYPTED_KEYS; ARCHITECTURE.md row 13c). */
+export const IMPORT_SAFETY_KEY = 'importSafetyCopy'
+
 /** Which import took the copy. The Report Packet and Setup file imports merge; Restore replaces. */
 export type ImportSafetyReason = 'restore' | 'report-packet' | 'setup-file'
 

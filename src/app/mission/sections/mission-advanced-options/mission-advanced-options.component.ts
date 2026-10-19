@@ -20,6 +20,7 @@ import { SetupFileComponent } from '../setup-file/setup-file.component'
 // comment on why this is the one Angular consumer that reaches encryption this way.
 import { AttachmentBudgetService } from '../../../shared/attachments/attachment-budget.service'
 import { AttachmentStoreService } from '../../../shared/services/attachment-store.service'
+import { ImportSafetyService } from '../../../shared/services/import-safety.service'
 import type { RadioLogEntryType } from '../../../shared/services/radio-log-entry.interface'
 import { RecordStore } from '../../../shared/storage/record-store'
 
@@ -96,6 +97,7 @@ export class MissionAdvancedOptionsComponent {
     private rangerService: RangerService,
     private radioLogService: RadioLogService,
     private fieldMode: FieldModeService,
+    private importSafety: ImportSafetyService,
     private log: LogService) { }
 
   // ── E-114 §1a: field phone, from a laptop/desktop ──────────────────────
@@ -374,6 +376,7 @@ export class MissionAdvancedOptionsComponent {
 
     try {
       let restoredMission = false
+      let safetyCopy: 'kept' | 'skipped' | 'cancelled' = 'skipped'
       if (backupFile) {
         const payload = await this.backupService.readFileAsMissionExport(backupFile, askFor(backupFile, 'it'))
         const summary = `Mission "${payload.settings.mission || '(unnamed)'}" backed up `
@@ -385,6 +388,13 @@ export class MissionAdvancedOptionsComponent {
           + `This REPLACES all current settings, rangers, and radio log entries on this device. `
           + `This cannot be undone - back up the current mission first if you want to keep it.${attachmentNote}`)) {
           this.log.verbose('onImportFileSelected: user cancelled restore.', this.id)
+          return
+        }
+
+        // E-198: the device as it is now, kept for 24 hours, before anything is replaced.
+        safetyCopy = await this.importSafety.ensureBeforeImport('restore', backupFile.name)
+        if (safetyCopy === 'cancelled') {
+          this.log.verbose('onImportFileSelected: no safety copy and the user chose not to continue.', this.id)
           return
         }
 
@@ -407,7 +417,9 @@ export class MissionAdvancedOptionsComponent {
       }
 
       if (restoredMission) {
-        alert(`Mission restored.${attachmentsLine ? ' ' + attachmentsLine : ''} Reloading to refresh every screen with the new data...`)
+        alert(`Mission restored.${attachmentsLine ? ' ' + attachmentsLine : ''}`
+          + `${safetyCopy === 'kept' ? ' Undo is in Mission > Data safety for 24 hours.' : ''} `
+          + `Reloading to refresh every screen with the new data...`)
         window.location.reload()
       } else {
         alert(attachmentsLine || 'Nothing in that file belongs to an attachment on this device.')

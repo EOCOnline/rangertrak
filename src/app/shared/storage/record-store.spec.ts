@@ -307,6 +307,7 @@ describe('RecordStore', () => {
         secrets: JSON.stringify({ googleGeocodingApiKey: 'k' }),
         rangersImported: JSON.stringify({ importedAt: 1, source: 'roster.json', rows: { u1: 'abc' } }),
         layers: JSON.stringify({ schemaVersion: 1, layers: [{ name: 'Fernhollow CERT', kind: 'people', asOf: '2026-10-15', fileName: 'f.xlsx', importedAt: '2026-10-15T10:00:00Z', uids: ['u1'] }] }),
+        importSafetyCopy: JSON.stringify({ meta: { takenAt: '2026-10-18T14:02:00Z', reason: 'restore', fileName: 'f.json', appVersion: '0.99.56-alpha' }, payload: { schemaVersion: 1 } }),
       };
       for (const key of MIGRATED_KEYS) localStorage.setItem(key, values[key]);
 
