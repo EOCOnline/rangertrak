@@ -52,6 +52,12 @@
         </mat-checkbox>
       }
 
+      @if (targets().includes('team')) {
+        <p class="rid__note" data-testid="teamTip">
+          Team: one unique name per team. With mutual aid, include the town or department, e.g. &ldquo;Burien CERT 2&rdquo;.
+        </p>
+      }
+
       @if (!canContinue()) {
         <p class="rid__warn" role="alert">
           Pick at least one column that names a person: {{ idLabel() }}, call sign or name.

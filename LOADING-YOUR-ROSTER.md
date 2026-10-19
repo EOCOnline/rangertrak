@@ -25,7 +25,7 @@ There are two ways to start:
 | **Call Sign** | This **or** Ranger ID | Their FCC amateur call, such as WZ0HAZ. Leave it blank for people who aren't licensed; that's fine |
 | **Full Name** | Recommended | As you'd say it on the radio or read it on a badge |
 | **Phone** | Optional | The number to reach them during an incident |
-| **Team** | Optional | Their group: CERT, EOC, Radio Club, MRC, a neighbourhood team |
+| **Team** | Optional | Their team. One unique name per team; with mutual aid, include the town or department, e.g. "Burien CERT 2" |
 | **Role** | Optional | What they usually do: Net control, First aid, Shelter lead |
 | **Notes** | Optional | Anything a scribe should see: qualifications, "no phone on file" |
 
