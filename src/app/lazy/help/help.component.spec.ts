@@ -1,4 +1,4 @@
-import { provideRouter } from '@angular/router';
+import { ActivatedRoute, provideRouter } from '@angular/router';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -50,3 +50,40 @@ describe('HelpComponent', () => {
   });
 
 });
+
+// 2026-10-18: rangertrak.com links to help?tab=faq#rangertrak-board and help?tab=start#field-phones.
+// Both targets are collapsed sections, so landing there has to open them.
+describe('HelpComponent fragments', () => {
+  const open = async (tab: string, fragment: string): Promise<HTMLElement> => {
+    await TestBed.configureTestingModule({
+      imports: [HelpComponent, NoopAnimationsModule],
+      providers: [provideRouter([]), {
+        provide: ActivatedRoute,
+        useValue: { snapshot: { queryParamMap: { get: () => tab }, fragment } },
+      }],
+    }).compileComponents()
+    const fixture = TestBed.createComponent(HelpComponent)
+    document.body.appendChild(fixture.nativeElement)
+    fixture.detectChanges()
+    await fixture.whenStable()
+    await new Promise(r => setTimeout(r, 100))
+    fixture.detectChanges()
+    return fixture.nativeElement as HTMLElement
+  }
+  const expanded = (root: HTMLElement, id: string): string | null | undefined =>
+    root.querySelector(`#${id} mat-expansion-panel-header`)?.getAttribute('aria-expanded')
+
+  it('opens the FAQ answer that #rangertrak-board names', async () => {
+    const root = await open('faq', 'rangertrak-board')
+    expect(root.querySelector('#rangertrak-board')).not.toBeNull()
+    expect(expanded(root, 'rangertrak-board')).toBe('true')
+    root.remove()
+  })
+
+  it('opens the Start-here section that #field-phones names', async () => {
+    const root = await open('start', 'field-phones')
+    expect(root.querySelector('#field-phones')).not.toBeNull()
+    expect(expanded(root, 'field-phones')).toBe('true')
+    root.remove()
+  })
+})

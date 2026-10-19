@@ -81,7 +81,7 @@ export class HelpComponent implements OnDestroy {
     // fragment is scrolled to here, once the tab has rendered.
     const fragment = route.snapshot.fragment
     if (fragment) {
-      setTimeout(() => document.getElementById(fragment)?.scrollIntoView())
+      setTimeout(() => HelpComponent.revealFragment(fragment))
     }
 
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
@@ -92,6 +92,27 @@ export class HelpComponent implements OnDestroy {
     })
 
     this.version = this.settings ? this.settings.version : '0'
+  }
+
+  /**
+   * Scrolls to the element a `#fragment` names. The FAQ and Start-here answers are collapsed
+   * expandable sections, so a link that lands on one must open it (and any section around it),
+   * or the reader arrives at a closed heading.
+   */
+  static revealFragment(fragment: string): void {
+    const target = document.getElementById(fragment)
+    if (!target) {
+      return
+    }
+    for (let el: Element | null = target; el; el = el.parentElement) {
+      if (el.tagName.toLowerCase() === 'rangertrak-expandable-section') {
+        const header = el.querySelector(':scope > mat-expansion-panel > mat-expansion-panel-header') as HTMLElement | null
+        if (header?.getAttribute('aria-expanded') === 'false') {
+          header.click()
+        }
+      }
+    }
+    target.scrollIntoView()
   }
 
   ngOnDestroy() {
