@@ -69,13 +69,17 @@
 .rt-attach-viewer__stage {
   align-items    : center;
   display        : flex;
+  // The dialog body is a column that can run out of height. Without this the stage shrank to its
+  // min-height and a tall photo spilled out over the Name and Size rows below it.
+  flex           : 0 0 auto;
   justify-content: center;
   min-height     : 120px;
 }
 
 .rt-attach-viewer__media {
-  max-height: 55vh;
+  max-height: min(55vh, 520px);
   max-width : 100%;
+  object-fit: contain;
 }
 
 .rt-attach-viewer__audio {
