@@ -29,6 +29,7 @@ declare -A DEMOS=(
   [grand-canyon]="-112.20,36.03,-112.07,36.12"  # Bright Angel Trail to Plateau Point, Hopi to Mather Point
   [vashon]="-122.53,47.32,-122.40,47.51"         # Vashon and Maury islands
   [state-fair]="-77.428,37.842,-77.411,37.854"         # State Fair of Virginia, Meadow Event Park, Doswell VA (tight: ~1.5 x 1.3 km around the grounds, bbox from OSM)
+  [montecito]="-119.80,34.39,-119.51,34.50"      # E-195: Santa Barbara County EOC (west) to Carpinteria shelter (east), Hwy 154 to US 101; 5.0 MB from build 20261018
 )
 
 "$PMTILES" extract "$SRC" "$OUT/world-z5-${BUILD}.pmtiles" --maxzoom=5

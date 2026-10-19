@@ -15,7 +15,7 @@ import type { SampleScenarioId } from '../services/sample-scenarios'
 // z6-15 detail, 16.3 MB) that every device opening the Alternative map downloaded, whichever
 // demo - or real mission - it ran. Now a world-only base plus one small detail file per demo
 // scenario, fetched only while that demo is the loaded mission AND the Alternative map is
-// open. All four are cut by tools/build-demo-maps.sh from one Protomaps build.
+// open. All are cut by tools/build-demo-maps.sh; a demo added later may come from a newer build.
 //
 // The build date is in every filename on purpose: OfflineBasemapService and CacheFirstSource
 // key Cache Storage on the URL string, not the content, so a file replaced under the same name
@@ -32,6 +32,8 @@ export const DEMO_DETAIL_MAPS: Partial<Record<SampleScenarioId, DemoDetailMap>> 
   'grand-canyon': { url: '/assets/maps/demo-grand-canyon-20260926.pmtiles', bbox: [-112.20, 36.03, -112.07, 36.12] },
   'vashon': { url: '/assets/maps/demo-vashon-20260926.pmtiles', bbox: [-122.53, 47.32, -122.40, 47.51] },
   'state-fair': { url: '/assets/maps/demo-state-fair-20260930.pmtiles', bbox: [-77.428, 37.842, -77.411, 37.854] },
+  // 2026-10-18, E-195: every place in the scenario, the County EOC at the west edge to Shelter 2 at the east (5.0 MB).
+  'montecito': { url: '/assets/maps/demo-montecito-20261018.pmtiles', bbox: [-119.80, 34.39, -119.51, 34.50] },
 }
 
 /**
