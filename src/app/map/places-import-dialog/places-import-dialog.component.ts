@@ -16,6 +16,7 @@ import { MissionLocationType } from '../../shared/services'
 import { DevicePrefsService } from '../../shared/services/device-prefs.service'
 import { LayerService } from '../../shared/services/layer.service'
 import { layersOfKind, suggestLayerName } from '../../domain/layers'
+import { localDateStamp } from '../../shared/export/local-date'
 
 /** What the Map page hands the dialog. */
 export type PlacesImportDialogData = {
@@ -215,7 +216,7 @@ export class PlacesImportDialogComponent {
     }
     const name = this.canNameLayer ? this.layerName().trim() : ''
     const layer = name
-      ? { name, asOf: this.data.layerAsOf || new Date().toISOString().slice(0, 10), ...(this.data.layerSource ? { source: this.data.layerSource } : {}) }
+      ? { name, asOf: this.data.layerAsOf || localDateStamp(), ...(this.data.layerSource ? { source: this.data.layerSource } : {}) }
       : null
     const removeUids = this.removeLeft() ? this.leftBehind().map(l => l.uid!) : []
     this.ref.close({ plan, layer, removeUids })

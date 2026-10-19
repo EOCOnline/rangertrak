@@ -9,6 +9,7 @@ import { LogService } from '../services/log.service'
 import { MissionLocationService } from '../services/mission-location.service'
 import { RangerService } from '../services/ranger.service'
 import { LayerService } from '../services/layer.service'
+import { localDateStamp } from '../export/local-date'
 
 /**
  * "Layers on this device" (E-187 phase C, ADR D-58 point 7): the lists this device remembers
@@ -59,7 +60,7 @@ export class LayersCardComponent {
   }
 
   importedOn(layer: LayerRecord): string {
-    return layer.importedAt ? layer.importedAt.slice(0, 10) : 'unknown'
+    return layer.importedAt ? localDateStamp(layer.importedAt) : 'unknown'
   }
 
   remove(layer: LayerRecord): void {

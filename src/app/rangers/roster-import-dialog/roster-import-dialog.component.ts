@@ -17,6 +17,7 @@ import { RangerService, RangerType } from '../../shared/services'
 import { DevicePrefsService } from '../../shared/services/device-prefs.service'
 import { LayerService } from '../../shared/services/layer.service'
 import { layersOfKind, suggestLayerName } from '../../domain/layers'
+import { localDateStamp } from '../../shared/export/local-date'
 
 /** What the Rangers page hands the dialog. */
 export type RosterImportDialogData = {
@@ -262,7 +263,7 @@ export class RosterImportDialogComponent {
     }
     const name = this.canNameLayer ? this.layerName().trim() : ''
     const layer = name
-      ? { name, asOf: this.data.layerAsOf || new Date().toISOString().slice(0, 10), ...(this.data.layerSource ? { source: this.data.layerSource } : {}) }
+      ? { name, asOf: this.data.layerAsOf || localDateStamp(), ...(this.data.layerSource ? { source: this.data.layerSource } : {}) }
       : null
     // Replace already removed everyone who is not in the file, so the question only applies to Add.
     const removeUids = action === 'add' && this.removeLeft() ? this.leftBehind().map(r => r.uid!) : []
