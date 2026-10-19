@@ -135,6 +135,20 @@ const dialogs = []
  * existing check changes behaviour.
  */
 const dialogQueue = []
+
+// Files in `dir` with their modified times, to spot a NEW download. A name alone is not enough:
+// Chrome (download behavior 'allow') overwrites a same-named file, and backups are named by date,
+// so an earlier --full check's rangertrak-mission-<date>.json hid this one's (2026-10-18).
+function downloadSnapshot(dir) {
+  return new Map(fs.readdirSync(dir).map(f => [f, fs.statSync(path.join(dir, f)).mtimeMs]))
+}
+function newDownloads(dir, before) {
+  return fs.readdirSync(dir).filter(f => {
+    if (f.endsWith('.crdownload')) return false
+    if (!before.has(f)) return true
+    try { return fs.statSync(path.join(dir, f)).mtimeMs > before.get(f) } catch { return false }
+  })
+}
 function queueDialogs(...responses) { dialogQueue.push(...responses) }
 
 // sessionId (optional, 3rd arg): every check before item 9 (2026-09-28) only ever drove ONE
@@ -3630,17 +3644,17 @@ async function checkAttachments(downloads) {
 
   // ── back up: JSON plus companion zip, then restore both on a wiped profile ──
   await goto('/mission')
-  const before = new Set(fs.readdirSync(downloads))
+  const before = downloadSnapshot(downloads)
   queueDialogs(true, '')
   await evaluate(`[...document.querySelectorAll('button')].find(b => /Back up mission/i.test(b.textContent))?.click()`)
   let made = []
   for (let i = 0; i < 60 && made.length < 2; i++) {
     await sleep(250)
-    made = fs.readdirSync(downloads).filter(f => !before.has(f) && !f.endsWith('.crdownload'))
+    made = newDownloads(downloads, before)
   }
   const jsonFile = made.find(f => f.endsWith('.json'))
   const zipFile = made.find(f => f.endsWith('-attachments.zip'))
-  check('Back up mission wrote the JSON and a -attachments.zip companion', !!jsonFile && !!zipFile, true)
+  check(`Back up mission wrote the JSON and a -attachments.zip companion (found: ${made.join(', ') || 'none'})`, !!jsonFile && !!zipFile, true)
   if (!jsonFile || !zipFile) return
   const backupJson = path.join(downloads, jsonFile)
   const backupZip = path.join(downloads, zipFile)
@@ -3917,7 +3931,7 @@ async function checkMissionRoundTrip(downloads) {
   await idbSetRaw('rangers', JSON.stringify({ schemaVersion: 1, rangers: [{ callsign: 'RTE2E1', fullName: 'Round Trip Fixture' }] }))
   await goto('/mission')
   // Only a file this backup produces counts - not one an earlier check left in downloads.
-  const before = new Set(fs.readdirSync(downloads))
+  const before = downloadSnapshot(downloads)
   await evaluate(`(() => { const s = JSON.parse(localStorage.getItem('appSettings')); s.mission = 'E2E-MISSION'; localStorage.setItem('appSettings', JSON.stringify(s)); })()`)
   await goto('/mission')
   // "Export mission" was renamed "Back up mission" (E-109 Setup files / Style A terminology
@@ -3932,7 +3946,7 @@ async function checkMissionRoundTrip(downloads) {
   let files = []
   for (let i = 0; i < 40 && files.length === 0; i++) {
     await sleep(250)
-    files = fs.readdirSync(downloads).filter(f => !before.has(f) && f.endsWith('.json') && !f.endsWith('.crdownload'))
+    files = newDownloads(downloads, before).filter(f => f.endsWith('.json'))
   }
   if (!check('Back up mission produced a file', files.length > 0, true)) return
   const missionFile = path.join(downloads, files[0])
@@ -4697,9 +4711,7 @@ async function main() {
       if (want('mission')) await checkMissionUnsavedChangesGuard()
       if (want('mission')) await checkMissionAddRowsPersist()
       if (want('mission')) await checkAarNotes()
-      if (want('attachments')) await checkAttachments(downloads) // E-194; wipes storage
-      if (want('attachments')) await checkSmallerCopies(downloads) // E-194 item 2 (revised); wipes storage
-      if (want('board')) await checkBoard(downloads) // D-61; needs Chrome's --ignore-certificate-errors, see main(); wipes storage
+      // (attachments, smaller copies and board moved to the end: they wipe storage - see there)
       if (want('entry')) await checkEntryUsesNewMissionDefault()
       if (want('mission')) await checkStatusColorMigration()
       if (want('mission')) await checkStatusColorsBothSchemes()
@@ -4733,6 +4745,14 @@ async function main() {
       } else {
         note('fast run: skipping checkMissionRoundTrip, checkReportPacketRoundTrip, checkSampleMissionLoads, checkRangeRingsAndCoordReadout, checkDeviceEncryption (pass --full to include)')
       }
+      // These three wipe storage, so they run LAST: placed earlier, they erased the fixture roster
+      // checkCallsignIsSaved (--full) relies on, and it failed only in combined runs (2026-10-18).
+      // Insurance: no earlier check's unused dialog answers may reach these. (The 1064/1065 backup
+      // failure was not this; it was a same-named download, see downloadSnapshot().)
+      dialogQueue.length = 0
+      if (want('attachments')) await checkAttachments(downloads) // E-194; wipes storage
+      if (want('attachments')) await checkSmallerCopies(downloads) // E-194 item 2 (revised); wipes storage
+      if (want('board')) await checkBoard(downloads) // D-61; needs Chrome's --ignore-certificate-errors, see main(); wipes storage
       await goto('/'); await evaluate(`localStorage.clear()`); await idbClearAll()
     }
   } catch (e) {
