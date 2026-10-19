@@ -220,7 +220,8 @@
   </span>
   <div class="rt-danger-zone">
     <p class="rt-danger-zone__note">
-      Each of these replaces or discards data already on this device, and cannot be undone.
+      Each of these replaces or discards data already on this device. Restore keeps a safety copy for
+      24 hours (Undo last import, above); the others cannot be undone.
       Back up your mission first if you need to keep it.
     </p>
 
@@ -239,7 +240,7 @@
            matButton> here silently did nothing, same bug found on Rangers. -->
       <button matButton="outlined" type="button" class="mission__danger-button"
         (click)="importMissionFile.click()"
-        title="Restore a mission from a previously backed-up file (and its attachments file, if there is one) - replaces everything currently on this device">
+        title="Restore a mission from a previously backed-up file (and its attachments file, if there is one) - replaces everything currently on this device (a safety copy is kept for 24 hours, so Undo last import can put it back)">
         <mat-icon>restore</mat-icon>
         Restore mission &mdash; replaces everything
       </button>

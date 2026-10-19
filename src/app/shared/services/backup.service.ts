@@ -110,6 +110,13 @@ export class BackupService {
     return this.injector.get(LayerService)
   }
 
+  /** This build's version, for a backup's header and for comparing with a file's. */
+  appVersion(): string {
+    // Workaround for "Error: Should not import the named export ... from
+    // default-exporting module" - same pattern already used in mission.service.ts.
+    return JSON.parse(JSON.stringify(packageJson)).version
+  }
+
   /**
    * Pure data assembly, no DOM/file access - kept separate from
    * exportMission() so the actual export contents are easy to test.
@@ -122,9 +129,7 @@ export class BackupService {
     const currentFieldReports = this.radioLogService.getCurrentRadioLog()
     const { bounds: _omitted, ...fieldReportsSansBounds } = currentFieldReports
 
-    // Workaround for "Error: Should not import the named export ... from
-    // default-exporting module" - same pattern already used in mission.service.ts.
-    const appVersion = JSON.parse(JSON.stringify(packageJson)).version
+    const appVersion = this.appVersion()
 
     return {
       schemaVersion: MISSION_EXPORT_SCHEMA_VERSION,

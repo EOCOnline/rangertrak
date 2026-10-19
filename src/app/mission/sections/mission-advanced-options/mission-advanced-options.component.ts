@@ -9,10 +9,11 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
 import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatDialog } from '@angular/material/dialog'
 import { ExpandableSectionComponent } from '../../../shared/expandable-section/expandable-section.component'
 import {
-  BackupService, FieldModeService, LogService, MissionType, RadioLogService, RangerPhotoService,
-  RangerService, StoragePersistenceService
+  AarNoteService, BackupService, FieldModeService, LogService, MissionExport, MissionLocationService, MissionType,
+  RadioLogService, RangerPhotoService, RangerService, StoragePersistenceService
 } from '../../../shared/services/'
 import { DemoPickerComponent } from '../../../shared/demo-picker/demo-picker.component'
 import { SetupFileComponent } from '../setup-file/setup-file.component'
@@ -23,6 +24,9 @@ import { promptAndBackUpMission } from '../../../shared/export/backup-prompts'
 import { AttachmentBudgetService } from '../../../shared/attachments/attachment-budget.service'
 import { AttachmentStoreService } from '../../../shared/services/attachment-store.service'
 import { ImportSafetyService } from '../../../shared/services/import-safety.service'
+import { compareForRestore } from '../../../domain/restore-preview'
+import type { RestoreSide } from '../../../domain/restore-preview'
+import type { RestorePreviewDialogData } from '../restore-preview-dialog/restore-preview-dialog.component'
 import type { RadioLogEntryType } from '../../../shared/services/radio-log-entry.interface'
 import { RecordStore } from '../../../shared/storage/record-store'
 
@@ -100,6 +104,9 @@ export class MissionAdvancedOptionsComponent {
     private radioLogService: RadioLogService,
     private fieldMode: FieldModeService,
     private importSafety: ImportSafetyService,
+    private locationService: MissionLocationService,
+    private aarNoteService: AarNoteService,
+    private dialog: MatDialog,
     private log: LogService) { }
 
   // ── E-114 §1a: field phone, from a laptop/desktop ──────────────────────
@@ -297,6 +304,37 @@ export class MissionAdvancedOptionsComponent {
     void promptAndBackUpMission(this.backupService, this.log, this.id)
   }
 
+  /** The Restore preview dialog (E-198): true only when the person chose Restore. */
+  private async confirmRestore(fileName: string, payload: MissionExport, attachmentNote: string): Promise<boolean> {
+    const device: RestoreSide = {
+      mission: this.form.mission().value(),
+      exportedAt: '',
+      appVersion: this.backupService.appVersion(),
+      entries: this.radioLogService.getCurrentRadioLog().logEntries,
+      rangers: this.rangerService.rangers.length,
+      places: this.locationService.getCurrentLocations().length,
+      aarNotes: this.aarNoteService.getCurrentNotes().length,
+      photos: this.rangerPhotoService.count(),
+    }
+    const file: RestoreSide = {
+      mission: payload.settings.mission,
+      exportedAt: payload.exportedAt,
+      appVersion: payload.appVersion,
+      entries: payload.radioLog.logEntries,
+      rangers: payload.rangers.length,
+      places: (payload.locations ?? []).length,
+      aarNotes: (payload.aarNotes ?? []).length,
+      photos: payload.photos ? payload.photos.length : null,
+    }
+    const preview = compareForRestore(device, file, device.appVersion)
+    const { RestorePreviewDialogComponent } = await import('../restore-preview-dialog/restore-preview-dialog.component')
+    const ref = this.dialog.open(RestorePreviewDialogComponent, {
+      width: '44rem', maxWidth: '95vw',
+      data: { fileName, preview, attachmentNote } satisfies RestorePreviewDialogData,
+    })
+    return (await new Promise<boolean | undefined>(resolve => ref.afterClosed().subscribe(r => resolve(r)))) === true
+  }
+
   /**
    * Handles a file picked via the "Restore mission" <input type="file">.
    * Destructive - replaces current settings/rangers/radio log entries entirely -
@@ -343,14 +381,10 @@ export class MissionAdvancedOptionsComponent {
       let safetyCopy: 'kept' | 'skipped' | 'cancelled' = 'skipped'
       if (backupFile) {
         const payload = await this.backupService.readFileAsMissionExport(backupFile, askFor(backupFile, 'it'))
-        const summary = `Mission "${payload.settings.mission || '(unnamed)'}" backed up `
-          + `${payload.exportedAt}, with ${payload.rangers.length} rangers and `
-          + `${payload.radioLog.logEntries.length} radio log entries.`
-
-        const attachmentNote = await this.attachmentStore.deletionNotice(payload.radioLog.logEntries as RadioLogEntryType[])
-        if (!confirm(`Restore this mission?\n\n${summary}\n\n`
-          + `This REPLACES all current settings, rangers, and radio log entries on this device. `
-          + `This cannot be undone - back up the current mission first if you want to keep it.${attachmentNote}`)) {
+        const attachmentNote = await this.attachmentStore.deletionNotice(
+          payload.radioLog.logEntries as RadioLogEntryType[], { keptForSafetyCopy: true })
+        // E-198: the device and the file side by side, before anything is replaced. Cancel is the default.
+        if (!(await this.confirmRestore(backupFile.name, payload, attachmentNote))) {
           this.log.verbose('onImportFileSelected: user cancelled restore.', this.id)
           return
         }
