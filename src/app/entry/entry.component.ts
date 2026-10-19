@@ -60,6 +60,7 @@ import { LocationComponent } from './location.component'
 import { EvidenceLocationComponent } from './evidence-location.component'
 import { MiniMapLeafletComponent } from './mini-mapLeaflet.component'
 import { sendReportPacket } from '../shared/export/report-packet-send'
+import { ImportSafetyCardComponent } from '../shared/import-safety/import-safety-card.component'
 import { PHOTOS_LEFT_OUT_MESSAGE } from '../domain/report-packet-files'
 
 // TODO: IDEA: use https://material.angular.io/components/badge/ ???
@@ -73,6 +74,7 @@ import { PHOTOS_LEFT_OUT_MESSAGE } from '../domain/report-packet-files'
     ReactiveFormsModule,
     FormField,
     RouterLink,
+    ImportSafetyCardComponent,
     MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatButtonToggleModule, MatCheckboxModule, MatChipsModule, MatSelectModule, MatAutocompleteModule,
     PageComponent,
     TimePickerComponent,

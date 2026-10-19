@@ -16,6 +16,8 @@ import {
 } from '../../../shared/services/'
 import { DemoPickerComponent } from '../../../shared/demo-picker/demo-picker.component'
 import { SetupFileComponent } from '../setup-file/setup-file.component'
+import { ImportSafetyCardComponent } from '../../../shared/import-safety/import-safety-card.component'
+import { promptAndBackUpMission } from '../../../shared/export/backup-prompts'
 // E-122 Phase 2b: the DI wrapper, not the module-level singleton - see record-store.ts's own
 // comment on why this is the one Angular consumer that reaches encryption this way.
 import { AttachmentBudgetService } from '../../../shared/attachments/attachment-budget.service'
@@ -49,7 +51,7 @@ const FRESH_BACKUP_WINDOW_MS = 10 * 60 * 1000
 @Component({
   selector: 'rangertrak-mission-advanced-options',
   standalone: true,
-  imports: [CommonModule, FormsModule, DemoPickerComponent, SetupFileComponent, ExpandableSectionComponent, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule],
+  imports: [CommonModule, FormsModule, DemoPickerComponent, SetupFileComponent, ImportSafetyCardComponent, ExpandableSectionComponent, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule],
   templateUrl: './mission-advanced-options.component.html',
   styleUrls: ['./mission-advanced-options.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -290,47 +292,9 @@ export class MissionAdvancedOptionsComponent {
    * single JSON file. See PRIVATE-Roadmap.md Section 8/R3.
    */
   onBtnExportMission() {
-    // The backup bundles the full ranger roster, so it carries the same personal data as
-    // the Rangers page warns about. E-122 Phase 1 made encrypting it optional, so this
-    // now offers the choice rather than only warning about the consequence.
-    if (!confirm(`Back up this mission to a file?\n\n`
-      + `The file includes the full ranger roster - legal names, personal `
-      + `phone numbers and call signs.\n\n`
-      + `You will be offered a passphrase next. Either way, store the file `
-      + `appropriately, share it only with people who need it for this mission, and `
-      + `delete it when the mission is over.`)) {
-      this.log.verbose('onBtnExportMission: user cancelled backup.', this.id)
-      return
-    }
-
-    // Blank = unencrypted, which stays the default: a passphrase nobody can recover
-    // destroys the mission record outright, and there is no server to reset it from.
-    const passphrase = prompt(`Passphrase for this backup?\n\n`
-      + `Leave blank for an UNENCRYPTED file (the previous behaviour).\n\n`
-      + `If you set one it CANNOT be recovered - no reset, no support address, no `
-      + `copy anywhere. Lose it and this backup is gone for good.`)
-
-    if (passphrase === null) {
-      this.log.verbose('onBtnExportMission: cancelled at the passphrase prompt.', this.id)
-      return
-    }
-
-    // Typed twice on purpose. A typo here is not discovered until the day someone needs
-    // the backup, by which time it is unrecoverable - the worst failure this can produce.
-    if (passphrase !== '') {
-      if (prompt('Type the same passphrase again to confirm it.') !== passphrase) {
-        alert('Those did not match. Nothing was written - start the backup again.')
-        this.log.warn('onBtnExportMission: passphrase confirmation did not match.', this.id)
-        return
-      }
-    }
-
-    this.log.verbose('onBtnExportMission: Backing up mission.', this.id)
-    this.backupService.exportMission(passphrase || undefined)
-      .catch(error => {
-        this.log.error(`onBtnExportMission: backup failed: ${error.message}`, this.id)
-        alert(`Could not write the backup: ${error.message}`)
-      })
+    // The questions (roster warning, optional passphrase typed twice) are shared with the Undo
+    // card's "Back up first": see promptAndBackUpMission().
+    void promptAndBackUpMission(this.backupService, this.log, this.id)
   }
 
   /**

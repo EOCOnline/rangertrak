@@ -98,6 +98,12 @@
   </p>
   }
 
+  <!-- E-198 phase 1: "Undo last import", the same card Mission > Data safety shows. A field phone has
+       no Mission page, so it is here; it renders nothing unless an import safety copy exists. -->
+  @if (fieldMode.enabled()) {
+  <rangertrak-import-safety-card></rangertrak-import-safety-card>
+  }
+
   <form [formGroup]="entryControlsForm" (ngSubmit)="onFormSubmit()" (keydown)="onFormKeydown($event)" class="enter__form">
     <!-- Groups the mini-map with Who/Where so a breakpoint can reorder them together
          without touching desktop layout at all: default (undeclared) `display` here does
