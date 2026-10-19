@@ -18,5 +18,9 @@ The data is generated, not committed: `check-regional-tools.js` fails on any CSV
 zip under `tools/regional/`, demo or not. To add a case, add it to the tables at the top of
 `make-demo-region.js`, list it in the header comment, and add a check to the test.
 
+`make-montecito-demo.js` is separate: it turns the E-195 Montecito scenario tables (kept in
+`rangertrak-InternalDocs`, not in git) into the app's `sample-data-montecito.ts`, with softened
+casualty text only. `test-make-montecito-demo.js` checks it (`npm run test:regional`).
+
 This folder belongs to the code session. Real regions (Vashon and the rest) belong to the
 regional-data session, in its own folder outside git.

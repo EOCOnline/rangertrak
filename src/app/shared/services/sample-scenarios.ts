@@ -3,7 +3,7 @@
  * to one place. DEFAULT_SAMPLE_SCENARIO below is what every picker (Entry, Mission > Danger
  * zone, Rangers) starts on. See SAMPLE_SCENARIOS below for the label/hint shown in each.
  */
-export type SampleScenarioId = 'vashon' | 'grand-canyon' | 'state-fair' | 'near-me'
+export type SampleScenarioId = 'vashon' | 'grand-canyon' | 'state-fair' | 'montecito' | 'near-me'
 
 /**
  * 2026-09-25 (maintainer): Grand Canyon replaces Vashon as the default - a place a national
@@ -43,6 +43,14 @@ export const SAMPLE_SCENARIOS: ReadonlyArray<SampleScenarioOption> = [
     id: 'state-fair',
     label: 'State fair (Doswell, VA)',
     hint: 'A lost child, heat illness and a crowd-flow incident at the State Fair of Virginia.',
+  },
+  {
+    id: 'montecito',
+    label: 'Montecito debris flows, CA (large)',
+    // E-195 section 7.1: the approved about line, word for word.
+    hint: 'Modeled on the January 9, 2018 debris flows in Montecito, California. The people, teams and '
+      + 'messages are invented; the scale, phases and problems follow the public record. About 400 radio '
+      + 'log entries, 30 teams and 100 roster rows: a busy mission, not a tidy sample.',
   },
   {
     id: 'near-me',

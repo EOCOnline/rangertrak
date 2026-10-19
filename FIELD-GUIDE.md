@@ -569,7 +569,9 @@ your agency's policy on handling participant information.
 holds only demo data, and **Help** → *Start* has a **Load a demo** button. You can also go to
 **Mission** → *Danger zone*, pick a **Demo scenario** and press **Load sample mission**. This fills the app with a demonstration roster and about thirty
 reports in the demo area you pick (Grand Canyon by default) — useful for training, demonstrating to others, or just
-seeing what a busy mission looks like.
+seeing what a busy mission looks like. **Montecito debris flows (large)** is the big one: about 400 radio
+log entries, 30 teams and 100 roster rows, *modeled on* the January 9, 2018 debris flows in Montecito,
+California (every person, team and message is invented).
 
 > This **replaces** your current roster and reports. Export first if you have anything you
 > need.

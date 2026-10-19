@@ -67,8 +67,8 @@ describe('SampleDataService', () => {
     await recordStore.resetForTests();
   });
 
-  it('SAMPLE_SCENARIOS defaults to Vashon first and lists exactly the four scenarios', () => {
-    expect(SAMPLE_SCENARIOS.map(s => s.id)).toEqual(['grand-canyon', 'vashon', 'state-fair', 'near-me']);
+  it('SAMPLE_SCENARIOS defaults to Vashon first and lists exactly the five scenarios', () => {
+    expect(SAMPLE_SCENARIOS.map(s => s.id)).toEqual(['grand-canyon', 'vashon', 'state-fair', 'montecito', 'near-me']);
     expect(SAMPLE_SCENARIOS[0].id).toBe(DEFAULT_SAMPLE_SCENARIO);
   });
 

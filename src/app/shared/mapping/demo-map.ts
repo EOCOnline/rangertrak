@@ -18,7 +18,7 @@ export const DEMO_SCENARIO_STORAGE_KEY = 'rangertrak-demo-scenario'
 
 // Kept local rather than read off sample-data.service.ts's SAMPLE_SCENARIOS: that would pull
 // the whole sample-data module into the eager bundle via MissionReadinessService.
-const KNOWN_SCENARIOS: readonly SampleScenarioId[] = ['vashon', 'grand-canyon', 'state-fair', 'near-me']
+const KNOWN_SCENARIOS: readonly SampleScenarioId[] = ['vashon', 'grand-canyon', 'state-fair', 'montecito', 'near-me']
 
 /**
  * E-168a (2026-10-01, John): the stored value is now JSON - the scenario plus what the loader
