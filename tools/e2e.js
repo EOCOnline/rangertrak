@@ -406,6 +406,27 @@ async function setFileInput(selector, filePath) { // filePath: one path, or an a
   await send('DOM.setFileInputFiles', { files: [].concat(filePath), nodeId })
 }
 
+/**
+ * E-198: Restore no longer asks with confirm(); it opens a preview dialog (device and file side by
+ * side). Waits for it, reads what it shows, and presses Restore (or 'cancel'). Returns the snapshot.
+ */
+async function answerRestorePreview(button = 'restore') {
+  const shown = await pollUntil(() => evaluate(`(() => {
+    const t = document.querySelector('[data-testid="restore-preview-table"]')
+    if (!t) return null
+    const rows = {}
+    for (const tr of t.querySelectorAll('tbody tr')) { const c = [...tr.children].map(x => x.textContent.trim()); rows[c[0]] = [c[1], c[2]] }
+    const text = id => document.querySelector('[data-testid="' + id + '"]')?.textContent.replace(/\\s+/g, ' ').trim() ?? null
+    return { rows, notInFile: text('restore-preview-notinfile'), footer: text('restore-preview-footer'),
+      attachments: text('restore-preview-attachments'), newer: text('restore-preview-newer') }
+  })()`), v => v !== null, 40, 300)
+  if (!shown) return null
+  shown.focus = await pollUntil(() => evaluate(`document.activeElement?.getAttribute('data-testid') ?? ''`),
+    v => v === 'restore-preview-cancel', 10, 200)
+  await evaluate(`document.querySelector('[data-testid="restore-preview-${button}"]')?.click()`)
+  return shown
+}
+
 // ── result tracking ──────────────────────────────────────────────────────────
 
 const results = []
@@ -3444,6 +3465,215 @@ async function checkAarNotes() {
   check('Delete all notes empties the page', empty, true)
 }
 
+/** Small seeding helpers shared by the E-198 checks: a mission name, a roster, and a radio log written straight to storage. */
+const importSafetySeed = {
+  setMission: name => evaluate(`(() => { const s = JSON.parse(localStorage.getItem('appSettings') || '{}'); s.mission = ${JSON.stringify(name)}; s.event = 'drill'; s.opPeriod = '1'; localStorage.setItem('appSettings', JSON.stringify(s)); })()`),
+  entry: (id, uid, callsign, notes) => ({
+    id, uid, callsign, status: 'Normal', notes, source: 'Voice', operator: 'Scribe E2E',
+    date: new Date(Date.UTC(2026, 9, 15, 12, id)).toISOString(),
+    location: { lat: 47.4, lng: -122.4, address: '' },
+  }),
+  seedLog: entries => idbSetRaw('radioLog', JSON.stringify({
+    schemaVersion: 1, version: '0.0.0', date: new Date().toISOString(), event: 'e2e', bounds: {},
+    numReport: entries.length, maxId: entries.length, filter: 'All', logEntries: entries,
+  })),
+  seedPeople: list => idbSetRaw('rangers', JSON.stringify({ schemaVersion: 1, rangers: list.map(c => ({ uid: 'u-' + c, id: 'ID-' + c, callsign: c, fullName: 'Person ' + c, phone: '', image: '', team: '', role: '', note: '' })) })),
+  entriesNow: async () => JSON.parse((await idbGetRaw('radioLog')) || '{}').logEntries || [],
+  missionNow: () => evaluate(`JSON.parse(localStorage.getItem('appSettings') || '{}').mission`),
+  // Reloads after the wipe so the app writes its default settings again; setMission() then edits those.
+  wipe: async () => { await goto('/mission'); await evaluate(`localStorage.clear()`); await idbClearAll(); await attachmentsWipe(); await goto('/mission') },
+  /** Presses "Back up mission" (confirm, blank passphrase) and returns the new JSON file's path. */
+  backUp: async downloads => {
+    const before = downloadSnapshot(downloads)
+    dialogQueue.length = 0
+    queueDialogs(true, '')
+    await evaluate(`[...document.querySelectorAll('button')].find(b => /Back up mission/i.test(b.textContent))?.click()`)
+    let files = []
+    for (let i = 0; i < 40 && files.length === 0; i++) {
+      await sleep(250)
+      files = newDownloads(downloads, before).filter(f => f.endsWith('.json'))
+    }
+    return files.length ? path.join(downloads, files[0]) : ''
+  },
+  card: () => evaluate(`document.querySelector('[data-testid="import-safety-text"]')?.textContent.replace(/\\s+/g, ' ').trim() ?? null`),
+}
+
+/**
+ * E-198 phase 1: Restore shows a preview (device and file side by side) with Cancel in focus; a Restore takes a
+ * safety copy (storage key importSafetyCopy) and the Undo last import card appears; Undo names the entries logged
+ * since, and puts the original mission back; a cut-off file is named as cut off and changes nothing.
+ */
+async function checkImportSafety(downloads) {
+  console.log('\nE-198: Restore preview, the safety copy and Undo last import; a cut-off backup is named as such')
+  await send('Emulation.setDeviceMetricsOverride', { width: 1400, height: 900, deviceScaleFactor: 1, mobile: false })
+  const { setMission, entry, seedLog, seedPeople, entriesNow, missionNow, wipe, backUp, card } = importSafetySeed
+  const uids = async () => (await entriesNow()).map(e => e.uid).sort()
+
+  // File ONE: mission E2E-ONE, 2 entries, 1 person.
+  await wipe()
+  await setMission('E2E-ONE')
+  await seedPeople(['ONE1'])
+  await seedLog([entry(1, 'one-1', 'ONE1', 'file entry 1'), entry(2, 'one-2', 'ONE1', 'file entry 2')])
+  await goto('/mission')
+  const fileOne = await backUp(downloads)
+  if (!check('Back up mission wrote file ONE', !!fileOne, true)) return
+
+  // The device: mission E2E-TWO, 4 entries (none in file ONE), 3 people.
+  await wipe()
+  await setMission('E2E-TWO')
+  await seedPeople(['TWO1', 'TWO2', 'TWO3'])
+  await seedLog([1, 2, 3, 4].map(n => entry(n, 'two-' + n, 'TWO1', 'device entry ' + n)))
+  await goto('/mission')
+  check('no Undo card before any import', await card(), null)
+
+  // Cancel: the preview shows both columns; nothing changes.
+  dialogQueue.length = 0
+  await setFileInput('#importMissionFile', fileOne)
+  const cancelled = await answerRestorePreview('cancel')
+  check('the preview shows the mission in each column', cancelled?.rows?.['Mission'], ['E2E-TWO', 'E2E-ONE'])
+  check('...the radio log entry counts', cancelled?.rows?.['Radio log entries'], ['4', '2'])
+  check('...and the roster counts', cancelled?.rows?.['Rangers (roster)'], ['3', '1'])
+  check('...and says how many entries here are not in the file', cancelled?.notInFile, '4 entries on this device are not in the file and will be replaced.')
+  check('...and the 24-hour safety copy footer', cancelled?.footer, 'A safety copy is kept for 24 hours. Mission > Data safety > Undo last import.')
+  check('...with the focus on Cancel', cancelled?.focus, 'restore-preview-cancel')
+  await sleep(800)
+  check('Cancel changed nothing: still mission E2E-TWO', await missionNow(), 'E2E-TWO')
+  check('...still 4 entries', (await entriesNow()).length, 4)
+  check('...and took no safety copy', await idbGetRaw('importSafetyCopy'), null)
+
+  // Restore.
+  dialogQueue.length = 0
+  queueDialogs(true)   // the "restored" alert
+  await setFileInput('#importMissionFile', fileOne)
+  await answerRestorePreview('restore')
+  await sleep(2500)   // the restore reloads the page
+  check('Restore brought in file ONE: mission E2E-ONE', await pollUntil(missionNow, v => v === 'E2E-ONE'), 'E2E-ONE')
+  check('...and its 2 entries', await pollUntil(uids, v => v.length === 2), ['one-1', 'one-2'])
+  const copyRaw = await pollUntil(() => idbGetRaw('importSafetyCopy'), v => v !== null)
+  const copy = JSON.parse(copyRaw || '{}')
+  check('a safety copy is stored under importSafetyCopy (device encryption is off)', [copy.meta?.reason, copy.payload?.radioLog?.logEntries?.length, copy.payload?.settings?.mission], ['restore', 4, 'E2E-TWO'])
+  check('the restore alert points to Undo', dialogs.some(d => /^Mission restored\. Undo is in Mission > Data safety/.test(d)), true)
+
+  // The card.
+  await goto('/mission')
+  const cardText = await pollUntil(card, v => v !== null)
+  check('the Undo card names the Restore and the file', /^Last import: Restore of "rangertrak-E2E-ONE-[\d-]+\.json", \d\d:\d\d\./.test(cardText || ''), true)
+
+  // Something is logged after the import; Undo says what it would cost: the 2 entries the file brought in and the new one (none of them is in the copy).
+  await seedLog([entry(1, 'one-1', 'ONE1', 'file entry 1'), entry(2, 'one-2', 'ONE1', 'file entry 2'), entry(3, 'since-3', 'ONE1', 'logged after the import')])
+  await goto('/mission')
+  await evaluate(`document.querySelector('[data-testid="import-safety-undo"]')?.click()`)
+  const asked = await pollUntil(() => evaluate(`document.querySelector('mat-dialog-container')?.textContent.replace(/\\s+/g, ' ').trim() ?? null`), v => v !== null, 20, 250)
+  check('Undo names what would be lost and offers a backup first', /3 entries logged since \d\d:\d\d will be lost\. Back them up first\?/.test(asked || '') && /Back up first/.test(asked || ''), true)
+  await evaluate(`document.querySelector('[data-testid="choice-cancel"]')?.click()`)
+  await sleep(600)
+  check('Cancel on the Undo question changes nothing: the card is still there', (await card()) !== null, true)
+  check('...and so is the post-import entry', (await entriesNow()).length, 3)
+
+  dialogQueue.length = 0
+  queueDialogs(true)   // the "undone" alert
+  await evaluate(`document.querySelector('[data-testid="import-safety-undo"]')?.click()`)
+  await pollUntil(() => evaluate(`!!document.querySelector('[data-testid="choice-undo"]')`), v => v === true, 20, 250)
+  await evaluate(`document.querySelector('[data-testid="choice-undo"]')?.click()`)
+  await sleep(2500)
+  check('Undo put the original mission back: E2E-TWO', await pollUntil(missionNow, v => v === 'E2E-TWO'), 'E2E-TWO')
+  check('...with its original 4 entries and not the ones from the file', await pollUntil(uids, v => v.length === 4), ['two-1', 'two-2', 'two-3', 'two-4'])
+  check('...and the safety copy is gone (no redo)', await pollUntil(() => idbGetRaw('importSafetyCopy'), v => v === null), null)
+  await goto('/mission')
+  check('...and so is the card', await card(), null)
+
+  // A cut-off backup: named as such, nothing changes.
+  const cut = path.join(downloads, 'e2e-cut-off-backup.json')
+  const whole = fs.readFileSync(fileOne, 'utf8')
+  fs.writeFileSync(cut, whole.slice(0, Math.floor(whole.length / 2)))
+  dialogs.length = 0
+  dialogQueue.length = 0
+  queueDialogs(true)
+  await setFileInput('#importMissionFile', cut)
+  await sleep(2000)
+  check('a cut-off backup is called cut off', dialogs.some(d => /This file is cut off/.test(d)), true)
+  check('...and nothing was restored', await missionNow(), 'E2E-TWO')
+
+  await wipe()
+  await goto('/mission')
+}
+
+/**
+ * E-198 phase 1 / ADR D-60 item 8 (amended 2026-10-18): Restore over an entry that carries a photo, then Undo -
+ * the photo is still there and opens. Discarding the safety copy then frees the bytes.
+ */
+async function checkImportSafetyAttachments(downloads) {
+  console.log('\nE-198 / D-60 item 8: the safety copy holds attachment bytes; Undo brings the entry and its photo back; Discard frees them')
+  await send('Emulation.setDeviceMetricsOverride', { width: 3200, height: 900, deviceScaleFactor: 1, mobile: false })
+  const crypto = require('crypto')
+  const { setMission, entry, seedLog, seedPeople, entriesNow, wipe, backUp, card } = importSafetySeed
+  const fixtures = path.join(downloads, '..', 'attachment-fixtures')
+  fs.mkdirSync(fixtures, { recursive: true })
+  const pngPath = path.join(fixtures, 'e2e-undo-clue.png')
+  fs.writeFileSync(pngPath, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'))
+  const pngSha = crypto.createHash('sha256').update(fs.readFileSync(pngPath)).digest('hex')
+
+  // File A: a mission with one plain entry and no photo.
+  await wipe()
+  await setMission('E2E-UNDO-A')
+  await seedPeople(['UNDO1'])
+  await seedLog([entry(1, 'a-1', 'UNDO1', 'plain entry')])
+  await goto('/mission')
+  const fileA = await backUp(downloads)
+  if (!check('Back up mission wrote file A', !!fileA, true)) return
+
+  // The device: an entry that carries a photo.
+  const waiting = await entrySaveWithAttachments('E2E-UNDO', [pngPath])
+  check('Entry holds the picked photo before saving', waiting, 1)
+  check('the photo is stored', await pollUntil(attachmentKeys, k => k.length === 1), [pngSha])
+  await sleep(800)
+
+  // Restore file A over it: the preview says the photo's space is kept for the safety copy.
+  await goto('/mission')
+  dialogQueue.length = 0
+  queueDialogs(true)   // the "restored" alert
+  await setFileInput('#importMissionFile', fileA)
+  const shown = await answerRestorePreview('restore')
+  check('the preview says the photo stays for 24 hours or until the safety copy is discarded',
+    /freed after 24 hours, or when the safety copy is discarded/.test(shown?.attachments || ''), true)
+  await sleep(2500)
+  check('after Restore the entry with the photo is gone from the log', await pollUntil(async () => (await entriesNow()).some(e => e.callsign === 'E2E-UNDO'), v => v === false), false)
+  check('...but its photo is still stored (held by the safety copy)', await attachmentKeys(), [pngSha])
+
+  // Undo: nothing logged since, so a plain confirm. The entry and its photo are back.
+  await goto('/mission')
+  check('the Undo card is there', (await pollUntil(card, v => v !== null)) !== null, true)
+  dialogQueue.length = 0
+  queueDialogs(true, true)   // the plain confirm, then the "undone" alert
+  await evaluate(`document.querySelector('[data-testid="import-safety-undo"]')?.click()`)
+  await sleep(2500)
+  check('Undo brought the entry back', await pollUntil(async () => (await entriesNow()).some(e => e.callsign === 'E2E-UNDO'), v => v === true), true)
+  await goto('/radio-log')
+  const grid = await openAttachmentViewerFromGrid()
+  check('its photo chip opens the viewer', grid.opened, true)
+  check('...showing the same fingerprint', await pollUntil(viewerFingerprint, v => v.length === 64), pngSha)
+  await closeAttachmentViewer()
+
+  // Restore again, then Discard the safety copy: the bytes only it was keeping are freed.
+  await goto('/mission')
+  dialogQueue.length = 0
+  queueDialogs(true)
+  await setFileInput('#importMissionFile', fileA)
+  await answerRestorePreview('restore')
+  await sleep(2500)
+  check('held again after a second Restore', await attachmentKeys(), [pngSha])
+  await goto('/mission')
+  await pollUntil(card, v => v !== null)
+  dialogQueue.length = 0
+  queueDialogs(true)   // the Discard confirm
+  await evaluate(`document.querySelector('[data-testid="import-safety-discard"]')?.click()`)
+  check('Discard safety copy frees the photo nothing else names', await pollUntil(attachmentKeys, k => k.length === 0), [])
+  check('...and removes the safety copy', await pollUntil(() => idbGetRaw('importSafetyCopy'), v => v === null), null)
+
+  await wipe()
+  await goto('/mission')
+}
+
 async function checkBackupFixturesRestore() {
   console.log('\nE-126: every release\'s fixture backup restores into this build')
   const root = path.join(__dirname, 'backup-fixtures')
@@ -3453,8 +3683,8 @@ async function checkBackupFixturesRestore() {
   for (const release of releases) {
     const expected = JSON.parse(fs.readFileSync(path.join(root, release, 'expect.json'), 'utf8'))
     for (const [file, answers, companion] of [
-      ['backup.json', [true, true], 'backup-attachments.zip'], // confirm the restore, then the "restored" alert
-      ['backup-encrypted.json', [expected.passphrase, true, true], 'backup-encrypted-attachments.rtenc.zip'], // passphrase first (once: it covers the companion too)
+      ['backup.json', [true], 'backup-attachments.zip'], // the "restored" alert (the restore itself is answered in the preview dialog, E-198)
+      ['backup-encrypted.json', [expected.passphrase, true], 'backup-encrypted-attachments.rtenc.zip'], // passphrase first (once: it covers the companion too)
     ]) {
       const label = `${release}/${file}`
       await goto('/mission')
@@ -3468,6 +3698,7 @@ async function checkBackupFixturesRestore() {
       const companionPath = path.join(root, release, companion)
       const withAttachment = !!expected.attachments && fs.existsSync(companionPath)
       await setFileInput('#importMissionFile', withAttachment ? [path.join(root, release, file), companionPath] : path.join(root, release, file))
+      await answerRestorePreview() // E-198: the preview dialog replaced the confirm()
       await sleep(2500) // the restore reloads the page
 
       const rangersRaw = await pollUntil(
@@ -3667,8 +3898,9 @@ async function checkAttachments(downloads) {
   await goto('/mission'); await evaluate(`localStorage.clear()`); await idbClearAll(); await attachmentsWipe()
   await goto('/mission')
   dialogQueue.length = 0
-  queueDialogs(true, true)   // the restore confirm, then the "restored" alert
+  queueDialogs(true)   // the "restored" alert (the restore itself is answered in the preview dialog, E-198)
   await setFileInput('#importMissionFile', [backupJson, backupZip])
+  await answerRestorePreview()
   await sleep(2500)
   check('after a wipe, restoring both files brings both originals back',
     await pollUntil(attachmentKeys, k => k.length === 2), both)
@@ -3956,6 +4188,7 @@ async function checkMissionRoundTrip(downloads) {
   await idbClearAll()
   await goto('/mission')
   await setFileInput('#importMissionFile', missionFile)
+  await answerRestorePreview() // E-198: the preview dialog replaced the confirm()
   await sleep(2000)
 
   // Poll rather than a flat sleep+single-read - RecordStore's write to IndexedDB is
@@ -4750,6 +4983,8 @@ async function main() {
       // Insurance: no earlier check's unused dialog answers may reach these. (The 1064/1065 backup
       // failure was not this; it was a same-named download, see downloadSnapshot().)
       dialogQueue.length = 0
+      if (want('mission')) await checkImportSafety(downloads) // E-198; wipes storage
+      if (want('attachments')) await checkImportSafetyAttachments(downloads) // E-198 + D-60 item 8; wipes storage
       if (want('attachments')) await checkAttachments(downloads) // E-194; wipes storage
       if (want('attachments')) await checkSmallerCopies(downloads) // E-194 item 2 (revised); wipes storage
       if (want('board')) await checkBoard(downloads) // D-61; needs Chrome's --ignore-certificate-errors, see main(); wipes storage
