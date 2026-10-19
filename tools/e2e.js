@@ -3559,12 +3559,12 @@ async function checkImportSafety(downloads) {
   const cardText = await pollUntil(card, v => v !== null)
   check('the Undo card names the Restore and the file', /^Last import: Restore of "rangertrak-E2E-ONE-[\d-]+\.json", \d\d:\d\d\./.test(cardText || ''), true)
 
-  // Something is logged after the import; Undo says what it would cost: the 2 entries the file brought in and the new one (none of them is in the copy).
+  // Something is logged after the import; Undo says what it would cost: only the new one. The 2 entries the file brought in are what Undo is for, so they are not counted.
   await seedLog([entry(1, 'one-1', 'ONE1', 'file entry 1'), entry(2, 'one-2', 'ONE1', 'file entry 2'), entry(3, 'since-3', 'ONE1', 'logged after the import')])
   await goto('/mission')
   await evaluate(`document.querySelector('[data-testid="import-safety-undo"]')?.click()`)
   const asked = await pollUntil(() => evaluate(`document.querySelector('mat-dialog-container')?.textContent.replace(/\\s+/g, ' ').trim() ?? null`), v => v !== null, 20, 250)
-  check('Undo names what would be lost and offers a backup first', /3 entries logged since \d\d:\d\d will be lost\. Back them up first\?/.test(asked || '') && /Back up first/.test(asked || ''), true)
+  check('Undo names what would be lost and offers a backup first', /1 entry logged since \d\d:\d\d will be lost\. Back them up first\?/.test(asked || '') && /Back up first/.test(asked || ''), true)
   await evaluate(`document.querySelector('[data-testid="choice-cancel"]')?.click()`)
   await sleep(600)
   check('Cancel on the Undo question changes nothing: the card is still there', (await card()) !== null, true)
