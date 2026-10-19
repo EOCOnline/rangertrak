@@ -1,0 +1,164 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later
+     RangerTrak exercise console (E-196 phase 0). Free software under the GNU AGPL v3 or later. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EXERCISE console - RangerTrak</title>
+<link rel="stylesheet" href="console.css">
+</head>
+<body>
+<div class="exercise-banner">EXERCISE &middot; EXERCISE &middot; EXERCISE</div>
+<header class="top">
+  <h1>Exercise controller console</h1>
+  <span id="pkg-title" class="note">No scenario open</span>
+</header>
+<nav class="tabs" role="tablist">
+  <button role="tab" aria-selected="true" data-tab="setup">1. Scenario and settings</button>
+  <button role="tab" aria-selected="false" data-tab="run">2. Run</button>
+  <button role="tab" aria-selected="false" data-tab="debrief">3. Debrief</button>
+  <button role="tab" aria-selected="false" data-tab="stress">Stress injector</button>
+</nav>
+<main>
+
+<section class="tab" id="tab-setup">
+  <h2>Open a scenario</h2>
+  <div class="row">
+    <label class="btn secondary" style="cursor:pointer">Open scenario folder&hellip;
+      <input type="file" id="pick-folder" webkitdirectory hidden></label>
+    <label class="btn secondary" style="cursor:pointer">Or choose the files&hellip;
+      <input type="file" id="pick-files" multiple hidden></label>
+    <button class="btn secondary" id="load-sample">Load the Montecito sample</button>
+  </div>
+  <p class="note">A scenario is a folder with scenario.json, msel.csv, places.csv and teams.csv (and an optional media folder). If the folder picker is not offered, choose the files together. The sample button works only when this page is served (node tools/exercise/serve.js). See PACKAGE.md.</p>
+  <div id="load-report"></div>
+  <div id="about-box"></div>
+
+  <div id="settings-area" hidden>
+    <h2>Settings for this class</h2>
+    <div class="grid2">
+      <div class="box">
+        <h3>When</h3>
+        <div class="row">
+          <label>Start <input type="text" id="s-start" size="17" placeholder="YYYY-MM-DDTHH:MM"></label>
+          <label>Stop <input type="text" id="s-stop" size="17" placeholder="YYYY-MM-DDTHH:MM"></label>
+        </div>
+        <div class="row">
+          <label>Pace <select id="s-pace"></select></label>
+          <label>Background traffic <select id="s-intensity"></select></label>
+        </div>
+        <p class="note">Start and stop are scenario times. Leave blank for the whole script. Thinning drops only background rows; injects, decision points, tests and casualty rows always stay.</p>
+        <label><input type="checkbox" id="s-reveal"> Allow &ldquo;What really happened&rdquo; to be shown at decision points</label>
+      </div>
+      <div class="box">
+        <h3>Casualty realism</h3>
+        <div class="row">
+          <label><input type="radio" name="s-cas" value="softened"> Softened (default)</label>
+          <label><input type="radio" name="s-cas" value="recorded"> As recorded</label>
+          <label><input type="radio" name="s-cas" value="per-row"> Row by row</label>
+        </div>
+        <div id="cas-rows" class="scroll" hidden></div>
+        <p class="note">Softened turns fatalities into critical injuries. As recorded uses radio-protocol wording for the dead. No names or photos of remains, ever.</p>
+      </div>
+      <div class="box">
+        <h3>Teams the trainees play</h3>
+        <div id="s-played" class="scroll"></div>
+        <p class="note">Rows sent by a played team become cue cards telling the trainee what to send. Every other team is simulated: its traffic goes in the catch-up file or is read out by you.</p>
+      </div>
+      <div class="box">
+        <h3>Switch rows off, add your own</h3>
+        <label style="display:block">Row ids to switch off (comma separated)
+          <textarea id="s-off" placeholder="M0012, M0034"></textarea></label>
+        <h3>Add a local inject</h3>
+        <div class="row">
+          <label>Time <input type="text" id="li-time" size="17" placeholder="YYYY-MM-DDTHH:MM"></label>
+          <label>From <input type="text" id="li-from" size="12"></label>
+          <label>To <input type="text" id="li-to" size="12"></label>
+        </div>
+        <label style="display:block">Words to say <textarea id="li-msg" placeholder="The local repeater fails."></textarea></label>
+        <label style="display:block">Expected action <textarea id="li-note"></textarea></label>
+        <div class="row"><button class="btn secondary" id="li-add">Add inject</button><span id="li-list" class="note"></span></div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn big" id="apply">Apply settings and go to Run</button>
+      <span id="apply-summary" class="note"></span>
+    </div>
+    <details style="margin-top:12px"><summary>Rows in the effective script</summary>
+      <div id="rows-table" class="scroll" style="max-height:420px"></div></details>
+  </div>
+</section>
+
+<section class="tab" id="tab-run" hidden>
+  <div id="run-empty" class="note">Open a scenario and apply settings first.</div>
+  <div id="run-area" hidden>
+    <div id="content-note" class="box content-note" hidden></div>
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div>
+        <div class="clock" id="clock">--:--<small id="clock-date"></small></div>
+        <div id="op-label" class="note"></div>
+      </div>
+      <div>
+        <div class="row">
+          <button class="btn big" id="play">Play</button>
+          <button class="btn big secondary" id="pause">Pause</button>
+          <label>Pace <select id="run-pace"></select></label>
+        </div>
+        <div class="row">
+          <label>Jump to <input type="text" id="jump-time" size="17" placeholder="YYYY-MM-DDTHH:MM"></label>
+          <button class="btn secondary" id="jump-go">Jump</button>
+          <label>Op period <select id="jump-op"></select></label>
+          <button class="btn secondary" id="jump-op-go">Jump to start</button>
+        </div>
+      </div>
+    </div>
+    <div class="opstrip" id="opstrip"></div>
+    <div class="row">
+      <button class="btn" id="catchup">Write catch-up file to now</button>
+      <button class="btn" id="advance">Advance to next OP (writes the catch-up file)</button>
+      <button class="btn secondary" id="open-room">Open room display</button>
+      <button class="btn secondary" id="blank-room">Blank room display</button>
+      <button class="btn secondary" id="print-packet">Print controller packet</button>
+    </div>
+    <p class="note" id="run-status"></p>
+    <div id="debrief-prompt" class="box content-note" hidden>Fatalities are on for this class. After the last row, hold a short stress debrief: how people are doing, what they heard, and who to talk to.</div>
+    <div id="decision-slot"></div>
+    <div class="cues" id="cues"></div>
+  </div>
+</section>
+
+<section class="tab" id="tab-debrief" hidden>
+  <h2>Debrief check</h2>
+  <p>Load the class&rsquo;s exported Report Packet (the .txt file from the app). The console lines it up against the script: which injects were logged, how late, and whether the planted personal details turned up in the log.</p>
+  <div class="row"><label>Report Packet <input type="file" id="debrief-file" accept=".txt,.json,text/plain,application/json"></label></div>
+  <div class="row">
+    <label>Scenario time <input type="text" id="an-scn" size="17" placeholder="YYYY-MM-DDTHH:MM"></label>
+    <label>was real time <input type="text" id="an-real" size="22" placeholder="YYYY-MM-DDTHH:MM (your clock)"></label>
+    <label>Late after <input type="number" id="an-late" value="10" min="1" style="width:5em"> min</label>
+  </div>
+  <p class="note" id="an-note">Without a time pair only logged and missed are shown. The pair is filled in from the last catch-up file or Play press.</p>
+  <div class="row"><button class="btn" id="debrief-run">Run the check</button>
+    <button class="btn secondary" id="debrief-md" disabled>Download Markdown</button>
+    <button class="btn secondary" id="debrief-print" disabled>Print</button></div>
+  <div id="debrief-out"></div>
+</section>
+
+<section class="tab" id="tab-stress" hidden>
+  <h2>Stress injector</h2>
+  <p>Made-up traffic as Report Packets, to test operators and the app at speed. For thousands of entries use the command line: <code>node tools/exercise/stress.js --rate=2000 --hours=3 --out=&lt;dir&gt;</code>. This form does the same, in the browser; several files may ask your browser&rsquo;s permission to download more than one.</p>
+  <div class="row">
+    <label>Entries per hour <input type="number" id="st-rate" value="500" min="1" style="width:7em"></label>
+    <label>Hours <input type="number" id="st-hours" value="2" min="1" style="width:5em"></label>
+    <label>One file per (minutes, 0 = one file) <input type="number" id="st-split" value="0" min="0" style="width:5em"></label>
+    <label>Seed <input type="number" id="st-seed" value="1" style="width:5em"></label>
+  </div>
+  <label><input type="checkbox" id="st-use-pkg"> Use the open scenario&rsquo;s teams and places</label>
+  <div class="row"><button class="btn" id="st-go">Write files</button><span id="st-status" class="note"></span></div>
+</section>
+
+</main>
+<div id="print-area"></div>
+<script type="module" src="console.js"></script>
+</body>
+</html>

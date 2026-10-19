@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later
+     RangerTrak exercise console (E-196 phase 0). Free software under the GNU AGPL v3 or later. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EXERCISE room display</title>
+<style>
+  :root { --warn: #b3261e; }
+  html, body { height: 100%; margin: 0; background: #0c0f14; color: #f2f4f8; font: 28px/1.4 system-ui, "Segoe UI", sans-serif; overflow: hidden; }
+  .banner { background: var(--warn); color: #fff; text-align: center; font-weight: 800; letter-spacing: .2em; padding: 6px; font-size: 22px; }
+  .stage { position: absolute; top: 40px; bottom: 64px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 40px; transition: opacity .6s; }
+  .stage.fading { opacity: 0; }
+  .stage img, .stage video { max-width: 100%; max-height: 72%; object-fit: contain; }
+  .caption { font-size: 38px; font-weight: 700; margin-top: 18px; text-align: center; max-width: 1400px; }
+  .meta { color: #aab3c2; font-size: 22px; margin-top: 10px; text-align: center; max-width: 1400px; }
+  .meta b { color: #f2f4f8; }
+  .card { border: 3px solid #3a4558; border-radius: 16px; padding: 30px 50px; max-width: 1400px; text-align: center; }
+  .waiting { color: #6c7686; font-size: 34px; }
+  .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; background: #151a22; display: flex; align-items: center; gap: 28px; padding: 0 28px; }
+  .bar .clock { font-size: 34px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .bar .ops { display: flex; gap: 6px; flex-wrap: wrap; font-size: 20px; }
+  .bar .ops span { padding: 2px 12px; border-radius: 14px; background: #263042; color: #aab3c2; }
+  .bar .ops span.now { background: #3b82f6; color: #fff; font-weight: 700; }
+  #blank { position: fixed; inset: 0; background: #000; z-index: 20; display: none; }
+  #blank.on { display: block; }
+</style>
+</head>
+<body>
+<div class="banner">EXERCISE &middot; EXERCISE &middot; EXERCISE</div>
+<div class="stage" id="stage"><div class="waiting">Waiting for the controller console&hellip;</div></div>
+<div class="bar"><div class="clock" id="clock">--:--</div><div class="ops" id="ops"></div><div style="flex:1"></div><div id="hint" style="font-size:18px;color:#6c7686">B blanks the screen</div></div>
+<div id="blank"></div>
+<script type="module" src="room.js"></script>
+</body>
+</html>
