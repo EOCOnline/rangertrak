@@ -76,4 +76,21 @@ describe('RangersComponent', () => {
 
     expect(reloadSpy).not.toHaveBeenCalled();
   });
+
+  // 2026-10-18: after an import the grid gets new rows but no filter changes, so shownCount stayed 0
+  // and the Print card said "Prints 0 of 9" (button disabled) while Export counted 9.
+  it('recounts the rows shown when the rows change, so Print counts them without a filter change', () => {
+    const rows = [1, 2, 3].map(n => ({ data: { id: String(n) } }))
+    const c = component as unknown as { gridApi: unknown }
+    c.gridApi = {
+      getSelectedRows: () => [],
+      getFilterModel: () => ({}),
+      forEachNodeAfterFilter: (fn: (n: unknown) => void) => rows.forEach(fn),
+    }
+    expect(component.printCount()).toBe(0)
+
+    component.gridOptions.onModelUpdated?.({} as any)
+
+    expect(component.printCount()).toBe(3)
+  });
 });

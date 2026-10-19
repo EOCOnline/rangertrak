@@ -173,6 +173,9 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     onCellValueChanged: () => this.onCellEdited(),
     onSelectionChanged: () => { this.selectedCount.set(this.gridApi?.getSelectedRows?.().length ?? 0); this.refreshExportPhotoCount() },
     onFilterChanged: () => this.refreshFilterChips(),
+    // 2026-10-18: rows arriving (an import, a restore) change what the grid shows without any filter
+    // changing, which left "Prints 0 of 9" on the Print card. Recount whenever the row model updates.
+    onModelUpdated: () => this.refreshFilterChips(),
 
     // CALLBACKS
     // getRowHeight: (params) => 25
