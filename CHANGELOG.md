@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.58-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.57-alpha...v0.99.58-alpha) (2026-10-19)
+
+
+### Features
+
+* **help:** FAQ and Start-here anchors open their collapsed section when linked ([489c56f](https://github.com/SteadyEOC/RangerTrak/commit/489c56f749a96ff900932d4d363fcc1703794b56))
+
+
+### Bug Fixes
+
+* **attachments:** saving or sharing a smaller copy names it NAME-smaller.ext ([49b1c3d](https://github.com/SteadyEOC/RangerTrak/commit/49b1c3d2e9d7a4e22e36d3819ec3563f135baa88))
+* **attachments:** viewer preview keeps its box so the Name and Size rows stay below it ([a448a86](https://github.com/SteadyEOC/RangerTrak/commit/a448a86984784df577ec6ec4431e3d55ac2069e9))
+* **export:** download file names use the device's local date, via one shared helper ([3562e2c](https://github.com/SteadyEOC/RangerTrak/commit/3562e2c65b30db7665759caf6216a89fe19f00c6))
+* **import:** column-mapping dialogs say what is happening and mark RangerTrak's field apart from the sheet's heading ([93aa8ce](https://github.com/SteadyEOC/RangerTrak/commit/93aa8ced56f75b596fc5919bbe3d8076998afe8e))
+* **map:** print marker swap no longer raises the false Filtered: Radio log entries hidden chip ([7e7a69a](https://github.com/SteadyEOC/RangerTrak/commit/7e7a69a97f79155cdb2470fed8df8e21bded4353))
+* **rangers:** Print roster counts the rows shown after an import ([66db8ee](https://github.com/SteadyEOC/RangerTrak/commit/66db8eeb75feae00772bb90a7825acf16eeefd4f))
+
 ### [0.99.57-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.56-alpha...v0.99.57-alpha) (2026-10-19)
 
 

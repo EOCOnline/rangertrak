@@ -1,6 +1,6 @@
 {
   "name": "rangertrak",
-  "version": "0.99.57-alpha",
+  "version": "0.99.58-alpha",
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "ng": "ng",
