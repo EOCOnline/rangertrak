@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.56-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.55-alpha...v0.99.56-alpha) (2026-10-19)
+
+
+### Features
+
+* **attachments:** E-194 / D-60 receiver's Make a smaller copy in the viewer - stronger warning, Keep both default, typed REPLACE to replace ([09a98fd](https://github.com/SteadyEOC/RangerTrak/commit/09a98fd1b7ba6edea354cafacffc4599162ebc25))
+* **attachments:** E-194 / D-60 say which kind a file is - viewer line and both fingerprints, tile tags, prints, CSV names, Board ([12c1f13](https://github.com/SteadyEOC/RangerTrak/commit/12c1f13c490ae4cea1168cd9ea9c533acf5c3d00))
+* **attachments:** E-194 / D-60 sender's choice at Attach - Keep original (default) or Smaller copy, with progress and Cancel ([e674b3d](https://github.com/SteadyEOC/RangerTrak/commit/e674b3d2131b4641cadfa58da5e8c671942a2d37))
+* **attachments:** E-194 / D-60 smaller-copy compressors - photo by canvas, video and audio through Mediabunny, lazy-loaded ([491a1b7](https://github.com/SteadyEOC/RangerTrak/commit/491a1b7d6dd7494c4a129975a52992259776f0a0))
+* **attachments:** E-194 / D-60 smaller-copy note and replaced mark on AttachmentRef, helpers and merge ([1a4abdc](https://github.com/SteadyEOC/RangerTrak/commit/1a4abdc2b515ae51ccd4eb9ae1b89fad12b0b206))
+* **demo:** E-195 Montecito sample scenario - generated, lazily loaded, softened casualties only ([7e6fa11](https://github.com/SteadyEOC/RangerTrak/commit/7e6fa1152a25664d0dcbfbc45bf3c67662cdf147))
+
 ### [0.99.55-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.54-alpha...v0.99.55-alpha) (2026-10-17)
 
 
