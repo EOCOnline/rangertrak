@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.57-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.56-alpha...v0.99.57-alpha) (2026-10-19)
+
+
+### Features
+
+* **exercise:** catch-up Report Packet writer and stress generator ([2331bab](https://github.com/SteadyEOC/RangerTrak/commit/2331babb48edba408e3408e40bbf6b6820212e2a))
+* **exercise:** class settings to effective script, and the scenario clock ([f7fec62](https://github.com/SteadyEOC/RangerTrak/commit/f7fec624dd934b07d690b7b1111884b6cbf9c534))
+* **exercise:** controller console and room display ([08eec15](https://github.com/SteadyEOC/RangerTrak/commit/08eec15f4810a171d6c405291437b119052825ff))
+* **exercise:** debrief check - inject timing and planted PII bait search ([56f4e8a](https://github.com/SteadyEOC/RangerTrak/commit/56f4e8ac1f9eb83214b92a178dcdce95ff6988e3))
+* **exercise:** README - how to run a class, the file boundary, casualty default ([f6dbae3](https://github.com/SteadyEOC/RangerTrak/commit/f6dbae31553e337a260aea20c2f2c73431f48839))
+* **exercise:** scenario package format, CSV reader and validator, Montecito sample ([dad2f37](https://github.com/SteadyEOC/RangerTrak/commit/dad2f3747d4e80c9c19274bd61748045b8fa81b6))
+* **exercise:** stress injector command line ([1b6f733](https://github.com/SteadyEOC/RangerTrak/commit/1b6f733740c65472eef149edb67ab727bd14a31e))
+* **import:** E-198 docs - Help > Data and FIELD-GUIDE for Undo last import and the Restore preview ([a2d8faf](https://github.com/SteadyEOC/RangerTrak/commit/a2d8fafe7794c82b282267c132986f27c9766a54))
+* **import:** E-198 hold the safety copy's attachments through every sweep ([f63bab4](https://github.com/SteadyEOC/RangerTrak/commit/f63bab408314ae64d65749d2edff6caa171e7350))
+* **import:** E-198 plain-language diagnosis for every import error, with a corpus ([7276ec1](https://github.com/SteadyEOC/RangerTrak/commit/7276ec1d0c73802139f6903d374f2e2b2b7b129e))
+* **import:** E-198 preview before Restore, with Cancel in focus ([bcd7489](https://github.com/SteadyEOC/RangerTrak/commit/bcd748929f9c6cab5bc28da4d73743319d8e76d5))
+* **import:** E-198 pure rules for the safety copy and the restore preview ([fffb189](https://github.com/SteadyEOC/RangerTrak/commit/fffb189cba37d6a347f55cba69e3e5683a7f517e))
+* **import:** E-198 safety copy before Restore, Report Packet and Setup file imports ([4d52f2a](https://github.com/SteadyEOC/RangerTrak/commit/4d52f2a25786fe9a82afc83cb31a152c1b70561c))
+* **import:** E-198 Undo last import card in Mission > Data safety and on a field phone ([363a457](https://github.com/SteadyEOC/RangerTrak/commit/363a4572531b6c78e0de9b767f00b215be4c9018))
+
+
+### Bug Fixes
+
+* **import:** E-198 Undo's warning counts only entries logged after the import ([8a890f9](https://github.com/SteadyEOC/RangerTrak/commit/8a890f9e57af994a9298faef18e21cbe58554433))
+
 ### [0.99.56-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.55-alpha...v0.99.56-alpha) (2026-10-19)
 
 
