@@ -400,6 +400,7 @@ export class MissionAdvancedOptionsComponent {
         // locations have actually committed to IndexedDB (RecordStore.flush()), which the
         // reload() right below depends on. See importMission()'s own doc comment.
         await this.backupService.importMission(payload)
+        if (safetyCopy === 'kept') await this.importSafety.markImportDone()
         this.log.warn(`Restored mission from ${backupFile.name}.`, this.id)
         restoredMission = true
       }

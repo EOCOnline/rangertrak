@@ -42,13 +42,27 @@ export function safetyCopyExpiresAt(meta: Pick<ImportSafetyMeta, 'takenAt'>): nu
 type HasUid = { uid?: string }
 
 /**
- * The entries on the device now that the copy does not have, by `uid`: exactly what Undo would
- * lose. An entry with no uid cannot be matched, so it counts as not in the copy (it is new).
+ * The entries on the device now that the copy does not have, by `uid`. An entry with no uid
+ * cannot be matched, so it counts as not in the copy (it is new). `alsoKnown` are uids to treat
+ * as known too: the entries the import itself brought in (see `entriesLoggedSinceImport`).
  */
-export function entriesSince<T extends HasUid>(copyEntries: readonly HasUid[], current: readonly T[]): T[] {
-  const inCopy = new Set<string>()
+export function entriesSince<T extends HasUid>(
+  copyEntries: readonly HasUid[], current: readonly T[], alsoKnown: readonly string[] = [],
+): T[] {
+  const inCopy = new Set<string>(alsoKnown)
   for (const e of copyEntries) if (e.uid) inCopy.add(e.uid)
   return current.filter(e => !e.uid || !inCopy.has(e.uid))
+}
+
+/**
+ * What Undo would cost the operator: entries logged AFTER the import finished. Entries the import
+ * brought in are expected to go (that is what Undo is for), so they are not counted. Before the
+ * import has finished (`afterImportUids` undefined) this falls back to everything not in the copy.
+ */
+export function entriesLoggedSinceImport<T extends HasUid>(
+  copyEntries: readonly HasUid[], afterImportUids: readonly string[] | undefined, current: readonly T[],
+): T[] {
+  return entriesSince(copyEntries, current, afterImportUids ?? [])
 }
 
 type HasAttachments = { attachments?: AttachmentRef[] }

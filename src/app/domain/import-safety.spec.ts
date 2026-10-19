@@ -1,5 +1,5 @@
 import {
-  IMPORT_SAFETY_TTL_MS, describeLastImport, entriesSince, heldFingerprints, holdAsEntries,
+  IMPORT_SAFETY_TTL_MS, describeLastImport, entriesLoggedSinceImport, entriesSince, heldFingerprints, holdAsEntries,
   isSafetyCopyExpired, safetyCopyExpiresAt,
 } from './import-safety'
 import type { ImportSafetyMeta } from './import-safety'
@@ -54,6 +54,25 @@ describe('import safety copy rules (E-198)', () => {
 
     it('does not count entries only the copy has (Undo brings those back)', () => {
       expect(entriesSince([{ uid: 'e1' }, { uid: 'old' }], [{ uid: 'e1' }])).toEqual([])
+    })
+  })
+
+  describe('entriesLoggedSinceImport', () => {
+    // A Restore replaced 2 device entries with 3 from the file; then the scribe logged 1 more.
+    const copy = [{ uid: 'dev1' }, { uid: 'dev2' }]
+    const afterImport = ['f1', 'f2', 'f3']
+    const now = [{ uid: 'f1' }, { uid: 'f2' }, { uid: 'f3' }, { uid: 'new1' }]
+
+    it('counts only entries logged after the import, not the ones it brought in', () => {
+      expect(entriesLoggedSinceImport(copy, afterImport, now).map(e => e.uid)).toEqual(['new1'])
+    })
+
+    it('is empty straight after the import', () => {
+      expect(entriesLoggedSinceImport(copy, afterImport, now.slice(0, 3))).toEqual([])
+    })
+
+    it('falls back to everything not in the copy before the import has finished', () => {
+      expect(entriesLoggedSinceImport(copy, undefined, now).length).toBe(4)
     })
   })
 

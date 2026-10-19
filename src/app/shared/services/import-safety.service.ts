@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 
 import {
-  IMPORT_SAFETY_KEY, entriesSince, heldFingerprints, isSafetyCopyExpired,
+  IMPORT_SAFETY_KEY, entriesLoggedSinceImport, heldFingerprints, isSafetyCopyExpired,
 } from '../../domain/import-safety'
 import type { ImportSafetyMeta, ImportSafetyReason } from '../../domain/import-safety'
 import { recordStore } from '../storage/record-store'
@@ -12,8 +12,12 @@ import type { MissionExport } from './backup.service'
 import { LogService } from './log.service'
 import { RadioLogService } from './radio-log.service'
 
-/** What is stored under `importSafetyCopy`: the copy and the record of the import it precedes. */
-type StoredSafetyCopy = { meta: ImportSafetyMeta, payload: MissionExport }
+/**
+ * What is stored under `importSafetyCopy`: the copy and the record of the import it precedes.
+ * `afterImport` is the entry uids on the device once the import finished (`markImportDone()`), so
+ * Undo's warning counts only entries logged after the import, not the ones it brought in.
+ */
+type StoredSafetyCopy = { meta: ImportSafetyMeta, payload: MissionExport, afterImport?: string[] }
 
 /** The safety copy could not be kept (storage full, or writes are off in this tab). */
 export class SafetyCopyFailedError extends Error {
@@ -54,6 +58,8 @@ export class ImportSafetyService {
   private heldSet: ReadonlySet<string> = new Set()
   /** The copy's entries by uid, kept so the card can say what Undo would lose without re-reading the copy. */
   private copyEntryStubs: { uid?: string }[] = []
+  /** The entry uids right after the import finished; undefined until `markImportDone()`. */
+  private afterImportUids: string[] | undefined
 
   private lastSignal = signal<ImportSafetyMeta | null>(null)
   /** The import the copy precedes, or null when there is no copy. The card shows exactly while this is set. */
@@ -85,6 +91,7 @@ export class ImportSafetyService {
     const entries = stored.payload.radioLog.logEntries
     this.heldSet = heldFingerprints(entries)
     this.copyEntryStubs = entries.map(e => ({ uid: e.uid }))
+    this.afterImportUids = stored.afterImport
     this.lastSignal.set(stored.meta)
   }
 
@@ -162,10 +169,26 @@ export class ImportSafetyService {
     }
   }
 
-  /** How many entries logged since the copy was taken Undo would lose. */
+  /**
+   * Called by each import once it has finished (before any reload): records which entries the
+   * import left on the device, so Undo's warning counts only what was logged afterwards.
+   */
+  async markImportDone(): Promise<void> {
+    const raw = recordStore.getItem(IMPORT_SAFETY_KEY)
+    if (raw === null) return
+    const stored = JSON.parse(raw) as StoredSafetyCopy
+    stored.afterImport = this.radioLog.getCurrentRadioLog().logEntries
+      .map(e => e.uid).filter((u): u is string => !!u)
+    recordStore.setItem(IMPORT_SAFETY_KEY, JSON.stringify(stored))
+    this.afterImportUids = stored.afterImport
+    await recordStore.flush()
+  }
+
+  /** How many entries logged since the import finished Undo would lose. */
   entriesLostByUndo(): number {
     if (!this.lastSignal()) return 0
-    return entriesSince(this.copyEntryStubs, this.radioLog.getCurrentRadioLog().logEntries).length
+    return entriesLoggedSinceImport(this.copyEntryStubs, this.afterImportUids,
+      this.radioLog.getCurrentRadioLog().logEntries).length
   }
 
   /**
@@ -187,6 +210,7 @@ export class ImportSafetyService {
     recordStore.removeItem(IMPORT_SAFETY_KEY)
     this.heldSet = new Set()
     this.copyEntryStubs = []
+    this.afterImportUids = undefined
     this.lastSignal.set(null)
     await recordStore.flush()
     await this.sweepNow()

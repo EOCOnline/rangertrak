@@ -181,6 +181,17 @@ describe('ImportSafetyService (E-198)', () => {
       expect(safety.entriesLostByUndo()).toBe(2);
     });
 
+    it('does not count the entries the import itself brought in, once markImportDone() ran', async () => {
+      addEntry('on the device before');
+      await safety.take('report-packet', 'p.txt');
+      addEntry('from the packet 1');   // the "import"
+      addEntry('from the packet 2');
+      await safety.markImportDone();
+      expect(safety.entriesLostByUndo()).toBe(0);
+      addEntry('logged afterwards');
+      expect(safety.entriesLostByUndo()).toBe(1);
+    });
+
     it('puts the device back as it was, deletes the copy, and does not take a new one', async () => {
       addEntry('original one');
       addEntry('original two');

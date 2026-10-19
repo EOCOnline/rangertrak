@@ -223,6 +223,7 @@ export class SetupFileComponent {
         return
       }
       const summary = await this.applyFile(file)
+      if (safetyCopy === 'kept') await this.importSafety.markImportDone()
       this.applied.set(`${file.fileName}: ${summary}${safetyCopy === 'kept' ? ' Undo is in Mission > Data safety for 24 hours.' : ''}`)
       this.log.warn(`Applied Setup file ${file.fileName}: ${summary}`, this.id)
     } catch (e: any) {

@@ -1104,7 +1104,10 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       if (rejected) {
         lines.push(`${rejected} report${rejected === 1 ? '' : 's'} could not be read (bad timestamp or location) and were NOT imported - see the Log page for which.`)
       }
-      if (safetyCopy === 'kept') lines.push('Undo is in Mission > Data safety for 24 hours.')
+      if (safetyCopy === 'kept') {
+        await this.importSafety.markImportDone()
+        lines.push('Undo is in Mission > Data safety for 24 hours.')
+      }
       alert(lines.join('\n'))
     } catch (e: any) {
       const label = file?.name ?? 'those files'
