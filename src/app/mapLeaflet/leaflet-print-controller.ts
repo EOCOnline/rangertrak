@@ -415,7 +415,21 @@ export class LeafletPrintController {
    * print media change, so Ctrl+P gets it too, not just the Print map button.
    */
   private readonly printMarkers = L.layerGroup()
+  /** True while the print swap moves markers between the cluster and plain layers; layer events then are not the user's choice. */
+  swappingMarkers = false
   private setPrintMarkers(printing: boolean): void {
+    if (!this.lMap) {
+      return
+    }
+    this.swappingMarkers = true
+    try {
+      this.swapPrintMarkers(printing)
+    } finally {
+      this.swappingMarkers = false
+    }
+  }
+
+  private swapPrintMarkers(printing: boolean): void {
     if (!this.lMap) {
       return
     }

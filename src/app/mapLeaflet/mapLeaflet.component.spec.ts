@@ -42,4 +42,21 @@ describe('LmapComponent', () => {
     expect(lMapRemoveSpy).toHaveBeenCalledTimes(1)
     expect(overviewRemoveSpy).toHaveBeenCalledTimes(1)
   });
+
+  // 2026-10-18: printing swaps the cluster for plain markers; that must not raise the
+  // "Filtered: Radio log entries hidden" chip, but a real hide must still raise it.
+  it('does not count the print marker swap as hiding radio log entries', () => {
+    const c = component as unknown as {
+      lMap: { removeLayer: (l: unknown) => void, addLayer: (l: unknown) => void }
+      myMarkerCluster: unknown
+      print: { setPrintMarkers: (p: boolean) => void }
+    }
+    expect(component.entriesOn()).toBeTrue()
+    c.print.setPrintMarkers(true)
+    expect(component.entriesOn()).toBeTrue()
+    c.print.setPrintMarkers(false)
+    expect(component.entriesOn()).toBeTrue()
+    c.lMap.removeLayer(c.myMarkerCluster)
+    expect(component.entriesOn()).toBeFalse()
+  });
 });

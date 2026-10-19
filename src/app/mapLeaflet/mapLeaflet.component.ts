@@ -607,7 +607,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // E-190: the three data overlays feed the filter chips.
     this.lMap.on('overlayadd overlayremove', () => {
       this.locationsOn.set(this.lMap.hasLayer(this.locationsLayer))
-      this.entriesOn.set(this.lMap.hasLayer(this.myMarkerCluster))
+      // Printing swaps the cluster for plain markers; that is not the user hiding entries.
+      if (!this.print.swappingMarkers) this.entriesOn.set(this.lMap.hasLayer(this.myMarkerCluster))
       this.pathsOn.set(this.lMap.hasLayer(this.myTrailsLayer))
     })
     // 2026-10-01: the save estimate includes the USGS shaded relief while it's on.
