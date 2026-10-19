@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.59-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.58-alpha...v0.99.59-alpha) (2026-10-19)
+
+
+### Features
+
+* **rangers:** Team column in the roster grid ([ad61f00](https://github.com/SteadyEOC/RangerTrak/commit/ad61f0051ebc6dd0fc57fe52e2647249ba197894))
+
+
+### Bug Fixes
+
+* **layers:** import and as-of dates use the device's local date ([a26e6c6](https://github.com/SteadyEOC/RangerTrak/commit/a26e6c6b1f3fc56991c25247695f644403f5d502))
+* **map:** printed map no longer says Filtered: Radio log entries hidden ([e936351](https://github.com/SteadyEOC/RangerTrak/commit/e93635151aaa1f4bb48fc73609edbddc22e0e4f0))
+
 ### [0.99.58-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.57-alpha...v0.99.58-alpha) (2026-10-19)
 
 
