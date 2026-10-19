@@ -227,8 +227,8 @@ Both engines live on the one **Map** page now, switched with the toggle above th
 > Map data from this tool carries the same OpenStreetMap attribution the app already shows.
 
 **7. Take a backup.**
-On **Mission**, press **Back up mission**. This writes a single file containing your
-settings, roster, ranger photos, and any reports. (Your Google geocoding key, if you set one,
+On **Mission**, press **Back up mission**. This writes a file containing your
+settings, roster, ranger photos, and any reports. If any report carries a photo, audio or video, a second file ending `-attachments.zip` is saved beside it; keep the two together. (Your Google geocoding key, if you set one,
 is included only when you protect the backup with a passphrase.) Keep it somewhere safe — a USB stick, another device.
 If the browser data is ever lost, **Restore mission** restores everything.
 
@@ -499,7 +499,7 @@ no report text or addresses — but it can name call signs, file names and map p
 ### Encrypting the roster and reports on this device
 
 Mission → Data safety has a **Device encryption** toggle. Turned on, it encrypts the roster,
-radio log entries, after-action notes and ranger photos stored in this browser with a passphrase you choose — so a
+radio log entries, after-action notes, ranger photos and attachments stored in this browser with a passphrase you choose — so a
 lost or stolen device, or someone else's hands on a shared command-post laptop, doesn't hand
 over the roster in the clear. It does **not** protect the app while it is open and unlocked,
 the same as any lock screen wouldn't.

@@ -85,8 +85,9 @@
     <h3 class="mission__subhead">Mission backup</h3>
     <p class="mission__note">
       Backs up this device&rsquo;s entire mission &mdash; settings, rangers and radio log entries
-      &mdash; to a single file, so it survives clearing browser storage or a move to another
-      device. Ranger photos are included.
+      &mdash; to a file, so it survives clearing browser storage or a move to another
+      device. Ranger photos are included. If radio log entries carry photos, audio or video, they
+      are saved in a second file beside it, named ending <code>-attachments.zip</code>; keep the two together.
     </p>
     @if (form.googleGeocodingApiKey().value()) {
     <p class="mission__note">
@@ -121,17 +122,17 @@
     @if (encryptionEnabled()) {
     <p class="mission__status mission__status--ok">
       <mat-icon aria-hidden="true">lock</mat-icon>
-      The roster, radio log entries, after-action notes and ranger photos on this device are encrypted. You will be
+      The roster, radio log entries, after-action notes, ranger photos and attachments on this device are encrypted. You will be
       asked for the passphrase on your next visit and after every app update.
     </p>
     <button matButton="outlined" type="button" (click)="onBtnDisableEncryption()"
-      title="Decrypt the roster, radio log entries, after-action notes and ranger photos on this device">
+      title="Decrypt the roster, radio log entries, after-action notes, ranger photos and attachments on this device">
       <mat-icon>lock_open</mat-icon>
       Turn off device encryption
     </button>
     } @else {
     <p class="mission__note">
-      Encrypts the roster, radio log entries, after-action notes and ranger photos stored on this device with a
+      Encrypts the roster, radio log entries, after-action notes, ranger photos and attachments stored on this device with a
       passphrase you choose. It protects a lost or stolen device or a shared browser - it does
       not protect the app while it is open and unlocked, the same as any lock screen.
     </p>
