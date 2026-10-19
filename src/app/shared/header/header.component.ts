@@ -115,6 +115,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.clockTime.set(this.formatClockTime(d))
   }
 
+  /** The pill's duration: "1:23:45" under a day, "11d 19:52" from a day on. Never signed. */
+  static pillDuration(t: { days: number, hours: number, minutes: number, string: string }): string {
+    if (t.days > 0) {
+      return `${t.days}d ${t.hours}:${String(t.minutes).padStart(2, '0')}`
+    }
+    return t.string.replace(/^-/, '')
+  }
+
   private formatClock(d: Date): string {
     return `${this.formatClockDate(d)}, ${this.formatClockTime(d)}`
   }
@@ -236,10 +244,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
       //   during: "1:23:45 elapsed; 5:36:15 left"
       //   after:  "1:23:45 elapsed; 5:36:15 over"
       // (Replaces the 2026-09-28 hour-rounded "−2h until period" and "period end in/ago".)
+      // 2026-10-19, John (AAR): "11 days, 19:52:41 elapsed; 11 days, 7:52:41 over" wrapped the
+      // pill on a phone. Past a day the seconds mean nothing: "11d 19:52 elapsed; 11d 7:52 over".
       const elapsed = Utility.timeDiff(msStartTime, new Date().getTime())
-      const elapsedUnsigned = elapsed.string.replace(/^-/, '')
+      const elapsedUnsigned = HeaderComponent.pillDuration(elapsed)
       const left = Utility.timeDiff(new Date().getTime(), msEndTime)
-      const leftUnsigned = left.string.replace(/^-/, '')
+      const leftUnsigned = HeaderComponent.pillDuration(left)
       if (elapsed.negative) {
         this.timeElapsedDisplay.set(`${elapsedUnsigned} to start`)
         this.timeLeftDisplay.set(`ends in ${leftUnsigned}`)

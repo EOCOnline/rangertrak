@@ -1119,6 +1119,13 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     offlineControlsHost: () => this.offlineControlsHost,
     hasOfflineTiles: this.hasOfflineTiles,
     offlineTilesShown: this.offlineTilesShown,
+    note: (text: string) => {
+      const status = this.document.getElementById('Lmap-status')
+      if (status) {
+        status.innerText = text
+        Utility.resetMaterialFadeAnimation(status)
+      }
+    },
   })
 
   /** Printing: the print-media re-layout, edge ticks, sharp tiles, fanning and panels; the component owns its lifetime. */

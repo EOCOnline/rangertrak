@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 
 import { HeaderComponent } from './header.component';
 import { MissionType } from '../services';
+import { Utility } from '../';
 
 function settingsWith(mission: string, event: string): MissionType {
   return {
@@ -94,5 +95,14 @@ describe('HeaderComponent', () => {
       expect(opPeriod?.route).toBe('/mission');
       expect(opPeriod?.fragment).toBe('readiness-mission-details');
     });
+  });
+
+  // 2026-10-19 (AAR): past a day the pill drops seconds so it fits a phone.
+  it('pillDuration: hh:mm:ss under a day, "Nd h:mm" from a day on, never signed', () => {
+    const day = 24 * 3600 * 1000
+    expect(HeaderComponent.pillDuration(Utility.timeDiff(0, (1 * 3600 + 23 * 60 + 45) * 1000))).toBe('1:23:45');
+    expect(HeaderComponent.pillDuration(Utility.timeDiff((1 * 3600 + 23 * 60 + 45) * 1000, 0))).toBe('1:23:45');
+    expect(HeaderComponent.pillDuration(Utility.timeDiff(0, 11 * day + (19 * 3600 + 52 * 60 + 41) * 1000))).toBe('11d 19:52');
+    expect(HeaderComponent.pillDuration(Utility.timeDiff(0, 1 * day + 5 * 60 * 1000))).toBe('1d 0:05');
   });
 });

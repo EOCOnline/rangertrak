@@ -183,6 +183,12 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
         this.log.warn(`(Abstract) No latlng on event in captureLMoveAndZoom()`, this.id)
       }
     })
+    // 2026-10-19, John (AAR): on a phone (no hover, so no mousemove) the readout kept the last
+    // tap's spot after the map jumped elsewhere. There it follows the map's centre after each
+    // move, until the next tap.
+    if (typeof window !== 'undefined' && window.matchMedia?.('(hover: none)').matches) {
+      map.on('moveend', () => this.mouseLatLng.set(map.getCenter()))
+    }
   }
 
   /**

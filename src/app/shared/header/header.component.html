@@ -32,7 +32,7 @@
          already in the hover panel below, just reachable without waiting for the hover delay. -->
     <span class="opPeriod" [title]="'Starts ' + opPeriodStartDisplay() + ' – Ends ' + opPeriodEndDisplay()">{{opPeriod()}} <span class="status-divider status-divider--inline"></span> {{timeElapsedDisplay()}};
       {{timeLeftDisplay()}}</span>
-    <span class="status-divider"></span>
+    <span class="status-divider status-divider--clock"></span>
     <span class="clock" [title]="clockDisplay()"><span class="clock__date">{{clockDate()}}, </span>{{clockTime()}}</span>
 
     <div class="rt-mission-info-panel" role="tooltip" (click)="$event.stopPropagation()">

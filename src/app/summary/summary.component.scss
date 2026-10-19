@@ -164,8 +164,11 @@
   }
 }
 
+// 2026-10-19, John (AAR): in the dark theme the accent and the urgent red were two near-identical
+// salmons, so the attention share was hard to see. The whole bar is a neutral grey now and only
+// the attention share is coloured. Team bars keep the accent.
 .rt-summary__bar {
-  fill: var(--rt-accent);
+  fill: var(--rt-ink-3);
 
   &--attn {
     fill  : var(--rt-status-urgent);
@@ -196,7 +199,7 @@
   border        : 1px solid var(--rt-ink);
 
   &--bar {
-    background: var(--rt-accent);
+    background: var(--rt-ink-3);
   }
 
   &--attn {

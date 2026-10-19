@@ -321,7 +321,11 @@
       font-size: 0.8125rem;
     }
 
-    .clock__date {
+    // 2026-10-19, John (AAR): a day-long mission still took three rows - the icons alone, the
+    // op-period reading, then the clock. The phone shows the time in its own status bar, so
+    // the clock goes; its divider with it. The op-period reading is shorter past a day too.
+    .clock,
+    .status-divider--clock {
       display: none;
     }
   }

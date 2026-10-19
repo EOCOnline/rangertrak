@@ -105,6 +105,8 @@ export interface LeafletOfflineHost {
   /** Template-bound ("Zoom to offline tiles" button), so the component owns them. */
   readonly hasOfflineTiles: WritableSignal<boolean>
   readonly offlineTilesShown: WritableSignal<boolean>
+  /** A short line in the status text under the map. */
+  note(text: string): void
 }
 
 /**
@@ -623,7 +625,50 @@ export class LeafletOfflineController {
     }
     layer.addTo(this.lMap)
     this.offlineTilesShown.set(true)
-    this.lMap.fitBounds(layer.getBounds(), { padding: [24, 24] })
+    // 2026-10-19, John (AAR): in the Montecito demo this flew to the Grand Canyon - the only
+    // tiles saved on that phone were from an earlier demo, and nothing said so. Now it goes to
+    // the saved area nearest the map, and says when that is somewhere else.
+    const center = this.lMap.getCenter()
+    const area = LeafletOfflineController.nearestSavedArea(layer, center)
+    const here = this.lMap.getBounds().intersects(area)
+    this.lMap.fitBounds(area, { padding: [24, 24] })
+    if (!here) {
+      const km = Math.round(center.distanceTo(area.getCenter()) / 1000)
+      this.host.note(`Nothing saved here. Showing your nearest saved area, about ${km.toLocaleString()} km away.`)
+    }
+  }
+
+  /**
+   * The saved tiles grouped into areas (tiles that touch or overlap), and the one nearest
+   * `from`. A device can hold several areas far apart, such as two demos and a real mission.
+   */
+  static nearestSavedArea(layer: L.FeatureGroup, from: L.LatLng): L.LatLngBounds {
+    let areas: L.LatLngBounds[] = []
+    layer.eachLayer(l => {
+      const b = (l as L.Polygon).getBounds?.()
+      if (b?.isValid()) {
+        areas.push(L.latLngBounds(b.getSouthWest(), b.getNorthEast()))
+      }
+    })
+    // Merge until no two areas touch; a few passes at most for the tile counts a phone holds.
+    for (let merged = true; merged;) {
+      merged = false
+      const next: L.LatLngBounds[] = []
+      for (const a of areas) {
+        const hit = next.find(n => n.intersects(a))
+        if (hit) {
+          hit.extend(a)
+          merged = true
+        } else {
+          next.push(a)
+        }
+      }
+      areas = next
+    }
+    if (areas.length === 0) {
+      return layer.getBounds()
+    }
+    return areas.reduce((best, a) => from.distanceTo(a.getCenter()) < from.distanceTo(best.getCenter()) ? a : best)
   }
 
   /** Removes the layer and map listeners (the component's ngOnDestroy). */
