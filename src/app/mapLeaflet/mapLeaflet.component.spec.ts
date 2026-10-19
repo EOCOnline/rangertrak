@@ -54,6 +54,11 @@ describe('LmapComponent', () => {
     expect(component.entriesOn()).toBeTrue()
     c.print.setPrintMarkers(true)
     expect(component.entriesOn()).toBeTrue()
+    // The print rings go on right after the swap, while the cluster is off the map (0.99.58 bug).
+    const rings = (component as unknown as { rangeRingsLayer: unknown }).rangeRingsLayer
+    c.lMap.addLayer(rings)
+    expect(component.entriesOn()).toBeTrue()
+    c.lMap.removeLayer(rings)
     c.print.setPrintMarkers(false)
     expect(component.entriesOn()).toBeTrue()
     c.lMap.removeLayer(c.myMarkerCluster)

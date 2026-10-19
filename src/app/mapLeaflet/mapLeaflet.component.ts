@@ -605,10 +605,12 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     this.lMap.on('overlayadd overlayremove', syncLegendOverlays)
     this.lMap.on('overlayadd overlayremove', () => this.ringsOn.set(this.lMap.hasLayer(this.rangeRingsLayer)))
     // E-190: the three data overlays feed the filter chips.
-    this.lMap.on('overlayadd overlayremove', () => {
+    this.lMap.on('overlayadd overlayremove', (e: L.LeafletEvent) => {
       this.locationsOn.set(this.lMap.hasLayer(this.locationsLayer))
-      // Printing swaps the cluster for plain markers; that is not the user hiding entries.
-      if (!this.print.swappingMarkers) this.entriesOn.set(this.lMap.hasLayer(this.myMarkerCluster))
+      // Printing swaps the cluster for plain markers; that is not the user hiding entries. Only the
+      // cluster's own events count: while printing it is off the map, so the print rings going on
+      // straight after the swap used to read as "entries hidden" (blog session, 0.99.58).
+      if ((e as L.LayersControlEvent).layer === this.myMarkerCluster && !this.print.swappingMarkers) this.entriesOn.set(e.type === 'overlayadd')
       this.pathsOn.set(this.lMap.hasLayer(this.myTrailsLayer))
     })
     // 2026-10-01: the save estimate includes the USGS shaded relief while it's on.
