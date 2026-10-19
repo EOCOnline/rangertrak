@@ -2,7 +2,7 @@ import { BlobSource, BufferTarget, CanvasSource, Input, MP4, Mp4OutputFormat, Ou
 
 import { canCompress, canCompressFile } from './can-compress'
 import { compress } from './index'
-import { smallerName } from './compress-types'
+import { downloadName, smallerName } from './compress-types'
 import { SmallerCopyService } from '../smaller-copy.service'
 import type { SmallerCopy } from '../smaller-copy.service'
 import { sha256Hex } from '../../services/attachment-store.service'
@@ -88,6 +88,13 @@ describe('smaller copies (compressors)', () => {
   it('names the copy after the original with the new extension', () => {
     expect(smallerName('IMG_0042.HEIC', 'jpg')).toBe('IMG_0042.jpg')
     expect(smallerName('clip', 'mp4')).toBe('clip.mp4')
+  })
+
+  it('saves a smaller copy as NAME-smaller.ext and leaves other files alone', () => {
+    expect(downloadName('IMG_0412.jpg', true)).toBe('IMG_0412-smaller.jpg')
+    expect(downloadName('IMG_0412-smaller.jpg', true)).toBe('IMG_0412-smaller.jpg')
+    expect(downloadName('clip', true)).toBe('clip-smaller')
+    expect(downloadName('IMG_0412.jpg', false)).toBe('IMG_0412.jpg')
   })
 
   it('compresses a 3000x2000 PNG to a JPEG with its longest side at 2048', async () => {

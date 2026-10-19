@@ -47,6 +47,20 @@ export function smallerName(name: string, ext: string): string {
   return `${stem}.${ext}`
 }
 
+/**
+ * The name a saved or shared file goes under. A smaller copy keeps the original's name inside the
+ * entry, so on its way out it gains `-smaller` (`IMG_0412.jpg` becomes `IMG_0412-smaller.jpg`);
+ * otherwise the copy and the original it came from can't be told apart in Downloads. A name that
+ * already ends that way is left alone.
+ */
+export function downloadName(name: string, isSmallerCopy: boolean): string {
+  if (!isSmallerCopy) return name
+  const dot = name.lastIndexOf('.')
+  const stem = dot > 0 ? name.slice(0, dot) : name
+  if (stem.endsWith('-smaller')) return name
+  return `${stem}-smaller${dot > 0 ? name.slice(dot) : ''}`
+}
+
 /** A smaller copy counts only if it really is smaller; otherwise the original is kept (D-60 item 2). */
 export function isActuallySmaller(copyBytes: number, originalBytes: number): boolean {
   return copyBytes > 0 && copyBytes < originalBytes

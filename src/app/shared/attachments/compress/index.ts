@@ -1,7 +1,7 @@
 import { CompressCancelledError, kindOf } from './compress-types'
 import type { CompressKind, CompressOptions, CompressResult } from './compress-types'
 
-export { CompressCancelledError, smallerName } from './compress-types'
+export { CompressCancelledError, downloadName, smallerName } from './compress-types'
 export type { CompressKind, CompressOptions, CompressResult } from './compress-types'
 
 /**

@@ -17,7 +17,7 @@ import { PendingAttachmentsComponent } from './pending-attachments.component'
 import { SmallerCopyDialogComponent } from './smaller-copy-dialog.component'
 import type { SmallerCopyChoice, SmallerCopyDialogData } from './smaller-copy-dialog.component'
 import { SmallerCopyService } from './smaller-copy.service'
-import { ALREADY_SMALL_NOTE } from './compress/compress-types'
+import { ALREADY_SMALL_NOTE, downloadName } from './compress/compress-types'
 import { SmallerCopyProgressComponent } from './smaller-copy-progress.component'
 
 /** What opens the viewer: the entry (by its permanent uid) and, optionally, which file to show first. */
@@ -243,7 +243,7 @@ export class AttachmentViewerComponent implements OnDestroy {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = ref.name
+      a.download = downloadName(ref.name, !!ref.compressed)
       a.click()
       setTimeout(() => URL.revokeObjectURL(url), 1000)
     } catch (e: any) {
@@ -256,7 +256,7 @@ export class AttachmentViewerComponent implements OnDestroy {
     const ref = this.current()
     if (!ref || isGone(ref)) return
     try {
-      const file = new File([await this.store.getOriginal(ref.sha256)], ref.name, { type: ref.type })
+      const file = new File([await this.store.getOriginal(ref.sha256)], downloadName(ref.name, !!ref.compressed), { type: ref.type })
       if (navigator.canShare && !navigator.canShare({ files: [file] })) {
         this.message.set('This device cannot share that kind of file. Use Save instead.')
         return
