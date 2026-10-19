@@ -1,0 +1,32 @@
+id,tactical_call,type,agency_type,members,first_op_period
+T01,Command 1,incident command,Local Fire District,4,0
+T02,Dispatch,dispatch,County Fire / Sheriff dispatch,6,0
+T03,Engine 11,engine company,Local Fire District,4,0
+T04,Engine 12,engine company,Local Fire District,4,0
+T05,Engine 21,engine company,County Fire,4,0
+T06,Medic 1,ambulance,Ambulance provider,2,0
+T07,Medic 2,ambulance,Ambulance provider,2,1
+T08,SAR 1,ground SAR,County SAR (volunteer),6,0
+T09,SAR 2,ground SAR,County SAR (volunteer),6,0
+T10,K9 1,K9 SAR,County SAR (volunteer),3,1
+T11,Swiftwater 1,swift-water rescue,Out-of-area fire department,12,0
+T12,Hiwater 1,high-water vehicles,National Guard,6,0
+T13,Patrol 1,law enforcement,County Sheriff,2,0
+T14,Patrol 2,law enforcement,County Sheriff,2,0
+T15,CHP 1,law enforcement,CHP,2,0
+T16,Caltrans 1,road maintenance,State DOT,4,1
+T17,Roads 1,road maintenance,County Public Works,4,1
+T18,Air Ops,air operations,County Fire,2,1
+T19,Rescue Helo 1,helicopter hoist,Coast Guard,4,1
+T20,Rescue Helo 2,helicopter hoist,Navy,4,1
+T21,Air Unit 3,helicopter,County Sheriff air unit,3,1
+T22,USAR 1,USAR task force,USAR task force (out of area),20,2
+T23,Strike Team Alpha,engine strike team,Out-of-area fire (mutual aid),12,2
+T24,Gas Utility 1,utility,Gas utility,3,1
+T25,Power Utility 1,utility,Power utility,3,1
+T26,Net Control,ham radio ACS net control,ACS volunteers (invented),3,0
+T27,ACS Mobile 1,ham radio mobile,ACS volunteers (invented),2,0
+T28,ACS Mobile 2,ham radio mobile,ACS volunteers (invented),2,1
+T29,ACS Shelter,ham radio at shelter,ACS volunteers (invented),2,1
+T30,Shelter 1,Red Cross shelter,Red Cross,6,1
+T31,Hospital ICC,hospital command,Hospital,4,1

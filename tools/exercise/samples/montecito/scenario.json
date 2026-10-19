@@ -1,0 +1,164 @@
+{
+  "format": 1,
+  "title": "Montecito debris flows (Jan 8-9, 2018)",
+  "about": "Modeled on the January 9, 2018 debris flows in Montecito, California. The people, teams and messages are invented; the scale, phases and problems follow the public record.",
+  "contentNote": "This scenario includes fatalities, as the public record does: 23 people died. By default every casualty is softened to a critical injury. If the instructor chooses \"as recorded\", some radio traffic reports a deceased person, handled in radio protocol (no names, no cause, scene held, coroner notified). No names, addresses or photos of remains appear anywhere. Plan a short stress debrief after the class.",
+  "modeledOn": "Modeled on the January 9, 2018 debris flows in Montecito, California.",
+  "sources": [
+    {
+      "id": "S01",
+      "url": "https://www.noozhawk.com/?p=108699",
+      "title": "Noozhawk one-year retrospective (byline 2019-01-08, updated 2022)"
+    },
+    {
+      "id": "S02",
+      "url": "https://www.independent.com/2018/02/22/first-responders-were-ready-when-debris-flows-hit/",
+      "title": "Santa Barbara Independent interview with a Montecito Fire division chief (2018-02-22)"
+    },
+    {
+      "id": "S03",
+      "url": "https://www.independent.com/2018/01/09/montecito-mudslide-death-toll-climbs-15/",
+      "title": "Independent same-day report (2018-01-09, amended Jan 10)"
+    },
+    {
+      "id": "S04",
+      "url": "https://www.independent.com/2018/01/11/number-missing-grows-questions-arise-over-county-warning/",
+      "title": "Independent (2018-01-11)"
+    },
+    {
+      "id": "S05",
+      "url": "https://montecitofire.com/files/bf630c0c5/MTO+Thomas+Retrospective.pdf",
+      "title": "Montecito Fire Protection District, \"Thomas Fire Retrospective Study\" (PDF, text extracted)"
+    },
+    {
+      "id": "S06",
+      "url": "https://ksby.com/news/2018/01/16/rescuers-describe-early-rescues-during-montecito-mudslides",
+      "title": "KSBY, community meeting where rescuers described the morning (2018-01-16)"
+    },
+    {
+      "id": "S07",
+      "url": "https://ksby.com/news/local-news/2018/10/16/report-outlines-strengths-suggested-improvements-in-countys-response-to-thomas-fire-mudslide",
+      "title": "KSBY on the county after-action report (2018-10-16)"
+    },
+    {
+      "id": "S08",
+      "url": "https://www.santamariasun.com/news/what-went-wrong-santa-barbara-county-analyzes-action-during-thomas-fire-and-1-9-debris-flow-14801778",
+      "title": "Santa Maria Sun on the same report"
+    },
+    {
+      "id": "S09",
+      "url": "https://en.wikipedia.org/wiki/2018_Southern_California_mudflows",
+      "title": "Wikipedia (orientation only)"
+    },
+    {
+      "id": "S10",
+      "url": "https://www.news.caloes.ca.gov/remembering-the-montecito-mudslides-two-years-later/",
+      "title": "Cal OES retrospective (2021-01-08)"
+    },
+    {
+      "id": "S11",
+      "url": "https://abc7.com/news/2947763/",
+      "title": "ABC7 (2018-01-16)"
+    },
+    {
+      "id": "S12",
+      "url": "https://vnews.com/2018/01/14/difficult-search-goes-on-in-california-mudslides-14882438/",
+      "title": "AP story (2018-01-14)"
+    },
+    {
+      "id": "S13",
+      "url": "https://www.cbsnews.com/amp/news/californias-highway-101-reopens-after-deadly-mudslides",
+      "title": "CBS/AP (2018-01-21)"
+    },
+    {
+      "id": "S14",
+      "url": "https://www.kclu.org/local-news/2018-01-21/highway-101-reopens-earlier-than-expected-in-santa-barbara-county",
+      "title": "KCLU (2018-01-21)"
+    },
+    {
+      "id": "S15",
+      "url": "https://www.usgs.gov/publications/inundation-flow-dynamics-and-damage-9-january-2018-montecito-debris-flow-event",
+      "title": "USGS record for Kean et al. 2019 (Geosphere 15(4):1140-1163). Only the abstract page was readable; the full..."
+    },
+    {
+      "id": "S16",
+      "url": "https://www.ceaccounties.org/wp-content/uploads/2018/04/Santa-Barbara-Thomas-Fire-debris-flow-Mont-association_Fayram.pdf",
+      "title": "County Public Works slide deck (text extracted)"
+    },
+    {
+      "id": "S17",
+      "url": "https://ksby.com/santa-barbara-south-coast/santa-barbara-amateur-radio-club-facing-displacement-after-50-years-on-the-mesa",
+      "title": "KSBY on the Santa Barbara Amateur Radio Club (about 2024)"
+    },
+    {
+      "id": "S18",
+      "url": "https://www.noozhawk.com/?p=138781",
+      "title": "Noozhawk (2021-07-22)"
+    },
+    {
+      "id": "S19",
+      "url": "https://mesonet.agron.iastate.edu/p.php?pid=201801082125-KLOX-WGUS66-FFALOX",
+      "title": "NWS Los Angeles/Oxnard Flash Flood Watch text, archived by the Iowa Environmental Mesonet"
+    },
+    {
+      "id": "S20",
+      "url": "https://mesonet.agron.iastate.edu/p.php?pid=201801091032-KLOX-WGUS56-FFWLOX",
+      "title": "NWS Flash Flood Warning 02:32 PST Jan 9"
+    },
+    {
+      "id": "S21",
+      "url": "https://mesonet.agron.iastate.edu/p.php?pid=201801091135-KLOX-WGUS56-FFWLOX",
+      "title": "NWS Flash Flood Warning 03:35 PST Jan 9"
+    },
+    {
+      "id": "S22",
+      "url": "https://mesonet.agron.iastate.edu/wx/afos/list.phtml?source=KLOX&year=2018&month=1&day=9",
+      "title": "Product listings (UTC) for the NWS Oxnard office"
+    },
+    {
+      "id": "S23",
+      "url": "https://www.usgs.gov/media/images/debris-flow-montecito-ca-january-9-2018",
+      "title": "USGS photo page, marked Public Domain"
+    },
+    {
+      "id": "S24",
+      "url": "https://www.usgs.gov/media/images/debris-flows-montecito-california",
+      "title": "USGS photo page, credited USGS Natural Hazards Mission Area, Public Domain"
+    },
+    {
+      "id": "S25",
+      "url": "https://www.usgs.gov/data/debris-flow-inundation-and-damage-data-9-january-2018-montecito-debris-flow-event",
+      "title": "USGS data release (2019-06-18), CC0, DOI 10.5066/P9JQJU0E"
+    },
+    {
+      "id": "S26",
+      "url": "https://water.usgs.gov/alerts/2018/item_2018-01-09_14:47:51.html",
+      "title": "USGS Project Alert Notice (2018-01-09, 14:47 EST)"
+    }
+  ],
+  "startTime": "2018-01-08T08:00",
+  "opPeriods": [
+    {
+      "n": 0,
+      "label": "OP 0 - Preparation (Mon 8 Jan, morning to night)",
+      "start": "2018-01-08T08:00"
+    },
+    {
+      "n": 1,
+      "label": "OP 1 - The debris flows (Tue 9 Jan, from 03:30)",
+      "start": "2018-01-09T03:30"
+    },
+    {
+      "n": 2,
+      "label": "OP 2 - Day 1 response (Tue 9 Jan, from 07:00)",
+      "start": "2018-01-09T07:00"
+    }
+  ],
+  "defaults": {
+    "pace": 1,
+    "intensity": 100,
+    "casualtyRealism": "softened",
+    "revealReal": false,
+    "playedTeams": []
+  }
+}

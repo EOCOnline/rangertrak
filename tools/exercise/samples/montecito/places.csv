@@ -1,0 +1,62 @@
+id,label,type,lat,lon,note
+P01,Command Post 1 (district station),command post,34.4345,-119.6335,approx; at a fire district station; real facility per S02 but label is generic
+P02,Staging Area A (showgrounds),staging,34.4349,-119.7112,approx; large fairground used for staging and briefings (S02 S03)
+P03,SAR Staging (Summerland),staging,34.4215,-119.5965,approx; SAR staged in Summerland the evening before (S01)
+P04,Fire Station 2 (west),fire station,34.4262,-119.6665,approx
+P05,County EOC,eoc,34.4400,-119.7900,approx; location indicative only
+P06,ACS Net Control (EOC radio room),comms,34.4402,-119.7897,approx; invented role
+P07,Hospital A (trauma),hospital,34.4313,-119.7189,approx; hospital ICC activated about 05:30 (S03)
+P08,Hospital A helipad,helispot,34.4318,-119.7175,approx
+P09,Family Assistance Center,assistance,34.4245,-119.7065,approx; opened Wed Jan 10 (S03)
+P10,Shelter 1 (college gym),shelter,34.4065,-119.7075,approx; Red Cross shelter at a college gym (S03)
+P11,Shelter 2 (east county),shelter,34.3990,-119.5180,approx; invented
+P12,Media Staging,staging,34.4340,-119.7080,approx; invented
+P13,Forward Command B,command post,34.4300,-119.6480,approx; invented forward post for Corridor B
+P14,Helispot 1 (park field),helispot,34.4283,-119.6347,approx; invented use of a public park
+P15,Helispot 2 (school field),helispot,34.4262,-119.6272,approx; invented
+P16,Helispot 3 (east),helispot,34.4220,-119.5920,approx; invented
+P17,Staging Area B (east),staging,34.4230,-119.5950,approx; invented
+P20,Corridor A (Cold Spring) mid,creek corridor,34.4385,-119.6655,approx; western channel; named in S16
+P21,Corridor A at US 101,creek corridor,34.4205,-119.6590,approx
+P22,Corridor B (Montecito/Hot Springs) mid,creek corridor,34.4330,-119.6480,approx
+P23,Corridor B at US 101 interchange,creek corridor,34.4210,-119.6425,approx; Olive Mill interchange area (S03)
+P24,Corridor C (San Ysidro) mid,creek corridor,34.4370,-119.6320,approx
+P25,Corridor C at US 101,creek corridor,34.4185,-119.6265,approx
+P26,Corridor D (Romero) mid,creek corridor,34.4320,-119.6000,approx; Romero Canyon trapped residents (S03)
+P27,Corridor D at US 101,creek corridor,34.4175,-119.5975,approx
+P28,"Corridor E (east, Toro/Sun Valley) mid",creek corridor,34.4270,-119.5800,approx
+P29,Corridor E at US 101,creek corridor,34.4140,-119.5750,approx
+P30,Gas main break (Park Lane / mountain road),hazard,34.4395,-119.6300,approx; first 911 call about gas explosion here (S01 S02)
+P31,Downed power lines cluster,hazard,34.4290,-119.6500,approx; invented
+P32,US 101 closure west end (Milpas exit),closure,34.4146,-119.6830,approx; S04
+P33,US 101 closure east end (Seacliff / Hwy 150),closure,34.3925,-119.5400,approx; S03 S04
+P34,Water main break (Olive Mill),hazard,34.4215,-119.6430,approx; S03
+P35,Hwy 154 car-over-side site,incident,34.4900,-119.7850,approx; 02:00 call (S01)
+P36,Hwy 192 boulder blockage,hazard,34.4400,-119.6500,approx; invented
+P37,Sycamore Canyon road blocked,hazard,34.4330,-119.6700,approx; invented
+P38,Coast Village Rd junction,hazard,34.4215,-119.6400,approx; CHP units pushed here (S01)
+P39,Flooded underpass,hazard,34.4180,-119.6600,approx; invented
+P40,Debris basin A,hazard,34.4510,-119.6650,approx; basin overwhelmed (S16)
+P41,Debris basin B,hazard,34.4440,-119.6500,approx
+P42,Debris basin C,hazard,34.4470,-119.6330,approx; S16
+P43,Traffic Control Point 1,tcp,34.4250,-119.6700,approx; invented
+P44,Traffic Control Point 2,tcp,34.4180,-119.6200,approx; invented
+P45,Traffic Control Point 3,tcp,34.4330,-119.6280,approx; invented
+P46,Evacuation boundary west,zone,34.4290,-119.6560,approx; S04 gives a west-side road as boundary on Jan 11
+P47,Evacuation boundary east,zone,34.4230,-119.6050,approx; S04 gives east-side roads
+P50,Home site 1,home site marker,34.4350,-119.6660,approx; invented; Corridor A
+P51,Home site 2,home site marker,34.4310,-119.6630,approx; invented; Corridor A
+P52,Home site 3,home site marker,34.4365,-119.6320,approx; invented; Corridor C (attic family found here)
+P53,Home site 4,home site marker,34.4290,-119.6330,approx; invented; Corridor C
+P54,Home site 5,home site marker,34.4310,-119.6490,approx; invented; Corridor B
+P55,Home site 6,home site marker,34.4260,-119.6440,approx; invented; Corridor B
+P56,Home site 7,home site marker,34.4275,-119.6395,approx; invented; Corridor B
+P57,Home site 8,home site marker,34.4350,-119.6500,approx; invented; Corridor B
+P58,Home site 9,home site marker,34.4310,-119.6010,approx; invented; Corridor D
+P59,Home site 10,home site marker,34.4290,-119.5990,approx; invented; Corridor D
+P60,Home site 11,home site marker,34.4260,-119.5780,approx; invented; Corridor E
+P61,Home site 12,home site marker,34.4240,-119.5830,approx; invented; Corridor E
+P62,Home site 13,home site marker,34.4395,-119.6280,approx; invented; Corridor C upper
+P63,Home site 14,home site marker,34.4250,-119.6540,approx; invented; Corridor A/B boundary
+P64,Home site 15,home site marker,34.4225,-119.6330,approx; invented; Corridor C lower
+P65,Home site 16,home site marker,34.4340,-119.6020,approx; invented; Corridor D upper
