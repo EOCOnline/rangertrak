@@ -232,6 +232,8 @@ settings, roster, ranger photos, and any reports. (Your Google geocoding key, if
 is included only when you protect the backup with a passphrase.) Keep it somewhere safe — a USB stick, another device.
 If the browser data is ever lost, **Restore mission** restores everything.
 
+> **Tip:** restored the wrong file? **Mission > Data safety > Undo last import**, within 24 hours.
+
 > ⚠️ That export file contains personal information about your people — names, home
 > addresses, phone numbers, and call signs — and it is **not encrypted**, even if you have
 > turned on device encryption (that protects the browser copy, not this file). Treat it like
