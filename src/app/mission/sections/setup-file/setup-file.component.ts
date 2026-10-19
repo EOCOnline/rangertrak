@@ -17,6 +17,7 @@ import { ImportSafetyService } from '../../../shared/services/import-safety.serv
 import { RangerPhotoService } from '../../../shared/services/ranger-photo.service'
 // E-122 Phase 2a: reloadPage() awaits this before reloading - see RangersComponent.reloadPage().
 import { RecordStore } from '../../../shared/storage/record-store'
+import { localDateStamp } from '../../../shared/export/local-date'
 
 /**
  * The Setup file card in Mission's Data safety card (E-187 Layers phase D, ADR D-58): the
@@ -118,7 +119,7 @@ export class SetupFileComponent {
       const tag = [includeRangers && 'rangers', includePlaces && 'locations', includeSettings && 'settings']
         .filter((c): c is string => !!c).join('-')
       const missionLabel = (this.missionService.settings.mission || 'mission').replace(/[^a-z0-9_-]+/gi, '_')
-      const filename = `rangertrak-setup-${tag}-${missionLabel}-${exportedAt.slice(0, 10)}.zip`
+      const filename = `rangertrak-setup-${tag}-${missionLabel}-${localDateStamp(exportedAt)}.zip`
 
       const a = this.document.createElement('a')
       a.href = url

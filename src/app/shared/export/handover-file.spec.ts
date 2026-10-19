@@ -61,9 +61,11 @@ describe('handover file', () => {
     });
 
     it('names the file like the other Setup files, plus handover and the time', () => {
-      expect(handoverFilename('Fern Hollow!', '2026-10-15T14:32:10.000Z', false))
+      // The stamp is the device's local date and time, so build the expectation the same way.
+      const at = new Date(2026, 9, 15, 14, 32)
+      expect(handoverFilename('Fern Hollow!', at.toISOString(), false))
         .toBe('rangertrak-setup-handover-Fern_Hollow_-20261015-1432.zip');
-      expect(handoverFilename('', '2026-10-15T14:32:10.000Z', true))
+      expect(handoverFilename('', at.toISOString(), true))
         .toBe('rangertrak-setup-handover-mission-20261015-1432.rtenc.json');
     });
   });

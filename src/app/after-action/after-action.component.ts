@@ -17,6 +17,7 @@ import {
 import { showFirstPrintTip } from '../shared/export/print-tip'
 import { armPrintTitle } from '../shared/export/print-title'
 import { csvCell, downloadCsv } from '../shared/export/csv'
+import { localDateStamp } from '../shared/export/local-date'
 
 type Filter = 'all' | AarNoteAbout
 
@@ -118,7 +119,7 @@ export class AfterActionComponent {
     const csv = [header.map(csvCell).join(','), ...rows].join('\r\n')
 
     const label = (this.missionName() || 'mission').replace(/[^a-z0-9_-]+/gi, '_')
-    downloadCsv(csv, `rangertrak-after-action-${label}-${new Date().toISOString().slice(0, 10)}.csv`)
+    downloadCsv(csv, `rangertrak-after-action-${label}-${localDateStamp()}.csv`)
   }
 
   /** Opens Help > Feedback with the RangerTrak notes filled in. Nothing is sent from here. */

@@ -33,6 +33,7 @@ import { showFirstPrintTip } from '../../shared/export/print-tip'
 import { armPrintTitle } from '../../shared/export/print-title'
 import { MapEngineService } from '../map-engine.service'
 import type { PlacesImportDialogResult } from '../places-import-dialog/places-import-dialog.component'
+import { localDateStamp } from '../../shared/export/local-date'
 
 type ExportFormat = 'xlsx' | 'csv' | 'setup'
 
@@ -424,7 +425,7 @@ export class PlacesIoComponent {
   }
 
   private today(): string {
-    return new Date().toISOString().slice(0, 10)
+    return localDateStamp()
   }
 
   private downloadBlob(blob: Blob, filename: string): void {

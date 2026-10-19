@@ -105,7 +105,7 @@ describe('report-packet', () => {
 
   describe('reportPacketFilename', () => {
     it('sanitizes the mission name and uses a .txt extension', () => {
-      const name = reportPacketFilename('Vashon Search #3!', '2026-08-31T12:00:00.000Z')
+      const name = reportPacketFilename('Vashon Search #3!', new Date(2026, 7, 31, 12).toISOString())
       expect(name).toBe('rangertrak-report-packet-Vashon_Search_3_-2026-08-31.txt')
     })
 

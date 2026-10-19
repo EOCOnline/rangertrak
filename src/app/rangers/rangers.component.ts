@@ -56,6 +56,7 @@ import { armPrintTitle } from '../shared/export/print-title'
 import { showFirstPrintTip } from '../shared/export/print-tip'
 import type { RosterImportDialogResult } from './roster-import-dialog/roster-import-dialog.component'
 import { CustomTooltip } from './customTooltip'
+import { localDateStamp } from '../shared/export/local-date'
 
 
 @Component({
@@ -881,7 +882,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const table = rosterToRows(rows, this.settings?.idFieldLabel)
-    const stamp = new Date().toISOString().slice(0, 10)
+    const stamp = localDateStamp()
     const partial = rows.length < this.rangerService.rangers.length ? '-selected' : ''
     if (this.exportFormat() === 'xlsx') {
       const bytes = await rowsToXlsxBytes(table)
@@ -976,7 +977,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const { stem, blob } of photos) {
       files[photoEntryName(stem, blob.type)] = [new Uint8Array(await blob.arrayBuffer()), { level: 0 }]
     }
-    const stamp = new Date().toISOString().slice(0, 10)
+    const stamp = localDateStamp()
     const partial = rows.length < this.rangerService.rangers.length ? '-selected' : ''
     this.downloadBlob(new Blob([zipSync(files) as BlobPart], { type: 'application/zip' }),
       `rangertrak-roster-${stamp}${partial}-photos.zip`)
@@ -1028,7 +1029,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const table = rosterToRows([], this.settings?.idFieldLabel, { changes })
     this.downloadBlob(new Blob(['\uFEFF', rowsToCsv(table)], { type: 'text/csv;charset=utf-8' }),
-      `rangertrak-roster-changes-${new Date().toISOString().slice(0, 10)}.csv`)
+      `rangertrak-roster-changes-${localDateStamp()}.csv`)
     this.log.info(`Exported roster changes: ${changes.added.length} added, ${changes.edited.length} edited, `
       + `${changes.removed.length} removed.`, this.id)
   }

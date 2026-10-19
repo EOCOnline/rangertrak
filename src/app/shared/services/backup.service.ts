@@ -20,6 +20,7 @@ import { clearActiveDemoScenario } from '../mapping/demo-map'
 import { diagnoseImportFile, stripBom } from '../../domain/import-diagnosis'
 import { BACKUP_DAMAGED_MESSAGE, DIAGNOSIS_HEAD_BYTES } from '../export/import-file'
 import type { LayerRecord } from '../../domain/layers'
+import { localDateStamp } from '../export/local-date'
 
 /**
  * A full mission backup: everything needed to restore the app to its
@@ -182,7 +183,7 @@ export class BackupService {
     // not rely on it - it detects the envelope by structure - but a person sorting through
     // a folder of backups should not have to open one to find out.
     const ext = encrypted ? 'rtenc.json' : 'json'
-    const filename = `rangertrak-${missionLabel}-${payload.exportedAt.slice(0, 10)}.${ext}`
+    const filename = `rangertrak-${missionLabel}-${localDateStamp(payload.exportedAt)}.${ext}`
 
     const a = document.createElement('a')
     a.href = url
@@ -228,7 +229,7 @@ export class BackupService {
       ? new TextEncoder().encode(JSON.stringify(await encryptBytes(zip, passphrase!,
         { exportedAt: payload.exportedAt, appVersion: payload.appVersion, kind: ATTACHMENTS_KIND }), null, 2))
       : zip
-    const filename = `rangertrak-${missionLabel}-${payload.exportedAt.slice(0, 10)}-attachments.${encrypted ? 'rtenc.zip' : 'zip'}`
+    const filename = `rangertrak-${missionLabel}-${localDateStamp(payload.exportedAt)}-attachments.${encrypted ? 'rtenc.zip' : 'zip'}`
     const url = URL.createObjectURL(new Blob([body as BlobPart], { type: encrypted ? 'application/json' : 'application/zip' }))
     const a = document.createElement('a')
     a.href = url

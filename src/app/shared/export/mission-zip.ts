@@ -6,6 +6,7 @@ import { MissionType } from '../services/mission.interface'
 import { MissionLocationType } from '../services/mission-location.interface'
 import { RadioLogEntryType } from '../services/radio-log-entry.interface'
 import { RangerType } from '../services/ranger.interface'
+import { localDateTimeStamp } from './local-date'
 
 /**
  * E-109 **Setup files**, v2 (2026-08-31, ADR D-48; v3 2026-10-15, see below). A PRE-mission provisioning artifact -
@@ -288,7 +289,7 @@ function extensionFor(mimeType: string): string {
 /** E-188: the name of a hand-over file, like the other Setup files plus "handover" and the time. */
 export function handoverFilename(mission: string, exportedAt: string, encrypted: boolean): string {
   const label = (mission || 'mission').replace(/[^a-z0-9_-]+/gi, '_')
-  const stamp = exportedAt.slice(0, 16).replace(/[-:]/g, '').replace('T', '-')   // 20261015-1432
+  const stamp = localDateTimeStamp(exportedAt)   // 20261015-1432, device-local
   return `rangertrak-setup-handover-${label}-${stamp}.${encrypted ? 'rtenc.json' : 'zip'}`
 }
 

@@ -1,6 +1,7 @@
 import { MissionType } from '../services/mission.interface'
 import { RadioLogEntryType } from '../services/radio-log-entry.interface'
 import { stripBom } from '../../domain/import-diagnosis'
+import { localDateStamp } from './local-date'
 
 /**
  * E-114 Report Packet, Phase 1 (2026-08-31, Private Roadmap.md's E-114 §2/§2a/§2b). A queued,
@@ -104,5 +105,5 @@ export function parseReportPacket(text: string): ReportPacket {
 /** `.txt`, not `.json` - see this file's own header comment for why (E-114 §2b). */
 export function reportPacketFilename(mission: string, exportedAt: string): string {
   const missionLabel = (mission || 'mission').replace(/[^a-z0-9_-]+/gi, '_')
-  return `rangertrak-report-packet-${missionLabel}-${exportedAt.slice(0, 10)}.txt`
+  return `rangertrak-report-packet-${missionLabel}-${localDateStamp(exportedAt)}.txt`
 }
