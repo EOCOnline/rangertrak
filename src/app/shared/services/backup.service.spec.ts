@@ -1,3 +1,4 @@
+import { buildCorpus } from '../../../testing/import-corpus/corpus';
 import { provideHttpClient } from '@angular/common/http';
 import { encryptBytes, encryptJson } from '../crypto/encrypted-file';
 import { buildHandoverFile } from '../export/handover-file';
@@ -281,6 +282,45 @@ describe('BackupService', () => {
       const file = new File([JSON.stringify(bad)], 'bad-rangers.json', { type: 'application/json' });
 
       await expectAsync(backup.readFileAsMissionExport(file)).toBeRejected();
+    });
+  });
+
+  describe('plain-language errors for a mangled file (E-198)', () => {
+    const corpusFile = (name: string) => {
+      const f = buildCorpus().find(c => c.name === name)!;
+      return new File([f.bytes as BlobPart], f.name);
+    };
+    const reject = (name: string) => TestBed.inject(BackupService).readFileAsMissionExport(corpusFile(name)).then(
+      () => { throw new Error(`${name} should have been refused`); }, (e: Error) => e.message);
+
+    it('reads a backup with a byte order mark as the backup it is', async () => {
+      const payload = await TestBed.inject(BackupService).readFileAsMissionExport(corpusFile('backup-with-bom.json'));
+      expect(payload.settings.mission).toBe('Fernhollow Drill');
+    });
+
+    it('says a truncated backup is cut off, at 10, 50 and 95 percent', async () => {
+      for (const name of ['backup-truncated-10.json', 'backup-truncated-50.json', 'backup-truncated-95.json']) {
+        expect(await reject(name)).withContext(name).toContain('This file is cut off');
+      }
+    });
+
+    it('says a hand-edited backup is damaged or edited by hand, and a newer one needs an update', async () => {
+      expect(await reject('backup-hand-edited.json')).toContain('damaged or was edited by hand');
+      expect(await reject('backup-newer-schema.json')).toBe('Made by a newer RangerTrak. Update this device first.');
+    });
+
+    it('names the right place for a Report Packet, a spreadsheet and random bytes', async () => {
+      expect(await reject('report-packet.txt')).toContain('Report Packet');
+      expect(await reject('roster.csv')).toContain('Rangers > Import');
+      expect(await reject('random.bin')).toBe("This isn't a RangerTrak file.");
+    });
+
+    it('refuses a Setup file or spreadsheet zip at the picker, in plain words, and still takes an attachments zip', async () => {
+      const backup = TestBed.inject(BackupService);
+      await expectAsync(backup.classifyRestoreFile(corpusFile('setup-file.zip'))).toBeRejectedWithError(/Mission > Setup files/);
+      await expectAsync(backup.classifyRestoreFile(corpusFile('roster.xlsx'))).toBeRejectedWithError(/spreadsheet/);
+      expect(await backup.classifyRestoreFile(corpusFile('attachments.zip'))).toBe('attachments');
+      expect(await backup.classifyRestoreFile(corpusFile('backup-with-bom.json'))).toBe('backup');
     });
   });
 

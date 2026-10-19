@@ -62,6 +62,13 @@ describe('report-packet', () => {
     })
   })
 
+  describe('byte order mark (E-198)', () => {
+    it('reads a packet saved with a UTF-8 byte order mark, as a text editor or spreadsheet may', () => {
+      const text = '﻿' + JSON.stringify({ schemaVersion: 1, entries: [] })
+      expect(parseReportPacket(text).entries).toEqual([])
+    })
+  })
+
   describe('rejections', () => {
     it('rejects text that is not JSON at all', () => {
       expect(() => parseReportPacket('not json{{{')).toThrowError(/not valid JSON/)

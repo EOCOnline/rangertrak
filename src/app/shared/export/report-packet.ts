@@ -1,5 +1,6 @@
 import { MissionType } from '../services/mission.interface'
 import { RadioLogEntryType } from '../services/radio-log-entry.interface'
+import { stripBom } from '../../domain/import-diagnosis'
 
 /**
  * E-114 Report Packet, Phase 1 (2026-08-31, Private Roadmap.md's E-114 §2/§2a/§2b). A queued,
@@ -82,7 +83,7 @@ export function buildReportPacket(params: {
 export function parseReportPacket(text: string): ReportPacket {
   let parsed: any
   try {
-    parsed = JSON.parse(text)
+    parsed = JSON.parse(stripBom(text))   // a byte order mark is read away (E-198), not an error
   } catch (error: any) {
     throw new Error(`This file is not valid JSON (${error.message}).`)
   }

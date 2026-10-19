@@ -38,6 +38,8 @@ import { AttachmentChipComponent } from '../shared/attachments/attachment-chip.c
 import { attachmentChipHtml, attachmentChipUid } from '../shared/attachments/attachment-chip-html'
 import { AttachmentViewerService } from '../shared/attachments/attachment-viewer.service'
 import { parseReportPacket, REPORT_PACKET_SCHEMA_VERSION } from '../shared/export/report-packet'
+import { diagnoseFile, REPORT_PACKET_DAMAGED_MESSAGE } from '../shared/export/import-file'
+import { MISSION_EXPORT_SCHEMA_VERSION } from '../shared/services/backup.service'
 import { sendReportPacket } from '../shared/export/report-packet-send'
 import { mediaSummary, PHOTOS_LEFT_OUT_MESSAGE } from '../domain/report-packet-files'
 import {
@@ -1055,10 +1057,21 @@ export class RadioLogComponent implements OnInit, OnDestroy {
         alert(this.mediaOnlyMessage(await this.radioLogService.storePacketMedia(media)))
         return
       }
-      const text = await file.text()
-      const packet = parseReportPacket(text)
-      if (packet.schemaVersion > REPORT_PACKET_SCHEMA_VERSION) {
-        alert(`"${file.name}" was built by a newer version of RangerTrak (schema v${packet.schemaVersion}). Update this device before importing it.`)
+      // E-198: say plainly what is wrong with the file (cut off, a backup, from a newer RangerTrak...)
+      // before trying to read it; the technical reason goes to the log only.
+      const diagnosis = await diagnoseFile(file, 'report-packet',
+        { backup: MISSION_EXPORT_SCHEMA_VERSION, reportPacket: REPORT_PACKET_SCHEMA_VERSION })
+      if (diagnosis.problem !== 'none') {
+        this.log.error(`Could not read "${file.name}" as a Report Packet: ${diagnosis.technical}`, this.id)
+        alert(`Could not read "${file.name}".\n\n${diagnosis.message}`)
+        return
+      }
+      let packet: ReturnType<typeof parseReportPacket>
+      try {
+        packet = parseReportPacket(await file.text())
+      } catch (parseError: any) {
+        this.log.error(`Could not read "${file.name}" as a Report Packet: ${parseError?.message ?? parseError}`, this.id)
+        alert(`Could not read "${file.name}".\n\n${REPORT_PACKET_DAMAGED_MESSAGE}`)
         return
       }
 

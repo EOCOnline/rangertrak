@@ -17,6 +17,8 @@ import { migrateAarNotes } from '../../domain/aar-note-migration'
 import { recordStore } from '../storage/record-store'
 import { AttachmentStoreService } from './attachment-store.service'
 import { clearActiveDemoScenario } from '../mapping/demo-map'
+import { diagnoseImportFile, stripBom } from '../../domain/import-diagnosis'
+import { BACKUP_DAMAGED_MESSAGE, DIAGNOSIS_HEAD_BYTES } from '../export/import-file'
 import type { LayerRecord } from '../../domain/layers'
 
 /**
@@ -238,13 +240,25 @@ export class BackupService {
     return files.length
   }
 
-  /** Which kind of file a Restore pick is: the backup JSON, or its attachments companion (plain zip or encrypted). */
+  /**
+   * Which kind of file a Restore pick is: the backup JSON, or its attachments companion (plain zip or
+   * encrypted). A zip that is not an attachments companion (a Setup file, a spreadsheet) is refused
+   * here in plain words (E-198), with the right place named.
+   */
   async classifyRestoreFile(file: File): Promise<'backup' | 'attachments'> {
-    if (looksLikeZip(new Uint8Array(await file.slice(0, 2).arrayBuffer()))) return 'attachments'
+    const head = new Uint8Array(await file.slice(0, DIAGNOSIS_HEAD_BYTES).arrayBuffer())
+    if (looksLikeZip(head)) {
+      const diagnosis = diagnoseImportFile(head, null, 'backup')
+      if (diagnosis.detected !== 'attachments') {
+        this.log.error(`Restore pick "${file.name}" is not an attachments file: ${diagnosis.technical}`, this.id)
+        throw new Error(diagnosis.message)
+      }
+      return 'attachments'
+    }
     try {
-      const parsed = JSON.parse(await file.text())
+      const parsed = JSON.parse(stripBom(await file.text()))
       if (isEncryptedFile(parsed) && parsed.hint?.kind === ATTACHMENTS_KIND) return 'attachments'
-    } catch { /* not JSON: readFileAsMissionExport will say so */ }
+    } catch { /* not JSON: readFileAsMissionExport will say what it is */ }
     return 'backup'
   }
 
@@ -380,7 +394,9 @@ export class BackupService {
 
   /**
    * Reads a File (from an <input type="file"> change event) and parses it
-   * as a MissionExport. Rejects on invalid JSON or an invalid shape.
+   * as a MissionExport. Rejects with a PLAIN message (E-198, domain/import-diagnosis.ts) when the
+   * file is cut off, the wrong kind, from a newer RangerTrak, damaged or not RangerTrak's at all;
+   * the technical reason goes to the log only. A UTF-8 byte order mark is read away, not an error.
    */
   readFileAsMissionExport(
     file: File, getPassphrase?: (hint?: EncryptedFile['hint']) => string | null,
@@ -388,8 +404,14 @@ export class BackupService {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.onload = async () => {
+        const text = reader.result as string
         try {
-          let parsed = JSON.parse(reader.result as string)
+          let parsed: any
+          try {
+            parsed = JSON.parse(stripBom(text))
+          } catch (parseError: any) {
+            throw await this.explain(file, text, parseError.message)
+          }
 
           // Detected structurally, not by file extension: a backup renamed on its way
           // through email still has to open, and a plain backup must still import
@@ -412,22 +434,38 @@ export class BackupService {
               throw new Error(HANDOVER_NOT_A_BACKUP_MESSAGE)
             }
             try {
-              parsed = JSON.parse(new TextDecoder().decode(plain))
+              parsed = JSON.parse(stripBom(new TextDecoder().decode(plain)))
             } catch {
               throw new DecryptionFailedError()
             }
+          } else if (parsed && typeof parsed === 'object' && typeof parsed.schemaVersion === 'number'
+            && parsed.schemaVersion > MISSION_EXPORT_SCHEMA_VERSION) {
+            throw await this.explain(file, text, `schemaVersion ${parsed.schemaVersion} is newer than ${MISSION_EXPORT_SCHEMA_VERSION}`)
           }
 
-          this.validatePayload(parsed)
+          try {
+            this.validatePayload(parsed)
+          } catch (structureError: any) {
+            throw await this.explain(file, text, structureError.message)
+          }
           resolve(parsed)
         } catch (error: any) {
-          this.log.error(`Failed to parse mission import file: ${error.message}`, this.id)
+          this.log.error(`Failed to parse mission import file: ${error.technical ?? error.message}`, this.id)
           reject(error)
         }
       }
       reader.onerror = () => reject(reader.error)
       reader.readAsText(file)
     })
+  }
+
+  /** The plain-words error for a file that could not be restored; `technical` is for the log only. */
+  private async explain(file: File, text: string, technical: string): Promise<Error & { technical: string }> {
+    const head = new Uint8Array(await file.slice(0, DIAGNOSIS_HEAD_BYTES).arrayBuffer())
+    const diagnosis = diagnoseImportFile(head, text, 'backup', { backup: MISSION_EXPORT_SCHEMA_VERSION, reportPacket: 1 })
+    const error = new Error(diagnosis.problem === 'none' ? BACKUP_DAMAGED_MESSAGE : diagnosis.message) as Error & { technical: string }
+    error.technical = `${technical} (${diagnosis.technical})`
+    return error
   }
 
   private validatePayload(payload: any): asserts payload is MissionExport {

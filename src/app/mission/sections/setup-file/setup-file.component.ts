@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input'
 import { describeLocationMerge, mergeLocations } from '../../../domain/location-merge'
 import { migrateMission } from '../../../domain/mission-migration'
 import { describeRangerMerge, mergeRangers } from '../../../domain/ranger-migration'
-import { LOCKED_FILE_MESSAGE, readEnvelope } from '../../../shared/export/handover-kind'
+import { diagnoseBytes, SETUP_FILE_DAMAGED_MESSAGE } from '../../../shared/export/import-file'
 import type { MissionZipManifest, MissionZipPhoto } from '../../../shared/export/mission-zip'
 import { LogService, MissionLocationService, MissionService, RangerService, RangerType } from '../../../shared/services'
 import { ImportSafetyService } from '../../../shared/services/import-safety.service'
@@ -154,8 +154,23 @@ export class SetupFileComponent {
     try {
       const { extractMissionZip, layerName, entryCountOf } = await import('../../../shared/export/mission-zip')
       const bytes = new Uint8Array(await file.arrayBuffer())
-      if (readEnvelope(bytes)) throw new Error(LOCKED_FILE_MESSAGE)
-      const { manifest, photos } = extractMissionZip(bytes)
+      // E-198: say plainly what is wrong with the file (a backup, a spreadsheet, locked, cut off...)
+      // before trying to unzip it; the technical reason goes to the log only.
+      const diagnosis = diagnoseBytes(bytes, 'setup-file')
+      if (diagnosis.problem !== 'none') {
+        this.log.error(`Could not read "${file.name}" as a Setup file: ${diagnosis.technical}`, this.id)
+        alert(`Could not read "${file.name}".\n\n${diagnosis.message}`)
+        return
+      }
+      let read: ReturnType<typeof extractMissionZip>
+      try {
+        read = extractMissionZip(bytes)
+      } catch (zipError: any) {
+        this.log.error(`Could not read "${file.name}" as a Setup file: ${zipError?.message ?? zipError}`, this.id)
+        alert(`Could not read "${file.name}".\n\n${SETUP_FILE_DAMAGED_MESSAGE}`)
+        return
+      }
+      const { manifest, photos } = read
 
       const lines: string[] = []
       if (manifest.settings) {
