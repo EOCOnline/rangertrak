@@ -60,7 +60,7 @@ export class ImportSafetyService {
   readonly last = this.lastSignal.asReadonly()
 
   constructor() {
-    //HOLD this.attachmentStore.setHold(() => this.heldSet)
+    this.attachmentStore.setHold(() => this.heldSet)
     this.load()
   }
 

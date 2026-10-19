@@ -1,7 +1,8 @@
-import { Injectable, signal } from '@angular/core'
+import { Injectable, Injector, inject, signal } from '@angular/core'
 
 import { formatBytes, formatFingerprint, isGone, orphans, removedOnly } from '../../domain/attachments'
 import type { AttachmentRef } from '../../domain/attachments'
+import { IMPORT_SAFETY_KEY, holdAsEntries } from '../../domain/import-safety'
 import { LogService } from './log.service'
 import { StoragePersistenceService } from './storage-persistence.service'
 // Direct import of the module-level singleton, for the same reason RangerPhotoService does it
@@ -28,6 +29,8 @@ import { decryptPhoto, encryptPhoto } from '../storage/record-encryption'
  *    and arrives as an ordinary file with its own fingerprint.
  * 3. **The one place bytes are deleted is `sweepOrphans()`**, which asks `orphans()` (domain).
  *    `remove()` is its low-level helper, not a second rule.
+ *    While an import safety copy exists (E-198, D-60 item 8 amended 2026-10-18), the fingerprints its
+ *    LIVE references name count as referenced for `sweepOrphans()` and `releaseRemoved()` too: see `setHold()`.
  *
  * Encryption at rest (D-51) uses the same record shape and helpers as the photos: `encryptAll()`
  * and `decryptAll()` are the Enable/Disable halves of Mission > Data safety, in the same order
@@ -261,7 +264,7 @@ export class AttachmentStoreService {
       ...(await this.tx<IDBValidKey[]>(ORIGINALS, 'readonly', s => s.getAllKeys())).map(String),
       ...(await this.tx<IDBValidKey[]>(THUMBS, 'readonly', s => s.getAllKeys())).map(String),
     ])
-    const gone = orphans(keys, entries)
+    const gone = orphans(keys, [...entries, ...holdAsEntries(await this.held())])
     if (!gone.length) return 0
     await this.txMulti([ORIGINALS, THUMBS], s => { for (const sha of gone) s.delete(sha) })
     for (const sha of gone) this.forget(sha)
@@ -280,7 +283,7 @@ export class AttachmentStoreService {
     await this.ready
     if (!this.db) return 0
     const keys = (await this.tx<IDBValidKey[]>(ORIGINALS, 'readonly', s => s.getAllKeys())).map(String)
-    const gone = removedOnly(keys, entries)
+    const gone = removedOnly(keys, [...entries, ...holdAsEntries(await this.held())])
     if (!gone.length) return 0
     await this.txMulti([ORIGINALS, THUMBS], s => { for (const sha of gone) s.delete(sha) })
     for (const sha of gone) this.forget(sha)
@@ -323,10 +326,17 @@ export class AttachmentStoreService {
     return { stored, alreadyHere, unreferenced, mismatched }
   }
 
-  /** How many attachments and bytes a sweep would delete if these entries replaced the current ones. */
-  async wouldSweep(entries: readonly Pick<AttachmentHolder, 'attachments'>[]): Promise<{ count: number, bytes: number }> {
+  /**
+   * How many attachments and bytes a sweep would delete if these entries replaced the current ones.
+   * An import safety copy's held fingerprints are not counted (they are kept); `ignoreHold` answers
+   * "what would go once the safety copy is gone" instead.
+   */
+  async wouldSweep(
+    entries: readonly Pick<AttachmentHolder, 'attachments'>[], ignoreHold = false,
+  ): Promise<{ count: number, bytes: number }> {
     const sizes = await this.sizes()
-    const gone = orphans(Object.keys(sizes), entries)
+    const hold = ignoreHold ? [] : holdAsEntries(await this.held())
+    const gone = orphans(Object.keys(sizes), [...entries, ...hold])
     return { count: gone.length, bytes: gone.reduce((sum, sha) => sum + (sizes[sha] ?? 0), 0) }
   }
 
@@ -334,11 +344,47 @@ export class AttachmentStoreService {
    * The line a destructive confirm adds when attachments exist: "This also deletes N
    * attachments (X MB) from this device." '' when none would go. `replacement` is the
    * entries the device will hold afterward (empty for a clear).
+   *
+   * `keptForSafetyCopy` (Restore, E-198): the import will take a safety copy first, and that copy
+   * holds this device's attachments, so nothing is deleted yet; the line says when the space comes back.
    */
-  async deletionNotice(replacement: readonly Pick<AttachmentHolder, 'attachments'>[]): Promise<string> {
-    const { count, bytes } = await this.wouldSweep(replacement)
+  async deletionNotice(
+    replacement: readonly Pick<AttachmentHolder, 'attachments'>[], options: { keptForSafetyCopy?: boolean } = {},
+  ): Promise<string> {
+    const { count, bytes } = await this.wouldSweep(replacement, !!options.keptForSafetyCopy)
     if (!count) return ''
-    return `\n\nThis also deletes ${count} attachment${count === 1 ? '' : 's'} (${formatBytes(bytes)}) from this device.`
+    const what = `${count} attachment${count === 1 ? '' : 's'} (${formatBytes(bytes)})`
+    if (options.keptForSafetyCopy) {
+      return `\n\n${what} on this device are not in the restored mission. They are kept for the safety copy, and that space is freed after 24 hours, or when the safety copy is discarded.`
+    }
+    return `\n\nThis also deletes ${what} from this device.`
+  }
+
+  // ── the import safety copy's hold (E-198, ADR D-60 item 8 amended 2026-10-18) ─────────────────
+
+  private holdProvider?: () => ReadonlySet<string>
+  private injector = inject(Injector)
+
+  /**
+   * Registered by `ImportSafetyService`: the fingerprints its safety copy's LIVE references name.
+   * While it returns any, `sweepOrphans()`, `releaseRemoved()` and `wouldSweep()` treat them as
+   * referenced, for every caller, so Undo can bring entries back with their bytes.
+   */
+  setHold(provider: () => ReadonlySet<string>): void {
+    this.holdProvider = provider
+  }
+
+  /**
+   * The held fingerprints. When a stored safety copy exists but the service that supplies the hold has
+   * not been created yet in this session, it is created first (lazily, so a device with no copy never
+   * loads it).
+   */
+  private async held(): Promise<ReadonlySet<string>> {
+    if (!this.holdProvider && recordStore.getItem(IMPORT_SAFETY_KEY) !== null) {
+      const { ImportSafetyService } = await import('./import-safety.service')
+      this.injector.get(ImportSafetyService)
+    }
+    return this.holdProvider ? this.holdProvider() : EMPTY_HOLD
   }
 
   /**
@@ -541,6 +587,8 @@ export class AttachmentStoreService {
     })
   }
 }
+
+const EMPTY_HOLD: ReadonlySet<string> = new Set()
 
 /** Anything that carries references: a radio log entry. */
 type AttachmentHolder = { attachments?: AttachmentRef[] }
