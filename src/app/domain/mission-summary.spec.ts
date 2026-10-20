@@ -152,6 +152,14 @@ describe('summarizeMission', () => {
       const s = run({ rangers, entries: [entry(at(15, 8), { callsign: 'K7AAA' }), entry(at(15, 9), { callsign: 'k7aaa' })] })
       expect(s.byTeam).toEqual([{ label: 'Alpha', count: 1 }, { label: NO_TEAM_LABEL, count: 1 }])
     })
+    it('splits each team by status, in the mission's status order', () => {
+      const s = run({
+        rangers,
+        entries: [entry(at(15, 8), { callsign: 'K7AAA', status: 'Urgent' }), entry(at(15, 9), { callsign: 'K7AAA' }),
+          entry(at(15, 10), { callsign: 'K7AAA' })],
+      })
+      expect(s.byTeamStatus['Alpha']).toEqual([{ status: 'Normal', count: 2 }, { status: 'Urgent', count: 1 }])
+    })
     it('no ranger, or a blank team, is "No team / not on roster", sorted by count', () => {
       const s = run({
         rangers,

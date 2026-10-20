@@ -69,6 +69,8 @@ export type MissionSummary = {
   buckets: { hours: number; items: SummaryBucket[] }
   byStatus: SummaryStatusRow[]
   byTeam: SummaryCount[]
+  /** Each team's messages split by status, in the same order as `byStatus` (for stacked bars). */
+  byTeamStatus: Record<string, { status: string; count: number }[]>
   byStation: SummaryStationRow[]
   byOperator: SummaryCount[]
   bySource: SummaryCount[]
@@ -218,6 +220,18 @@ export function summarizeMission(input: SummaryInput): MissionSummary {
     return r?.team?.trim() || NO_TEAM_LABEL
   }
 
+  const teamStatus = new Map<string, Map<string, number>>()
+  for (const e of entries) {
+    const team = teamOf(e)
+    const m = teamStatus.get(team) ?? new Map<string, number>()
+    m.set(e.status, (m.get(e.status) ?? 0) + 1)
+    teamStatus.set(team, m)
+  }
+  const byTeamStatus: MissionSummary['byTeamStatus'] = {}
+  for (const [team, m] of teamStatus) {
+    byTeamStatus[team] = byStatus.filter(r => m.has(r.status)).map(r => ({ status: r.status, count: m.get(r.status)! }))
+  }
+
   // 7. By station.
   const stationMap = new Map<string, SummaryStationRow>()
   for (const { e, t } of inWindow) {
@@ -274,6 +288,7 @@ export function summarizeMission(input: SummaryInput): MissionSummary {
     buckets: { hours, items },
     byStatus,
     byTeam: tally(entries.map(teamOf)),
+    byTeamStatus,
     byStation,
     byOperator: tally(entries.map(e => e.operator?.trim() || NOT_RECORDED_LABEL)),
     bySource: tally(entries.map(e => e.source?.trim() || NOT_RECORDED_LABEL)),

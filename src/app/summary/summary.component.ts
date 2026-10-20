@@ -262,23 +262,45 @@ export class SummaryComponent implements OnDestroy {
       width,
       height: rows.length * rowH + 8,
       labelW,
-      bars: rows.map((r, i) => ({
+      bars: rows.map((r, i) => {
+        const w = Math.max(2, (r.count / max) * room)
+        // Stacked by status: each slice is its share of the bar, in the mission's status order.
+        const parts = this.summary().byTeamStatus[r.label] ?? []
+        let used = 0
+        const segs = parts.map(p => {
+          const x = barLeft + used
+          const sw = (p.count / r.count) * w
+          used += sw
+          return { x, w: sw, fill: this.statusFillFor(p.status), tip: `${p.status}: ${p.count}` }
+        })
+        return {
         y: 4 + i * rowH,
-        w: Math.max(2, (r.count / max) * room),
+        w,
+        segs,
+        detail: parts.map(p => `${p.status} ${p.count}`).join(', '),
         label: r.label.length > maxChars ? r.label.slice(0, maxChars - 1) + '…' : r.label,
         full: r.label,
         count: r.count,
         barLeft,
         h: rowH - 8,
-      })),
+        }
+      }),
     }
   })
+
+  teamStatusText(team: string): string {
+    return (this.summary().byTeamStatus[team] ?? []).map(p => `${p.status} ${p.count}`).join(', ')
+  }
 
   readonly teamChartAria = computed(() => {
     const rows = this.summary().byTeam
     if (!rows.length) return 'Traffic by team: no entries.'
     return `Traffic by team. ${rows.length} ${rows.length === 1 ? 'team' : 'teams'}. `
-      + `Busiest: ${rows[0].label}, ${rows[0].count} ${rows[0].count === 1 ? 'message' : 'messages'}.`
+      + `Busiest: ${rows[0].label}, ${rows[0].count} ${rows[0].count === 1 ? 'message' : 'messages'}. `
+      + rows.map(r => {
+        const parts = this.summary().byTeamStatus[r.label] ?? []
+        return `${r.label}: ${r.count}` + (parts.length ? ` (${parts.map(p => `${p.status} ${p.count}`).join(', ')})` : '')
+      }).join('; ') + '.'
   })
 
   // ---- formatting ----

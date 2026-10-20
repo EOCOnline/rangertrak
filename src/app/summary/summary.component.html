@@ -157,8 +157,13 @@
           [attr.aria-label]="teamChartAria()" data-testid="summary-team-chart">
           @for (b of teamChart().bars; track $index) {
           <text class="rt-summary__tick rt-summary__tick--label" x="0" [attr.y]="b.y + b.h / 2 + 4">{{ b.label }}<title>{{ b.full }}</title></text>
-          <rect class="rt-summary__bar rt-summary__bar--team" data-testid="summary-team-bar" [attr.x]="b.barLeft"
-            [attr.y]="b.y" [attr.width]="b.w" [attr.height]="b.h"><title>{{ b.full }}: {{ b.count }}</title></rect>
+          <g data-testid="summary-team-bar" role="img" [attr.aria-label]="b.full + ': ' + b.count + (b.detail ? ' (' + b.detail + ')' : '')">
+            <title>{{ b.full }}: {{ b.count }}{{ b.detail ? ' (' + b.detail + ')' : '' }}</title>
+            @for (g of b.segs; track $index) {
+            <rect class="rt-summary__bar rt-summary__bar--team" [attr.x]="g.x" [attr.y]="b.y" [attr.width]="g.w"
+              [attr.height]="b.h" [style.fill]="g.fill"><title>{{ b.full }}, {{ g.tip }}</title></rect>
+            }
+          </g>
           <text class="rt-summary__tick rt-summary__tick--count" [attr.x]="b.barLeft + b.w + 5"
             [attr.y]="b.y + b.h / 2 + 4">{{ b.count }}</text>
           }
@@ -167,10 +172,10 @@
           <summary>Show the numbers</summary>
           <div class="rt-summary__scroll">
             <table class="rt-summary__table">
-              <thead><tr><th>Team</th><th class="num">Messages</th></tr></thead>
+              <thead><tr><th>Team</th><th class="num">Messages</th><th>By status</th></tr></thead>
               <tbody>
                 @for (r of summary().byTeam; track r.label) {
-                <tr><td>{{ r.label }}</td><td class="num">{{ r.count }}</td></tr>
+                <tr><td>{{ r.label }}</td><td class="num">{{ r.count }}</td><td>{{ teamStatusText(r.label) }}</td></tr>
                 }
               </tbody>
             </table>
