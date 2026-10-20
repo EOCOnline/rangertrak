@@ -225,77 +225,21 @@
   break-inside : avoid;
 }
 
-// ── Advanced marker (E-207, ADR D-62 item 7) ─────────────────────────────────
-// In Full view, every card or control that Simple view can hide carries this: a left rule and a
-// small "Full view" label (it said "Advanced" until 2026-10-20), so core and extra read apart at a
-// glance. Applied by [rtAdvanced] (shared/view/advanced.directive.ts), never by hand. The rule is an
-// inset shadow and the label is positioned out of flow, so the marker takes no width; untitled
-// controls get a little room above for the label. Theme tokens only. Not printed.
-@mixin _advanced-pill {
-  display       : inline-block;
-  padding       : 0 var(--rt-space-sm);
-  border        : 1px solid var(--rt-advanced);
-  border-radius : var(--rt-radius);
-  background    : var(--rt-advanced-tint);
-  color         : var(--rt-advanced);
-  @include type.type-label;
-  line-height   : 1.4;
-  pointer-events: none;
-}
-
+// ── Advanced marker (E-207, ADR D-62 item 7; E-214) ──────────────────────────
+// In Full view, every card or control that Simple view can hide carries a thin plum rule on its
+// left edge, so core and extra read apart at a glance. Left edge only (John, 2026-10-20): the
+// "Full view" text pill is gone. Applied by [rtAdvanced] (shared/view/advanced.directive.ts), never
+// by hand; the directive also adds the title and aria-description "Full view option". The rule is
+// an inset shadow, so the marker takes no width. Theme tokens only. Not printed.
 .rt-advanced {
-  position  : relative;
   box-shadow: inset 3px 0 0 var(--rt-advanced);
 
-  // AAR 2026-10-19 10pm: the pill used to sit on the top edge at the right, a whole screen away
-  // from a wide card's title, and read as belonging to the card above. It now follows the title
-  // (cards and Data safety's subheads); anything without a title gets it on its top edge at the
-  // left, next to the rule.
-  // 2026-10-20, John: the pill reads "Full view", the setting's own name (Q11 kept "Full view"),
-  // not "Advanced". And on a control with no title (Map's MapLibre switch) the pill covered the
-  // first word of the label, so those get room above for it - the one place the marker takes height.
-  // Not buttons: the pill sits on a button's border, clear of its label, and the room would drop
-  // the button below the others in its row (Map tools' Print map).
-  &:not(:has(> .mat-mdc-card-header, > .mission__subhead)):not(button) {
-    margin-block-start: 0.9em;
-  }
-
-  &::before {
-    content       : 'Full view';
-    position      : absolute;
-    top           : 0;
-    left          : var(--rt-space-sm);
-    transform     : translateY(-50%);
-    z-index       : 1;
-    @include _advanced-pill;
-  }
-
-  &:has(> .mat-mdc-card-header, > .mission__subhead)::before { content: none; }
-
-  > .mat-mdc-card-header .mat-mdc-card-title::after,
-  > .mission__subhead::after {
-    content       : 'Full view';
-    margin-inline-start: var(--rt-space-sm);
-    vertical-align: middle;
-    @include _advanced-pill;
-  }
-
-  @media print {
-    box-shadow: none;
-
-    &::before,
-    > .mat-mdc-card-header .mat-mdc-card-title::after,
-    > .mission__subhead::after { content: none; }
-  }
+  @media print { box-shadow: none; }
 }
 
-// Leaflet's layers box draws its own rows (map-leaflet.component.ts marks the advanced ones): the rule
-// is enough there, a badge on each row would crowd a small box.
+// Leaflet's layers box draws its own rows (mapLeaflet.component.ts marks the advanced ones).
 .leaflet-control-layers .rt-advanced {
   padding-inline-start: 4px;
-  margin-block-start  : 0;
-
-  &::before { content: none; }
 }
 
 // ── Masonry (E-169) ──────────────────────────────────────────────────────────
