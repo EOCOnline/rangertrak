@@ -1,0 +1,19 @@
+{
+  "format": "rangertrak-encrypted-v1",
+  "kdf": {
+    "name": "PBKDF2",
+    "hash": "SHA-256",
+    "iterations": 310000,
+    "salt": "PMdxRL1Ms0BVK3DB0T1kfQ=="
+  },
+  "cipher": {
+    "name": "AES-GCM",
+    "iv": "f3ekAWvsD+feS7Qa"
+  },
+  "ciphertext": "2ZX9WmFRmYJhD61ISpckdxYBoRyBHDhtM1mXX4wr8T4iQW19WLL09sOF4lkKTnOqt5vxUTgpMqEws9DMYkDJG39jFd2UJmbvrxX9RJySMdf24FD73/dI18dgkQMBIUF6DnZPBz4ZMV4YYiI/QDdrxTtGf1wBnSbZD2YpDBsilavDe92UoOi3MkuzgJh92mV4wxHCxoeOG9Bv6HOPq5+QXxxyFGKt0kyDJ9f5KRe5Cv1RYX0TCApaelINrMoDDulh8P/M02qWxOIV49zaNrdf+MyDPDnRGrPddvmwuRmxDwX8A7+pQeqapfkJ3/7xYUWmCrmq9quQ7HuMShDuXreYbt/3n4AU94kQwzRsCOKbf1EQPmaPQgMGHUCi+ygerCiou0MPhoUiX0TMfzNDjTuoo8lzuGN2C6SJsTbo43gX3MSpm6tl4DoUn6ncrGtHcJn9Ri+4ANDOFZxXN8f1Qv4DJDahfvcU1Yx8ljjknMU+Q9XokBkC1Ax/DUbChYQmLwTojXyxui0etaFdjeFTmK476VmOsD+SJegP8pFz4WRxD+wj3+Wdx32iwjhkk5JfhhELh3Y6V6/2q9JgfNqBhi6bFRR3uYP+g7KG2PgB96T1yo4xm49PVVaoz/xzLg37jozuOiWJe4yUa0jXcTGZU+R6N1SegusD6Ps89lEKFdddg5BB/nLGrxS21v3jNnSo7JiRSdCRTFE96vaIx78or7GH1FqeWgaLBe5SxFIZLl6iBlPptzd1/Mua9Dfpg2aVFIWoIod7x6n7euu/Ll60AaK4RVrN+0wCMF/rJAJLA4Ip3uzhrnNq/wydzn2Orc+WXV7zKbcEmcabVg==",
+  "hint": {
+    "exportedAt": "2026-10-20T00:45:00.364Z",
+    "appVersion": "0.99.60-alpha",
+    "kind": "attachments"
+  }
+}
