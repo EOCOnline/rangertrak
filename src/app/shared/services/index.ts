@@ -5,6 +5,7 @@ export { CommandPostPublishService, CommandPostMission, CommandPostReport } from
 export { RangerService } from "./ranger.service"
 export { MissionLocationService } from "./mission-location.service"
 export { AarNoteService } from "./aar-note.service"
+export { ActivityLogHeaderService } from "./activity-log-header.service"
 export { RadioLogService } from "./radio-log.service"
 export { LogService } from "./log.service"
 export { GlobalErrorHandler } from "./global-error-handler"

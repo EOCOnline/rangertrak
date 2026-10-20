@@ -319,7 +319,9 @@ export class MissionAdvancedOptionsComponent {
       entries: this.radioLogService.getCurrentRadioLog().logEntries,
       rangers: this.rangerService.rangers.length,
       places: this.locationService.getCurrentLocations().length,
-      aarNotes: this.aarNoteService.getCurrentNotes().length,
+      // E-04 / D-63: debrief notes and 214 lines are counted apart; a 214 line is never an AAR note.
+      aarNotes: this.aarNoteService.getCurrentNotes().filter(n => n.kind !== 'activity').length,
+      activityLines: this.aarNoteService.getCurrentNotes().filter(n => n.kind === 'activity').length,
       photos: this.rangerPhotoService.count(),
     }
     const file: RestoreSide = {
@@ -329,7 +331,8 @@ export class MissionAdvancedOptionsComponent {
       entries: payload.radioLog.logEntries,
       rangers: payload.rangers.length,
       places: (payload.locations ?? []).length,
-      aarNotes: (payload.aarNotes ?? []).length,
+      aarNotes: (payload.aarNotes ?? []).filter(n => n?.kind !== 'activity').length,
+      activityLines: (payload.aarNotes ?? []).filter(n => n?.kind === 'activity').length,
       photos: payload.photos ? payload.photos.length : null,
     }
     const preview = compareForRestore(device, file, device.appVersion)

@@ -9,6 +9,7 @@ import { RadioLogService } from './radio-log.service';
 import { RangerService } from './ranger.service';
 import { MissionService } from './mission.service';
 import { AarNoteService } from './aar-note.service';
+import { ActivityLogHeaderService } from './activity-log-header.service';
 import { RangerPhotoService } from './ranger-photo.service';
 // E-122 Phase 2a: the roster (and radio log) now live behind RecordStore, not localStorage
 // directly - see that module's own doc comment.
@@ -360,6 +361,38 @@ describe('BackupService', () => {
       notes.addNote('left over from another mission', 'incident', 'Entry');
       await backup.importMission(payload);
       expect(notes.notes()).toEqual([]);
+    });
+  });
+  describe('ICS-214 lines and header (E-04 / D-63)', () => {
+    it('carries activity lines with the notes, and the header, through a backup and restore', async () => {
+      const notes = TestBed.inject(AarNoteService);
+      const header = TestBed.inject(ActivityLogHeaderService);
+      const backup = TestBed.inject(BackupService);
+      notes.addNote('Net opened', 'incident', 'Entry', 'activity', '2026-10-20T07:30:00.000Z');
+      header.save({ name: 'Pat Doe', icsPosition: 'Radio Operator', resources: [{ name: 'Sam', icsPosition: 'Runner', homeAgency: 'CERT' }] });
+
+      const payload = JSON.parse(JSON.stringify(await backup.buildExportPayload()));
+      expect(payload.aarNotes[0].kind).toBe('activity');
+      expect(payload.activityLogHeader.name).toBe('Pat Doe');
+
+      notes.deleteAllNotes();
+      header.clear();
+      await backup.importMission(payload);
+      expect(notes.notes()[0].kind).toBe('activity');
+      expect(notes.notes()[0].at).toBe('2026-10-20T07:30:00.000Z');
+      expect(header.header().name).toBe('Pat Doe');
+      expect(header.header().resources.length).toBe(1);
+    });
+
+    it('leaves the device header alone when the backup has none (an older version)', async () => {
+      const header = TestBed.inject(ActivityLogHeaderService);
+      const backup = TestBed.inject(BackupService);
+      const payload = JSON.parse(JSON.stringify(await backup.buildExportPayload()));
+      delete payload.activityLogHeader;
+
+      header.save({ name: 'Kept' });
+      await backup.importMission(payload);
+      expect(header.header().name).toBe('Kept');
     });
   });
   describe('geocoding key and photos (2026-10-01, John)', () => {

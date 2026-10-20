@@ -15,7 +15,10 @@ export type RestoreSide = {
   entries: readonly { uid?: string, date?: unknown }[]
   rangers: number
   places: number
+  /** After-action notes (kind `aar`). ICS-214 lines are counted apart, below (E-04 / D-63). */
   aarNotes: number
+  /** ICS-214 activity lines (kind `activity`). */
+  activityLines: number
   /** Ranger photos. null = the side does not say (an older backup has no `photos`; the device's stay). */
   photos: number | null
 }
@@ -99,6 +102,7 @@ export function compareForRestore(device: RestoreSide, file: RestoreSide, thisAp
     { label: 'Rangers (roster)', device: String(device.rangers), file: String(file.rangers) },
     { label: 'Places', device: String(device.places), file: String(file.places) },
     { label: 'After action notes', device: String(device.aarNotes), file: String(file.aarNotes) },
+    { label: 'ICS-214 log lines', device: String(device.activityLines), file: String(file.activityLines) },
     {
       label: 'Ranger photos',
       device: device.photos === null ? '?' : String(device.photos),

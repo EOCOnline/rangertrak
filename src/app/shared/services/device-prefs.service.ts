@@ -11,6 +11,8 @@ const RANGERS_PRIVACY_DISMISSED_KEY = 'rangertrak.rangers.privacyNoticeDismissed
 const IMPORT_MAPPINGS_KEY = 'rt-import-mappings'
 // D-61: this device's hold on a Board. See BoardPublisherPref.
 const BOARD_PUBLISHER_KEY = 'rt-board-publisher'
+// E-04 / D-63: the kind the AAR/214 capture box opens on ('aar' or 'activity'): the one used last on this device.
+const AAR_NOTE_LAST_KIND_KEY = 'aarNoteLastKind'
 
 /**
  * D-61: what this device remembers about publishing to a Board. `key` is the hidden publish key the
@@ -33,6 +35,15 @@ export class DevicePrefsService {
    * mission's own preferred format (see LocationComponent's constructor). Unvalidated: the
    * caller checks it against the formats it knows.
    */
+  /** E-04 / D-63: the capture box opens on the kind used last on this device. Anything unknown reads as `aar`. */
+  getAarNoteLastKind(): 'aar' | 'activity' {
+    return this.read(AAR_NOTE_LAST_KIND_KEY) === 'activity' ? 'activity' : 'aar'
+  }
+
+  setAarNoteLastKind(kind: 'aar' | 'activity'): void {
+    this.write(AAR_NOTE_LAST_KIND_KEY, kind)
+  }
+
   getLastCoordinateFormat(): string | null {
     return this.read(LAST_COORDINATE_FORMAT_KEY)
   }

@@ -8,7 +8,7 @@ import { RestorePreviewDialogComponent } from './restore-preview-dialog.componen
 import type { RestorePreviewDialogData } from './restore-preview-dialog.component';
 
 const side = (over: Partial<RestoreSide>): RestoreSide => ({
-  mission: 'Fernhollow Drill', exportedAt: '', appVersion: '', entries: [], rangers: 0, places: 0, aarNotes: 0, photos: 0, ...over,
+  mission: 'Fernhollow Drill', exportedAt: '', appVersion: '', entries: [], rangers: 0, places: 0, aarNotes: 0, activityLines: 0, photos: 0, ...over,
 });
 
 /** E-198 phase 1: the Restore preview dialog. The comparison itself is tested in domain/restore-preview.spec.ts. */

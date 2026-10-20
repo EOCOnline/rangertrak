@@ -5,7 +5,7 @@ import { ATTACHMENTS_KIND, HANDOVER_KIND, HANDOVER_NOT_A_BACKUP_MESSAGE, looksLi
 import * as packageJson from '../../../../package.json'
 import {
   RadioLogType, RadioLogService, LogService, RangerService, RangerType, MissionService,
-  MissionType, MissionLocationService, MissionLocationType, AarNoteService, AarNoteType, RangerPhotoService
+  MissionType, MissionLocationService, MissionLocationType, AarNoteService, AarNoteType, ActivityLogHeaderService, RangerPhotoService
 } from './'
 import { liveRefs } from '../../domain/attachments'
 import type { AttachmentRef } from '../../domain/attachments'
@@ -14,6 +14,7 @@ import { normalizeRangerIds } from '../../domain/ranger-migration'
 import { migrateRadioLog } from '../../domain/radio-log-migration'
 import { normalizeLocationUids } from '../../domain/mission-location-migration'
 import { migrateAarNotes } from '../../domain/aar-note-migration'
+import { ActivityLogHeader, normalizeActivityLogHeader } from '../../domain/activity-log'
 import { recordStore } from '../storage/record-store'
 import { AttachmentStoreService } from './attachment-store.service'
 import { clearActiveDemoScenario } from '../mapping/demo-map'
@@ -37,6 +38,10 @@ import { localDateStamp } from '../export/local-date'
  * `aarNotes` (E-116, 2026-09-27): the same rule. Additive and optional, so no schema bump: a
  * backup from before After Action notes restores with none.
  *
+ * `activityLogHeader` (E-04 / D-63, 2026-10-20): the ICS-214 header and Resources Assigned rows. Optional, no
+ * schema bump: older versions ignore it. PRESENT replaces this device's header; ABSENT leaves it alone. (ICS-214
+ * lines themselves are `aarNotes` entries with `kind: 'activity'`.)
+ *
  * `layers` (E-187 phase C, 2026-10-16): which layers the device holds, with the uids each brought in. The
  * same rule: PRESENT replaces this device's list, ABSENT (an older backup) leaves nothing stale - the list
  * is pruned to the roster and places just restored. No schema bump.
@@ -54,6 +59,7 @@ export type MissionExport = {
   radioLog: Omit<RadioLogType, 'bounds'>,
   locations?: MissionLocationType[],
   aarNotes?: AarNoteType[],
+  activityLogHeader?: ActivityLogHeader,
   layers?: LayerRecord[],
   photos?: { stem: string, type: string, data: string }[],
 }
@@ -100,6 +106,7 @@ export class BackupService {
     private radioLogService: RadioLogService,
     private locationService: MissionLocationService,
     private aarNoteService: AarNoteService,
+    private activityLogHeaderService: ActivityLogHeaderService,
     private log: LogService,
     private photoService: RangerPhotoService,
   ) { }
@@ -145,6 +152,7 @@ export class BackupService {
       radioLog: fieldReportsSansBounds,
       locations: this.locationService.getCurrentLocations(),
       aarNotes: this.aarNoteService.getCurrentNotes(),
+      activityLogHeader: this.activityLogHeaderService.getCurrentHeader(),
       layers: (await this.layerService()).snapshot(),
       photos: await this.photosForExport(),
     }
@@ -363,6 +371,8 @@ export class BackupService {
     // rejecting the import, same tolerance every other additive field in this app gets.
     this.locationService.replaceAllLocations(normalizeLocationUids(payload.locations ?? []))
     this.aarNoteService.replaceAllNotes(migrateAarNotes(payload.aarNotes ?? []).notes)
+    // E-04 / D-63: present replaces the header, absent (an older backup) leaves this device's alone.
+    if (payload.activityLogHeader) this.activityLogHeaderService.save(normalizeActivityLogHeader(payload.activityLogHeader))
     // The layers the device held (E-187 phase C). Present: put them back. Absent (an older backup):
     // keep the list but forget whatever the restored roster and places no longer contain.
     const layerService = await this.layerService()

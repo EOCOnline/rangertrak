@@ -6,6 +6,7 @@ import { setQuiet } from '../quiet-flag'
 import { clearActiveDemoScenario, demoRecord } from '../mapping/demo-map'
 import { recordStore } from '../storage/record-store'
 import { AarNoteService } from './aar-note.service'
+import { ActivityLogHeaderService } from './activity-log-header.service'
 import { AttachmentStoreService } from './attachment-store.service'
 import { MissionLocationService } from './mission-location.service'
 import { FieldModeService } from './field-mode.service'
@@ -86,6 +87,7 @@ export class UsageStateService {
     private radioLogService: RadioLogService,
     private locationService: MissionLocationService,
     private aarNoteService: AarNoteService,
+    private activityLogHeaderService: ActivityLogHeaderService,
     private fieldMode: FieldModeService,
     private log: LogService,
   ) {
@@ -122,6 +124,7 @@ export class UsageStateService {
     await this.radioLogService.deleteAllRadioLogEntries()
     this.locationService.deleteAllLocations()
     this.aarNoteService.deleteAllNotes()
+    this.activityLogHeaderService.clear()
     this.missionService.ResetDefaults()
     clearActiveDemoScenario()
     if (mode) this.setMode(mode)

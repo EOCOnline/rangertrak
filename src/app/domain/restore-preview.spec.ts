@@ -2,7 +2,7 @@ import { compareForRestore, formatLocalMinute, isNewerVersion, newestEntryTime, 
 import type { RestoreSide } from './restore-preview'
 
 const side = (over: Partial<RestoreSide> = {}): RestoreSide => ({
-  mission: 'Fernhollow Drill', exportedAt: '', appVersion: '', entries: [], rangers: 0, places: 0, aarNotes: 0, photos: 0, ...over,
+  mission: 'Fernhollow Drill', exportedAt: '', appVersion: '', entries: [], rangers: 0, places: 0, aarNotes: 0, activityLines: 0, photos: 0, ...over,
 })
 
 describe('restore preview (E-198)', () => {
@@ -35,12 +35,12 @@ describe('restore preview (E-198)', () => {
   describe('compareForRestore', () => {
     const device = side({
       entries: [{ uid: 'e1', date: '2026-10-17T10:00:00Z' }, { uid: 'e2', date: '2026-10-17T11:00:00Z' }, { uid: 'e3', date: '2026-10-17T12:00:00Z' }],
-      rangers: 12, places: 4, aarNotes: 2, photos: 5,
+      rangers: 12, places: 4, aarNotes: 2, activityLines: 3, photos: 5,
     })
     const file = side({
       mission: 'Last Week', exportedAt: '2026-10-10T09:00:00Z', appVersion: '0.99.50-alpha',
       entries: [{ uid: 'e1', date: '2026-10-10T08:00:00Z' }, { uid: 'z9', date: '2026-10-10T08:30:00Z' }],
-      rangers: 10, places: 3, aarNotes: 0, photos: 4,
+      rangers: 10, places: 3, aarNotes: 0, activityLines: 0, photos: 4,
     })
 
     it('counts the entries on the device that the file lacks, by uid', () => {
@@ -68,6 +68,7 @@ describe('restore preview (E-198)', () => {
       expect(rows['Rangers (roster)'].file).toBe('10')
       expect(rows['Places']).toEqual({ label: 'Places', device: '4', file: '3' })
       expect(rows['After action notes']).toEqual({ label: 'After action notes', device: '2', file: '0' })
+      expect(rows['ICS-214 log lines']).toEqual({ label: 'ICS-214 log lines', device: '3', file: '0' })
       expect(rows['Ranger photos']).toEqual({ label: 'Ranger photos', device: '5', file: '4' })
       expect(rows['Made by RangerTrak'].file).toBe('0.99.50-alpha')
       expect(rows['Newest entry'].device).toBe(formatLocalMinute(Date.parse('2026-10-17T12:00:00Z')))
