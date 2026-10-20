@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.66-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.65-alpha...v0.99.66-alpha) (2026-10-20)
+
+
+### Features
+
+* **demo:** E-195 Oso sample scenario - generated, lazily loaded, ICS-213 messages, softened casualties only ([f983426](https://github.com/SteadyEOC/RangerTrak/commit/f983426458868c298082aa44883d7e9baa125384))
+* **demo:** E-195 Oso scenario generator (ICS-213 rows, search division / decon / river gauge places) ([c87db03](https://github.com/SteadyEOC/RangerTrak/commit/c87db03256e6e5066e90b394a414e12a3ae8a9ad))
+* **map:** Oso demo street-detail map (E-195) ([941b385](https://github.com/SteadyEOC/RangerTrak/commit/941b385a0c83c21ca06e6507ba916ebe6cb8f905))
+
+
+### Bug Fixes
+
+* **view:** the Full view marker says "Full view", and no longer covers an untitled control's label ([21dce4a](https://github.com/SteadyEOC/RangerTrak/commit/21dce4a5630d6d447a4c8eb02a47e780832cb1df))
+
 ### [0.99.65-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.64-alpha...v0.99.65-alpha) (2026-10-20)
 
 
