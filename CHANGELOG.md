@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.63-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.62-alpha...v0.99.63-alpha) (2026-10-20)
+
+
+### Features
+
+* **view:** E-207 / D-62 phase 3 - "More about this" folds in Help, and where Attach is ([5c4cc7a](https://github.com/SteadyEOC/RangerTrak/commit/5c4cc7a4fc95f6e37173f28c7f4fd7efc29473e6))
+
 ### [0.99.62-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.61-alpha...v0.99.62-alpha) (2026-10-20)
 
 
