@@ -252,14 +252,9 @@ export class RosterImportDialogComponent {
       state: this.usage.state(),
       missionName: '',
       word: 'REPLACE',
-      message: `Replace the roster with ${this.incoming().length} people from "${this.data.fileName}"?
-
-`
-        + `${describeReplace(this.data.existing, merge)}
-
-`
-        + `Radio log entries and settings are not affected.
-`
+      message: `Replace the roster with ${this.incoming().length} people from "${this.data.fileName}"?\n\n`
+        + `${describeReplace(this.data.existing, merge)}\n\n`
+        + `Radio log entries and settings are not affected.\n`
         + `Tip: use "Export roster" first if you want to keep the current one.`,
     })
     if (!ok) return
