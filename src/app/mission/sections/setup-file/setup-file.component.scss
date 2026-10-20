@@ -52,3 +52,12 @@
     padding-inline-start: 1.25rem;
   }
 }
+
+// E-207 (D-62 item 6): the suggested-view choice beside the export options.
+.setup-file__view {
+  display       : flex;
+  flex-direction: column;
+  align-items   : flex-start;
+  gap           : 0.35rem;
+  margin-block  : 0.5rem 0.75rem;
+}

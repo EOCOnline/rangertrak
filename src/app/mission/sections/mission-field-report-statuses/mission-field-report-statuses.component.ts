@@ -16,6 +16,7 @@ import {
 } from '../../../shared/services/'
 import { ColorEditor } from '../../color-editor.component'
 import { isStatusFlagged } from '../../../domain/map-entry-filter'
+import { AdvancedDirective } from '../../../shared/view/advanced.directive'
 
 /**
  * The Radio Log entry status/color ag-Grid editor. Sprint C split out of the 429-line
@@ -38,7 +39,7 @@ import { isStatusFlagged } from '../../../domain/map-entry-filter'
 @Component({
   selector: 'rangertrak-mission-field-report-statuses',
   standalone: true,
-  imports: [CommonModule, AgGridModule, MatButtonModule, MatCardModule],
+  imports: [CommonModule, AgGridModule, MatButtonModule, MatCardModule, AdvancedDirective],
   templateUrl: './mission-field-report-statuses.component.html',
   styleUrls: ['./mission-field-report-statuses.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

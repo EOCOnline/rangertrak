@@ -15,6 +15,7 @@ import {
   LOCATION_ICON_OPTIONS, LocationCategoryType, statusColorMeetsAA, statusColorValue, statusInkValue
 } from '../../../shared/services/'
 import { ColorEditor } from '../../color-editor.component'
+import { AdvancedDirective } from '../../../shared/view/advanced.directive'
 
 /**
  * ADR D-49: the mission-editable Location category list (Command Post, Staging Area, Ranger
@@ -44,7 +45,7 @@ import { ColorEditor } from '../../color-editor.component'
 @Component({
   selector: 'rangertrak-mission-location-types',
   standalone: true,
-  imports: [CommonModule, AgGridModule, MatButtonModule, MatCardModule],
+  imports: [CommonModule, AgGridModule, MatButtonModule, MatCardModule, AdvancedDirective],
   templateUrl: './mission-location-types.component.html',
   styleUrls: ['./mission-location-types.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

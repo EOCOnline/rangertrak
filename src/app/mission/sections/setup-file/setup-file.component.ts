@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 
 import * as packageJson from '../../../../../package.json'
 import { MatButtonModule } from '@angular/material/button'
+import { MatButtonToggleModule } from '@angular/material/button-toggle'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
@@ -15,6 +16,7 @@ import type { MissionZipManifest, MissionZipPhoto } from '../../../shared/export
 import { LogService, MissionLocationService, MissionService, RangerService, RangerType } from '../../../shared/services'
 import { ImportSafetyService } from '../../../shared/services/import-safety.service'
 import { RangerPhotoService } from '../../../shared/services/ranger-photo.service'
+import { ViewService } from '../../../shared/services/view.service'
 // E-122 Phase 2a: reloadPage() awaits this before reloading - see RangersComponent.reloadPage().
 import { RecordStore } from '../../../shared/storage/record-store'
 import { localDateStamp } from '../../../shared/export/local-date'
@@ -40,7 +42,7 @@ import { localDateStamp } from '../../../shared/export/local-date'
 @Component({
   selector: 'rangertrak-setup-file',
   standalone: true,
-  imports: [MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatIconModule, MatInputModule],
+  imports: [MatButtonModule, MatButtonToggleModule, MatCheckboxModule, MatFormFieldModule, MatIconModule, MatInputModule],
   templateUrl: './setup-file.component.html',
   styleUrls: ['./setup-file.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -54,6 +56,7 @@ export class SetupFileComponent {
   private readonly log = inject(LogService)
   private readonly recordStore = inject(RecordStore)
   private readonly importSafety = inject(ImportSafetyService)
+  private readonly view = inject(ViewService)
   private readonly document = inject(DOCUMENT)
 
   readonly building = signal(false)
@@ -65,6 +68,8 @@ export class SetupFileComponent {
   readonly exportSettings = signal(true)
   /** E-187 (ADR D-58): an optional name for the file ("Fernhollow shelters, Oct 2026"). Blank = no layer block. */
   readonly exportLayerName = signal('')
+  /** E-207 (D-62 item 6): the view this file suggests to devices that load it. '' = none (the default). */
+  readonly exportSuggestedView = signal<'' | 'simple' | 'full'>('')
 
   /** Import: the file that was read, with what applying it would do. Null until a file is picked. */
   readonly pending = signal<PendingSetupFile | null>(null)
@@ -105,11 +110,13 @@ export class SetupFileComponent {
       }
       const exportedAt = new Date().toISOString()
       const layer = this.exportLayerName().trim()
+      const suggestedView = this.exportSuggestedView()
       const manifest: MissionZipManifest = {
         schemaVersion: MISSION_ZIP_SCHEMA_VERSION,
         exportedAt,
         appVersion,
         ...contents,
+        ...(suggestedView ? { suggestedView } : {}),
         ...(layer ? { layer: layerFor(contents, layer, exportedAt.slice(0, 10)) } : {}),
       }
 
@@ -185,6 +192,9 @@ export class SetupFileComponent {
       }
       if (photos.length) {
         lines.push(`Photos: ${photos.length} will be stored on this device, matched to rangers by ID or call sign.`)
+      }
+      if (manifest.suggestedView === 'simple' || manifest.suggestedView === 'full') {
+        lines.push(`View: suggests ${manifest.suggestedView === 'simple' ? 'Simple' : 'Full'} view, used only if this device has not chosen a view yet.`)
       }
       const entries = entryCountOf(manifest)
       this.pending.set({
@@ -275,6 +285,10 @@ export class SetupFileComponent {
       parts.push(`${stored.length} photo${stored.length === 1 ? '' : 's'} stored`
         + (unmatched.length ? `, ${unmatched.length} unmatched` : ''))
     }
+
+    // E-207 / D-62 item 6: a suggestion, never an order. ViewService applies it only while this
+    // device has no view choice of its own, and records it so it is applied once.
+    this.view.suggest(manifest.suggestedView)
 
     const prefix = file.layer ? `From "${file.layer}": ` : ''
     return parts.length ? prefix + parts.join('. ') + '.' : 'carried nothing to apply.'

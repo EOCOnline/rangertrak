@@ -38,6 +38,7 @@
      to read/copy/send the log is for feedback purposes... I don't imagine too much feedback
      were we need it." See ExpandableSectionComponent's own doc comment for why this is a
      deliberate, named exception to the 2026-08-25 "no collapsible sections" removal. -->
+@if (view.isShown('debug-log')) {
 <rangertrak-expandable-section summary="Diagnostic log (optional)">
   <p>
     RangerTrak keeps a running record of what it did this session - useful when something
@@ -62,3 +63,4 @@
     than a description of what went wrong.
   </p>
 </rangertrak-expandable-section>
+}

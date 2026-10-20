@@ -29,6 +29,8 @@ import type { RestoreSide } from '../../../domain/restore-preview'
 import type { RestorePreviewDialogData } from '../restore-preview-dialog/restore-preview-dialog.component'
 import type { RadioLogEntryType } from '../../../shared/services/radio-log-entry.interface'
 import { RecordStore } from '../../../shared/storage/record-store'
+import { ViewService } from '../../../shared/services/view.service'
+import { AdvancedDirective } from '../../../shared/view/advanced.directive'
 
 /** Enable requires a backup finished within this long - see BackupService.lastBackupCompletedAt. */
 const FRESH_BACKUP_WINDOW_MS = 10 * 60 * 1000
@@ -55,7 +57,7 @@ const FRESH_BACKUP_WINDOW_MS = 10 * 60 * 1000
 @Component({
   selector: 'rangertrak-mission-advanced-options',
   standalone: true,
-  imports: [CommonModule, FormsModule, DemoPickerComponent, SetupFileComponent, ImportSafetyCardComponent, ExpandableSectionComponent, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule],
+  imports: [CommonModule, FormsModule, DemoPickerComponent, SetupFileComponent, ImportSafetyCardComponent, ExpandableSectionComponent, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, AdvancedDirective],
   templateUrl: './mission-advanced-options.component.html',
   styleUrls: ['./mission-advanced-options.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -96,6 +98,7 @@ export class MissionAdvancedOptionsComponent {
   constructor(
     private backupService: BackupService,
     public storagePersistence: StoragePersistenceService,
+    public view: ViewService,
     private recordStore: RecordStore,
     private rangerPhotoService: RangerPhotoService,
     private attachmentStore: AttachmentStoreService,

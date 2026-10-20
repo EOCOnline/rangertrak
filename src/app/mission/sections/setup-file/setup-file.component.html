@@ -18,6 +18,18 @@
   </mat-checkbox>
 </div>
 
+<!-- E-207 / D-62 item 6: an EC preparing volunteers' phones can have them start in Simple view. -->
+<div class="setup-file__view">
+  <span id="setup-file-view-label">Suggest this view to devices that load it</span>
+  <mat-button-toggle-group hideSingleSelectionIndicator aria-labelledby="setup-file-view-label"
+    data-testid="setup-file-suggested-view" [value]="exportSuggestedView()"
+    (change)="exportSuggestedView.set($event.value)">
+    <mat-button-toggle value="">None</mat-button-toggle>
+    <mat-button-toggle value="simple">Simple</mat-button-toggle>
+    <mat-button-toggle value="full">Full</mat-button-toggle>
+  </mat-button-toggle-group>
+</div>
+
 <mat-form-field class="setup-file__name" subscriptSizing="dynamic">
   <mat-label>Name this file (optional)</mat-label>
   <input matInput type="text" [value]="exportLayerName()"

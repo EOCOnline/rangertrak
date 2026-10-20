@@ -122,3 +122,11 @@ export function applySuggestedView(i: { suggested: unknown, source: ViewSource |
   if (i.source !== 'default' && i.source !== 'upgrade') return null
   return { view: i.suggested, source: 'setup' }
 }
+
+/**
+ * Whether a control wears the "Advanced" marker: in Full view, every control Simple view can hide
+ * (whether or not this mission happens to use it), so core and extra stay visible at a glance.
+ */
+export function isAdvanced(id: string, view: AppView): boolean {
+  return view === 'full' && ADVANCED_FEATURES.some(f => f.id === id)
+}

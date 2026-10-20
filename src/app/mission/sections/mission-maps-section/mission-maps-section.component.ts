@@ -6,6 +6,7 @@ import { MissionType } from '../../../shared/services/'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatCardModule } from '@angular/material/card'
+import { AdvancedDirective } from '../../../shared/view/advanced.directive'
 
 /**
  * Maps checkbox, Leaflet settings, Geocoding, and Alternative Map (MapLibre + PMTiles) settings.
@@ -18,7 +19,7 @@ import { MatCardModule } from '@angular/material/card'
 @Component({
   selector: 'rangertrak-mission-maps-section',
   standalone: true,
-  imports: [CommonModule, FormField, MatFormFieldModule, MatInputModule, MatCardModule],
+  imports: [CommonModule, FormField, MatFormFieldModule, MatInputModule, MatCardModule, AdvancedDirective],
   templateUrl: './mission-maps-section.component.html',
   styleUrls: ['./mission-maps-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

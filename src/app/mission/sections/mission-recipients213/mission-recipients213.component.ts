@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
 import { MatCheckboxModule } from '@angular/material/checkbox'
+import { AdvancedDirective } from '../../../shared/view/advanced.directive'
 
 /**
  * E-103: the per-mission definable checklist of routine ICS-213 recipients (Incident
@@ -25,7 +26,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 @Component({
   selector: 'rangertrak-mission-recipients213',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatCardModule, MatCheckboxModule],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatCardModule, AdvancedDirective, MatCheckboxModule],
   templateUrl: './mission-recipients213.component.html',
   styleUrls: ['./mission-recipients213.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

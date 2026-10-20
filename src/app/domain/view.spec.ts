@@ -1,4 +1,4 @@
-import { ADVANCED_FEATURES, ViewContext, applySuggestedView, initialView, isShown } from './view'
+import { ADVANCED_FEATURES, ViewContext, applySuggestedView, initialView, isAdvanced, isShown } from './view'
 
 describe('Simple view and Full view (E-207, D-62)', () => {
   /** A blank mission: nothing in use. */
@@ -65,6 +65,17 @@ describe('Simple view and Full view (E-207, D-62)', () => {
   it('shows an unknown id in either view', () => {
     expect(isShown('no-such-feature', 'simple', blank)).toBeTrue()
     expect(isShown('no-such-feature', 'full', blank)).toBeTrue()
+  })
+
+  describe('isAdvanced (the marker)', () => {
+    it('marks an advanced feature in Full view only', () => {
+      expect(isAdvanced('tactical-calls', 'full')).toBeTrue()
+      expect(isAdvanced('tactical-calls', 'simple')).toBeFalse()
+    })
+
+    it('never marks an unknown id', () => {
+      expect(isAdvanced('no-such-feature', 'full')).toBeFalse()
+    })
   })
 
   describe('initialView (the upgrade rule)', () => {

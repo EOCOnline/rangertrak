@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
+
+import { ViewService } from '../../../shared/services/view.service'
 
 /**
  * Help tab: Where your data lives, who can see it, exports, backup and restore, and the Log.
@@ -21,4 +23,7 @@ import { RouterLink } from '@angular/router'
   styleUrls: ['./help-tab.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
 })
-export class HelpDataComponent { }
+export class HelpDataComponent {
+  /** E-207: the Log page link is hidden in Simple view unless debug mode is on. */
+  protected readonly view = inject(ViewService)
+}

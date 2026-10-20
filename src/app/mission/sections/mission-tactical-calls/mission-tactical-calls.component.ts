@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
 import { MatSelectModule } from '@angular/material/select'
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
+import { AdvancedDirective } from '../../../shared/view/advanced.directive'
 
 /** One editable line: the tactical name, the roster link, and the operator box's own text. */
 type Row = { name: string, rangerUid: string, operatorText: string }
@@ -34,7 +35,7 @@ type Row = { name: string, rangerUid: string, operatorText: string }
 @Component({
   selector: 'rangertrak-mission-tactical-calls',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatCardModule, MatSelectModule, MatAutocompleteModule],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatCardModule, AdvancedDirective, MatSelectModule, MatAutocompleteModule],
   templateUrl: './mission-tactical-calls.component.html',
   styleUrls: ['./mission-tactical-calls.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

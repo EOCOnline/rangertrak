@@ -3,7 +3,7 @@ import { Injectable, computed, signal } from '@angular/core'
 import { liveRefs } from '../../domain/attachments'
 import { DEFAULT_LOCATION_TYPES, DEFAULT_RADIO_LOG_STATUSES, DEFAULT_RECIPIENT_OPTIONS_213 } from '../../domain/mission-migration'
 import {
-  AppView, ViewContext, ViewSource, applySuggestedView, initialView, isShown as domainIsShown,
+  AppView, ViewContext, ViewSource, applySuggestedView, initialView, isAdvanced as domainIsAdvanced, isShown as domainIsShown,
 } from '../../domain/view'
 import { FieldModeService } from './field-mode.service'
 import { LogService } from './log.service'
@@ -161,6 +161,11 @@ export class ViewService {
       else if (typeof v === 'boolean') (ctx as Record<string, number | boolean>)[k] = v || (base[k] as boolean)
     }
     return domainIsShown(id, this.viewSignal(), ctx)
+  }
+
+  /** Whether a control wears the "Advanced" marker (see domain isAdvanced). */
+  isAdvanced(id: string): boolean {
+    return domainIsAdvanced(id, this.viewSignal())
   }
 
   /**

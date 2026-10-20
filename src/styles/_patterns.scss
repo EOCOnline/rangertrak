@@ -225,6 +225,39 @@
   break-inside : avoid;
 }
 
+// ── Advanced marker (E-207, ADR D-62 item 7) ─────────────────────────────────
+// In Full view, every card or control that Simple view can hide carries this: a left rule and a
+// small "Advanced" label sitting on the top edge, so core and extra read apart at a glance.
+// Applied by [rtAdvanced] (shared/view/advanced.directive.ts), never by hand. The rule is an
+// inset shadow and the label is positioned out of flow, so the marker takes no width or height:
+// nothing shifts and nothing overflows at 360 px. Theme tokens only. Not printed.
+.rt-advanced {
+  position  : relative;
+  box-shadow: inset 3px 0 0 var(--rt-line-strong);
+
+  &::after {
+    content       : 'Advanced';
+    position      : absolute;
+    top           : 0;
+    right         : var(--rt-space-md);
+    transform     : translateY(-50%);
+    padding       : 0 var(--rt-space-sm);
+    border        : 1px solid var(--rt-line);
+    border-radius : var(--rt-radius);
+    background    : var(--rt-surface);
+    color         : var(--rt-ink-2);
+    @include type.type-label;
+    line-height   : 1.25;
+    pointer-events: none;
+  }
+
+  @media print {
+    box-shadow: none;
+
+    &::after { content: none; }
+  }
+}
+
 // ── Masonry (E-169) ──────────────────────────────────────────────────────────
 // Mission's card grid. Cards keep DOM order (so tab order and screen readers read the page
 // the way the template tells it) and each one spans as many small rows as it is tall;

@@ -97,7 +97,21 @@
       </mat-card-content>
     </mat-card>
 
-    <!-- E-145: the one setting the app only reads when it starts. Everything else on this page
+    <!-- E-207 / ADR D-62: Simple view or Full view, per device. Shown in both views. Not mission
+         data: it is not in the backup (ViewService, rt-view). -->
+    <mat-card appearance="outlined" class="rt-mission-card mission__view-card" id="view" data-testid="mission-view-card">
+      <mat-card-header>
+        <mat-card-title>View</mat-card-title>
+        <mat-card-subtitle>What this device shows.</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <rangertrak-view-switch></rangertrak-view-switch>
+        <p class="mission__note">Simple shows the everyday controls. Anything your mission already uses always
+          shows. Nothing is hidden from your data.</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- E-145: the one setting the app only reads when it starts.Everything else on this page
          takes effect as soon as it is saved, so this is shown for this field alone. -->
     @if (keyNeedsReload()) {
     <div class="rt-alert" role="note" data-testid="mission-reload-notice">
@@ -129,28 +143,42 @@
         (timeEventEnd)="onNewTimeEventEnd($event)">
       </rangertrak-mission-details-section>
 
+      @if (view.isShown('statuses')) {
       <rangertrak-mission-field-report-statuses [rowData]="rowData()" (rowsChanged)="onRowsChanged()">
       </rangertrak-mission-field-report-statuses>
+      }
 
+      @if (view.isShown('location-categories')) {
       <rangertrak-mission-location-types [rowData]="locationTypesRowData()" (rowsChanged)="onRowsChanged()">
       </rangertrak-mission-location-types>
+      }
 
+      @if (view.isShown('locations-list')) {
       <rangertrak-mission-locations-list></rangertrak-mission-locations-list>
+      }
 
+      @if (view.isShown('maps')) {
       <rangertrak-mission-maps-section [form]="settingsForm"></rangertrak-mission-maps-section>
+      }
 
       <rangertrak-mission-location-section [form]="settingsForm" [settings]="settings">
       </rangertrak-mission-location-section>
 
+      @if (view.isShown('recipients213')) {
       <rangertrak-mission-recipients213 [options]="recipientOptions213()" [form]="settingsForm"
         (optionsChange)="onRecipientOptions213Change($event)"></rangertrak-mission-recipients213>
+      }
 
       <!-- E-165: mission-scoped tactical call list (name + optional staffing roster member). -->
+      @if (view.isShown('tactical-calls')) {
       <rangertrak-mission-tactical-calls [items]="tacticalCalls()" (itemsChange)="onTacticalCallsChange($event)">
       </rangertrak-mission-tactical-calls>
+      }
 
       <!-- Sharing. -->
+      @if (view.isShown('board')) {
       <rangertrak-mission-command-post [form]="settingsForm"></rangertrak-mission-command-post>
+      }
     </div>
 
     <!-- ══ 5. (Action bar removed 2026-09-30, John: E-145 - settings autosave, so the Save
@@ -162,5 +190,8 @@
     <rangertrak-mission-advanced-options [form]="settingsForm" (resetDefaults)="onBtnResetDefaults()">
     </rangertrak-mission-advanced-options>
   </form>
+
+  <!-- E-207: only while Simple view is hiding something on this page. -->
+  <rangertrak-show-all-options [ids]="advancedIds"></rangertrak-show-all-options>
 
 </rangertrak-page>

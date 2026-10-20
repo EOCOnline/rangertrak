@@ -62,6 +62,8 @@
       installing RangerTrak and backing up your mission are the real protection.
     </p>
 
+    @if (view.isShown('attachments-budget')) {
+    <div [rtAdvanced]="'attachments-budget'">
     <!-- E-194 / D-60: the attachment budget. The line is always shown; it warns at 80% and 100% when
          files are added and never blocks. The setting waits for the page's autosave like the rest. -->
     <h3 class="mission__subhead">Attachments</h3>
@@ -77,6 +79,8 @@
           [ngModelOptions]="{standalone: true}" style="width: 6em"> MB on this device
       </label>
     </div>
+    </div>
+    }
 
     <!-- Style A ("Mission Backup"/"Mission Restore") - a `backup`/`restore` icon pair,
          distinct from Style B's shared `layers` icon (Rangers, the Setup file card) so the two families
@@ -110,11 +114,17 @@
          Report Packet import or Setup file apply). -->
     <rangertrak-import-safety-card></rangertrak-import-safety-card>
 
+    @if (view.isShown('setup-file')) {
+    <div [rtAdvanced]="'setup-file'">
     <!-- E-187 phase D (ADR D-58): the old Setup files page (/prep) lives here now; /prep redirects
          to this heading (#setup-file). -->
     <h3 class="mission__subhead" id="setup-file">Setup file</h3>
     <rangertrak-setup-file></rangertrak-setup-file>
+    </div>
+    }
 
+    @if (view.isShown('device-encryption')) {
+    <div [rtAdvanced]="'device-encryption'">
     <!-- E-122 Phase 2b: opt-in encryption at rest. The roster, radio log entries and ranger
          photos - the same data Mission backup's warning above names - can be encrypted on
          THIS device with a passphrase, rather than only on their way out in a backup file. -->
@@ -147,6 +157,8 @@
       Turn on device encryption
     </button>
     }
+    </div>
+    }
   </mat-card-content>
 </mat-card>
 
@@ -155,7 +167,8 @@
      rather than a setting, and sat oddly between the grid of real setup cards and the Save
      button. A dedicated Advanced/diagnostics card, positioned right before Danger zone,
      gives it the same card treatment every other setting already has. -->
-<mat-card appearance="outlined" class="rt-mission-card">
+@if (view.isShown('advanced-debug')) {
+<mat-card appearance="outlined" class="rt-mission-card" [rtAdvanced]="'advanced-debug'">
   <mat-card-header>
     <mat-card-title>Advanced</mat-card-title>
   </mat-card-header>
@@ -178,6 +191,7 @@
       </span>
     </div>
 
+    @if (view.isShown('field-phone')) {
     <!-- 2026-09-29, John: the laptop/desktop way into field mode - the Entry welcome panel
          only asks on phones and tablets now. See onBtnUseAsFieldPhone()'s own comment. -->
     <h3 class="mission__subhead">Field phone</h3>
@@ -204,8 +218,10 @@
       Not available: this device already has rangers, radio log entries or a mission name.
     </p>
     }
+    }
   </mat-card-content>
 </mat-card>
+}
 
 <!-- ══ 6. DANGER ZONE ══ Everything below replaces data that is already on the device.
      F29-18 (2026-08-29): collapsed behind ExpandableSectionComponent so a stray click can't

@@ -11,6 +11,7 @@ import { LocationDialogComponent } from '../../../map/location-dialog/location-d
 import { locationMarkerSvg, resolveLocationIcon } from '../../../shared/mapping/location-marker'
 import { locationCategoryColor } from '../../../shared/mapping/report-marker-status'
 import { LogService, MissionLocationService, MissionLocationType, MissionService } from '../../../shared/services/'
+import { AdvancedDirective } from '../../../shared/view/advanced.directive'
 
 /**
  * ADR D-49: a plain review/manage list of every Location on the current mission - raised
@@ -28,7 +29,7 @@ import { LogService, MissionLocationService, MissionLocationType, MissionService
 @Component({
   selector: 'rangertrak-mission-locations-list',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatCardModule],
+  imports: [CommonModule, MatButtonModule, MatCardModule, AdvancedDirective],
   templateUrl: './mission-locations-list.component.html',
   styleUrls: ['./mission-locations-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

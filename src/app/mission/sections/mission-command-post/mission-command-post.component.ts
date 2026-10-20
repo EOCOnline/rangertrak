@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
+import { AdvancedDirective } from '../../../shared/view/advanced.directive'
 
 /**
  * E-87 Stage 1 (2026-08-31): the opt-in publish-to-Command-Post-Server setting. See
@@ -25,7 +26,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 @Component({
   selector: 'rangertrak-mission-command-post',
   standalone: true,
-  imports: [CommonModule, FormField, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatCardModule, MatSlideToggleModule],
+  imports: [CommonModule, FormField, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatCardModule, AdvancedDirective, MatSlideToggleModule],
   templateUrl: './mission-command-post.component.html',
   styleUrls: ['./mission-command-post.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

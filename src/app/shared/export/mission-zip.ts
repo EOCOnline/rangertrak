@@ -122,6 +122,10 @@ export type MissionZipManifest = {
   entries?: RadioLogEntryType[]
   /** E-188: the sending device's mission / event / op period, ADVISORY only (a mismatch warns, never blocks). */
   context?: { mission: string, event: string, opPeriod: string }
+  /** E-207 (D-62 item 6): the view this file suggests to a device that loads it. Optional and
+   *  ignored by older apps; applies only while the device has no view choice of its own. Not
+   *  part of the mission backup. */
+  suggestedView?: 'simple' | 'full'
 }
 
 /** The `layer.contains` and `layer.sensitivity` a manifest's categories make (rangers mean personal information). */
