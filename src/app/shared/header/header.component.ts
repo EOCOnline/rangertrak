@@ -8,7 +8,7 @@ import { MatDialog } from '@angular/material/dialog'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
 import {
-  ClockService, LogService, MissionReadinessService, MissionService, MissionType, WelcomePanelService,
+  AarNoteService, ClockService, FieldModeService, LogService, MissionReadinessService, MissionService, MissionType, WelcomePanelService,
   OfflineBasemapService, UsageStateService, MissionModeType
 } from '../services'
 import { Utility } from '../'
@@ -50,6 +50,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   readonly offlineBasemap = inject(OfflineBasemapService)
   private readonly dialog = inject(MatDialog)
   private readonly snackBar = inject(MatSnackBar)
+  /** E-04 / D-63: a field phone keeps the plain "AAR note" button; everyone else gets "AAR/214". */
+  readonly fieldMode = inject(FieldModeService)
+  private readonly aarNotes = inject(AarNoteService)
 
   private id = 'Header component'
 
@@ -348,7 +351,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.dialog.open(AarNoteDialogComponent, { data, autoFocus: 'first-tabbable' })
       .afterClosed().subscribe(saved => {
         if (!saved) return
-        this.snackBar.open('Noted for the after-action review', 'View', { duration: 4000 })
+        // The snackbar offers the page either way; only the words change with what was saved.
+        const notes = this.aarNotes.getCurrentNotes()
+        const was214 = notes[notes.length - 1]?.kind === 'activity'
+        this.snackBar.open(was214 ? 'Added to the ICS-214 activity log' : 'Noted for the after-action review', 'View', { duration: 4000 })
           .onAction().subscribe(() => this.router.navigate(['/after-action']))
       })
   }

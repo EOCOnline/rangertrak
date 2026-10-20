@@ -3,7 +3,7 @@ import { provideRouter, Router } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { AarNoteDialogComponent, AarNoteDialogData } from './aar-note-dialog.component';
-import { AarNoteService } from '../services';
+import { AarNoteService, FieldModeService } from '../services';
 import { recordStore } from '../storage/record-store';
 
 describe('AarNoteDialogComponent', () => {
@@ -85,6 +85,75 @@ describe('AarNoteDialogComponent', () => {
       // navigation that already landed on the page it would have pointed to.
       expect(dialogRefSpy.close).toHaveBeenCalledWith(false);
       expect(router.navigate).toHaveBeenCalledWith(['/after-action']);
+    });
+  });
+
+  // E-04 / D-63: the same box captures an ICS-214 line.
+  describe('AAR note or ICS-214 line', () => {
+    const remake = () => {
+      fixture = TestBed.createComponent(AarNoteDialogComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    };
+
+    it('opens on AAR note on a device that has not chosen yet', () => {
+      expect(component.kind()).toBe('aar');
+      expect(fixture.nativeElement.querySelector('[data-testid="aar-note-kind"]')).not.toBeNull();
+    });
+
+    it('remembers the kind used last on this device', () => {
+      component.onKindChange('activity');
+      expect(localStorage.getItem('aarNoteLastKind')).toBe('activity');
+      remake();
+      expect(component.kind()).toBe('activity');
+      component.onKindChange('aar');
+      remake();
+      expect(component.kind()).toBe('aar');
+    });
+
+    it('saves a 214 line with no edited time when the time is left alone', () => {
+      component.onKindChange('activity');
+      component.text.set('Arrived at the command post');
+      component.onSave();
+      const [n] = TestBed.inject(AarNoteService).notes();
+      expect(n.kind).toBe('activity');
+      expect(n.about).toBe('incident');
+      expect(n.at).toBeUndefined();
+      expect(dialogRefSpy.close).toHaveBeenCalledWith(true);
+    });
+
+    it('stores the edited time when the scribe changes it', () => {
+      component.onKindChange('activity');
+      component.text.set('Shift change');
+      component.at.set('2026-10-20T07:30');
+      component.onSave();
+      const [n] = TestBed.inject(AarNoteService).notes();
+      expect(n.at).toBe(new Date('2026-10-20T07:30').toISOString());
+    });
+
+    it('does not count 214 lines in "See all notes (N)"', () => {
+      TestBed.inject(AarNoteService).addNote('Net opened', 'incident', 'Entry', 'activity');
+      fixture.detectChanges();
+      expect(component.noteCount()).toBe(0);
+    });
+
+    it('offers the 214 log link and goes to the After Action page', () => {
+      spyOn(router, 'navigate');
+      fixture.nativeElement.querySelector('[data-testid="aar-note-214-link"]').click();
+      expect(dialogRefSpy.close).toHaveBeenCalledWith(false);
+      expect(router.navigate).toHaveBeenCalledWith(['/after-action']);
+    });
+
+    it('in field mode has no kind choice, no 214 link, and always saves an AAR note', () => {
+      localStorage.setItem('aarNoteLastKind', 'activity');
+      TestBed.inject(FieldModeService).enabled.set(true);
+      remake();
+      expect(component.kind()).toBe('aar');
+      expect(fixture.nativeElement.querySelector('[data-testid="aar-note-kind"]')).toBeNull();
+      expect(fixture.nativeElement.querySelector('[data-testid="aar-note-214-link"]')).toBeNull();
+      component.text.set('Weak signal at the ridge');
+      component.onSave();
+      expect(TestBed.inject(AarNoteService).notes()[0].kind).toBe('aar');
     });
   });
 

@@ -389,7 +389,13 @@ Mission page instead.
 **Noting things for the debrief.** When you notice something to fix or improve later, such as
 a relay point out of range or a form field that slows you down, press **AAR note** at the
 top of any page. Type a line, choose whether it is about the incident or about RangerTrak, and
-save. You stay on the page you were on. After the mission, the **AAR notes** page lists the
+save. You stay on the page you were on. The button is now called **AAR/214**, because the same
+box can also add a line to your **ICS-214 activity log**: choose *ICS-214 line*, check the time
+(it starts as now; change it if you are writing something down late) and save. A 214 line is what
+you did or what changed at your position, such as arriving, a shift change or a radio that stopped
+working. It is not a radio call, so it is not in the radio log. On the **AAR notes** page, the
+ICS-214 section lists the lines, and **Export ICS-214** fills in FEMA's own form to print and
+sign. After the mission, the **AAR notes** page lists the
 notes. Add an area, a recommendation and an owner to each, then print the incident notes as
 an improvement-plan table or export them all as a spreadsheet. Notes are in the mission
 backup, and device encryption covers them. An AAR note is private to this device until you

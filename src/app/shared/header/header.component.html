@@ -90,9 +90,12 @@
     <!-- E-116: capture an After Action note from any page without leaving it. -->
     <button matButton="outlined" type="button" class="header__guide" (click)="onAarNote()"
       data-testid="aar-note"
-      title="AAR (after-action review) note: something to fix or improve later">
+      [attr.title]="fieldMode.enabled()
+        ? 'AAR (after-action review) note: something to fix or improve later'
+        : 'AAR note (something to fix or improve later) or ICS-214 line (an entry for your activity log)'">
       <mat-icon>edit_note</mat-icon>
-      AAR note
+      <!-- E-04 / D-63: AAR/214 names both uses of the one button; a field phone keeps "AAR note". -->
+      {{ fieldMode.enabled() ? 'AAR note' : 'AAR/214' }}
     </button>
     @if (guide.available()) {
     <button matButton="outlined" type="button" class="header__guide" (click)="guide.toggle()"
