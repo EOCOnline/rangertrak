@@ -22,5 +22,10 @@ zip under `tools/regional/`, demo or not. To add a case, add it to the tables at
 `rangertrak-InternalDocs`, not in git) into the app's `sample-data-montecito.ts`, with softened
 casualty text only. `test-make-montecito-demo.js` checks it (`npm run test:regional`).
 
+`make-oso-demo.js` does the same for the E-195 Oso scenario (`sample-data-oso.ts`); it adds ICS-213
+message rows, which the app files as radio log entries that also generate an ICS-213, so they show on
+Messages. Both are small configs over `make-scenario-demo.js`, the shared generator.
+`test-make-oso-demo.js` checks the Oso side.
+
 This folder belongs to the code session. Real regions (Vashon and the rest) belong to the
 regional-data session, in its own folder outside git.

@@ -265,7 +265,7 @@ function makeScenario({ msel, places, teams }, cfg) {
       if (fromTeam && membersByTeam.has(r.to) && r.to !== r.from) row.to = r.to
       if (r.form === 'ICS-213') {
         const { body, reply } = split213(r.message)
-        row.f213 = { subject: r.ics213_subject, message: body, to: r.to, reply: /^pending/i.test(reply) }
+        row.f213 = { subject: r.ics213_subject, message: body, to: r.to, reply: /^pending/i.test(reply) }
       }
       return row
     })
