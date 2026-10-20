@@ -23,7 +23,7 @@
 </div>
 </div-->
 
-<rangertrak-page [title]="title" [description]="pageDescr">
+<rangertrak-page [title]="title" [description]="pageDescr" [viewIds]="advancedIds">
 
   <!-- The full confidentiality notice used to sit here as a permanent block that pushed
        the roster down the page on every single visit. It is now a dismissable bar, with
@@ -320,8 +320,5 @@
   }
 
   <br />
-
-  <!-- E-207: only while Simple view is hiding something on this page. -->
-  <rangertrak-show-all-options [ids]="advancedIds" [here]="rangersHere()"></rangertrak-show-all-options>
 
 </rangertrak-page>

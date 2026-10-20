@@ -1,4 +1,4 @@
-<rangertrak-page [title]="title" [description]="pageDescr">
+<rangertrak-page [title]="title" [description]="pageDescr" [viewIds]="advancedIds">
 
   <!-- E-83: first-run welcome panel, above the form per the original reskin design intent
        ("a panel above the Entry form ... rather than a landing page", since path:'' routes
@@ -641,8 +641,5 @@
       <pre><strong>EntryForm value:</strong> {{mergedFormValue() | json}}</pre>
     </div>
   </form>
-
-  <!-- E-207: only while Simple view is hiding something on this page. -->
-  <rangertrak-show-all-options [ids]="advancedIds" [here]="entryHere()"></rangertrak-show-all-options>
 
 </rangertrak-page>

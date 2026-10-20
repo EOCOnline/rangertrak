@@ -1,4 +1,4 @@
-<rangertrak-page [title]="title" [description]="pageDescr">
+<rangertrak-page [title]="title" [description]="pageDescr" [viewIds]="advancedIds">
 
   <!-- ══ 3. ALERTS - live only, never permanent furniture ══ -->
 
@@ -97,20 +97,6 @@
       </mat-card-content>
     </mat-card>
 
-    <!-- E-207 / ADR D-62: Simple view or Full view, per device. Shown in both views. Not mission
-         data: it is not in the backup (ViewService, rt-view). -->
-    <mat-card appearance="outlined" class="rt-mission-card mission__view-card" id="view" data-testid="mission-view-card">
-      <mat-card-header>
-        <mat-card-title>View</mat-card-title>
-        <mat-card-subtitle>What this device shows.</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <rangertrak-view-switch></rangertrak-view-switch>
-        <p class="mission__note">Simple shows the everyday controls. Anything your mission already uses always
-          shows. Nothing is hidden from your data.</p>
-      </mat-card-content>
-    </mat-card>
-
     <!-- E-145: the one setting the app only reads when it starts.Everything else on this page
          takes effect as soon as it is saved, so this is shown for this field alone. -->
     @if (keyNeedsReload()) {
@@ -190,8 +176,5 @@
     <rangertrak-mission-advanced-options [form]="settingsForm" (resetDefaults)="onBtnResetDefaults()">
     </rangertrak-mission-advanced-options>
   </form>
-
-  <!-- E-207: only while Simple view is hiding something on this page. -->
-  <rangertrak-show-all-options [ids]="advancedIds"></rangertrak-show-all-options>
 
 </rangertrak-page>

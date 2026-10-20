@@ -36,7 +36,6 @@ import { layersOfKind, recordableLayerName } from '../domain/layers'
 import type { ViewContext } from '../domain/view'
 import { ViewService } from '../shared/services/view.service'
 import { AdvancedDirective } from '../shared/view/advanced.directive'
-import { ShowAllOptionsComponent } from '../shared/view/show-all-options.component'
 import { readSheetFile, rowsToXlsxBytes } from '../shared/import/sheet-reader'
 import { formatReportTime } from '../shared/mapping/report-time'
 import {
@@ -66,7 +65,7 @@ import { localDateStamp } from '../shared/export/local-date'
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, LayersCardComponent, PrintSheetHeadComponent, RouterLink, FilterChipsComponent, MatFormFieldModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule, AdvancedDirective, ShowAllOptionsComponent],
+  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, LayersCardComponent, PrintSheetHeadComponent, RouterLink, FilterChipsComponent, MatFormFieldModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule, AdvancedDirective],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']

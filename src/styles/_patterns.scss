@@ -242,6 +242,16 @@
   padding-inline-start: 4px;
 }
 
+// Fade-in for controls that appear when the person switches Simple -> Full (E-214). PageComponent
+// adds .rt-fade-in to newly rendered elements for a moment after the switch. Not for reduced motion.
+@keyframes rt-fade-in { from { opacity: 0 } to { opacity: 1 } }
+
+.rt-fade-in { animation: rt-fade-in 300ms ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rt-fade-in { animation: none; }
+}
+
 // ── Masonry (E-169) ──────────────────────────────────────────────────────────
 // Mission's card grid. Cards keep DOM order (so tab order and screen readers read the page
 // the way the template tells it) and each one spans as many small rows as it is tall;

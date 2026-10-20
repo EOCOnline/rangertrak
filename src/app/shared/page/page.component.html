@@ -1,6 +1,11 @@
 @if (showHeader) {
 <pageHeader [parentTitle]="title" [pageDescription]="description"></pageHeader>
 }
+@if (viewIds.length && !fieldMode.enabled()) {
+<div class="view-bar">
+  <rangertrak-view-switch></rangertrak-view-switch>
+</div>
+}
 <main class="main">
   <ng-content></ng-content>
 </main>

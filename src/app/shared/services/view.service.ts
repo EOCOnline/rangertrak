@@ -49,6 +49,9 @@ export class ViewService {
   /** Who chose it (see the class comment). */
   readonly source = this.sourceSignal.asReadonly()
   readonly isSimple = computed(() => this.viewSignal() === 'simple')
+  private readonly justSwitchedSignal = signal(false)
+  /** True for a moment after the person switches Simple -> Full, so newly shown controls can fade in once. */
+  readonly justSwitchedToFull = this.justSwitchedSignal.asReadonly()
 
   private readonly settings = signal<MissionType | null>(null)
   private readonly entries = signal<readonly RadioLogEntryType[]>([])
@@ -141,8 +144,12 @@ export class ViewService {
     return this.usage.state() !== 'empty' || this.recordStore.isEncryptionEnabled()
   }
 
-  /** The person's own switch (Mission page, Help, "Show all options"). */
+  /** The person's own switch (the Full view switch in the page header). */
   setView(view: AppView): void {
+    if (view === 'full' && this.viewSignal() === 'simple') {
+      this.justSwitchedSignal.set(true)
+      setTimeout(() => this.justSwitchedSignal.set(false), 400)
+    }
     this.store(view, 'user')
     this.log.info(`View set to ${view}.`, this.id)
   }

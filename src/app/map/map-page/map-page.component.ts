@@ -10,7 +10,6 @@ import { MissionService } from '../../shared/services'
 import { OperatorNameService } from '../../shared/services/operator-name.service'
 import { ViewService } from '../../shared/services/view.service'
 import { AdvancedDirective } from '../../shared/view/advanced.directive'
-import { ShowAllOptionsComponent } from '../../shared/view/show-all-options.component'
 import type { ViewContext } from '../../domain/view'
 import { MapEngineService } from '../map-engine.service'
 import { PlacesIoComponent } from '../places-io/places-io.component'
@@ -31,7 +30,7 @@ import { PlacesIoComponent } from '../places-io/places-io.component'
 @Component({
   selector: 'rangertrak-map-page',
   standalone: true,
-  imports: [PageComponent, LmapComponent, NgComponentOutlet, NgTemplateOutlet, AsyncPipe, DatePipe, MatSlideToggleModule, PlacesIoComponent, ShowAllOptionsComponent, AdvancedDirective],
+  imports: [PageComponent, LmapComponent, NgComponentOutlet, NgTemplateOutlet, AsyncPipe, DatePipe, MatSlideToggleModule, PlacesIoComponent, AdvancedDirective],
   templateUrl: './map-page.component.html',
   styleUrls: ['./map-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

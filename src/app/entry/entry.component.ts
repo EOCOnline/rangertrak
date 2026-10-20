@@ -27,7 +27,6 @@ import { AlertsComponent } from '../shared/alerts/alerts.component'
 import { PageComponent } from '../shared/page/page.component'
 import { ViewService } from '../shared/services/view.service'
 import { AdvancedDirective } from '../shared/view/advanced.directive'
-import { ShowAllOptionsComponent } from '../shared/view/show-all-options.component'
 // Direct path, not the shared/services barrel - see the note in rangers.component.ts.
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
@@ -89,7 +88,6 @@ import type { ViewContext } from '../domain/view'
     PendingAttachmentsComponent,
     SmallerCopyProgressComponent,
     AdvancedDirective,
-    ShowAllOptionsComponent,
   ],
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
@@ -410,7 +408,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // stored when the entry is saved, not on pick. Cleared by a reset.
   readonly pendingFiles = signal<PendingAttachment[]>([])
 
-  /** E-207: the advanced controls on this page (Simple view hides them while unused). The coordinate
+  /** E-207: the advanced controls on this page (Simple view hides them while unused); also what shows the header Full view switch. The coordinate
    *  format picker lives in LocationComponent. */
   protected readonly advancedIds = ['stations', 'source', 'attachments', 'ics213', 'evidence-location', 'coord-format'] as const
 

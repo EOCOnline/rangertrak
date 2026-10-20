@@ -1,4 +1,4 @@
-<rangertrak-page [title]="title" [description]="pageDescr">
+<rangertrak-page [title]="title" [description]="pageDescr" [viewIds]="advancedIds">
   <!-- E-item 13 (2026-08-27): screen-only hidden (see map-page.component.scss's own
        @media print block), shown only in a printed copy - a map on paper has no page
        title, URL bar, or app chrome to say what it is or when it was current, unlike one
@@ -97,7 +97,4 @@
          Still ruled, so a hand-corrected time can be written over it. -->
     <span>Date / time: <span class="map-print-footer__line map-print-footer__line--short">{{ printedAt() | date:'MMM d, y, HH:mm:ss' }}</span></span>
   </div>
-  <!-- E-207: only while Simple view is hiding something on this page. The layers box extras are
-       switched inside the Leaflet engine, so they are not counted here. -->
-  <rangertrak-show-all-options [ids]="advancedIds" [here]="mapHere()"></rangertrak-show-all-options>
 </rangertrak-page>

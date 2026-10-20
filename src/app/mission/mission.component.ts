@@ -60,8 +60,6 @@ import { MissionTacticalCallsComponent } from './sections/mission-tactical-calls
 import { MissionCommandPostComponent } from './sections/mission-command-post/mission-command-post.component'
 import { MasonryDirective } from '../shared/layout/masonry.directive'
 import { ViewService } from '../shared/services/view.service'
-import { ShowAllOptionsComponent } from '../shared/view/show-all-options.component'
-import { ViewSwitchComponent } from '../shared/view/view-switch.component'
 import { MissionAdvancedOptionsComponent } from './sections/mission-advanced-options/mission-advanced-options.component'
 
 // Placeholder used only until the real settings arrive via the constructor's synchronous
@@ -112,8 +110,6 @@ const blankMission: MissionType = {
     MissionCommandPostComponent,
     MissionAdvancedOptionsComponent,
     InstallUpdateComponent,
-    ViewSwitchComponent,
-    ShowAllOptionsComponent,
   ],
   templateUrl: './mission.component.html',
   styleUrls: ['./mission.component.scss'],
@@ -257,7 +253,7 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
     return gaps
   })
 
-  /** E-207: the advanced cards on this page, for "Show all options" at its foot. */
+  /** E-207: the advanced cards on this page, for the header Full view switch. */
   protected readonly advancedIds = ['statuses', 'location-categories', 'locations-list', 'maps', 'recipients213',
     'tactical-calls', 'board', 'attachments-budget', 'setup-file', 'device-encryption', 'advanced-debug'] as const
 
