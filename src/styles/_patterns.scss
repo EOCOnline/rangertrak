@@ -231,30 +231,52 @@
 // Applied by [rtAdvanced] (shared/view/advanced.directive.ts), never by hand. The rule is an
 // inset shadow and the label is positioned out of flow, so the marker takes no width or height:
 // nothing shifts and nothing overflows at 360 px. Theme tokens only. Not printed.
+@mixin _advanced-pill {
+  display       : inline-block;
+  padding       : 0 var(--rt-space-sm);
+  border        : 1px solid var(--rt-advanced);
+  border-radius : var(--rt-radius);
+  background    : var(--rt-advanced-tint);
+  color         : var(--rt-advanced);
+  @include type.type-label;
+  line-height   : 1.4;
+  pointer-events: none;
+}
+
 .rt-advanced {
   position  : relative;
-  box-shadow: inset 3px 0 0 var(--rt-line-strong);
+  box-shadow: inset 3px 0 0 var(--rt-advanced);
 
+  // AAR 2026-10-19 10pm: the pill used to sit on the top edge at the right, a whole screen away
+  // from a wide card's title, and read as belonging to the card above. It now follows the title
+  // (cards and Data safety's subheads); anything without a title gets it on its top edge at the
+  // left, next to the rule, where it covers no field.
   &::before {
     content       : 'Advanced';
     position      : absolute;
     top           : 0;
-    right         : var(--rt-space-md);
+    left          : var(--rt-space-sm);
     transform     : translateY(-50%);
-    padding       : 0 var(--rt-space-sm);
-    border        : 1px solid var(--rt-line);
-    border-radius : var(--rt-radius);
-    background    : var(--rt-surface);
-    color         : var(--rt-ink-2);
-    @include type.type-label;
-    line-height   : 1.25;
-    pointer-events: none;
+    z-index       : 1;
+    @include _advanced-pill;
+  }
+
+  &:has(> .mat-mdc-card-header, > .mission__subhead)::before { content: none; }
+
+  > .mat-mdc-card-header .mat-mdc-card-title::after,
+  > .mission__subhead::after {
+    content       : 'Advanced';
+    margin-inline-start: var(--rt-space-sm);
+    vertical-align: middle;
+    @include _advanced-pill;
   }
 
   @media print {
     box-shadow: none;
 
-    &::before { content: none; }
+    &::before,
+    > .mat-mdc-card-header .mat-mdc-card-title::after,
+    > .mission__subhead::after { content: none; }
   }
 }
 

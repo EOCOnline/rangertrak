@@ -20,6 +20,12 @@ import { ViewService } from '../services/view.service'
       <mat-button-toggle value="simple" data-testid="view-simple">Simple view</mat-button-toggle>
       <mat-button-toggle value="full" data-testid="view-full">Full view</mat-button-toggle>
     </mat-button-toggle-group>`,
+  // AAR 2026-10-19 10pm: Full view wears the same plum as the "Advanced" pills it turns on.
+  styles: `
+    .view-switch .mat-button-toggle-checked[value=full] {
+      background: var(--rt-advanced-tint);
+      color     : var(--rt-advanced);
+    }`,
 })
 export class ViewSwitchComponent {
   protected readonly view = inject(ViewService)

@@ -4936,7 +4936,9 @@ async function checkSimpleView(fx) {
       [true, true, true])
     const marker = await evaluate(`(() => {
       const card = document.querySelector('rangertrak-mission-tactical-calls mat-card')
-      return { cls: card?.classList.contains('rt-advanced') ?? false, label: card ? getComputedStyle(card, '::before').content : '' }
+      // The pill follows the card's title (AAR 2026-10-19 10pm), not the card's corner.
+      const title = card?.querySelector('.mat-mdc-card-title')
+      return { cls: card?.classList.contains('rt-advanced') ?? false, label: title ? getComputedStyle(title, '::after').content : '' }
     })()`)
     check('Full view marks them Advanced with the shared marker', [marker.cls, marker.label], [true, '"Advanced"'])
     check('Show all options is gone in Full view', await has('[data-testid=show-all-options]'), false)
