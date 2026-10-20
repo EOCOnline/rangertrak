@@ -26,11 +26,13 @@
   merging the same file twice changes nothing.
 </p>
 
+<rangertrak-more-about>
 <p>
   The file holds people's names and phone numbers. Type a passphrase to lock it; leave the box
   blank and it is not locked. A forgotten passphrase cannot be recovered. For a blank device,
   use <span class="ui">Restore</span> on the Mission page instead.
 </p>
+</rangertrak-more-about>
 
 <h3 id="undo-import">Restored the wrong file? Undo last import</h3>
 
@@ -38,7 +40,12 @@
   Before <span class="ui">Restore</span>, a Report Packet import or a Setup file, RangerTrak keeps a
   <strong>safety copy</strong> of everything on this device for 24 hours. Until then,
   <span class="ui">Mission</span> &gt; Data safety shows <span class="ui">Undo last import</span>, which
-  puts the mission back exactly as it was just before. It also works after a merge, and puts back the
+  puts the mission back exactly as it was just before.
+</p>
+
+<rangertrak-more-about>
+<p>
+  It also works after a merge, and puts back the
   whole mission, so anything logged since goes too (Undo says how many entries, and offers a backup
   first). <span class="ui">Discard safety copy</span> throws it away early. There is only one: the next
   import replaces it. The copy holds the whole roster and is locked with the rest if device encryption
@@ -51,6 +58,7 @@
   file, side by side, including how many entries here are not in the file and will be replaced.
   Cancel is the default.
 </p>
+</rangertrak-more-about>
 
 <h3 id="attachments">Photos, video and audio on entries</h3>
 
@@ -61,6 +69,17 @@
   fingerprint in short form, with a copy button.
 </p>
 
+<!-- E-207 phase 3 (AAR 10-19 obs 9): attachments are advanced (John 10-19), so say where Attach is. -->
+<p data-testid="help-where-attach">
+  @if (view.isShown('attachments')) {
+    <span class="ui">Attach</span> is under the Notes box on the Entry page, in any browser.
+  } @else {
+    <span class="ui">Attach</span> is in <strong>Full view</strong> (Help &gt; Start, or the Mission page),
+    in any browser. Once the mission has an attachment it shows in Simple view too.
+  }
+</p>
+
+<rangertrak-more-about>
 <ul>
   <li>
     <strong>Originals keep their hidden details</strong>, including the GPS position a phone wrote
@@ -83,6 +102,7 @@
     attachments too.
   </li>
 </ul>
+</rangertrak-more-about>
 
 <h3 id="one-copy-per-browser">One copy per browser</h3>
 
@@ -154,6 +174,10 @@
   geocoding key only if you protect the backup with a passphrase. <span class="ui">Export roster</span> on
   the <a routerLink="/rangers">Rangers</a> page moves just the roster, as a spreadsheet that
   <span class="ui">Import a list</span> reads straight back in.
+</p>
+
+<rangertrak-more-about>
+<p>
   <span class="ui">Export changes</span>, beside it, is for after an event: it saves only the rangers
   added or edited on this device since the roster was imported, so whoever keeps the master list
   can add the walk-ups and fixes without combing through the whole roster. The
@@ -169,6 +193,7 @@
   <span class="ui">Export</span> on Radio Log produces an Excel-friendly spreadsheet — useful
   for working with the data, but one-way: it cannot be imported back in.
 </p>
+</rangertrak-more-about>
 
 <p>
   Ranger photographs stay on the device they were added to. They are never uploaded. Name each

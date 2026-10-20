@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 
 import { ViewService } from '../../../shared/services/view.service'
+import { MoreAboutComponent } from '../../../shared/view/more-about.component'
 
 /**
  * Help tab: Where your data lives, who can see it, exports, backup and restore, and the Log.
@@ -18,12 +19,12 @@ import { ViewService } from '../../../shared/services/view.service'
 @Component({
   selector: 'rangertrak-help-data',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, MoreAboutComponent],
   templateUrl: './help-data.component.html',
   styleUrls: ['./help-tab.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class HelpDataComponent {
-  /** E-207: the Log page link is hidden in Simple view unless debug mode is on. */
+  /** E-207: the Log page link is hidden in Simple view unless debug mode is on; Attach's whereabouts depend on the view. */
   protected readonly view = inject(ViewService)
 }

@@ -38,23 +38,46 @@
   Simple view shows the everyday controls; anything your mission already uses always shows. Full view shows every option.
 </p>
 <p><rangertrak-view-switch></rangertrak-view-switch></p>
+<!-- E-207 phase 3 (AAR 10-19 obs 9, "where do I attach a file?"): say where the hidden controls are. -->
+<p data-testid="help-where-full-view">
+  Looking for <span class="ui">Attach</span> (photos, video and audio on an entry)? It is in Full view, in
+  any browser. So are From / To stations, the Alternative map and Print map.
+</p>
+<rangertrak-more-about>
+  <p>
+    Simple view hides a control only while your mission has never used it. Once an entry has an
+    attachment, <span class="ui">Attach</span> shows in Simple view too, and the same goes for tactical
+    call signs, To stations and message fields. Switching views never changes or deletes anything,
+    and each device keeps its own choice. A <span class="ui">Show all options</span> button at the foot
+    of a page that hides something switches to Full view.
+  </p>
+</rangertrak-more-about>
 
 <h3>Try it with demo data</h3>
 <p>
-  Want to see the app full of made-up data first? Pick a demonstration here. The Entry page also
-  shows a demo card whenever this device is empty or holds only demo data. While a mission is
-  under way, RangerTrak stays out of your way: no first-run tips, no install prompt, and an
-  update waits as a small <em>Update ready</em> note instead of a Reload bar. Loading a demo then
-  asks you to type the mission name first.
+  Want to see the app full of made-up data first? Pick a demonstration here.
 </p>
+<rangertrak-more-about>
+  <p>
+    The Entry page also shows a demo card whenever this device is empty or holds only demo data.
+    While a mission is under way, RangerTrak stays out of your way: no first-run tips, no install
+    prompt, and an update waits as a small <em>Update ready</em> note instead of a Reload bar.
+    Loading a demo then asks you to type the mission name first.
+  </p>
+</rangertrak-more-about>
 <div class="help-start__demo">
   <rangertrak-demo-picker label="Load a demo"></rangertrak-demo-picker>
 </div>
 <p>
   The icon at the left of the status pill in the header shows the mode: Demo, Exercise or
-  Incident. Hover it to change it. An Exercise stamps <em>EXERCISE</em> on printed messages,
+  Incident. Hover it to change it.
+</p>
+<rangertrak-more-about>
+<p>
+  An Exercise stamps <em>EXERCISE</em> on printed messages,
   the communications log, the After Action report and the map sheet.
 </p>
+</rangertrak-more-about>
 
 <div class="warn">
   <strong>Do this before you need it.</strong> RangerTrak works with no Internet — but only

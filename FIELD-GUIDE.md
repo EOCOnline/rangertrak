@@ -259,7 +259,8 @@ filled in for you (left blank if they have none). The optional **To station** bo
 records which station the message went to, with the same choices; leave it blank if it does not
 matter. It is separate from **ICS-213 addressed to**, further down.
 
-**Attaching photos, video and audio.** The **Attach** button under Notes adds files to the entry you
+**Attaching photos, video and audio.** The **Attach** button under Notes (in Full view, or in
+Simple view once the mission has an attachment; it works in any browser) adds files to the entry you
 are typing (on a phone or tablet, **Take photo / video** opens the camera). They wait as chips and
 are stored when you save the entry; a saved entry shows a **📎 N** chip that opens the viewer. In the
 viewer you can **Add** more, **Save** or **Share** the original, and **Remove** one - which deletes it
@@ -404,6 +405,13 @@ For what each screen does and how to use it, see the in-app **Help** page — it
 the app, always matches the version you're running, and works with no Internet. This guide
 covers what Help can't: getting a device ready before you no longer have a connection to
 fall back on.
+
+**Simple view and Full view.** A new install starts in **Simple view**, which shows the everyday
+controls. **Full view** shows every option, including **Attach**, From / To stations, the
+Alternative map and Print map. Switch on the Mission page or on Help > Start; each device keeps
+its own choice. Simple view never hides something your mission already uses: once an entry has an
+attachment, **Attach** shows in Simple view too. Switching changes only what is shown, never your
+data. A device that already held a mission when this arrived starts in Full view.
 
 <!-- SCREENSHOT SLOT: Settings page, 0.43.x or later. Replaces the Nov-2022 capture, which
      showed the removed Google Maps page and the MIT licence. -->
