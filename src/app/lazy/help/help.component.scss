@@ -27,7 +27,10 @@
   content                                 : "";
   position                                : absolute;
   inset                                   : 0 0 auto auto;
-  width                                   : min(45%, 640px);
+  // E-211 (AAR 2026-10-19, John): "the marmot is tiny"; the band now takes about two thirds of
+  // the width (was min(45%, 640px)). The photo is 3:2, so up to ~1140px wide the 760px height
+  // cap still decides its size and the wider band shows more of it rather than enlarging fur.
+  width                                   : min(67%, 1140px);
   // 2026-09-30, John ("marmot positioning is awful"): the band used to run the full height of
   // the tab, so on a long tab (Your data) `cover` scaled the landscape photo up to that height
   // and showed a blown-up, blurred slice of fur. Capped at a height where the whole marmot

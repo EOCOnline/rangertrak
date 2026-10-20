@@ -564,6 +564,12 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     return (SAMPLE_SCENARIOS.find(x => x.id === id)?.label ?? 'demo').replace(/ \(default\)$/, '')
   }
 
+  /** E-213: the loaded demo's real-event overview, if it is modeled on one. */
+  demoDetailsUrl(): string | undefined {
+    const id = activeDemoScenario()
+    return SAMPLE_SCENARIOS.find(x => x.id === id)?.detailsUrl
+  }
+
   /** The demo card's "Start a real mission": clears the demo, confirms first (a demo is
    *  replaceable, but anything typed on top of it is not). */
   async onStartRealMission(): Promise<void> {

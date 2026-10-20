@@ -72,6 +72,13 @@ describe('SampleDataService', () => {
     expect(SAMPLE_SCENARIOS[0].id).toBe(DEFAULT_SAMPLE_SCENARIO);
   });
 
+  it('E-213: only demos modeled on a real event carry a "Details" link', () => {
+    const withDetails = SAMPLE_SCENARIOS.filter(s => s.detailsUrl).map(s => s.id);
+    expect(withDetails).toEqual(['montecito']);
+    expect(SAMPLE_SCENARIOS.find(s => s.id === 'montecito')!.detailsUrl)
+      .toMatch(/^https:\/\/en\.wikipedia\.org\/wiki\/2018_Southern_California_mudflows$/);
+  });
+
   SCENARIOS.forEach(scenario => {
     describe(`scenario: ${scenario}`, () => {
       it('produces 12 rangers, 4 field teams with >=3 reports each, 2 locations, '

@@ -17,6 +17,9 @@ export type SampleScenarioOption = {
   id: SampleScenarioId
   label: string
   hint: string
+  /** E-213 (AAR 2026-10-19, John 10-20): a demo modeled on a real event links to the best
+   *  public overview of what really happened, shown as a plain "Details" link by the demo. */
+  detailsUrl?: string
 }
 
 /**
@@ -51,6 +54,7 @@ export const SAMPLE_SCENARIOS: ReadonlyArray<SampleScenarioOption> = [
     hint: 'Modeled on the January 9, 2018 debris flows in Montecito, California. The people, teams and '
       + 'messages are invented; the scale, phases and problems follow the public record. About 400 radio '
       + 'log entries, 30 teams and 100 roster rows: a busy mission, not a tidy sample.',
+    detailsUrl: 'https://en.wikipedia.org/wiki/2018_Southern_California_mudflows',
   },
   {
     id: 'near-me',

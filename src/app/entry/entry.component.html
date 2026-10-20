@@ -67,6 +67,10 @@
     <div class="entry-welcome__text">
       @if (usage.state() === 'demo') {
       <strong>You're looking at demo data ({{ demoLabel() }}).</strong>
+      @if (demoDetailsUrl(); as url) {
+      {{ ' ' }}<a [href]="url" target="_blank" rel="noopener" data-testid="demo-card-details-link"
+        title="What really happened (opens a new tab)">Details</a>
+      }
       Pick another demo, or start a real mission.
       } @else {
       <strong>Demo:</strong> no mission yet? Load a demonstration with made-up data to try out the app.
