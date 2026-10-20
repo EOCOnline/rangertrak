@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.65-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.64-alpha...v0.99.65-alpha) (2026-10-20)
+
+
+### Features
+
+* **aar:** E-04 / D-63 AAR/214 button and capture box with an ICS-214 line kind ([7ae9eae](https://github.com/SteadyEOC/RangerTrak/commit/7ae9eae72a938fbcf89c295707d461d44465bd84))
+* **aar:** E-04 / D-63 activity-line kind on AAR notes (schema 2), pure activity-log rules ([0211746](https://github.com/SteadyEOC/RangerTrak/commit/0211746a7f84511b054ea45f7ea87634a6a8ad70))
+* **aar:** E-04 / D-63 After action in Simple view once there is a 214 line; e2e check ([23009fd](https://github.com/SteadyEOC/RangerTrak/commit/23009fd370e5b0e075232430e0823aa506112f2f))
+* **aar:** E-04 / D-63 ICS-214 header store: activityLogHeader key, encrypted, in the backup ([9c7cc63](https://github.com/SteadyEOC/RangerTrak/commit/9c7cc636e6929b1a760835a85c0829597fcff8df))
+* **aar:** E-04 / D-63 ICS-214 section on After Action and Export ICS-214 on FEMA's form ([92341dd](https://github.com/SteadyEOC/RangerTrak/commit/92341dd2327da0aaf87e9a407e28fb5dc665ead1))
+
 ### [0.99.64-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.63-alpha...v0.99.64-alpha) (2026-10-20)
 
 
