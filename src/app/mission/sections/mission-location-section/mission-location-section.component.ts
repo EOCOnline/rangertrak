@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 
+import { CoordinateFormat, defaultCoordinateFormat } from '../../../domain/coordinate'
 import { MissionType } from '../../../shared/services/'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
@@ -36,16 +37,14 @@ export class MissionLocationSectionComponent {
    * Material CVA component, so [value]/(change) here rather than [formField], same reason
    * as the mat-checkbox group this replaces.
    */
-  currentDefaultFormat(): 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM' {
-    if (this.form.showDD().value()) return 'DD'
-    if (this.form.showDDM().value()) return 'DDM'
-    if (this.form.showDMS().value()) return 'DMS'
-    if (this.form.showMGRS().value()) return 'MGRS'
-    if (this.form.showUTM().value()) return 'UTM'
-    return 'DD'
+  currentDefaultFormat(): CoordinateFormat {
+    return defaultCoordinateFormat({
+      showDD: this.form.showDD().value(), showDDM: this.form.showDDM().value(), showDMS: this.form.showDMS().value(),
+      showMGRS: this.form.showMGRS().value(), showUTM: this.form.showUTM().value(),
+    })
   }
 
-  selectDefaultFormat(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): void {
+  selectDefaultFormat(system: CoordinateFormat): void {
     this.form.showDD().value.set(system === 'DD')
     this.form.showDDM().value.set(system === 'DDM')
     this.form.showDMS().value.set(system === 'DMS')

@@ -26,7 +26,7 @@ import { LOCKED_FILE_MESSAGE, readEnvelope } from '../../shared/export/handover-
 import { LayersCardComponent } from '../../shared/io-panel/layers-card.component'
 import { LayerService } from '../../shared/services/layer.service'
 import { recordableLayerName } from '../../domain/layers'
-import type { CoordinateFormat } from '../../domain/coordinate'
+import { COORDINATE_FORMATS, type CoordinateFormat } from '../../domain/coordinate'
 import { buildPlacesPrint, PlacesPrintGroup } from '../../domain/places-print'
 import { PrintSheetHeadComponent } from '../../shared/print-sheet/print-sheet-head.component'
 import { showFirstPrintTip } from '../../shared/export/print-tip'
@@ -105,8 +105,9 @@ export class PlacesIoComponent {
   readonly printPreparing = signal(false)
   /** The format the sheet writes coordinates in; the same one as the map's readout (DD, DDM or USNG). */
   readonly coordFormat = this.engineService.coordFormat
+  readonly coordFormats = COORDINATE_FORMATS
   setCoordFormat(value: CoordinateFormat): void {
-    this.coordFormat.set(value)
+    this.engineService.chooseCoordFormat(value)
   }
 
   /** The name offered for a Setup file until the user types their own. */

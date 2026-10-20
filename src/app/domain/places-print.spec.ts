@@ -37,7 +37,7 @@ describe('buildPlacesPrint', () => {
     const place = p('A', 'S', { lat: 47.5, lng: -122.25 })
     expect(buildPlacesPrint([place], ['S'], 'DD')[0].rows[0].coordinates).toBe('47.50000, -122.25000')
     expect(buildPlacesPrint([place], ['S'], 'DDM')[0].rows[0].coordinates).toBe('47° 30.000′ N, 122° 15.000′ W')
-    expect(buildPlacesPrint([place], ['S'], 'USNG')[0].rows[0].coordinates).toMatch(/^10T /)
+    expect(buildPlacesPrint([place], ['S'], 'MGRS')[0].rows[0].coordinates).toMatch(/^10T /)
   })
 
   it('carries address and note, blank when missing', () => {

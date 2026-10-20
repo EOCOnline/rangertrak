@@ -41,7 +41,7 @@ import {
   locationCategoryColor, locationIconFor, resolveLocationIcon, formatReportTime, computeExtent, ExtentPoint
 } from '../shared'
 import {
-  CoordinateFormat, formatLatLng
+  COORDINATE_FORMATS, CoordinateFormat, formatLatLng
 } from '../domain/coordinate'
 import {
   RadioLogService, RadioLogEntryType, LocationType, LogService, MissionLocationService,
@@ -163,10 +163,12 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   // gesture, rather than a persistent mode a scribe could forget is still on.
   placingLocation = signal(false)
 
-  // 2026-09-30, John: the readout under the map (and click-to-copy) in DD, DDM or USNG.
-  // Module-level, so the choice survives leaving and returning to the Map page; not saved,
-  // so a reload starts at DD again.
+  // 2026-09-30, John: the readout under the map (and click-to-copy), in the same five formats
+  // as Entry. Module-level, so the choice survives leaving and returning to the Map page; not
+  // saved, so a reload starts on the mission's default format again (E-208).
   readonly coordFormat = this.engineService.coordFormat
+  readonly coordFormats = COORDINATE_FORMATS
+  setCoordFormat(format: CoordinateFormat): void { this.engineService.chooseCoordFormat(format) }
   readonly mouseCoords = computed(() =>
     formatLatLng(this.mouseLatLng().lat, this.mouseLatLng().lng, this.coordFormat()))
   // The on-screen edge ticks are written in the readout's format, so redraw them when it changes.

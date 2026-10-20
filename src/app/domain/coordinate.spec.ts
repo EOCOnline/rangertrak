@@ -1,4 +1,6 @@
-import { MGRSToDD, edgeTickStep, formatEdgeTick, formatLatLng } from './coordinate'
+import {
+  COORDINATE_FORMATS, MGRSToDD, defaultCoordinateFormat, edgeTickStep, formatEdgeTick, formatLatLng, normalizeCoordinateFormat
+} from './coordinate'
 
 describe('printed map edge ticks', () => {
   it('picks a round decimal-degree step giving at most 6 ticks', () => {
@@ -41,7 +43,7 @@ describe('formatLatLng (map coordinate readout)', () => {
   })
 
   it('writes USNG with spaces, and it reads back to the same place', () => {
-    const usng = formatLatLng(lat, lng, 'USNG')
+    const usng = formatLatLng(lat, lng, 'MGRS')
     const m = usng.match(/^(\d{1,2}[C-X]) ([A-Z]{2}) (\d{5}) (\d{5})$/)
     expect(m).withContext(usng).not.toBeNull()
     const back = MGRSToDD(m![1] + m![2], Number(m![3]), Number(m![4]))!
@@ -50,6 +52,32 @@ describe('formatLatLng (map coordinate readout)', () => {
   })
 
   it('falls back to decimal degrees where USNG has no grid (near the poles)', () => {
-    expect(formatLatLng(89.5, 10, 'USNG')).toBe('89.50000, 10.00000')
+    expect(formatLatLng(89.5, 10, 'MGRS')).toBe('89.50000, 10.00000')
+  })
+
+  it('writes degrees, minutes and seconds, carrying 60 seconds over', () => {
+    expect(formatLatLng(10.5, -20.25, 'DMS')).toBe('10° 30′ 0.0″ N, 20° 15′ 0.0″ W')
+    expect(formatLatLng(10.99999999, 0, 'DMS')).toBe('11° 0′ 0.0″ N, 0° 0′ 0.0″ E')
+  })
+
+  it('writes UTM as zone, hemisphere, easting, northing', () => {
+    expect(formatLatLng(lat, lng, 'UTM')).toMatch(/^18N \d{6} \d{7}$/)
+  })
+
+  it('still reads an older USNG choice as the USNG/MGRS one', () => {
+    expect(formatLatLng(lat, lng, 'USNG')).toBe(formatLatLng(lat, lng, 'MGRS'))
+    expect(normalizeCoordinateFormat('USNG')).toBe('MGRS')
+    expect(normalizeCoordinateFormat('MGRS')).toBe('MGRS')
+    expect(normalizeCoordinateFormat('nonsense')).toBeNull()
+  })
+
+  it('offers the five formats in one order, USNG/MGRS as a single choice', () => {
+    expect(COORDINATE_FORMATS.map(f => f.label)).toEqual(['DD', 'DDM', 'DMS', 'USNG/MGRS', 'UTM'])
+  })
+
+  it('takes the mission default from the show flags', () => {
+    expect(defaultCoordinateFormat({ showDD: false, showDDM: false, showDMS: false, showMGRS: true, showUTM: false })).toBe('MGRS')
+    expect(defaultCoordinateFormat({ showUTM: true })).toBe('UTM')
+    expect(defaultCoordinateFormat(undefined)).toBe('DD')
   })
 })

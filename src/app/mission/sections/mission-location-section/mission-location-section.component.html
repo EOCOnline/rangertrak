@@ -57,15 +57,15 @@
          here, not [formField] - same angular/components#32072 avoidance as everywhere else
          a Signal Forms field drives one of these. -->
     <fieldset class="mission__coords">
-      <legend class="mission__coords-legend">Default coordinate format for Entry</legend>
+      <legend class="mission__coords-legend">Default coordinate format (Entry and Map)</legend>
       <p class="mission__coords-note">Every format is always available on Entry - this only
-        picks which one it opens on for this mission.</p>
+        picks which one Entry and the Map open on for this mission.</p>
       <mat-radio-group class="mission__coords-grid" aria-label="Default coordinate format for Entry"
         [value]="currentDefaultFormat()" (change)="selectDefaultFormat($event.value)">
         <mat-radio-button value="DD">Decimal degrees</mat-radio-button>
         <mat-radio-button value="DDM">Degrees decimal minutes</mat-radio-button>
         <mat-radio-button value="DMS">Degrees minutes seconds</mat-radio-button>
-        <mat-radio-button value="MGRS">MGRS</mat-radio-button>
+        <mat-radio-button value="MGRS">USNG/MGRS</mat-radio-button>
         <mat-radio-button value="UTM">UTM</mat-radio-button>
       </mat-radio-group>
     </fieldset>

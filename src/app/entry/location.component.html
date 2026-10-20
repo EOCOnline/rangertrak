@@ -28,8 +28,8 @@
     @if (view.isShown('coord-format')) {
     <mat-button-toggle-group class="enter__Where-switcher" aria-label="Coordinate format" [rtAdvanced]="'coord-format'"
       [value]="activeSystem()" (change)="setActiveSystem($event.value)">
-      @for (sys of availableSystems(); track sys) {
-      <mat-button-toggle [value]="sys" [title]="systemLabel(sys)">{{ sys }}</mat-button-toggle>
+      @for (f of formats; track f.id) {
+      <mat-button-toggle [value]="f.id" [title]="f.title">{{ f.label }}</mat-button-toggle>
       }
     </mat-button-toggle-group>
     }

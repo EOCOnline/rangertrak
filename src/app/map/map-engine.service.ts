@@ -1,6 +1,7 @@
-import { Injectable, signal } from '@angular/core'
+import { Injectable, inject, signal } from '@angular/core'
 
-import type { CoordinateFormat } from '../domain/coordinate'
+import { defaultCoordinateFormat, type CoordinateFormat } from '../domain/coordinate'
+import { MissionService } from '../shared/services/mission.service'
 import type { MissionLocationType } from '../shared/services/mission-location.interface'
 import type { PlaceBounds } from '../domain/places-file'
 
@@ -27,11 +28,24 @@ export class MapEngineService {
   readonly viewBounds = signal<PlaceBounds | null>(null)
 
   /**
-   * The format the Leaflet map's coordinate readout is written in (DD, DDM or USNG). Here rather
-   * than in the map component so the Print card's places list can use the same one. Session only,
-   * as the readout always was: a reload starts at DD again.
+   * The format the Leaflet map's coordinate readout is written in (the same five as Entry). Here
+   * rather than in the map component so the Print card's places list can use the same one. Session
+   * only: it starts on the mission's default format (E-208) until someone picks another here.
    */
   readonly coordFormat = signal<CoordinateFormat>('DD')
+  private coordFormatChosen = false
+
+  /** A person's own pick on the Map page: from now on a mission change no longer moves it. */
+  chooseCoordFormat(format: CoordinateFormat): void {
+    this.coordFormatChosen = true
+    this.coordFormat.set(format)
+  }
+
+  constructor() {
+    inject(MissionService).getMissionObserver().subscribe(m => {
+      if (!this.coordFormatChosen) this.coordFormat.set(defaultCoordinateFormat(m))
+    })
+  }
 
   /**
    * E-187 phase D: the Leaflet map's side of "Print places". Set by the Leaflet component while

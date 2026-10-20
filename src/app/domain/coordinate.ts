@@ -406,16 +406,50 @@ export function formatEdgeTick(value: number, isLng: boolean, format: 'DD' | 'DD
   return stepMin >= 60 ? `${deg}° ${hemi}` : `${deg}° ${min.toFixed(d)}′ ${hemi}`
 }
 
-/** The formats the main map's coordinate readout (and its click-to-copy) can show. */
-export type CoordinateFormat = 'DD' | 'DDM' | 'USNG'
+/**
+ * E-208 (John): one set of coordinate formats, defined once, with the same choices, order and
+ * names on Entry and the Map. 'MGRS' is the stored id of the USNG/MGRS choice (the same grid
+ * written two ways), so a value remembered on a device as 'MGRS' - or an old map choice of
+ * 'USNG' - still means that one choice (see `normalizeCoordinateFormat`).
+ */
+export type CoordinateFormat = 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'
+
+export const COORDINATE_FORMATS: readonly { id: CoordinateFormat, label: string, title: string }[] = [
+  { id: 'DD', label: 'DD', title: 'Decimal degrees' },
+  { id: 'DDM', label: 'DDM', title: 'Degrees and decimal minutes (air operations)' },
+  { id: 'DMS', label: 'DMS', title: 'Degrees, minutes and seconds' },
+  { id: 'MGRS', label: 'USNG/MGRS', title: 'US National Grid / MGRS - the same grid (ground search and rescue)' },
+  { id: 'UTM', label: 'UTM', title: 'Universal Transverse Mercator' },
+]
+
+/** Reads a stored or older value as a current format, or null if it is none of them. */
+export function normalizeCoordinateFormat(value: unknown): CoordinateFormat | null {
+  if (value === 'USNG') return 'MGRS'
+  return COORDINATE_FORMATS.find(f => f.id === value)?.id ?? null
+}
+
+/**
+ * The mission's default format, from the five show-flags the Mission page's radio group sets
+ * (no schema change: exactly one is normally on). Entry and the Map both open on it.
+ */
+export function defaultCoordinateFormat(m: {
+  showDD?: boolean, showDDM?: boolean, showDMS?: boolean, showMGRS?: boolean, showUTM?: boolean,
+} | null | undefined): CoordinateFormat {
+  if (m?.showDD) return 'DD'
+  if (m?.showDDM) return 'DDM'
+  if (m?.showDMS) return 'DMS'
+  if (m?.showMGRS) return 'MGRS'
+  if (m?.showUTM) return 'UTM'
+  return 'DD'
+}
 
 /**
  * 2026-09-30, John: one line of text for a position, in the format the scribe picked under the
- * map. DD for 911/apps, DDM for air operations, USNG for ground SAR (the same grid as MGRS,
- * written with spaces: "18S UH 12345 67890", 1 m). USNG has no cells near the poles (the
- * `mgrs` package throws there), so it falls back to DD rather than showing nothing.
+ * map. DD for 911/apps, DDM for air operations, DMS and UTM for those who use them, USNG/MGRS for
+ * ground SAR (written with spaces: "18S UH 12345 67890", 1 m). The grid has no cells near the
+ * poles (the `mgrs` package throws there), so it falls back to DD rather than showing nothing.
  */
-export function formatLatLng(lat: number, lng: number, format: CoordinateFormat): string {
+export function formatLatLng(lat: number, lng: number, format: CoordinateFormat | 'USNG'): string {
   if (format === 'DDM') {
     const ddm = (d: number, pos: string, neg: string) => {
       const abs = Math.abs(d)
@@ -426,11 +460,30 @@ export function formatLatLng(lat: number, lng: number, format: CoordinateFormat)
     }
     return `${ddm(lat, 'N', 'S')}, ${ddm(lng, 'E', 'W')}`
   }
-  if (format === 'USNG') {
+  if (format === 'DMS') {
+    const dms = (d: number, pos: string, neg: string) => {
+      // Work in whole hundredths of a second so a carry (59.999" -> next minute) stays exact.
+      const total = Math.round(Math.abs(d) * 3600 * 100)
+      const deg = Math.floor(total / 360000)
+      const min = Math.floor((total % 360000) / 6000)
+      const sec = (total % 6000) / 100
+      return `${deg}° ${min}′ ${sec.toFixed(1)}″ ${d < 0 ? neg : pos}`
+    }
+    return `${dms(lat, 'N', 'S')}, ${dms(lng, 'E', 'W')}`
+  }
+  if (format === 'MGRS' || format === 'USNG') {
     try {
       const { gridRef, easting, northing } = DDToMGRS(lat, lng)
       const pad = (n: number) => String(n).padStart(5, '0')
       return `${gridRef.slice(0, -2)} ${gridRef.slice(-2)} ${pad(easting)} ${pad(northing)}`
+    } catch {
+      // fall through to DD
+    }
+  }
+  if (format === 'UTM') {
+    try {
+      const { zone, hemisphere, easting, northing } = DDToUTM(lat, lng)
+      return `${zone}${hemisphere} ${easting} ${northing}`
     } catch {
       // fall through to DD
     }

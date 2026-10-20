@@ -21,7 +21,8 @@ import { mdiAccount, mdiInformationOutline } from '@mdi/js'
 // though this page never shows a MapLibre map. Same reasoning as app.config.ts.
 import {
   DDMToDD, DDToDDM, DDToDMS, DDToMaidenhead, DDToMGRS, DDToUTM, DMSToDD, isMaidenhead,
-  MaidenheadToDD, MGRSToDD, UTMToDD
+  MaidenheadToDD, MGRSToDD, UTMToDD,
+  COORDINATE_FORMATS, CoordinateFormat, defaultCoordinateFormat, normalizeCoordinateFormat,
 } from '../domain/coordinate'
 import { GEOCODING_PROVIDER, GeocodingProvider } from '../shared/mapping/geocoding-provider.interface'
 import { OpenLocationCode } from '../shared/mapping/open-location-code'
@@ -143,15 +144,14 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * subscription below, to this mission's own preferred starting format if it has one (see
    * `preferredSystems()`).
    */
-  activeSystem = signal<'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'>('DD')
+  activeSystem = signal<CoordinateFormat>('DD')
 
   /** Guards the settings subscription's one-time initial-default correction below, so a
    * later settings change never re-applies it mid-session. */
   private activeSystemDefaultSet = false
 
   /** Canonical display order, reused by the switcher and by `preferredSystems()` below. */
-  private static readonly SYSTEM_ORDER: ('DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM')[] =
-    ['DD', 'DDM', 'DMS', 'MGRS', 'UTM']
+  private static readonly SYSTEM_ORDER: CoordinateFormat[] = COORDINATE_FORMATS.map(f => f.id)
 
   /**
    * Every system the switcher offers - unconditionally all five, regardless of Mission
@@ -169,7 +169,10 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * usually expects - see `preferredSystems()` below for where settings.showXX actually
    * matters now (which format Entry opens on, not which formats exist).
    */
-  availableSystems(): ('DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM')[] {
+  /** The switcher's choices, with the labels the Map uses (E-208). */
+  readonly formats = COORDINATE_FORMATS
+
+  availableSystems(): CoordinateFormat[] {
     return LocationComponent.SYSTEM_ORDER
   }
 
@@ -180,12 +183,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * mostly works in MGRS can have Entry open there by default while every other format
    * stays one tap away regardless.
    */
-  private preferredSystems(): ('DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM')[] {
+  private preferredSystems(): CoordinateFormat[] {
     if (!this.settings) return LocationComponent.SYSTEM_ORDER
     return LocationComponent.SYSTEM_ORDER.filter(s => this.systemPreferredInSettings(s))
   }
 
-  private systemPreferredInSettings(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): boolean {
+  private systemPreferredInSettings(system: CoordinateFormat): boolean {
     if (!this.settings) return true
     switch (system) {
       case 'DD': return this.settings.showDD
@@ -199,7 +202,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   /** The switcher's own handler - a plain component signal, not a Signal Forms field, so
    * no [formField]/CVA question applies here at all (unlike Source's own switcher on the
    * parent Entry form). */
-  setActiveSystem(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): void {
+  setActiveSystem(system: CoordinateFormat): void {
     this.activeSystem.set(system)
     // E-114 §1a: remembered across devices/sessions/missions - see the E-114 §1a comment near
     // the imports. Written on every switch, not just the first, so it always reflects
@@ -216,7 +219,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * at all times, only the CSS `hidden` state (driven by this method) changes which one a
    * scribe can actually reach by tabbing or see on screen.
    */
-  isVisible(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): boolean {
+  isVisible(system: CoordinateFormat): boolean {
     return this.activeSystem() === system
   }
 
@@ -451,8 +454,9 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
           // preferred format - a stronger, more specific signal (see
           // the E-114 §1a comment above the class for the maintainer's reasoning).
           const remembered = this.devicePrefs.getLastCoordinateFormat()
-          const rememberedValid = LocationComponent.SYSTEM_ORDER.find(s => s === remembered)
-          const preferred = rememberedValid ?? this.preferredSystems()[0]
+          // normalize: a device that remembered an older value still resolves to a current one.
+          const rememberedValid = normalizeCoordinateFormat(remembered)
+          const preferred = rememberedValid ?? defaultCoordinateFormat(this.settings)
           if (preferred) this.activeSystem.set(preferred)
         }
       },
@@ -610,12 +614,12 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
   /** Friendly label for the switcher and the "other formats" strip - kept separate from the
    * short 'DD'/'DDM'/... codes used as the type/keys, since a scribe reads the label. */
-  systemLabel(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): string {
+  systemLabel(system: CoordinateFormat): string {
     switch (system) {
       case 'DD': return 'Decimal degrees'
       case 'DDM': return 'Degrees decimal minutes'
       case 'DMS': return 'Degrees minutes seconds'
-      case 'MGRS': return 'MGRS'
+      case 'MGRS': return 'USNG/MGRS'
       case 'UTM': return 'UTM'
     }
   }
@@ -633,7 +637,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
    * here, a separate roadmap item). There is no such legacy debt for these three - they are
    * new with this pass, so they get real bindings from the start.
    */
-  otherSystemsDisplay(): { system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'; label: string; value: string }[] {
+  otherSystemsDisplay(): { system: CoordinateFormat; label: string; value: string }[] {
     const active = this.activeSystem()
     return LocationComponent.SYSTEM_ORDER
       .filter(s => s !== active)
@@ -675,7 +679,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       })
   }
 
-  private formatSystem(system: 'DD' | 'DDM' | 'DMS' | 'MGRS' | 'UTM'): string {
+  private formatSystem(system: CoordinateFormat): string {
     switch (system) {
       case 'DD': {
         const { latI, latF, lngI, lngF } = this.ddModel()

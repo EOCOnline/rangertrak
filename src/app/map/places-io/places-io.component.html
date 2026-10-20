@@ -96,9 +96,9 @@
         <mat-form-field class="places-io__control">
           <mat-label>Coordinates</mat-label>
           <mat-select [value]="coordFormat()" (selectionChange)="setCoordFormat($event.value)">
-            <mat-option value="DD" title="Decimal degrees">DD</mat-option>
-            <mat-option value="DDM" title="Degrees and decimal minutes (air operations)">DDM</mat-option>
-            <mat-option value="USNG" title="US National Grid, the same grid as MGRS (ground search and rescue)">USNG</mat-option>
+            @for (f of coordFormats; track f.id) {
+            <mat-option [value]="f.id" [title]="f.title">{{ f.label }}</mat-option>
+            }
           </mat-select>
         </mat-form-field>
 

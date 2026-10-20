@@ -34,11 +34,11 @@
        format picked here; clicking the map copies it in the same format. -->
   <div class="map-print-hide map-coords">
     <mat-button-toggle-group class="map-coords__format" hideSingleSelectionIndicator
-      [value]="coordFormat()" (change)="coordFormat.set($event.value)" aria-label="Coordinate format"
+      [value]="coordFormat()" (change)="setCoordFormat($event.value)" aria-label="Coordinate format"
       data-testid="map-coord-format">
-      <mat-button-toggle value="DD" title="Decimal degrees">DD</mat-button-toggle>
-      <mat-button-toggle value="DDM" title="Degrees and decimal minutes (air operations)">DDM</mat-button-toggle>
-      <mat-button-toggle value="USNG" title="US National Grid, the same grid as MGRS (ground search and rescue)">USNG</mat-button-toggle>
+      @for (f of coordFormats; track f.id) {
+      <mat-button-toggle [value]="f.id" [title]="f.title">{{ f.label }}</mat-button-toggle>
+      }
     </mat-button-toggle-group>
     <span class="strong" data-testid="map-coord-readout">{{mouseCoords()}}</span> Zoom:
     <span class="strong">{{zoom()}}</span>
