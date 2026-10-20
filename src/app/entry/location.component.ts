@@ -30,6 +30,8 @@ import {
   LocationType, LogService, MissionService, MissionType, undefinedAddressFlag, undefinedLocation
 } from '../shared/services'
 import { DevicePrefsService } from '../shared/services/device-prefs.service'
+import { ViewService } from '../shared/services/view.service'
+import { AdvancedDirective } from '../shared/view/advanced.directive'
 
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
@@ -53,7 +55,7 @@ https://stackblitz.com/edit/angular-azzmhu?file=src/app/hello.component.ts
   //moduleId: module.id,
   selector: 'rangertrak-location',
   standalone: true,
-  imports: [CommonModule, FormField, MatFormFieldModule, MatInputModule, MatButtonModule, MatButtonToggleModule, MatChipsModule],
+  imports: [CommonModule, FormField, MatFormFieldModule, MatInputModule, MatButtonModule, MatButtonToggleModule, MatChipsModule, AdvancedDirective],
   templateUrl: './location.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./location.component.scss']
@@ -421,6 +423,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
     private missionService: MissionService,
     private log: LogService,
     private devicePrefs: DevicePrefsService,
+    public view: ViewService,
     @Inject(GEOCODING_PROVIDER) private geocodingProvider: GeocodingProvider,
     // private _toppy: Toppy,
   ) {

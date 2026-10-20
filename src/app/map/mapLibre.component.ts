@@ -60,6 +60,8 @@ import { LocationDialogComponent } from './location-dialog/location-dialog.compo
 import { MapPrintFurnitureComponent } from './map-print/map-print-furniture.component'
 import { MapPrintLegendComponent } from './map-print/map-print-legend.component'
 import { printMapSheet } from './map-print/map-print-sheet'
+import { ViewService } from '../shared/services/view.service'
+import { AdvancedDirective } from '../shared/view/advanced.directive'
 
 const REPORTS_SOURCE_ID = 'field-reports'
 
@@ -85,7 +87,7 @@ function formatBytes(bytes: number): string {
   selector: 'rangertrak-mapLibre',
   standalone: true,
   imports: [NgTemplateOutlet, RouterLink, MatSlideToggleModule, MatButtonModule, MatCardModule, MatIconModule,
-    ExpandableSectionComponent, MapPrintLegendComponent, MapPrintFurnitureComponent],
+    ExpandableSectionComponent, MapPrintLegendComponent, MapPrintFurnitureComponent, AdvancedDirective],
   templateUrl: './mapLibre.component.html',
   styleUrls: ['./mapLibre.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager
@@ -240,6 +242,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     private missionService: MissionService,
     private radioLogService: RadioLogService,
     private locationService: MissionLocationService,
+    public view: ViewService,
     private dialog: MatDialog,
     private log: LogService,
     public customPmtiles: CustomPmtilesService,

@@ -58,15 +58,17 @@
          hoisted back above the map - state/handler stay owned here, only placement is the
          child's call. -->
     <ng-template #engineSwitchTpl>
+      @if (view.isShown('maplibre', mapHere())) {
       <!-- F29-21 (2026-08-30): id is a fragment-scroll target for the header readiness dot's
            "Alternative map warmed" row - see mission-readiness.component.ts's own comment. -->
-      <div class="map-engine-switch" id="readiness-map-engine-switch"
+      <div class="map-engine-switch" id="readiness-map-engine-switch" [rtAdvanced]="'maplibre'"
         [class.map-engine-switch--beside-overview]="engine() === 'leaflet'">
         <mat-slide-toggle data-testid="mapEngineSwitch" [checked]="engine() === 'maplibre'"
           (change)="onEngineSwitchChanged($event)">
           Use MapLibre + PMTiles Map - instead of Leaflet Map
         </mat-slide-toggle>
       </div>
+      }
     </ng-template>
 
     @if (engine() === 'leaflet') {
@@ -86,11 +88,16 @@
   </div>
   <!-- 2026-10-15, John: E-187 phase B - the places half of the Import, export & print panel
        (ADR D-58). Under either engine; hidden on paper, and in field mode by the panel itself. -->
+  @if (view.isShown('places-import')) {
   <rangertrak-places-io></rangertrak-places-io>
+  }
   <div class="map-print-footer">
     <span>Prepared by: <span class="map-print-footer__line">{{ preparedBy() }}</span></span>
     <!-- 2026-10-05, John: E-172 - never blank: the print time, in the title block's PRINTED format.
          Still ruled, so a hand-corrected time can be written over it. -->
     <span>Date / time: <span class="map-print-footer__line map-print-footer__line--short">{{ printedAt() | date:'MMM d, y, HH:mm:ss' }}</span></span>
   </div>
+  <!-- E-207: only while Simple view is hiding something on this page. The layers box extras are
+       switched inside the Leaflet engine, so they are not counted here. -->
+  <rangertrak-show-all-options [ids]="advancedIds" [here]="mapHere()"></rangertrak-show-all-options>
 </rangertrak-page>

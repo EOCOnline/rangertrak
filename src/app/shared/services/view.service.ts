@@ -75,8 +75,12 @@ export class ViewService {
       debugMode: !!s?.debugMode,
       ics213EntryCount: entries.filter(e => e.generates213 || !!e.message213?.trim() || !!e.recipients213?.length || !!e.subject213?.trim()).length,
       nonDefaultSourceCount: entries.filter(e => !!e.source && e.source !== 'Voice').length,
+      toStationCount: entries.filter(e => !!(e.toTactical || e.toCallsign || e.toRangerUid)).length,
+      evidenceLocationCount: entries.filter(e => !!e.evidenceLocation).length,
       // Pages that know better (Rangers & Teams holds the layers) pass this in; see isShown().
       layerCount: 0,
+      mapEngineIsAlternative: false,
+      mapExtraLayersOn: false,
     }
   })
 

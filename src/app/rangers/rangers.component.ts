@@ -32,7 +32,11 @@ import { ExpandableSectionComponent } from '../shared/expandable-section/expanda
 import { IoPanelComponent } from '../shared/io-panel/io-panel.component'
 import { LayersCardComponent } from '../shared/io-panel/layers-card.component'
 import { LayerService } from '../shared/services/layer.service'
-import { recordableLayerName } from '../domain/layers'
+import { layersOfKind, recordableLayerName } from '../domain/layers'
+import type { ViewContext } from '../domain/view'
+import { ViewService } from '../shared/services/view.service'
+import { AdvancedDirective } from '../shared/view/advanced.directive'
+import { ShowAllOptionsComponent } from '../shared/view/show-all-options.component'
 import { readSheetFile, rowsToXlsxBytes } from '../shared/import/sheet-reader'
 import { formatReportTime } from '../shared/mapping/report-time'
 import {
@@ -62,7 +66,7 @@ import { localDateStamp } from '../shared/export/local-date'
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, LayersCardComponent, PrintSheetHeadComponent, RouterLink, FilterChipsComponent, MatFormFieldModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule],
+  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, LayersCardComponent, PrintSheetHeadComponent, RouterLink, FilterChipsComponent, MatFormFieldModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule, AdvancedDirective, ShowAllOptionsComponent],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']
@@ -71,6 +75,15 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private id = 'Ranger Component'
   private readonly layerService = inject(LayerService)
+  readonly view = inject(ViewService)
+
+  /** E-207: the advanced controls on this page that Simple view can hide. */
+  protected readonly advancedIds = ['layers-panel', 'setup-file'] as const
+
+  /** E-207 / D-62 item 3: how many lists of people are loaded here, for ViewService. */
+  rangersHere(): Partial<ViewContext> {
+    return { layerCount: layersOfKind(this.layerService.layers(), 'people').length }
+  }
   private readonly appRef = inject(ApplicationRef)
   title = 'Rangers & Teams'
   pageDescr = `Grid display of rangers & teams on this mission`

@@ -34,6 +34,7 @@ import { armPrintTitle } from '../../shared/export/print-title'
 import { MapEngineService } from '../map-engine.service'
 import type { PlacesImportDialogResult } from '../places-import-dialog/places-import-dialog.component'
 import { localDateStamp } from '../../shared/export/local-date'
+import { AdvancedDirective } from '../../shared/view/advanced.directive'
 
 type ExportFormat = 'xlsx' | 'csv' | 'setup'
 
@@ -57,7 +58,7 @@ type ReadPlaces = PlacesParseResult & {
 @Component({
   selector: 'rangertrak-places-io',
   standalone: true,
-  imports: [IoPanelComponent, LayersCardComponent, PrintSheetHeadComponent, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule],
+  imports: [IoPanelComponent, LayersCardComponent, PrintSheetHeadComponent, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule, AdvancedDirective],
   templateUrl: './places-io.component.html',
   styleUrls: ['./places-io.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

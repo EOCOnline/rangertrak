@@ -8,6 +8,10 @@ import { LmapComponent } from '../../mapLeaflet/mapLeaflet.component'
 import { PageComponent } from '../../shared/page/page.component'
 import { MissionService } from '../../shared/services'
 import { OperatorNameService } from '../../shared/services/operator-name.service'
+import { ViewService } from '../../shared/services/view.service'
+import { AdvancedDirective } from '../../shared/view/advanced.directive'
+import { ShowAllOptionsComponent } from '../../shared/view/show-all-options.component'
+import type { ViewContext } from '../../domain/view'
 import { MapEngineService } from '../map-engine.service'
 import { PlacesIoComponent } from '../places-io/places-io.component'
 
@@ -27,7 +31,7 @@ import { PlacesIoComponent } from '../places-io/places-io.component'
 @Component({
   selector: 'rangertrak-map-page',
   standalone: true,
-  imports: [PageComponent, LmapComponent, NgComponentOutlet, NgTemplateOutlet, AsyncPipe, DatePipe, MatSlideToggleModule, PlacesIoComponent],
+  imports: [PageComponent, LmapComponent, NgComponentOutlet, NgTemplateOutlet, AsyncPipe, DatePipe, MatSlideToggleModule, PlacesIoComponent, ShowAllOptionsComponent, AdvancedDirective],
   templateUrl: './map-page.component.html',
   styleUrls: ['./map-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -79,7 +83,15 @@ export class MapPageComponent implements OnInit, OnDestroy {
   printedAt = signal(new Date())
   private readonly onBeforePrint = () => this.printedAt.set(new Date())
 
-  constructor(private engineService: MapEngineService, private missionService: MissionService) { }
+  constructor(private engineService: MapEngineService, private missionService: MissionService, public view: ViewService) { }
+
+  /** E-207: the advanced controls on this page that Simple view can hide. */
+  protected readonly advancedIds = ['maplibre', 'print-map', 'places-import'] as const
+
+  /** E-207 / D-62 item 3: the page's own facts for ViewService (the Alternative map is the one showing). */
+  mapHere(): Partial<ViewContext> {
+    return { mapEngineIsAlternative: this.engineService.engine() === 'maplibre' }
+  }
 
   get engine() {
     return this.engineService.engine

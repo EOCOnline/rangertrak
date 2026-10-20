@@ -25,6 +25,9 @@ import { bundledRangerImage } from '../shared/ranger-image'
 import { Utility } from '../shared/utility'
 import { AlertsComponent } from '../shared/alerts/alerts.component'
 import { PageComponent } from '../shared/page/page.component'
+import { ViewService } from '../shared/services/view.service'
+import { AdvancedDirective } from '../shared/view/advanced.directive'
+import { ShowAllOptionsComponent } from '../shared/view/show-all-options.component'
 // Direct path, not the shared/services barrel - see the note in rangers.component.ts.
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
@@ -62,6 +65,7 @@ import { MiniMapLeafletComponent } from './mini-mapLeaflet.component'
 import { sendReportPacket } from '../shared/export/report-packet-send'
 import { ImportSafetyCardComponent } from '../shared/import-safety/import-safety-card.component'
 import { PHOTOS_LEFT_OUT_MESSAGE } from '../domain/report-packet-files'
+import type { ViewContext } from '../domain/view'
 
 // TODO: IDEA: use https://material.angular.io/components/badge/ ???
 
@@ -84,6 +88,8 @@ import { PHOTOS_LEFT_OUT_MESSAGE } from '../domain/report-packet-files'
     DemoPickerComponent,
     PendingAttachmentsComponent,
     SmallerCopyProgressComponent,
+    AdvancedDirective,
+    ShowAllOptionsComponent,
   ],
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
@@ -403,6 +409,26 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   // E-194 / D-60: files picked for the entry being typed. Held as plain Files and hashed and
   // stored when the entry is saved, not on pick. Cleared by a reset.
   readonly pendingFiles = signal<PendingAttachment[]>([])
+
+  /** E-207: the advanced controls on this page (Simple view hides them while unused). The coordinate
+   *  format picker lives in LocationComponent. */
+  protected readonly advancedIds = ['stations', 'source', 'attachments', 'ics213', 'evidence-location', 'coord-format'] as const
+
+  /**
+   * E-207 / D-62 item 3: what THIS form already holds, so Simple view never hides a control the
+   * scribe has put something in. Added to the mission-wide facts ViewService already knows.
+   */
+  entryHere(): Partial<ViewContext> {
+    const f = this.entryForm
+    return {
+      toStationCount: this.toCtrl.value?.trim() ? 1 : 0,
+      nonDefaultSourceCount: f.source().value() === 'Voice' ? 0 : 1,
+      attachmentCount: this.pendingFiles().length,
+      evidenceLocationCount: this.showEvidenceLocation() ? 1 : 0,
+      ics213EntryCount: f.generates213().value() || f.replyRequested213().value() || !!f.message213().value().trim()
+        || !!f.recipients213().value().trim() || !!f.subject213().value().trim() ? 1 : 0,
+    }
+  }
   readonly attachReason = this.attachmentStore.unavailableReason()
 
   constructor(
@@ -419,6 +445,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     public usage: UsageStateService,
     private operatorName: OperatorNameService,
     private printCopies: PrintCopiesService,
+    public view: ViewService,
     @Inject(DOCUMENT) private document: Document) {
 
 

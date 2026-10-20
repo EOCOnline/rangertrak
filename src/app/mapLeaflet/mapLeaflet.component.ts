@@ -53,6 +53,8 @@ import { liveRefs } from '../domain/attachments'
 import { attachmentChipHtml, attachmentChipUid } from '../shared/attachments/attachment-chip-html'
 import { AttachmentViewerService } from '../shared/attachments/attachment-viewer.service'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
+import { ViewService } from '../shared/services/view.service'
+import { AdvancedDirective } from '../shared/view/advanced.directive'
 import { MapPrintFurnitureComponent } from '../map/map-print/map-print-furniture.component'
 import { MapPrintLegendComponent } from '../map/map-print/map-print-legend.component'
 
@@ -84,7 +86,7 @@ const ringStepIndex = signal(0)
   selector: 'rangertrak-mapLeaflet',
   standalone: true,
   imports: [NgTemplateOutlet, MatSlideToggleModule, MatButtonModule, MatButtonToggleModule, MatSliderModule, MatIconModule,
-    FilterChipsComponent, MapPrintLegendComponent, MapPrintFurnitureComponent],
+    FilterChipsComponent, MapPrintLegendComponent, MapPrintFurnitureComponent, AdvancedDirective],
   templateUrl: './mapLeaflet.component.html',
   styleUrls: [
     './mapLeaflet.component.scss'
@@ -125,6 +127,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   private readonly engineService = inject(MapEngineService)
   private readonly attachmentStore = inject(AttachmentStoreService)
   private readonly attachmentViewer = inject(AttachmentViewerService)
+  readonly view = inject(ViewService)
 
   private lMap!: L.Map
   private overviewMapLeaflet!: L.Map
@@ -181,6 +184,32 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   // coordFormat, so it survives leaving the Map page; not saved.
   readonly ringStepIndex = ringStepIndex
   readonly ringStepCount = RING_STEPS_MILES.length
+  /** E-207: the layers box rows that are advanced, with the layers they switch. */
+  private layerExtras: { label: string, layer: L.Layer }[] = []
+  private layersBox: HTMLElement | null = null
+
+  /**
+   * E-207 / D-62: in Simple view the layers box shows its extras (USNG/MGRS grid, range rings, satellite,
+   * hiking trails) only while one of them is on, so a layer in use can always be switched off. Rows are
+   * hidden, never removed from the control, so nothing is switched on or off by the view. In Full view each
+   * row carries the Advanced rule (the badge is dropped inside this box, styles/_patterns.scss).
+   */
+  private syncLayerExtras(): void {
+    if (!this.layersBox || !this.lMap) return
+    const on = this.layerExtras.some(e => this.lMap.hasLayer(e.layer))
+    const show = this.view.isShown('map-layers-extra', { mapExtraLayersOn: on })
+    const marked = this.view.isAdvanced('map-layers-extra')
+    const labels = new Set(this.layerExtras.map(e => e.label))
+    this.layersBox.querySelectorAll('label').forEach(row => {
+      if (!labels.has((row.textContent ?? '').trim())) return
+      row.style.display = show ? '' : 'none'
+      row.classList.toggle('rt-advanced', marked)
+    })
+  }
+
+  /** Re-applies the above when the view changes. */
+  private readonly layerExtrasFollowView = effect(() => { this.view.isShown('map-layers-extra'); this.view.isAdvanced('map-layers-extra'); this.syncLayerExtras() })
+
   /** Whether the Range rings overlay is on (the slider only shows then). */
   readonly ringsOn = signal(false)
 
@@ -570,7 +599,16 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
       'Hiking trails (Waymarked Trails)': trailsOverlay,
       'Roads and place names (for Satellite)': roadsLabelsOverlay,
     }
-    L.control.layers(baseLayers, overlayLayers, { position: 'topright' }).addTo(this.lMap)
+    const layersControl = L.control.layers(baseLayers, overlayLayers, { position: 'topright' }).addTo(this.lMap)
+    // E-207 / D-62: the layers box extras that Simple view hides while none is on (see syncLayerExtras()).
+    this.layerExtras = [
+      ['USNG / MGRS grid', this.usngGridLayer], ['Range rings (from command post)', this.rangeRingsLayer],
+      ['Satellite (Esri World Imagery)', satelliteTiles], ['Roads and place names (for Satellite)', roadsLabelsOverlay],
+      ['Hiking trails (Waymarked Trails)', trailsOverlay],
+    ].map(([label, layer]) => ({ label: label as string, layer: layer as L.Layer }))
+    this.layersBox = layersControl.getContainer() ?? null
+    this.lMap.on('overlayadd overlayremove baselayerchange', () => this.syncLayerExtras())
+    this.syncLayerExtras()
     // E-190: the three data overlays start ON (their checkboxes ticked), before any entries exist
     // and before the on/off tracking below is wired, so "on" is never mistaken for "filtered".
     this.lMap.addLayer(this.locationsLayer)

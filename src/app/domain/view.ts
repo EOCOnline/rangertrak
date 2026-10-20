@@ -46,8 +46,16 @@ export type ViewContext = {
   ics213EntryCount: number,
   /** Radio log entries whose source is not the default. */
   nonDefaultSourceCount: number,
+  /** Radio log entries with a To station. */
+  toStationCount: number,
+  /** Radio log entries with an evidence location. */
+  evidenceLocationCount: number,
   /** Layers loaded on this device (people and places). */
   layerCount: number,
+  /** The alternative map engine (MapLibre) is the one showing. */
+  mapEngineIsAlternative: boolean,
+  /** An extra map layer (grid, range rings, satellite, hiking trails) is switched on. */
+  mapExtraLayersOn: boolean,
 }
 
 export type AdvancedFeature = {
@@ -77,15 +85,15 @@ export const ADVANCED_FEATURES: ReadonlyArray<AdvancedFeature> = [
   { id: 'advanced-debug', label: 'Advanced and debug', isInUse: ctx => ctx.fieldMode || ctx.debugMode },
   { id: 'field-phone', label: 'Field phone', isInUse: ctx => ctx.fieldMode },
   // Entry
-  { id: 'stations', label: 'From and To station', isInUse: ctx => ctx.tacticalCallCount > 0 },
+  { id: 'stations', label: 'From and To station', isInUse: ctx => ctx.tacticalCallCount > 0 || ctx.toStationCount > 0 },
   { id: 'source', label: 'Source', isInUse: ctx => ctx.nonDefaultSourceCount > 0 },
   { id: 'coord-format', label: 'Coordinate format picker', isInUse: never },
   { id: 'attachments', label: 'Attachments', isInUse: ctx => ctx.attachmentCount > 0 },
   { id: 'ics213', label: 'ICS-213 message fields', isInUse: ctx => ctx.ics213EntryCount > 0 || ctx.recipientsCustomised },
-  { id: 'evidence-location', label: 'Evidence location', isInUse: never },
+  { id: 'evidence-location', label: 'Evidence location', isInUse: ctx => ctx.evidenceLocationCount > 0 },
   // Map
-  { id: 'maplibre', label: 'Alternative map', isInUse: never },
-  { id: 'map-layers-extra', label: 'Extra map layers', isInUse: never },
+  { id: 'maplibre', label: 'Alternative map', isInUse: ctx => ctx.mapEngineIsAlternative },
+  { id: 'map-layers-extra', label: 'Extra map layers', isInUse: ctx => ctx.mapExtraLayersOn },
   { id: 'print-map', label: 'Print map', isInUse: never },
   { id: 'places-import', label: 'Places import and export', isInUse: ctx => ctx.locationCount > 0 },
   // Rangers & Teams

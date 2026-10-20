@@ -2,7 +2,7 @@
      panel, in the same card style as the one on Rangers. It hides itself in field mode. Phase D
      (2026-10-16) added the Print card and the print-only places sheet at the foot of this file. The file input is triggered from a real button via .click(), called
      synchronously inside the click handler, as on Rangers. -->
-<rangertrak-io-panel class="map-print-hide">
+<rangertrak-io-panel class="map-print-hide" [rtAdvanced]="'places-import'">
   <mat-card appearance="outlined" class="rt-mission-card rt-io-card">
     <mat-card-header>
       <mat-card-title>Import</mat-card-title>

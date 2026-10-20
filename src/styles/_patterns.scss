@@ -258,6 +258,14 @@
   }
 }
 
+// Leaflet's layers box draws its own rows (map-leaflet.component.ts marks the advanced ones): the rule
+// is enough there, a badge on each row would crowd a small box.
+.leaflet-control-layers .rt-advanced {
+  padding-inline-start: 4px;
+
+  &::after { content: none; }
+}
+
 // ── Masonry (E-169) ──────────────────────────────────────────────────────────
 // Mission's card grid. Cards keep DOM order (so tab order and screen readers read the page
 // the way the template tells it) and each one spans as many small rows as it is tall;

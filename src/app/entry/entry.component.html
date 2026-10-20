@@ -200,12 +200,13 @@
         </mat-form-field>
         <span id="enter__Callsign-image"> </span>
         <span id="enter__Callsign-upshot"> </span>
+        @if (view.isShown('stations', entryHere())) {
         <!-- E-165: the station the message went TO, over the air. Same options and rules as the
              From box above; writes toTactical/toCallsign/toRangerUid. Not the ICS-213
              "addressed to" checklist further down (a person/position on the 213 form), and
              neither fills in the other. Typing a call sign or name that is not in the roster is
              fine and is kept as typed. -->
-        <mat-form-field class="enter__Callsign enter__To-station" floatLabel="always"
+        <mat-form-field class="enter__Callsign enter__To-station" floatLabel="always" [rtAdvanced]="'stations'"
           title="The station this message was sent to: a tactical call from the Mission page, or a ranger by ID, call sign or name. Leave blank if it does not matter.">
           <mat-label>To station</mat-label>
           <input matInput [formControl]="toCtrl" type="text" placeholder="Optional" aria-label="To station"
@@ -228,6 +229,7 @@
             </mat-optgroup>
           </mat-autocomplete>
         </mat-form-field>
+        }
       </div>
 
       <!-- ======================================= -->
@@ -259,7 +261,8 @@
              reading it right after the reporter's own position makes more sense than finding
              it after the entire 213 section. See entry.component.ts's tabindex chain comment
              for why the tab-order slots moved with it, not just this markup. -->
-        <div class="enter__evidence">
+        @if (view.isShown('evidence-location', entryHere())) {
+        <div class="enter__evidence" [rtAdvanced]="'evidence-location'">
           <!-- Material-M3 pass, 2026-08-26: was a plain native checkbox, already bound
                manually (showEvidenceLocation is a component signal, not a Signal Forms
                field) - so this swap carries no [formField]/CVA risk. No wrapping <label>:
@@ -287,6 +290,7 @@
             </rangertrak-evidence-location>
           </div>
         </div>
+        }
       </div>
     </div>
 
@@ -377,7 +381,8 @@
            every Signal Forms field driving a Material CVA control. [tabIndex] (property
            binding), not [attr.tabindex]: matches Status's own listbox above, for the same
            HostAttributeToken reason documented there. -->
-      <fieldset class="enter__field-fieldset">
+      @if (view.isShown('source', entryHere())) {
+      <fieldset class="enter__field-fieldset" [rtAdvanced]="'source'">
         <legend class="enter__field-label">Source</legend>
         <mat-chip-listbox class="enter__Source" aria-label="Source" [tabIndex]="sourceTabIndex"
           [value]="entryForm.source().value()" (change)="entryForm.source().value.set($event.value)">
@@ -387,6 +392,7 @@
           }
         </mat-chip-listbox>
       </fieldset>
+      }
 
       <!-- Material-M3 pass, 2026-08-26: matInput decorates a REAL native <textarea>
            (mat-form-field wraps it, it does not replace it), so [formField] here is the
@@ -406,7 +412,8 @@
       <!-- E-194 / D-60: photos, video and audio for this entry. Picked files wait here as chips and
            are hashed and stored when the entry is saved. Take photo / video is touch devices only
            (capture opens the camera directly). "Keep original" is the default; "Smaller copy" is the sender's choice (D-60 item 2). -->
-      <div class="enter__attach">
+      @if (view.isShown('attachments', entryHere())) {
+      <div class="enter__attach" [rtAdvanced]="'attachments'">
         <input #attachInput type="file" accept="image/*,video/*,audio/*" multiple hidden
           data-testid="entry-attach-file" (change)="onAttachPicked(attachInput)" />
         <input #captureInput type="file" accept="image/*,video/*" capture="environment" hidden
@@ -436,13 +443,15 @@
         <rangertrak-smaller-copy-progress />
         <rangertrak-pending-attachments [(items)]="pendingFiles" />
       </div>
+      }
 
       <!-- E-41 phase 1: "the 213 stays opt-in per entry" - data collection only, no
            export/reporting logic yet (that's phases 2-3). Asking only what the maintainer
            named as the 213's initial-version requirement, not a full ICS-213 form - see the
            field's own doc comment in radio-log-entry.interface.ts for the "not confirmed
            against the real form" caveat this carries forward. -->
-      <div class="enter__213">
+      @if (view.isShown('ics213', entryHere())) {
+      <div class="enter__213" [rtAdvanced]="'ics213'">
         <!-- Material-M3 pass: manual WritableSignal binding, not [formField] - same
              angular/components#32072 reasoning as Source above (entryForm.generates213 is a
              genuine Signal Forms field; mat-checkbox is a Material CVA component). -->
@@ -542,6 +551,7 @@
           </mat-checkbox>
         </div>
       </div>
+      }
     </div>
 
     <!-- ======================================= -->
@@ -627,5 +637,8 @@
       <pre><strong>EntryForm value:</strong> {{mergedFormValue() | json}}</pre>
     </div>
   </form>
+
+  <!-- E-207: only while Simple view is hiding something on this page. -->
+  <rangertrak-show-all-options [ids]="advancedIds" [here]="entryHere()"></rangertrak-show-all-options>
 
 </rangertrak-page>

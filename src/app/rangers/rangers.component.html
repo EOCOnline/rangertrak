@@ -219,11 +219,13 @@
             <!-- E-109 Setup files v2 (2026-08-31): a pre-mission provisioning tool that packages
                  any combination of rangers + photos, locations, and mission settings - a separate
                  page, linked from here since it's the natural next stop from roster management. -->
-            <a matButton="outlined" routerLink="/mission" fragment="setup-file"
+            @if (view.isShown('setup-file')) {
+            <a matButton="outlined" routerLink="/mission" fragment="setup-file" [rtAdvanced]="'setup-file'"
               title="Package this roster and its photos, places and/or mission settings into a Setup file for another device - or load one someone handed you. Opens the Setup file card on the Mission page.">
               <mat-icon>layers</mat-icon>
               Setup files
             </a>
+            }
           </div>
         </mat-card-content>
       </mat-card>
@@ -253,7 +255,9 @@
         </mat-card-content>
       </mat-card>
 
-      <rangertrak-layers-card kind="people" />
+      @if (view.isShown('layers-panel', rangersHere())) {
+      <rangertrak-layers-card kind="people" [rtAdvanced]="'layers-panel'" />
+      }
     </rangertrak-io-panel>
 
     <!-- ══ 6. DANGER ZONE ══ Was inside "Advanced", styled identically to the prose around
@@ -317,5 +321,7 @@
 
   <br />
 
+  <!-- E-207: only while Simple view is hiding something on this page. -->
+  <rangertrak-show-all-options [ids]="advancedIds" [here]="rangersHere()"></rangertrak-show-all-options>
 
 </rangertrak-page>
