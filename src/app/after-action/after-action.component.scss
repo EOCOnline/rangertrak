@@ -68,6 +68,16 @@
   margin-top: var(--rt-space-lg, 1.5rem);
 }
 
+// E-04 / D-63: the ICS-214 section sits under the AAR notes, with room above it.
+.rt-aar__log {
+  margin-top: var(--rt-space-lg, 1.5rem);
+}
+
+.rt-aar__hint {
+  max-width: 40em;
+  color    : var(--rt-muted, #666);
+}
+
 .rt-aar-print {
   display: none;
 }

@@ -122,6 +122,15 @@ export class AarNoteService {
     this.saveAndPublish()
   }
 
+  /**
+   * E-04 / D-63: deletes every note of one kind, so "Delete all notes" on the After Action page
+   * leaves the ICS-214 lines alone (and the other way round).
+   */
+  deleteAllOfKind(kind: AarNoteKind): void {
+    this.list = this.list.filter(n => n.kind !== kind)
+    this.saveAndPublish()
+  }
+
   /** Replaces every note, e.g. when restoring a mission backup. */
   replaceAllNotes(notes: readonly unknown[]): void {
     this.list = normalizeAarNotes(notes)

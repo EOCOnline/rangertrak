@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
+import { MatDialog } from '@angular/material/dialog'
 
 import { PageComponent } from '../shared/page/page.component'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -11,6 +12,8 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatButtonToggleModule } from '@angular/material/button-toggle'
 import { MatCardModule } from '@angular/material/card'
 import { MatSelectModule } from '@angular/material/select'
+import { activityLines } from '../domain/activity-log'
+import { noteTime } from '../domain/aar-note-migration'
 import {
   AAR_NOTE_ABOUT_LABELS, AarNoteAbout, AarNoteService, AarNoteType, FieldModeService, LogService, MissionService
 } from '../shared/services'
@@ -27,6 +30,10 @@ type Filter = 'all' | AarNoteAbout
  * owner) and saved on change. Output: a printed improvement-plan table of the incident notes,
  * a CSV of everything, and - for notes about RangerTrak itself - a hand-off to Help > Feedback
  * with the text filled in, which the user reviews and sends (never automatic).
+ *
+ * E-04 / D-63: the same page also holds the ICS-214 activity log (notes of kind `activity`): a
+ * list sorted by time, edit time and text, delete, and Export ICS-214. The AAR list, CSV, print
+ * and counts show only kind `aar`; a 214 line is never an AAR note.
  *
  * Not behind fieldModeGuard, unlike the other working pages: a field-mode phone can capture
  * notes from the header, so it has to be able to review them too.
@@ -51,20 +58,26 @@ export class AfterActionComponent {
   readonly aboutLabels = AAR_NOTE_ABOUT_LABELS
   filter = signal<Filter>('all')
 
+  /** E-04 / D-63: debrief notes only, in capture order. The ICS-214 lines are `lines()` below. */
+  readonly aarNotes = computed(() => this.notes.notes().filter(n => n.kind !== 'activity'))
+  /** E-04 / D-63: the ICS-214 lines, oldest first by their own time. */
+  readonly lines = computed(() => activityLines(this.notes.notes()))
+
   /** Newest first. */
   readonly shown = computed(() => {
     const f = this.filter()
-    return [...this.notes.notes()].reverse().filter(n => f === 'all' || n.about === f)
+    return [...this.aarNotes()].reverse().filter(n => f === 'all' || n.about === f)
   })
   /** Oldest first, the order an improvement plan is read in. */
-  readonly incidentNotes = computed(() => this.notes.notes().filter(n => n.about === 'incident'))
-  readonly appNotes = computed(() => this.notes.notes().filter(n => n.about === 'app'))
+  readonly incidentNotes = computed(() => this.aarNotes().filter(n => n.about === 'incident'))
+  readonly appNotes = computed(() => this.aarNotes().filter(n => n.about === 'app'))
 
   constructor(
     public notes: AarNoteService,
     private mission: MissionService,
     private router: Router,
     private log: LogService,
+    private dialog: MatDialog,
     /** E-189: the summary page is a command-post page, so a field-mode phone gets no button to it. */
     public fieldMode: FieldModeService,
   ) { }
@@ -91,11 +104,42 @@ export class AfterActionComponent {
     }
   }
 
+  /** E-04 / D-63: the line's time as an `<input type="datetime-local">` value, local, to the minute. */
+  lineTimeValue(n: AarNoteType): string {
+    const d = new Date(noteTime(n))
+    if (isNaN(d.getTime())) return ''
+    const p = (x: number) => String(x).padStart(2, '0')
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`
+  }
+
+  /** An edited time is stored in `at`; a cleared or unreadable one changes nothing (the field snaps back). */
+  onLineTimeChange(note: AarNoteType, value: string): void {
+    const d = new Date(value)
+    if (!value || isNaN(d.getTime())) return
+    this.notes.updateNote({ ...note, at: d.toISOString() })
+  }
+
+  onLineTextChange(note: AarNoteType, value: string): void {
+    this.notes.updateNote({ ...note, text: value })
+  }
+
+  onDeleteLine(note: AarNoteType): void {
+    if (confirm(`Delete this ICS-214 line?\n\n"${note.text}"\n\nThis cannot be undone.`)) {
+      this.notes.deleteNote(note.uid)
+    }
+  }
+
+  /** Opens the Export ICS-214 dialog (loaded when needed; pdf-lib loads only when Export is pressed inside it). */
+  async onExport214(): Promise<void> {
+    const { Ics214ExportDialogComponent } = await import('./ics214-export-dialog.component')
+    this.dialog.open(Ics214ExportDialogComponent, { maxWidth: '95vw', autoFocus: 'first-tabbable' })
+  }
+
   onDeleteAll(): void {
-    const count = this.notes.notes().length
+    const count = this.aarNotes().length
     if (confirm(`Delete all ${count} after-action notes on this device? This cannot be undone.\n\n`
-      + `Back up the mission first (Mission page) if you may need them.`)) {
-      this.notes.deleteAllNotes()
+      + `Back up the mission first (Mission page) if you may need them. The ICS-214 lines are not deleted.`)) {
+      this.notes.deleteAllOfKind('aar')
       this.log.warn(`Deleted all ${count} after-action notes`, this.id)
     }
   }
@@ -113,7 +157,7 @@ export class AfterActionComponent {
 
   onExportCsv(): void {
     const header = ['Noted at', 'About', 'Page', 'Observation', 'Area', 'Recommendation', 'Owner']
-    const rows = this.notes.notes().map(n => [
+    const rows = this.aarNotes().map(n => [
       n.createdAt, this.aboutLabels[n.about], n.page, n.text, n.area, n.recommendation, n.owner,
     ].map(csvCell).join(','))
     const csv = [header.map(csvCell).join(','), ...rows].join('\r\n')

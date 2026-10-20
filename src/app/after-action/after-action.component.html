@@ -1,17 +1,17 @@
 <rangertrak-page [title]="title" [description]="pageDescr">
   <div class="rt-aar">
-    @if (notes.notes().length === 0) {
+    @if (aarNotes().length === 0) {
     <p class="rt-aar__empty" data-testid="aar-empty">
       No notes yet. Whenever you notice something to fix or improve later, press
-      <strong>AAR note</strong> at the top of any page. It takes one line, and you stay where you were.
+      <strong>AAR/214</strong> at the top of any page. It takes one line, and you stay where you were.
       The notes collect here for the after-action review.
     </p>
     }
 
     <div class="rt-aar__toolbar">
-      @if (notes.notes().length > 0) {
+      @if (aarNotes().length > 0) {
       <mat-button-toggle-group [value]="filter()" (change)="filter.set($event.value)" aria-label="Show notes about">
-        <mat-button-toggle value="all">All ({{ notes.notes().length }})</mat-button-toggle>
+        <mat-button-toggle value="all">All ({{ aarNotes().length }})</mat-button-toggle>
         <mat-button-toggle value="incident">{{ aboutLabels.incident }} ({{ incidentNotes().length }})</mat-button-toggle>
         <mat-button-toggle value="app">{{ aboutLabels.app }} ({{ appNotes().length }})</mat-button-toggle>
       </mat-button-toggle-group>
@@ -25,7 +25,7 @@
         <mat-icon>insights</mat-icon> Current summary
       </a>
       }
-      @if (notes.notes().length > 0) {
+      @if (aarNotes().length > 0) {
       <button matButton="outlined" type="button" (click)="onPrint()" [disabled]="incidentNotes().length === 0"
         title="Print the notes about this incident as an improvement-plan table. Opens your browser's print dialog; choose your printer there">
         <mat-icon>print</mat-icon> Print
@@ -37,7 +37,7 @@
       }
     </div>
 
-    @if (notes.notes().length > 0) {
+    @if (aarNotes().length > 0) {
     <ul class="rt-aar__list" data-testid="aar-list">
       @for (n of shown(); track n.uid) {
       <li>
@@ -115,6 +115,54 @@
     </mat-card>
     </div>
     }
+
+    <!-- E-04 / D-63: the ICS-214 activity log. Lines are captured with the AAR/214 button; this is
+         where they are read, corrected and exported on FEMA's form. Shown even with no AAR notes. -->
+    <section class="rt-aar__log" aria-labelledby="rt-aar-214" data-testid="aar-214-section">
+      <h2 id="rt-aar-214">ICS-214 activity log</h2>
+      <p class="rt-aar__hint">What you did or what changed at your position: arrived, shift change,
+        equipment down. A line is not a radio call, so it is not in the radio log. Add one with
+        <strong>AAR/214</strong> at the top of any page, then export the log on FEMA's ICS-214 form.</p>
+
+      <div class="rt-aar__toolbar">
+        <span class="rt-aar__spacer"></span>
+        <button matButton="outlined" type="button" (click)="onExport214()" [disabled]="lines().length === 0"
+          data-testid="aar-214-export"
+          title="Fill in FEMA's ICS-214 form with these lines. Opens your browser's print dialog, or saves a PDF">
+          <mat-icon>picture_as_pdf</mat-icon> Export ICS-214
+        </button>
+      </div>
+
+      @if (lines().length === 0) {
+      <p class="rt-aar__empty" data-testid="aar-214-empty">No ICS-214 lines yet.</p>
+      } @else {
+      <ul class="rt-aar__list" data-testid="aar-214-list">
+        @for (n of lines(); track n.uid) {
+        <li>
+          <mat-card appearance="outlined" class="rt-aar__note" data-testid="aar-214-item">
+            <div class="rt-aar__fields">
+              <mat-form-field appearance="outline">
+                <mat-label>Time</mat-label>
+                <input matInput type="datetime-local" [ngModel]="lineTimeValue(n)"
+                  (change)="onLineTimeChange(n, $any($event.target).value)" data-testid="aar-214-time" />
+              </mat-form-field>
+            </div>
+            <mat-form-field appearance="outline" class="rt-aar__wide">
+              <mat-label>What happened</mat-label>
+              <textarea matInput rows="2" [ngModel]="n.text" (change)="onLineTextChange(n, $any($event.target).value)"
+                data-testid="aar-214-text"></textarea>
+            </mat-form-field>
+            <div class="rt-aar__actions">
+              <button matButton type="button" (click)="onDeleteLine(n)" title="Delete this line">
+                <mat-icon>delete</mat-icon> Delete
+              </button>
+            </div>
+          </mat-card>
+        </li>
+        }
+      </ul>
+      }
+    </section>
   </div>
 
   <!-- Print only: an improvement-plan table of the incident notes, oldest first. -->

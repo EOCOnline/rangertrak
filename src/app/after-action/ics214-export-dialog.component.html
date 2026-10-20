@@ -1,0 +1,65 @@
+<h2 mat-dialog-title>Export ICS-214</h2>
+
+<div mat-dialog-content class="rt-214">
+  <p class="rt-214__hint">FEMA's own ICS-214 form, filled in on this device. The name and the resources are
+    kept for next time. The signature is left for you to sign by hand.</p>
+
+  <h3 class="rt-214__h">Whose log is this?</h3>
+  <div class="rt-214__row">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput [ngModel]="name()" (ngModelChange)="name.set($event)" data-testid="ics214-name" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>ICS position</mat-label>
+      <input matInput [ngModel]="icsPosition()" (ngModelChange)="icsPosition.set($event)" data-testid="ics214-position" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Home agency and unit</mat-label>
+      <input matInput [ngModel]="homeAgency()" (ngModelChange)="homeAgency.set($event)" data-testid="ics214-agency" />
+    </mat-form-field>
+  </div>
+
+  <h3 class="rt-214__h">Resources assigned (optional, up to {{ maxResources }})</h3>
+  @for (r of resources(); track $index) {
+  <div class="rt-214__row rt-214__resource">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput [ngModel]="r.name" (ngModelChange)="setResource($index, 'name', $event)" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>ICS position</mat-label>
+      <input matInput [ngModel]="r.icsPosition" (ngModelChange)="setResource($index, 'icsPosition', $event)" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Home agency and unit</mat-label>
+      <input matInput [ngModel]="r.homeAgency" (ngModelChange)="setResource($index, 'homeAgency', $event)" />
+    </mat-form-field>
+    <button matButton type="button" (click)="removeResource($index)">Remove</button>
+  </div>
+  }
+  @if (resources().length < maxResources) {
+  <div><button matButton="outlined" type="button" (click)="addResource()" data-testid="ics214-add-resource">Add a person</button></div>
+  }
+
+  <h3 class="rt-214__h">Which lines?</h3>
+  <mat-radio-group [ngModel]="scope()" (ngModelChange)="scope.set($event)" class="rt-214__scope"
+    aria-label="Which lines go on the form" data-testid="ics214-scope">
+    @if (hasPeriod) {
+    <mat-radio-button value="op">Only this operational period ({{ opCount }} {{ opCount === 1 ? 'line' : 'lines' }})</mat-radio-button>
+    }
+    <mat-radio-button value="all">All lines ({{ allCount }})</mat-radio-button>
+  </mat-radio-group>
+  @if (selectedCount() === 0) {
+  <p class="rt-214__hint">There are no lines in this choice yet. Add some with the AAR/214 button.</p>
+  }
+  @if (error()) {
+  <p class="rt-214__error" role="alert">{{ error() }}</p>
+  }
+</div>
+
+<div mat-dialog-actions align="end">
+  <button matButton type="button" (click)="onCancel()">Cancel</button>
+  <button matButton="filled" type="button" [disabled]="busy() || selectedCount() === 0" (click)="onExport()"
+    data-testid="ics214-export">{{ busy() ? 'Making the form...' : 'Export ICS-214' }}</button>
+</div>
