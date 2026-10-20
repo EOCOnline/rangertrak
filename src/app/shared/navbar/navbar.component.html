@@ -207,6 +207,14 @@
         title="The roster">Rangers</a></li>
     <li><a [routerLink]="['/mission']" routerLinkActive="active" (click)="closeNav()"
         title="Mission settings, statuses, locations and backups">Mission</a></li>
+    <!-- E-04 / D-63 item 7: the ICS-214 log lives on the After Action page, which is otherwise off the
+         menu (see the 2026-09-27 note below). Simple view lists it once the mission has a line; Full
+         view keeps the menu as it was, and reaches it from the AAR/214 box. The rule is
+         ADVANCED_FEATURES' 'after-action' in domain/view.ts. -->
+    @if (view.isSimple() && view.isShown('after-action')) {
+    <li><a [routerLink]="['/after-action']" routerLinkActive="active" (click)="closeNav()"
+        title="Your ICS-214 activity log, and the notes for the debrief" data-testid="nav-after-action">After action</a></li>
+    }
     }
     <!-- Renamed from "Help" to "Help" - the maintainer's framing: "Too many confusing
          things are on the main menu!" Log's own nav item is gone the same day; it's

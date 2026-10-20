@@ -8,6 +8,7 @@ import { MDCTopAppBar } from '@material/top-app-bar'
 // import { MatButton } from '@angular/material/button'
 // import { MatButtonModule } from '@angular/material/button'
 import { subscribeOn } from 'rxjs';
+import { ViewService } from '../services/view.service';
 import { FieldModeService, LogService, MissionService, MissionType, RadioLogService, Skin, SKINS, SkinService, ThemeService } from '../services';
 //https://material.io/components/app-bars-top/web#regular-top-app-bar
 
@@ -108,6 +109,8 @@ export class NavbarComponent implements OnInit {
     protected theme: ThemeService,
     protected skin: SkinService,
     protected fieldMode: FieldModeService,
+    /** E-04 / D-63: lists After action in Simple view once the mission has an ICS-214 line. */
+    protected view: ViewService,
     private radioLog: RadioLogService
   ) {
 

@@ -6,6 +6,7 @@ import {
   AppView, ViewContext, ViewSource, applySuggestedView, initialView, isAdvanced as domainIsAdvanced, isShown as domainIsShown,
 } from '../../domain/view'
 import { FieldModeService } from './field-mode.service'
+import { AarNoteService } from './aar-note.service'
 import { LogService } from './log.service'
 import { MissionLocationService } from './mission-location.service'
 import { MissionType } from './mission.interface'
@@ -52,6 +53,7 @@ export class ViewService {
   private readonly settings = signal<MissionType | null>(null)
   private readonly entries = signal<readonly RadioLogEntryType[]>([])
   private readonly locationCount = signal(0)
+  private readonly activityLineCount = signal(0)
 
   /** What the rules look at, gathered from the services the app already has. */
   private readonly context = computed<ViewContext>(() => {
@@ -82,6 +84,7 @@ export class ViewService {
       mapEngineIsAlternative: false,
       mapExtraLayersOn: false,
       setupFileAsked: false,
+      activityLineCount: this.activityLineCount(),
     }
   })
 
@@ -89,6 +92,7 @@ export class ViewService {
     private missionService: MissionService,
     private radioLogService: RadioLogService,
     private locationService: MissionLocationService,
+    private aarNoteService: AarNoteService,
     private fieldMode: FieldModeService,
     private usage: UsageStateService,
     private recordStore: RecordStore,
@@ -105,6 +109,10 @@ export class ViewService {
     this.locationService.getLocationsObserver().subscribe({
       next: l => this.locationCount.set(l.length),
       error: e => this.log.error(`Locations subscription error: ${e}`, this.id),
+    })
+    this.aarNoteService.getNotesObserver().subscribe({
+      next: n => this.activityLineCount.set(n.filter(x => x.kind === 'activity').length),
+      error: e => this.log.error(`After action notes subscription error: ${e}`, this.id),
     })
     this.start()
   }

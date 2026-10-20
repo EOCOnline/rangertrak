@@ -8,7 +8,7 @@ describe('Simple view and Full view (E-207, D-62)', () => {
     attachmentCount: 0, encryptionOn: false, fieldMode: false, debugMode: false,
     ics213EntryCount: 0, nonDefaultSourceCount: 0, toStationCount: 0, evidenceLocationCount: 0, layerCount: 0,
     mapEngineIsAlternative: false, mapExtraLayersOn: false,
-    setupFileAsked: false,
+    setupFileAsked: false, activityLineCount: 0,
   }
 
   describe('ADVANCED_FEATURES', () => {
@@ -52,6 +52,7 @@ describe('Simple view and Full view (E-207, D-62)', () => {
       { id: 'maplibre', ctx: { mapEngineIsAlternative: true } },
       { id: 'map-layers-extra', ctx: { mapExtraLayersOn: true } },
       { id: 'layers-panel', ctx: { layerCount: 2 } },
+      { id: 'after-action', ctx: { activityLineCount: 1 } },
     ]
     for (const c of cases) {
       it(`${c.id} shows when ${JSON.stringify(c.ctx)}`, () => {

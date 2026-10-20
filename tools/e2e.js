@@ -3493,6 +3493,78 @@ async function checkAarNotes() {
   check('Delete all notes empties the page', empty, true)
 }
 
+/**
+ * E-04 / D-63: an ICS-214 activity line is captured from the same header button as an AAR note (the kind
+ * choice in the box), listed in its own section on /after-action and never in the AAR list, and Export
+ * ICS-214 produces a PDF. The PDF is caught in the page by wrapping URL.createObjectURL (the blob is made
+ * before the print dialog is asked for, so a headless browser that cannot print still hands it over).
+ */
+async function checkActivityLog() {
+  console.log('\nE-04: ICS-214 activity log - capture a line from the header, see it on After Action, export the PDF')
+  await goto('/')
+  await idbRemoveRaw('aarNotes')
+  await idbRemoveRaw('activityLogHeader')
+  await evaluate(`localStorage.removeItem('aarNoteLastKind')`)
+
+  const captured = await evaluate(`(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    document.querySelector('[data-testid="aar-note"]').click();
+    await sleep(600);
+    const kind = document.querySelector('[data-testid="aar-note-kind"]');
+    if (!kind) return 'no kind choice';
+    const opensOn = kind.querySelector('.mat-button-toggle-checked')?.textContent.trim();
+    [...kind.querySelectorAll('button')].find(b => b.textContent.includes('ICS-214 line')).click();
+    await sleep(300);
+    const label = document.querySelector('[data-testid="aar-note"]')?.textContent.replace('edit_note', '').trim();
+    const ta = document.querySelector('[data-testid="aar-note-text"]');
+    Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set.call(ta, 'E2E arrived at the command post');
+    ta.dispatchEvent(new Event('input', { bubbles: true }));
+    const hasTime = !!document.querySelector('[data-testid="aar-note-time"]');
+    const hasAbout = !!document.querySelector('[data-testid="aar-note-about"]');
+    await sleep(200);
+    document.querySelector('[data-testid="aar-note-save"]').click();
+    await sleep(600);
+    return { opensOn, label, hasTime, hasAbout, dialogOpen: !!document.querySelector('[data-testid="aar-note-text"]') };
+  })()`)
+  check('the box opens on AAR note, the button reads AAR/214, a 214 line has a time and no About choice',
+    captured, { opensOn: 'AAR note', label: 'AAR/214', hasTime: true, hasAbout: false, dialogOpen: false })
+
+  const stored = JSON.parse((await idbGetRaw('aarNotes')) || '{}').notes || []
+  check('the line is stored as an activity line about the incident, with no edited time',
+    stored.map(n => [n.text, n.kind, n.about, n.at === undefined]), [['E2E arrived at the command post', 'activity', 'incident', true]])
+  check('the kind used last is remembered on this device', await evaluate(`localStorage.getItem('aarNoteLastKind')`), 'activity')
+
+  await goto('/after-action')
+  check('After Action lists the line in the ICS-214 section',
+    await evaluate(`[...document.querySelectorAll('[data-testid="aar-214-text"]')].map(t => t.value)`), ['E2E arrived at the command post'])
+  check('...and not among the AAR notes',
+    await evaluate(`document.querySelectorAll('[data-testid="aar-item"]').length + ':' + !!document.querySelector('[data-testid="aar-empty"]')`), '0:true')
+
+  await evaluate(`window.__rtPdf = null;
+    const orig = URL.createObjectURL.bind(URL);
+    URL.createObjectURL = b => { b.slice(0, 5).text().then(h => { window.__rtPdf = { type: b.type, size: b.size, head: h } }); return orig(b) }`)
+  await evaluate(`document.querySelector('[data-testid="aar-214-export"]').click()`)
+  await sleep(800)
+  const hasFields = await evaluate(`!!document.querySelector('[data-testid="ics214-name"]') && document.querySelector('[data-testid="ics214-position"]')?.value`)
+  check('the Export dialog opens with the ICS position defaulted', hasFields, 'Radio Operator')
+  await evaluate(`(() => {
+    const i = document.querySelector('[data-testid="ics214-name"]');
+    Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(i, 'E2E Scribe');
+    i.dispatchEvent(new Event('input', { bubbles: true }));
+  })()`)
+  await sleep(200)
+  await evaluate(`document.querySelector('[data-testid="ics214-export"]').click()`)
+  const pdf = await pollUntil(() => evaluate(`window.__rtPdf`), v => !!v, 40, 300)
+  check('Export ICS-214 produces a PDF', [pdf?.type, pdf?.head, (pdf?.size || 0) > 1000], ['application/pdf', '%PDF-', true])
+  await sleep(500)
+  const header = JSON.parse((await idbGetRaw('activityLogHeader')) || '{}')
+  check('the header was kept for next time', [header.name, header.icsPosition], ['E2E Scribe', 'Radio Operator'])
+
+  await idbRemoveRaw('aarNotes')
+  await idbRemoveRaw('activityLogHeader')
+  await evaluate(`localStorage.removeItem('aarNoteLastKind')`)
+}
+
 /** Small seeding helpers shared by the E-198 checks: a mission name, a roster, and a radio log written straight to storage. */
 const importSafetySeed = {
   setMission: name => evaluate(`(() => { const s = JSON.parse(localStorage.getItem('appSettings') || '{}'); s.mission = ${JSON.stringify(name)}; s.event = 'drill'; s.opPeriod = '1'; localStorage.setItem('appSettings', JSON.stringify(s)); })()`),
@@ -5165,6 +5237,7 @@ async function main() {
       if (want('mission')) await checkMissionUnsavedChangesGuard()
       if (want('mission')) await checkMissionAddRowsPersist()
       if (want('mission')) await checkAarNotes()
+      if (want('mission')) await checkActivityLog()
       // (attachments, smaller copies and board moved to the end: they wipe storage - see there)
       if (want('entry')) await checkEntryUsesNewMissionDefault()
       if (want('mission')) await checkStatusColorMigration()
