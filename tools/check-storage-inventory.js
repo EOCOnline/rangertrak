@@ -25,10 +25,11 @@ const PASS_THROUGH = [
   { file: 'shared/storage/record-store.ts', expr: 'key', why: 'RecordStore itself; callers name the keys' },
   { file: 'shared/storage/record-store.ts', expr: 'k', why: 'RecordStore re-writing its own map' },
   { file: 'shared/services/device-prefs.service.ts', expr: 'key', why: 'its *_KEY constants are collected below' },
+  { file: 'shared/services/view.service.ts', expr: 'key', why: 'its *_KEY constants are collected below' },
   { file: 'shared/mapping/cache-first-source.ts', expr: 'this.cacheName', why: 'constructor param; callers pass PMTILES_WARM_CACHE_NAME' },
 ]
 // Files whose *_KEY string constants are keys in their own right (behind a pass-through).
-const KEY_CONSTANT_FILES = ['shared/services/device-prefs.service.ts']
+const KEY_CONSTANT_FILES = ['shared/services/device-prefs.service.ts', 'shared/services/view.service.ts']
 
 function walk(dir) {
   const out = []
