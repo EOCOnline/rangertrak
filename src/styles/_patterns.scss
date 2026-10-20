@@ -231,7 +231,9 @@
 // "Full view" text pill is gone. Applied by [rtAdvanced] (shared/view/advanced.directive.ts), never
 // by hand; the directive also adds the title and aria-description "Full view option". The rule is
 // an inset shadow, so the marker takes no width. Theme tokens only. Not printed.
-.rt-advanced {
+// Doubled class: Material's card elevation rule (`.mat-mdc-card-outlined`, same weight, later in the
+// cascade) otherwise wins and the edge never shows on a card.
+.rt-advanced.rt-advanced {
   box-shadow: inset 3px 0 0 var(--rt-advanced);
 
   @media print { box-shadow: none; }
