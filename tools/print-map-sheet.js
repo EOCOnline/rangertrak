@@ -105,6 +105,9 @@ async function main() {
       }
     }
     await send('Page.enable'); await send('Runtime.enable')
+    // E-207 / D-62: a clean profile is a new install, which opens in Simple view and hides Print map.
+    await send('Page.addScriptToEvaluateOnNewDocument', { source: `try { if (!localStorage.getItem('rt-view')) {
+      localStorage.setItem('rt-view', 'full'); localStorage.setItem('rt-view-source', 'user') } } catch { }` })
 
     // Fresh profile, then load the default sample mission from Mission > Danger zone.
     await send('Page.navigate', { url: `${BASE}/mission` }); await sleep(3500)

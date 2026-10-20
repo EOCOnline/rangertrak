@@ -107,6 +107,10 @@ async function openChrome(profile) {
     return r.result.value
   }
   await send('Page.enable'); await send('Runtime.enable')
+  // E-207 / D-62: a clean profile is a new install, which opens in Simple view and hides the
+  // Alternative map switch this test flips.
+  await send('Page.addScriptToEvaluateOnNewDocument', { source: `try { if (!localStorage.getItem('rt-view')) {
+    localStorage.setItem('rt-view', 'full'); localStorage.setItem('rt-view-source', 'user') } } catch { }` })
   const close = () => { try { ws.close() } catch { } try { chrome.kill() } catch { } }
   // A hard kill can beat Chrome's lazy localStorage flush to disk: 3 of 4 runs lost the whole
   // demo load (mission name AND demo marker) across the restart below, which no real browser
