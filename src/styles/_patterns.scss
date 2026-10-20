@@ -235,7 +235,7 @@
   position  : relative;
   box-shadow: inset 3px 0 0 var(--rt-line-strong);
 
-  &::after {
+  &::before {
     content       : 'Advanced';
     position      : absolute;
     top           : 0;
@@ -254,7 +254,7 @@
   @media print {
     box-shadow: none;
 
-    &::after { content: none; }
+    &::before { content: none; }
   }
 }
 
@@ -263,7 +263,7 @@
 .leaflet-control-layers .rt-advanced {
   padding-inline-start: 4px;
 
-  &::after { content: none; }
+  &::before { content: none; }
 }
 
 // ── Masonry (E-169) ──────────────────────────────────────────────────────────

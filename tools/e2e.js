@@ -62,7 +62,7 @@ const KEEP_OPEN = args.includes('--keep-open')
 // page or functionality, so all need not run." Quiet is the default: only failures print (each
 // under its section heading) plus the final count. --verbose prints every PASS and note again.
 // --only=map,entry runs just those groups (see want() at each call in main()); groups: shell,
-// entry, map, radiolog, roster, mission, backup, attachments, board. Combines with --full and --read-only.
+// entry, map, radiolog, roster, mission, backup, attachments, board, view. Combines with --full and --read-only.
 const VERBOSE = args.includes('--verbose')
 const ONLY = arg('only', '').split(',').map(g => g.trim()).filter(Boolean)
 const want = group => !ONLY.length || ONLY.includes(group)
@@ -83,6 +83,21 @@ function showSection() {
 }
 const REAL_GEOCODING = args.includes('--real-geocoding')
 const PORT = 9444
+
+/**
+ * E-207 / D-62: a clean profile is a new install, and a new install starts in Simple view. Every group but
+ * `view` was written against the whole app, so this stores rt-view=full / rt-view-source=user before the
+ * app loads (on every navigation) whenever no view is stored yet. It only fills an empty slot, and this
+ * profile is a throwaway one. checkSimpleView() takes it off for its own run.
+ */
+const FORCE_FULL_VIEW_SCRIPT = `(() => {
+  try {
+    if (localStorage.getItem('rt-view') === null) {
+      localStorage.setItem('rt-view', 'full'); localStorage.setItem('rt-view-source', 'user')
+    }
+  } catch { }
+})()`
+let forceFullViewId = null
 
 /**
  * 2026-08-29: this suite's own traffic got Nominatim's rate limit (~1 req/sec, see
@@ -520,7 +535,20 @@ function makeFixtures(dir) {
     'E2E Nowhere,E2E Water,,,no fix yet',
   ].join('\r\n') + '\r\n')
 
-  return { rangers, rosterPath, aliasPath, setupFilePath, csvPath, placesCsvPath }
+  // E-207: three Setup files whose only point is the view they suggest. Distinct callsigns so each one has
+  // something to add to the roster (the import dialog has nothing to press otherwise).
+  const suggesting = (name, callsign, suggestedView) => {
+    const p = path.join(dir, name)
+    const manifest = { schemaVersion: 4, exportedAt: '2026-10-19T00:00:00.000Z', appVersion: '0.99.60',
+      rangers: [{ callsign, fullName: 'Fixture ' + callsign, team: 'CERT', rew: 'VI-' + callsign.slice(-1) + '99', role: 'REW / Active' }], suggestedView }
+    fs.writeFileSync(p, Buffer.from(zipSync({ 'mission-zip.json': new Uint8Array(Buffer.from(JSON.stringify(manifest))) })))
+    return p
+  }
+  const suggestFullPath = suggesting('setup-suggest-full.zip', 'E2E-V1', 'full')
+  const suggestSimplePath = suggesting('setup-suggest-simple.zip', 'E2E-V2', 'simple')
+  const suggestFullAgainPath = suggesting('setup-suggest-full-again.zip', 'E2E-V3', 'full')
+
+  return { rangers, rosterPath, aliasPath, setupFilePath, csvPath, placesCsvPath, suggestFullPath, suggestSimplePath, suggestFullAgainPath }
 }
 
 // ── the checks ───────────────────────────────────────────────────────────────
@@ -4811,6 +4839,190 @@ function findChrome() {
   return hit
 }
 
+/**
+ * E-207 / ADR D-62: Simple view and Full view.
+ *
+ * A clean profile is a NEW install, and a new install starts in Simple view. Every other group in this
+ * suite was written against the whole app, so main() installs FORCE_FULL_VIEW_SCRIPT, which stores
+ * rt-view=full / rt-view-source=user before the app loads whenever no view is stored yet. This group
+ * takes that script off while it runs, so it sees a real first run, and puts it back at the end.
+ *
+ * What it proves, in order: a clean profile starts Simple (source default); each page hides its unused
+ * advanced controls and keeps the everyday ones; Full view shows them with the Advanced marker and it
+ * does not widen a phone; a tactical call added in Full still shows after switching back to Simple (and
+ * Entry then offers To station); an entry with an attachment keeps Entry's attach button in Simple;
+ * "Show all options" switches to Full; and a Setup file's suggested view is applied once, never over the
+ * person's own choice.
+ */
+async function checkSimpleView(fx) {
+  console.log('\nE-207 / D-62: Simple view hides unused advanced controls, never data')
+  const viewState = () => evaluate(`[localStorage.getItem('rt-view'), localStorage.getItem('rt-view-source')]`)
+  const has = sel => evaluate(`!!document.querySelector(${JSON.stringify(sel)})`)
+  const hasText = (sel, pattern) => evaluate(`[...document.querySelectorAll(${JSON.stringify(sel)})].some(e => new RegExp(${JSON.stringify(pattern)}).test(e.textContent))`)
+  const clickToggle = id => evaluate(`document.querySelector('[data-testid=${id}] button')?.click()`)
+  const wipe = async () => { await goto('/'); await evaluate(`localStorage.clear()`); await idbClearAll(); await attachmentsWipe() }
+  const firstPresent = async sels => { for (const s of sels) if (await has(s)) return s; return null }
+
+  await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: forceFullViewId })
+  try {
+    // ── a new install ──────────────────────────────────────────────────
+    await wipe()
+    await goto('/mission', 4500)
+    check('a clean profile starts in Simple view, source default', await viewState(), ['simple', 'default'])
+    check('Mission hides Tactical call signs', await has('rangertrak-mission-tactical-calls'), false)
+    check('Mission hides the other advanced cards too',
+      await firstPresent(['rangertrak-mission-field-report-statuses', 'rangertrak-mission-location-types',
+        'rangertrak-mission-locations-list', 'rangertrak-mission-maps-section', 'rangertrak-mission-recipients213',
+        'rangertrak-mission-command-post']), null)
+    check('...and Data safety\'s Setup file, Device encryption and Attachments, and the Advanced card',
+      [await has('rangertrak-setup-file'), await hasText('h3', 'Device encryption'), await has('[data-testid=attachment-budget-line]'),
+        await has('[data-testid=debug-mode]')], [false, false, false, false])
+    check('Mission keeps Mode, View, Mission, Location defaults, Data safety and the Danger zone',
+      [await has('[data-testid=mission-mode-card]'), await has('[data-testid=mission-view-card]'),
+        await has('rangertrak-mission-details-section'), await has('rangertrak-mission-location-section'),
+        await has('#readiness-storage-protection'), await has('.rt-danger-zone-trigger')], [true, true, true, true, true, true])
+    check('Storage protection and Mission backup still show',
+      [await hasText('#readiness-storage-protection h3', 'Storage protection'), await hasText('#readiness-storage-protection h3', 'Mission backup')],
+      [true, true])
+    check('Show all options is at the foot of Mission', await has('[data-testid=show-all-options]'), true)
+    check('nothing in Simple view is marked Advanced', await has('.rt-advanced'), false)
+
+    await goto('/', 4500)
+    check('Entry keeps Who, Where, When, Notes and Submit',
+      [await has('#enter__Callsign-input'), await has('#enter__Where-latI'), await has('rangertrak-time-picker'),
+        await has('#enter__What--area'), await has('.enter__Submit-button')], [true, true, true, true, true])
+    check('Entry hides To station, Source, attachments, ICS-213, the evidence location and the format picker',
+      await firstPresent(['#enter__To-input', '.enter__Source', '[data-testid=entry-attach]', '[data-testid=generates213-toggle]',
+        '[data-testid=evidence-toggle]', '.enter__Where-switcher']), null)
+    check('Entry offers Show all options', await has('[data-testid=show-all-options]'), true)
+
+    await goto('/map', 5500)
+    check('Map hides the Alternative map switch, Print map and the places panel',
+      await firstPresent(['[data-testid=mapEngineSwitch]', '[data-testid=printMap]', 'rangertrak-places-io']), null)
+    check('Map keeps Zoom to Extent and Zoom to offline tiles',
+      [await has('[data-testid=zoomToExtent]'), await has('[data-testid=zoomToOfflineTiles]')], [true, true])
+    const rows = await evaluate(`(() => {
+      const labels = [...document.querySelectorAll('.leaflet-control-layers label')]
+      const extra = labels.filter(l => /USNG|Range rings|Satellite|Hiking|Roads and place/.test(l.textContent))
+      const core = labels.filter(l => /OpenStreetMap|Locations|Radio log entries/.test(l.textContent))
+      return { extra: extra.length, extraHidden: extra.every(l => getComputedStyle(l).display === 'none'),
+        coreShown: core.length >= 3 && core.every(l => getComputedStyle(l).display !== 'none') }
+    })()`)
+    check('the layers box hides its extras (grid, rings, satellite, hiking trails) and keeps the base layers',
+      [rows.extra > 0, rows.extraHidden, rows.coreShown], [true, true, true])
+    check('Map offers Show all options', await has('[data-testid=show-all-options]'), true)
+
+    await goto('/rangers', 4000)
+    check('Rangers keeps the grid, Add and Import, and hides the layers card and the Setup files link',
+      [await has('ag-grid-angular'), await has('#importRosterFile'), await has('[data-testid=layersCard]'),
+        await hasText('a', 'Setup files')], [true, true, false, false])
+    check('Rangers offers Show all options', await has('[data-testid=show-all-options]'), true)
+
+    await goto('/help', 3500)
+    check('Help carries the view switch', await has('[data-testid=view-switch]'), true)
+
+    // ── Full view ──────────────────────────────────────────────────────
+    await goto('/mission', 4000)
+    await clickToggle('view-full')
+    await sleep(600)
+    check('the person\'s switch to Full is stored with source user', await viewState(), ['full', 'user'])
+    check('Full view shows the advanced Mission cards',
+      [await has('rangertrak-mission-tactical-calls'), await has('rangertrak-mission-maps-section'), await has('rangertrak-setup-file')],
+      [true, true, true])
+    const marker = await evaluate(`(() => {
+      const card = document.querySelector('rangertrak-mission-tactical-calls mat-card')
+      return { cls: card?.classList.contains('rt-advanced') ?? false, label: card ? getComputedStyle(card, '::before').content : '' }
+    })()`)
+    check('Full view marks them Advanced with the shared marker', [marker.cls, marker.label], [true, '"Advanced"'])
+    check('Show all options is gone in Full view', await has('[data-testid=show-all-options]'), false)
+
+    // The marker takes no width: nothing widens a phone (360 px), on Mission or Entry.
+    await send('Emulation.setDeviceMetricsOverride', { width: 360, height: 800, deviceScaleFactor: 2, mobile: true })
+    for (const route of ['/mission', '/']) {
+      await goto(route, 4500)
+      const w = await evaluate(`({ doc: Math.ceil(document.documentElement.scrollWidth), client: document.documentElement.clientWidth, inner: innerWidth })`)
+      check(`${route === '/' ? 'Entry' : 'Mission'} in Full view with the Advanced marker fits a 360 px phone`, [w.doc <= w.client, w.inner <= w.client], [true, true])
+    }
+    await send('Emulation.clearDeviceMetricsOverride')
+
+    // ── a tactical call added in Full still shows in Simple ───────────
+    await goto('/mission', 4000)
+    await evaluate(`document.querySelector('[data-testid=addTacticalCall]')?.click()`)
+    await sleep(400)
+    await evaluate(`(() => {
+      const input = document.querySelector('[data-testid=tacticalRow] input')
+      input.focus()
+      Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(input, 'E2E Tac 1')
+      input.dispatchEvent(new Event('input', { bubbles: true }))
+      input.dispatchEvent(new Event('blur')); input.dispatchEvent(new Event('focusout', { bubbles: true }))
+    })()`)
+    const saved = await pollUntil(() => evaluate(`(localStorage.getItem('appSettings') || '').includes('E2E Tac 1')`), v => v === true, 20, 300)
+    if (!saved) note('appSettings: ' + (await evaluate(`(localStorage.getItem('appSettings') || 'none').slice(-300) + ' rows=' + document.querySelectorAll('[data-testid=tacticalRow]').length`)))
+    check('the tactical call is saved with the mission', saved, true)
+    await clickToggle('view-simple')
+    await sleep(600)
+    check('switching back to Simple is stored with source user', await viewState(), ['simple', 'user'])
+    check('the tactical call card still shows in Simple view, because the mission uses it',
+      await has('rangertrak-mission-tactical-calls'), true)
+    check('...while the unused cards stay hidden', await has('rangertrak-mission-recipients213'), false)
+    check('...and nothing was changed: the call is still in the mission',
+      await evaluate(`(localStorage.getItem('appSettings') || '').includes('E2E Tac 1')`), true)
+    await goto('/', 4500)
+    check('Entry then shows To station in Simple view', await has('#enter__To-input'), true)
+
+    // ── an attachment keeps its buttons in Simple ─────────────────────
+    const png = path.join(path.dirname(fx.rosterPath), 'e2e-view-clue.png')
+    fs.writeFileSync(png, PNG_1PX)
+    await goto('/mission', 3500)
+    await clickToggle('view-full')
+    await sleep(600)
+    check('Entry in Full view takes an attachment (setup for the next checks)',
+      (await entrySaveWithAttachments('E2E-VIEW', [png])) === 1, true)
+    check('the attachment is stored', (await pollUntil(attachmentKeys, k => k.length === 1)).length, 1)
+    await sleep(2500) // let the entry that holds it reach storage before leaving the page
+    await goto('/mission', 3500)
+    await clickToggle('view-simple')
+    await sleep(600)
+    check('Mission shows the Attachments budget in Simple view once a file is stored',
+      await pollUntil(() => has('[data-testid=attachment-budget-line]'), v => v === true, 10, 500), true)
+    await goto('/', 4500)
+    check('Entry keeps the attach button in Simple view once the mission has an attachment', await has('[data-testid=entry-attach]'), true)
+
+    // ── Show all options ──────────────────────────────────────────────
+    await goto('/map', 5500)
+    check('Map still hides Print map in Simple view', await has('[data-testid=printMap]'), false)
+    await evaluate(`document.querySelector('[data-testid=show-all-options]')?.click()`)
+    await sleep(800)
+    check('Show all options switches to Full, source user', await viewState(), ['full', 'user'])
+    check('...and the page now shows Print map and the Alternative map switch',
+      [await has('[data-testid=printMap]'), await has('[data-testid=mapEngineSwitch]')], [true, true])
+    check('...and the button is gone', await has('[data-testid=show-all-options]'), false)
+
+    // ── a Setup file's suggested view ─────────────────────────────────
+    await wipe()
+    await goto('/rangers', 4000)
+    check('a wiped profile is a new install again', await viewState(), ['simple', 'default'])
+    await importRoster(fx.suggestFullPath)
+    check('a Setup file suggesting Full sets the view, recorded as setup',
+      await pollUntil(viewState, v => v[1] === 'setup'), ['full', 'setup'])
+    await goto('/rangers', 4000)
+    await importRoster(fx.suggestSimplePath)
+    await sleep(1500)
+    check('a second suggestion is not applied: it was applied once', await viewState(), ['full', 'setup'])
+    await goto('/mission', 4000)
+    await clickToggle('view-simple')
+    await sleep(600)
+    await goto('/rangers', 4000)
+    await importRoster(fx.suggestFullAgainPath)
+    await sleep(1500)
+    check('a suggestion never overrides the person\'s own choice', await viewState(), ['simple', 'user'])
+  } finally {
+    await send('Emulation.clearDeviceMetricsOverride').catch(() => { })
+    forceFullViewId = (await send('Page.addScriptToEvaluateOnNewDocument', { source: FORCE_FULL_VIEW_SCRIPT })).identifier
+    await goto('/'); await evaluate(`localStorage.clear()`); await idbClearAll(); await attachmentsWipe()
+  }
+}
+
 async function main() {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'rangertrak-e2e-'))
   const profile = path.join(tmp, 'profile')
@@ -4876,6 +5088,7 @@ async function main() {
       await send('Page.addScriptToEvaluateOnNewDocument', { source: MOCK_NOMINATIM_SCRIPT })
     }
     await send('Page.setDownloadBehavior', { behavior: 'allow', downloadPath: downloads })
+    forceFullViewId = (await send('Page.addScriptToEvaluateOnNewDocument', { source: FORCE_FULL_VIEW_SCRIPT })).identifier
 
     if (want('shell')) await checkRoutesRender()
     if (want('shell')) await checkNavbarLayout()
@@ -4906,6 +5119,7 @@ async function main() {
       note('read-only: skipping roster, photo, submit and mission checks')
     } else {
       const fx = makeFixtures(path.join(tmp, 'fixtures'))
+      if (want('view')) await checkSimpleView(fx) // E-207; starts from a wiped profile, wipes it again after
       if (want('entry')) await checkUsageModes() // E-168; wipes storage, so before checkRosterLifecycle creates the E2E-AA1 ranger
       if (want('roster')) await checkRangersFilterChips(fx)
       if (want('roster')) await checkRosterLayers(fx) // E-187 C

@@ -702,6 +702,9 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const summary = this.applyImport(file.name, result, named)
+    // E-207 / D-62 item 6: a Setup file may suggest a view (a device in Simple view has no Setup file
+    // card to load it from). Applied once, and never over the person's own choice.
+    this.view.suggest(manifest.suggestedView)
     const rosterNow = this.rangerService.rangers
     const files = photos.map(p =>
       new File([p.bytes as BlobPart], p.filename, { type: this.mimeFor(p.filename) }))
