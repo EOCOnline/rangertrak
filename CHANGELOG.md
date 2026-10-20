@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.60-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.59-alpha...v0.99.60-alpha) (2026-10-20)
+
+
+### Features
+
+* **map:** Montecito demo street-detail map (E-195) ([08bbe1b](https://github.com/SteadyEOC/RangerTrak/commit/08bbe1b23aa8c0bfcdef52b0858e69406f5f5d5b))
+
+
+### Bug Fixes
+
+* AAR 2026-10-19 phone fixes (E-201, E-202, E-203 colours) ([617b2e6](https://github.com/SteadyEOC/RangerTrak/commit/617b2e6cf9425ff3bad786fc1e5ebc821d08550c))
+
 ### [0.99.59-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.58-alpha...v0.99.59-alpha) (2026-10-19)
 
 
