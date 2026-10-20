@@ -3,7 +3,7 @@ import { Observable, ReplaySubject } from 'rxjs'
 import { Injectable, Optional, SkipSelf, signal } from '@angular/core'
 
 import { LogService } from './log.service'
-import { AarNoteAbout, AarNoteType } from './aar-note.interface'
+import { AarNoteAbout, AarNoteKind, AarNoteType } from './aar-note.interface'
 import { AAR_NOTE_SCHEMA_VERSION, migrateAarNotes, normalizeAarNotes } from '../../domain/aar-note-migration'
 import { newLocationUid } from '../../domain/mission-location-migration'
 import { recordStore } from '../storage/record-store'
@@ -69,19 +69,25 @@ export class AarNoteService {
     this.notesReplay$.next(this.list)
   }
 
-  /** Captures a note. Returns it, or null when the text is blank. */
-  addNote(text: string, about: AarNoteAbout, page: string): AarNoteType | null {
+  /**
+   * Captures a note. Returns it, or null when the text is blank. E-04 / D-63: `kind` 'activity'
+   * adds an ICS-214 line instead - always about the incident; `at` is the scribe's edited time
+   * (ISO), passed only when it differs from now.
+   */
+  addNote(text: string, about: AarNoteAbout, page: string, kind: AarNoteKind = 'aar', at?: string): AarNoteType | null {
     if (!text.trim()) return null
     const note: AarNoteType = {
       uid: newLocationUid(),
       createdAt: new Date().toISOString(),
       text: text.trim(),
       page,
-      about,
+      about: kind === 'activity' ? 'incident' : about,
+      kind,
     }
+    if (kind === 'activity' && at && !isNaN(new Date(at).getTime())) note.at = at
     this.list = [...this.list, note]
     this.saveAndPublish()
-    this.log.verbose(`Noted for the after-action review (${about}, on ${page})`, this.id)
+    this.log.verbose(`Noted for the after-action review (${kind}, ${about}, on ${page})`, this.id)
     return note
   }
 

@@ -35,7 +35,8 @@ describe('AarNoteService (E-116)', () => {
     service.addNote('MGRS field slow to type', 'app', 'Entry');
 
     const stored = JSON.parse(recordStore.getItem('aarNotes')!);
-    expect(stored.schemaVersion).toBe(1);
+    expect(stored.schemaVersion).toBe(2);
+    expect(stored.notes[0].kind).toBe('aar');
     expect(stored.notes[0].text).toBe('MGRS field slow to type');
   });
 
@@ -63,5 +64,24 @@ describe('AarNoteService (E-116)', () => {
     service.replaceAllNotes([{ text: 'from a backup' }, { junk: true }]);
     expect(service.notes().length).toBe(1);
     expect(service.notes()[0].uid).toBeTruthy();
+  });
+
+  // E-04 / D-63
+  it('captures an ICS-214 line: always about the incident, with an edited time only when given', () => {
+    const service = TestBed.inject(AarNoteService);
+    const plain = service.addNote('Net opened', 'app', 'Entry', 'activity')!;
+    expect(plain.kind).toBe('activity');
+    expect(plain.about).toBe('incident');
+    expect('at' in plain).toBeFalse();
+
+    const edited = service.addNote('Shift change', 'incident', 'Map', 'activity', '2026-10-20T07:30:00.000Z')!;
+    expect(edited.at).toBe('2026-10-20T07:30:00.000Z');
+    expect(service.addNote('x', 'incident', 'Map', 'aar', '2026-10-20T07:30:00.000Z')!.at).toBeUndefined();
+    expect(service.notes().filter(n => n.kind === 'activity').length).toBe(2);
+  });
+
+  it('reads schema 1 storage as AAR notes', () => {
+    recordStore.setItem('aarNotes', JSON.stringify({ schemaVersion: 1, notes: [{ uid: 'a', createdAt: '2026-09-27T10:00:00.000Z', text: 'old', page: 'Map', about: 'incident' }] }));
+    expect(TestBed.inject(AarNoteService).notes()[0].kind).toBe('aar');
   });
 });

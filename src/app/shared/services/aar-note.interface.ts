@@ -19,7 +19,22 @@ export interface AarNoteType {
   area?: string
   recommendation?: string
   owner?: string
+  /**
+   * E-04 / D-63: `aar` (default) is a note for the debrief; `activity` is a line for the ICS-214
+   * activity log. A 214 line is a time and a line of text: it keeps `about: 'incident'`
+   * internally and never carries area/recommendation/owner. Schema 1 data has no kind and reads
+   * as `aar`.
+   */
+  kind: AarNoteKind
+  /**
+   * E-04 / D-63: the line's own time (ISO) when the scribe edited it - they log late. `createdAt`
+   * stays the capture time; the time to show and sort by is `noteTime()` (`at ?? createdAt`),
+   * the same split as `loggedAt` on radio entries. Set only when it differs from capture.
+   */
+  at?: string
 }
+
+export type AarNoteKind = 'aar' | 'activity'
 
 export type AarNoteAbout = 'incident' | 'app'
 

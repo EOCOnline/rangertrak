@@ -246,7 +246,8 @@ export function summarizeMission(input: SummaryInput): MissionSummary {
     const t = ms(n.createdAt)
     return Number.isFinite(t) && t >= noteFrom && t <= noteTo
   }
-  const windowNotes = notes.filter(inNoteWindow)
+  // E-04 / D-63: ICS-214 activity lines are not debrief notes and never count here.
+  const windowNotes = notes.filter(n => n.kind !== 'activity').filter(inNoteWindow)
   const incident = windowNotes.filter(n => n.about !== 'app')
     .sort((a, b) => ms(a.createdAt) - ms(b.createdAt))
   const groupMap = new Map<string, SummaryNoteGroup>()

@@ -23,7 +23,7 @@ const STATUSES: RadioLogStatusType[] = [
 ]
 
 const note = (createdAt: Date, over: Partial<AarNoteType> = {}): AarNoteType => ({
-  uid: 'n' + nextId++, createdAt: createdAt.toISOString(), text: 'x', page: 'Entry', about: 'incident', ...over,
+  uid: 'n' + nextId++, createdAt: createdAt.toISOString(), text: 'x', page: 'Entry', about: 'incident', kind: 'aar', ...over,
 })
 
 const ranger = (over: Partial<RangerType>): RangerType => ({
@@ -270,6 +270,14 @@ describe('summarizeMission', () => {
         notes: [note(at(15, 9), { about: 'app' }), note(at(15, 10), { about: 'app' }), note(at(15, 11))],
       })
       expect(s.aar.appCount).toBe(2)
+      expect(s.aar.groups.flatMap(g => g.notes).length).toBe(1)
+    })
+
+    // E-04 / D-63
+    it('never counts or groups an ICS-214 activity line', () => {
+      const s = run({ notes: [note(at(15, 9), { kind: 'activity' }), note(at(15, 10))] })
+      expect(s.aar.incidentCount).toBe(1)
+      expect(s.aar.appCount).toBe(0)
       expect(s.aar.groups.flatMap(g => g.notes).length).toBe(1)
     })
     it('keeps only notes made inside a chosen window, but all of them for the whole log', () => {

@@ -29,7 +29,7 @@ export { LocationType, undefinedAddressFlag, undefinedLocation } from "./locatio
 export { LogLevel, LogLevelNames, LogType, LogHeadings } from "./log.interface"
 export { RangerType, UnknownRanger } from "./ranger.interface"
 export { MissionType, MissionModeType, TacticalCallType } from "./mission.interface"
-export { AarNoteType, AarNoteAbout, AAR_NOTE_ABOUT_LABELS } from "./aar-note.interface"
+export { AarNoteType, AarNoteAbout, AarNoteKind, AAR_NOTE_ABOUT_LABELS } from "./aar-note.interface"
 export {
   LocationCategoryType, MissionLocationType, LocationIconId, LOCATION_ICON_OPTIONS
 } from "./mission-location.interface"

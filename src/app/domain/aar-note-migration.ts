@@ -1,11 +1,11 @@
-import type { AarNoteAbout, AarNoteType } from '../shared/services/aar-note.interface'
+import type { AarNoteAbout, AarNoteKind, AarNoteType } from '../shared/services/aar-note.interface'
 import { newLocationUid } from './mission-location-migration'
 
 /**
  * E-116: the stored shape of After Action notes, versioned from the start like Locations
  * (mission-location-migration.ts), so a later field change has somewhere to migrate from.
  */
-export const AAR_NOTE_SCHEMA_VERSION = 1
+export const AAR_NOTE_SCHEMA_VERSION = 2 // E-04 / D-63: 1 -> 2 adds `kind` and `at`; schema 1 reads as all 'aar'
 
 export type StoredAarNotes = {
   schemaVersion: number,
@@ -13,6 +13,12 @@ export type StoredAarNotes = {
 }
 
 const ABOUT_VALUES: readonly AarNoteAbout[] = ['incident', 'app']
+const KIND_VALUES: readonly AarNoteKind[] = ['aar', 'activity']
+
+/** E-04 / D-63: the time a note counts as happening - the edited time if there is one, else capture. */
+export function noteTime(n: Pick<AarNoteType, 'createdAt' | 'at'>): string {
+  return n.at ?? n.createdAt
+}
 
 /**
  * Repairs one stored or imported note: every note leaves with a string `text`, a valid
@@ -29,17 +35,28 @@ function normalizeNote(raw: unknown, usedUids: Set<string>): AarNoteType | null 
   while (!uid || usedUids.has(uid)) uid = newLocationUid()
   usedUids.add(uid)
 
+  // E-04 / D-63: a missing or unknown kind is an AAR note (schema 1 data, a hand-edited file).
+  const kind: AarNoteKind = KIND_VALUES.includes(n.kind as AarNoteKind) ? n.kind as AarNoteKind : 'aar'
+
   const note: AarNoteType = {
     uid,
     createdAt: typeof n.createdAt === 'string' && n.createdAt ? n.createdAt : new Date(0).toISOString(),
     text,
     page: typeof n.page === 'string' ? n.page : '',
-    about: ABOUT_VALUES.includes(n.about as AarNoteAbout) ? n.about as AarNoteAbout : 'incident',
+    // An activity line is always about the incident; it has no About choice.
+    about: kind === 'activity' ? 'incident'
+      : ABOUT_VALUES.includes(n.about as AarNoteAbout) ? n.about as AarNoteAbout : 'incident',
+    kind,
   }
-  // Blank review fields are left off rather than stored as empty strings or undefined.
-  for (const field of ['area', 'recommendation', 'owner'] as const) {
-    const v = n[field]
-    if (typeof v === 'string' && v.trim()) note[field] = v
+  // A time that does not parse is dropped rather than kept, so the line falls back to capture time.
+  if (typeof n.at === 'string' && n.at && !isNaN(new Date(n.at).getTime())) note.at = n.at
+  // Blank review fields are left off rather than stored as empty strings or undefined. An
+  // activity line never carries them.
+  if (kind === 'aar') {
+    for (const field of ['area', 'recommendation', 'owner'] as const) {
+      const v = n[field]
+      if (typeof v === 'string' && v.trim()) note[field] = v
+    }
   }
   return note
 }

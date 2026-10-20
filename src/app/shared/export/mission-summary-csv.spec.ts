@@ -9,7 +9,7 @@ describe('mission summary CSV', () => {
   const now = new Date(2026, 9, 15, 14, 30)
   const summary = summarizeMission({
     entries: [e(1, new Date(2026, 9, 15, 9)), e(2, new Date(2026, 9, 15, 10), { status: 'Normal' })],
-    rangers: [], notes: [{ uid: 'n', createdAt: new Date(2026, 9, 15, 11).toISOString(), text: 'Radios', page: 'Entry', about: 'incident', area: 'Comms' }],
+    rangers: [], notes: [{ uid: 'n', createdAt: new Date(2026, 9, 15, 11).toISOString(), text: 'Radios', page: 'Entry', about: 'incident', kind: 'aar', area: 'Comms' }],
     statuses: [{ status: 'Normal', color: 'normal', icon: '' }, { status: 'Urgent', color: 'urgent', icon: '' }],
     window: null, now,
   })
