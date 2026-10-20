@@ -15,6 +15,8 @@ export function confirmReplaceMission(opts: {
   missionName: string,
   /** The normal confirm text, used outside a live mission. */
   message: string,
+  /** Force the word to type (e.g. 'REPLACE') instead of the mission name. */
+  word?: string,
 }): boolean {
   if (opts.state !== 'live') return confirm(opts.message)
 
@@ -24,7 +26,7 @@ export function confirmReplaceMission(opts: {
     + `Cancel = carry on without a backup.`)) {
     return false
   }
-  const word = opts.missionName.trim() || 'REPLACE'
+  const word = opts.word ?? (opts.missionName.trim() || 'REPLACE')
   const typed = prompt(`${opts.message}\n\nTo go ahead, type  ${word}  below.`)
   return typed !== null && typed.trim().toLowerCase() === word.toLowerCase()
 }

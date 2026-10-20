@@ -427,6 +427,36 @@ export function describeRangerMerge(merge: RangerMergeResult): string {
   return `rangers: ${bits.length ? bits.join('; ') : 'no changes'}`
 }
 
+/**
+ * Who a Replace would remove: everyone already on the device whom the merge did not match
+ * (a matched row is updated or unchanged, so it survives; an unmatched one is dropped).
+ */
+export function rangersRemovedByReplace(existing: readonly RangerType[], merge: RangerMergeResult): RangerType[] {
+  const kept = new Set([...merge.overwritten, ...merge.unchanged].map(n => n.uid).filter((u): u is string => !!u))
+  return existing.filter(r => !r.uid || !kept.has(r.uid))
+}
+
+/** The Replace warning: counts from the merge, and the people who would be removed by name. */
+export function describeReplace(existing: readonly RangerType[], merge: RangerMergeResult, maxNamed = 10): string {
+  const removed = rangersRemovedByReplace(existing, merge)
+  const label = (r: RangerType) => {
+    const name = (r.fullName || '').trim()
+    const call = (r.callsign || '').trim()
+    return name && call ? `${name} (${call})` : name || call || r.id || '(unidentified)'
+  }
+  const counts = `${merge.added.length} added, ${merge.overwritten.length} updated, ${merge.unchanged.length} unchanged.`
+  if (!removed.length) return `${counts}
+Nobody on the current roster would be removed.`
+  const named = removed.slice(0, maxNamed).map(r => `  - ${label(r)}`).join('
+')
+  const more = removed.length > maxNamed ? `
+  ...and ${removed.length - maxNamed} more` : ''
+  return `${counts}
+${removed.length} ${removed.length === 1 ? 'person' : 'people'} on the current roster `
+    + `would be REMOVED because they are not in the file:
+${named}${more}`
+}
+
 export function migrateRangers(raw: unknown): StoredRangers {
   // Version 0: a bare array, which is exactly what localStorage holds today.
   if (Array.isArray(raw)) {

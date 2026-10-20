@@ -8,12 +8,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatDialogModule } from '@angular/material/dialog'
 import { MatSelectModule } from '@angular/material/select'
 import { MatRadioModule } from '@angular/material/radio'
-import { mergeRangers, RangerMergeResult } from '../../domain/ranger-migration'
+import { describeReplace, mergeRangers, RangerMergeResult } from '../../domain/ranger-migration'
 import {
   applyMapping, ColumnMapping, exitedStatusLabel, ColumnTarget, guessMapping, headerSetKey, idColumnLabel, recallMapping,
 } from '../../domain/roster-sheet'
 import { SheetFile } from '../../shared/import/sheet-reader'
-import { RangerService, RangerType } from '../../shared/services'
+import { RangerService, RangerType, UsageStateService } from '../../shared/services'
+import { confirmReplaceMission } from '../../shared/demo-picker/replace-guard'
 import { DevicePrefsService } from '../../shared/services/device-prefs.service'
 import { LayerService } from '../../shared/services/layer.service'
 import { layersOfKind, suggestLayerName } from '../../domain/layers'
@@ -82,6 +83,7 @@ export class RosterImportDialogComponent {
   private rangerService = inject(RangerService)
   private prefs = inject(DevicePrefsService)
   private layerService = inject(LayerService)
+  private usage = inject(UsageStateService)
 
   readonly isSheet = !!this.data.sheet
   readonly sheets = this.data.sheet?.sheets ?? []
@@ -244,14 +246,23 @@ export class RosterImportDialogComponent {
   }
 
   replace() {
-    const current = this.data.existing.length
-    if (!confirm(
-      `Replace the roster with ${this.incoming().length} people from "${this.data.fileName}"?\n\n`
-      + `This REPLACES the current roster of ${current}: anyone not in this file is removed. `
-      + `Radio log entries and settings are not affected.\n\n`
-      + `Tip: use "Export roster" first if you want to keep the current one.`)) {
-      return
-    }
+    const merge = this.merge()
+    if (!merge) return
+    const ok = confirmReplaceMission({
+      state: this.usage.state(),
+      missionName: '',
+      word: 'REPLACE',
+      message: `Replace the roster with ${this.incoming().length} people from "${this.data.fileName}"?
+
+`
+        + `${describeReplace(this.data.existing, merge)}
+
+`
+        + `Radio log entries and settings are not affected.
+`
+        + `Tip: use "Export roster" first if you want to keep the current one.`,
+    })
+    if (!ok) return
     this.finish('replace')
   }
 

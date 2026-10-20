@@ -1,6 +1,6 @@
 import { RangerType } from '../shared/services/ranger.interface';
 import {
-  describeRangerMerge, isRangerId, mergeRangers, migrateRangers, newRangerUid, normalizeRangerId, normalizeRangerIds,
+  describeRangerMerge, describeReplace, isRangerId, rangersRemovedByReplace, mergeRangers, migrateRangers, newRangerUid, normalizeRangerId, normalizeRangerIds,
   RANGER_SCHEMA_VERSION
 } from './ranger-migration';
 
@@ -479,6 +479,30 @@ describe('ranger-migration (ADR D-42)', () => {
       expect(text).toContain('added 1 (C1)');
       expect(text).toContain('updated 1 (A1: phone)');
       expect(text).toContain('1 already up to date');
+    });
+
+    it('Replace names the people the file does not match, with counts', () => {
+      const existing = [
+        ranger('A1', { id: 'REW-1', uid: 'u-a1', fullName: 'Ann Lee' }),
+        ranger('B1', { id: 'REW-2', uid: 'u-b1' }),
+        ranger('C1', { id: 'REW-3', uid: 'u-c1', fullName: 'Cy Ho' }),
+      ];
+      const merge = mergeRangers(existing, [ranger('A1', { id: 'REW-1' }), ranger('D1', { id: 'REW-4' })]);
+
+      expect(rangersRemovedByReplace(existing, merge).map(r => r.callsign)).toEqual(['B1', 'C1']);
+      const text = describeReplace(existing, merge);
+      expect(text).toContain('1 added, 0 updated, 1 unchanged');
+      expect(text).toContain('2 people');
+      expect(text).toContain('Cy Ho (C1)');
+      expect(text).toContain('- B1');
+    });
+
+    it('Replace caps the named list and says so when nobody is removed', () => {
+      const existing = Array.from({ length: 12 }, (_, i) => ranger(`X${i}`, { id: `REW-${i + 1}`, uid: `u${i}` }));
+      const none = mergeRangers(existing, existing);
+      expect(describeReplace(existing, none)).toContain('Nobody on the current roster would be removed');
+      const all = mergeRangers(existing, [ranger('Z', { id: 'REW-99' })]);
+      expect(describeReplace(existing, all)).toContain('...and 2 more');
     });
   });
 });
