@@ -99,6 +99,11 @@ async function openChrome(profile, downloads) {
     return r.result.value
   }
   await send('Page.enable'); await send('Runtime.enable')
+  // E-207 / D-62: a clean profile is a new install, which opens in Simple view and hides Attach.
+  // The fixture needs the full app; the view is per device and never in the backup, so this
+  // changes nothing the fixture records.
+  await send('Page.addScriptToEvaluateOnNewDocument', { source: `try { if (!localStorage.getItem('rt-view')) {
+    localStorage.setItem('rt-view', 'full'); localStorage.setItem('rt-view-source', 'user') } } catch { }` })
   await send('Page.setDownloadBehavior', { behavior: 'allow', downloadPath: downloads })
   const close = async () => {
     try { await Promise.race([send('Browser.close'), sleep(3000)]) } catch { }
