@@ -152,7 +152,7 @@ describe('summarizeMission', () => {
       const s = run({ rangers, entries: [entry(at(15, 8), { callsign: 'K7AAA' }), entry(at(15, 9), { callsign: 'k7aaa' })] })
       expect(s.byTeam).toEqual([{ label: 'Alpha', count: 1 }, { label: NO_TEAM_LABEL, count: 1 }])
     })
-    it('splits each team by status, in the mission's status order', () => {
+    it('splits each team by status, in the mission status order', () => {
       const s = run({
         rangers,
         entries: [entry(at(15, 8), { callsign: 'K7AAA', status: 'Urgent' }), entry(at(15, 9), { callsign: 'K7AAA' }),

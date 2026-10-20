@@ -445,16 +445,11 @@ export function describeReplace(existing: readonly RangerType[], merge: RangerMe
     return name && call ? `${name} (${call})` : name || call || r.id || '(unidentified)'
   }
   const counts = `${merge.added.length} added, ${merge.overwritten.length} updated, ${merge.unchanged.length} unchanged.`
-  if (!removed.length) return `${counts}
-Nobody on the current roster would be removed.`
-  const named = removed.slice(0, maxNamed).map(r => `  - ${label(r)}`).join('
-')
-  const more = removed.length > maxNamed ? `
-  ...and ${removed.length - maxNamed} more` : ''
-  return `${counts}
-${removed.length} ${removed.length === 1 ? 'person' : 'people'} on the current roster `
-    + `would be REMOVED because they are not in the file:
-${named}${more}`
+  if (!removed.length) return `${counts}\nNobody on the current roster would be removed.`
+  const named = removed.slice(0, maxNamed).map(r => `  - ${label(r)}`).join('\n')
+  const more = removed.length > maxNamed ? `\n  ...and ${removed.length - maxNamed} more` : ''
+  const who = removed.length === 1 ? 'person' : 'people'
+  return `${counts}\n${removed.length} ${who} on the current roster would be REMOVED because they are not in the file:\n${named}${more}`
 }
 
 export function migrateRangers(raw: unknown): StoredRangers {
