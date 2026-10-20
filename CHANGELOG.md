@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.64-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.63-alpha...v0.99.64-alpha) (2026-10-20)
+
+
+### Features
+
+* **demo:** E-213 "Details" link for real-event demos; E-211 larger Help marmot ([040697a](https://github.com/SteadyEOC/RangerTrak/commit/040697a6e14889619ec0c1c8a8ba48dbd20b47d7))
+
 ### [0.99.63-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.62-alpha...v0.99.63-alpha) (2026-10-20)
 
 
