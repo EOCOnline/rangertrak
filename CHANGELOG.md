@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.62-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.61-alpha...v0.99.62-alpha) (2026-10-20)
+
+
+### Bug Fixes
+
+* **view:** E-207 Advanced pill beside the card title, in its own plum colour ([89cf50b](https://github.com/SteadyEOC/RangerTrak/commit/89cf50bbacf7d02d89bed577d84444cab57c49c6))
+
 ### [0.99.61-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.60-alpha...v0.99.61-alpha) (2026-10-20)
 
 
