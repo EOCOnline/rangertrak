@@ -120,6 +120,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.gridApi?.setGridOption?.('headerHeight', this.headerPx())
     this.gridApi?.setGridOption?.('floatingFiltersHeight', this.headerPx())
     this.gridApi?.resetRowHeights?.()
+    setTimeout(() => this.fitColumns())
   }
   private idFieldLabel = 'ID'
   private rowPx = () => this.isPhone() ? RangersComponent.PHONE_ROW_PX : RangersComponent.GRID_ROW_PX
@@ -220,7 +221,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     // field-reports.component.ts for the full reasoning. On this grid the symptom was
     // `ID` and `Notes` holding "(none set)" and "-" in ~290px columns while `Call Sign`
     // and `Full Name` were squeezed.
-    autoSizeStrategy: { type: 'fitCellContents' },
+    // E-205: a phone's three columns share the grid's width instead (see buildColumnDefs).
+    autoSizeStrategy: this.isPhone() ? { type: 'fitGridWidth' } : { type: 'fitCellContents' },
 
     defaultColDef: {
       // flex removed - it made every column flexible, which disables autoSizeStrategy.
@@ -343,8 +345,10 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.isPhone()) return all
     // E-205: name, call sign and team only; the rest is one tap away on a wider screen.
     const keep = ['fullName', 'callsign', 'team']
+    // All three flex (autoSizeStrategy skips flex columns), so together they fit the screen exactly
+    // instead of keeping desktop widths and scrolling sideways.
     return keep.map(f => all.find(c => c.field === f)!).map(c =>
-      c.field === 'fullName' ? { ...c, flex: 1, minWidth: 100, maxWidth: undefined } : { ...c, minWidth: 80 })
+      ({ ...c, flex: c.field === 'fullName' ? 2 : 1, width: undefined, minWidth: 70, maxWidth: undefined }))
   }
 
   private allColumnDefs(idFieldLabel: string): ColDef[] {
@@ -1127,9 +1131,15 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   refreshGrid() {
     if (this.gridApi) {
       this.gridApi.refreshCells()
-      // E-104: was sizeColumnsToFit(), which undid the content sizing after every edit.
-      this.gridApi.autoSizeAllColumns()
+      this.fitColumns()
     }
+  }
+
+  /** Desktop sizes columns from content (E-104: sizeColumnsToFit() undid that after every edit);
+   *  a phone's three columns share the grid's width, so nothing scrolls sideways (E-205). */
+  private fitColumns() {
+    if (this.isPhone()) this.gridApi?.sizeColumnsToFit()
+    else this.gridApi?.autoSizeAllColumns()
   }
 
   //--------------------------------------------------------------------------
