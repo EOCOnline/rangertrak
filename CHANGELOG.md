@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.61-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.60-alpha...v0.99.61-alpha) (2026-10-20)
+
+
+### Features
+
+* **view:** E-207 / D-62 domain list and ViewService (Simple view / Full view) ([fcf8542](https://github.com/SteadyEOC/RangerTrak/commit/fcf8542859ce04ebf88bdc3dd6a9ba8b897aeae3))
+* **view:** E-207 / D-62 e2e view group, Rangers applies a Setup file's suggested view ([b0bcc1b](https://github.com/SteadyEOC/RangerTrak/commit/b0bcc1bf85fb9ec6074171e02a0bccf94d31f6ce))
+* **view:** E-207 / D-62 Entry, Map and Rangers & Teams in Simple view ([b871d08](https://github.com/SteadyEOC/RangerTrak/commit/b871d08220ecb222fb7eeb9f9bfdd20752c711aa))
+* **view:** E-207 / D-62 Mission page, Help, Advanced marker, Setup file suggestion ([935e274](https://github.com/SteadyEOC/RangerTrak/commit/935e274f60c3ecb1051dd5b0d63303cd9c2de7b2))
+
+
+### Bug Fixes
+
+* **view:** E-207 / D-62 /prep and #setup-file links show the Setup file in Simple view ([86733b6](https://github.com/SteadyEOC/RangerTrak/commit/86733b63cc76aa599e5054a0fa92fc0b86417ea1))
+
 ### [0.99.60-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.59-alpha...v0.99.60-alpha) (2026-10-20)
 
 
