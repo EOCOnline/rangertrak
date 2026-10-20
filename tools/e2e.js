@@ -5012,7 +5012,7 @@ async function checkSimpleView(fx) {
       const title = card?.querySelector('.mat-mdc-card-title')
       return { cls: card?.classList.contains('rt-advanced') ?? false, label: title ? getComputedStyle(title, '::after').content : '' }
     })()`)
-    check('Full view marks them Advanced with the shared marker', [marker.cls, marker.label], [true, '"Advanced"'])
+    check('Full view marks them "Full view" with the shared marker', [marker.cls, marker.label], [true, '"Full view"'])
     check('Show all options is gone in Full view', await has('[data-testid=show-all-options]'), false)
 
     // The marker takes no width: nothing widens a phone (360 px), on Mission or Entry.
