@@ -106,10 +106,32 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   private static readonly GRID_HEADER_PX = 48
   /** Header + floating filter + pager, plus a pixel or two of border. */
   private static readonly GRID_CHROME_PX = 48 * 3 + 2
+
+  // E-205: on a phone the grid is compact - tighter rows and header, three columns (see
+  // buildColumnDefs) - so noticeably more people fit on screen. Same breakpoint as
+  // styles/_breakpoints.scss's `phone` mixin (<=575px), as the Radio Log uses. Desktop is untouched.
+  private static readonly PHONE_ROW_PX = 34
+  private static readonly PHONE_HEADER_PX = 36
+  private phoneMediaQuery = window.matchMedia('(max-width: 575px)')
+  public isPhone = signal(this.phoneMediaQuery.matches)
+  private onPhoneMediaChange = (e: MediaQueryListEvent) => {
+    this.isPhone.set(e.matches)
+    this.columnDefs = this.buildColumnDefs(this.idFieldLabel)
+    this.gridApi?.setGridOption?.('rowHeight', this.rowPx())
+    this.gridApi?.setGridOption?.('headerHeight', this.headerPx())
+    this.gridApi?.setGridOption?.('floatingFiltersHeight', this.headerPx())
+    this.gridApi?.resetRowHeights?.()
+  }
+  private idFieldLabel = 'ID'
+  private rowPx = () => this.isPhone() ? RangersComponent.PHONE_ROW_PX : RangersComponent.GRID_ROW_PX
+  private headerPx = () => this.isPhone() ? RangersComponent.PHONE_HEADER_PX : RangersComponent.GRID_HEADER_PX
+
   readonly gridHeight = computed(() => {
     const rows = Math.max(this.rangers().length, 3) + 1
-    const px = rows * RangersComponent.GRID_ROW_PX + RangersComponent.GRID_CHROME_PX
-    return `min(60vh, ${px}px)`
+    const chrome = this.isPhone() ? this.headerPx() * 3 + 2 : RangersComponent.GRID_CHROME_PX
+    const px = rows * this.rowPx() + chrome
+    // A phone has little else on the page worth keeping in view, so the grid may take more of it.
+    return `min(${this.isPhone() ? 75 : 60}vh, ${px}px)`
   })
 
   private radioLogSubscription!: Subscription
@@ -175,9 +197,9 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     },
     // pagination: true,
     // E-144: pinned so gridHeight() can size the grid to its rows exactly.
-    rowHeight: RangersComponent.GRID_ROW_PX,
-    headerHeight: RangersComponent.GRID_HEADER_PX,
-    floatingFiltersHeight: RangersComponent.GRID_HEADER_PX,
+    rowHeight: this.rowPx(),
+    headerHeight: this.headerPx(),
+    floatingFiltersHeight: this.headerPx(),
 
     // EVENT handlers
     // onSelectionChanged: (event: SelectionChangedEvent) => this.onRowSelection(event),
@@ -317,6 +339,16 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // Grid's Angular wrapper picks up a NEW columnDefs array reference reactively, so
   // reassigning `this.columnDefs` here is enough, no grid API call needed.
   private buildColumnDefs(idFieldLabel: string): ColDef[] {
+    this.idFieldLabel = idFieldLabel
+    const all = this.allColumnDefs(idFieldLabel)
+    if (!this.isPhone()) return all
+    // E-205: name, call sign and team only; the rest is one tap away on a wider screen.
+    const keep = ['fullName', 'callsign', 'team']
+    return keep.map(f => all.find(c => c.field === f)!).map(c =>
+      c.field === 'fullName' ? { ...c, flex: 1, minWidth: 100, maxWidth: undefined } : { ...c, minWidth: 80 })
+  }
+
+  private allColumnDefs(idFieldLabel: string): ColDef[] {
     return [
       // F29-12 (2026-08-29): Image first, then the mission's identity field, then callsign -
       // matches the order a scribe actually scans a roster row in.
@@ -382,6 +414,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
 
     this.privacyNoticeDismissed = this.devicePrefs.isRangersPrivacyNoticeDismissed()
+    this.phoneMediaQuery.addEventListener('change', this.onPhoneMediaChange)
+    this.columnDefs = this.buildColumnDefs(this.idFieldLabel)
 
     this.alert = new AlertsComponent(this._snackBar, this.log, this.missionService, this.document) // TODO: Use Alert Service to avoid passing along doc & snackbar as parameters!
     //this.teamService = teamService
@@ -1140,6 +1174,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   ngOnDestroy() {
+    this.phoneMediaQuery.removeEventListener('change', this.onPhoneMediaChange)
     this.rangersSubscription?.unsubscribe()
     this.missionSubscription?.unsubscribe()
     this.radioLogSubscription?.unsubscribe()
