@@ -56,6 +56,8 @@ export type ViewContext = {
   mapEngineIsAlternative: boolean,
   /** An extra map layer (grid, range rings, satellite, hiking trails) is switched on. */
   mapExtraLayersOn: boolean,
+  /** The person asked for the Setup file by link (/prep, /mission#setup-file): a link must never land on nothing. */
+  setupFileAsked: boolean,
 }
 
 export type AdvancedFeature = {
@@ -80,7 +82,7 @@ export const ADVANCED_FEATURES: ReadonlyArray<AdvancedFeature> = [
   { id: 'tactical-calls', label: 'Tactical call signs', isInUse: ctx => ctx.tacticalCallCount > 0 },
   { id: 'board', label: 'RangerTrak Board', isInUse: ctx => ctx.boardInUse },
   { id: 'attachments-budget', label: 'Attachments budget', isInUse: ctx => ctx.attachmentCount > 0 },
-  { id: 'setup-file', label: 'Setup file', isInUse: never },
+  { id: 'setup-file', label: 'Setup file', isInUse: ctx => ctx.setupFileAsked },
   { id: 'device-encryption', label: 'Device encryption', isInUse: ctx => ctx.encryptionOn },
   { id: 'advanced-debug', label: 'Advanced and debug', isInUse: ctx => ctx.fieldMode || ctx.debugMode },
   { id: 'field-phone', label: 'Field phone', isInUse: ctx => ctx.fieldMode },

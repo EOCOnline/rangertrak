@@ -114,7 +114,7 @@
          Report Packet import or Setup file apply). -->
     <rangertrak-import-safety-card></rangertrak-import-safety-card>
 
-    @if (view.isShown('setup-file')) {
+    @if (view.isShown('setup-file', { setupFileAsked: setupFileAsked() })) {
     <div [rtAdvanced]="'setup-file'">
     <!-- E-187 phase D (ADR D-58): the old Setup files page (/prep) lives here now; /prep redirects
          to this heading (#setup-file). -->

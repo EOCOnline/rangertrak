@@ -4921,6 +4921,11 @@ async function checkSimpleView(fx) {
     await goto('/help', 3500)
     check('Help carries the view switch', await has('[data-testid=view-switch]'), true)
 
+    // A link to the Setup file (/prep, an EC's bookmark) must never land on nothing in Simple view.
+    await goto('/prep', 4500)
+    check('/prep shows the Setup file in Simple view, and leaves the view alone',
+      [await has('rangertrak-setup-file'), ...(await viewState())], [true, 'simple', 'default'])
+
     // ── Full view ──────────────────────────────────────────────────────
     await goto('/mission', 4000)
     await clickToggle('view-full')

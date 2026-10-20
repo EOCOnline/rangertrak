@@ -81,6 +81,7 @@ export class ViewService {
       layerCount: 0,
       mapEngineIsAlternative: false,
       mapExtraLayersOn: false,
+      setupFileAsked: false,
     }
   })
 

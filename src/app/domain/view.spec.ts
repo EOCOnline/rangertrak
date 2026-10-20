@@ -8,6 +8,7 @@ describe('Simple view and Full view (E-207, D-62)', () => {
     attachmentCount: 0, encryptionOn: false, fieldMode: false, debugMode: false,
     ics213EntryCount: 0, nonDefaultSourceCount: 0, toStationCount: 0, evidenceLocationCount: 0, layerCount: 0,
     mapEngineIsAlternative: false, mapExtraLayersOn: false,
+    setupFileAsked: false,
   }
 
   describe('ADVANCED_FEATURES', () => {
@@ -62,8 +63,9 @@ describe('Simple view and Full view (E-207, D-62)', () => {
       expect(isShown('layers-panel', 'simple', { ...blank, layerCount: 1 })).toBeFalse()
     })
 
-    it('the Setup file is never "in use"', () => {
+    it('the Setup file shows only when asked for by link', () => {
       expect(isShown('setup-file', 'simple', { ...blank, attachmentCount: 9, locationCount: 9 })).toBeFalse()
+      expect(isShown('setup-file', 'simple', { ...blank, setupFileAsked: true })).toBeTrue()
     })
   })
 
