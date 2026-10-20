@@ -190,7 +190,7 @@ export class ViewService {
 
   /**
    * True when Simple view is hiding at least one of these ids right now - what decides whether a
-   * page shows "Show all options" at its foot.
+   * page can still offer more in Full view.
    */
   hidesAny(ids: readonly string[], here: Partial<ViewContext> = {}): boolean {
     return ids.some(id => !this.isShown(id, here))

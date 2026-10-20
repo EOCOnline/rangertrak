@@ -194,7 +194,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
    * E-207 / D-62: in Simple view the layers box shows its extras (USNG/MGRS grid, range rings, satellite,
    * hiking trails) only while one of them is on, so a layer in use can always be switched off. Rows are
    * hidden, never removed from the control, so nothing is switched on or off by the view. In Full view each
-   * row carries the Advanced rule (the badge is dropped inside this box, styles/_patterns.scss).
+   * row carries the plum left-edge rule (styles/_patterns.scss).
    */
   private syncLayerExtras(): void {
     if (!this.layersBox || !this.lMap) return

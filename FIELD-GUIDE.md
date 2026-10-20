@@ -414,8 +414,8 @@ fall back on.
 
 **Simple view and Full view.** A new install starts in **Simple view**, which shows the everyday
 controls. **Full view** shows every option, including **Attach**, From / To stations, the
-Alternative map and Print map. Switch on the Mission page or on Help > Start; each device keeps
-its own choice. Simple view never hides something your mission already uses: once an entry has an
+Alternative map and Print map. Switch with **Full view** at the top of Entry, Map, Mission or Rangers & Teams; each device
+keeps its own choice. Simple view never hides something your mission already uses: once an entry has an
 attachment, **Attach** shows in Simple view too. Switching changes only what is shown, never your
 data. A device that already held a mission when this arrived starts in Full view.
 

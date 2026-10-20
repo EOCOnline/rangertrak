@@ -32,24 +32,25 @@
   missing; click it to jump to Mission.
 </p>
 
-<!-- E-207 / ADR D-62: the same switch as the Mission page, here so it is easy to find. -->
+<!-- E-207 / ADR D-62, reshaped by E-214: the switch is in the page header, not here. -->
 <h3>Simple view or Full view</h3>
 <p>
-  Simple view shows the everyday controls; anything your mission already uses always shows. Full view shows every option.
+  Simple view shows the everyday controls. Full view shows every option. Switch with
+  <span class="ui">Full view</span> at the top of Entry, Map, Mission or Rangers &amp; Teams. It is one
+  setting for the whole device. In Full view, options that Simple view can hide have a thin plum
+  edge. Anything your mission already uses always shows, and nothing is hidden from your data.
 </p>
-<p><rangertrak-view-switch></rangertrak-view-switch></p>
 <!-- E-207 phase 3 (AAR 10-19 obs 9, "where do I attach a file?"): say where the hidden controls are. -->
 <p data-testid="help-where-full-view">
-  Looking for <span class="ui">Attach</span> (photos, video and audio on an entry)? It is in Full view, in
-  any browser. So are From / To stations, the Alternative map and Print map.
+  Looking for <span class="ui">Attach</span> (photos, video and audio on an entry)? It is in Full view
+  (the switch at the top of Entry), in any browser. So are From / To stations, the Alternative map and Print map.
 </p>
 <rangertrak-more-about>
   <p>
     Simple view hides a control only while your mission has never used it. Once an entry has an
     attachment, <span class="ui">Attach</span> shows in Simple view too, and the same goes for tactical
     call signs, To stations and message fields. Switching views never changes or deletes anything,
-    and each device keeps its own choice. A <span class="ui">Show all options</span> button at the foot
-    of a page that hides something switches to Full view.
+    and each device keeps its own choice.
   </p>
 </rangertrak-more-about>
 
