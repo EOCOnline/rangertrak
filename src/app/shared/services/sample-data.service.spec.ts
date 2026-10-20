@@ -67,16 +67,18 @@ describe('SampleDataService', () => {
     await recordStore.resetForTests();
   });
 
-  it('SAMPLE_SCENARIOS defaults to Vashon first and lists exactly the five scenarios', () => {
-    expect(SAMPLE_SCENARIOS.map(s => s.id)).toEqual(['grand-canyon', 'vashon', 'state-fair', 'montecito', 'near-me']);
+  it('SAMPLE_SCENARIOS defaults to Vashon first and lists exactly the six scenarios', () => {
+    expect(SAMPLE_SCENARIOS.map(s => s.id)).toEqual(['grand-canyon', 'vashon', 'state-fair', 'montecito', 'oso', 'near-me']);
     expect(SAMPLE_SCENARIOS[0].id).toBe(DEFAULT_SAMPLE_SCENARIO);
   });
 
   it('E-213: only demos modeled on a real event carry a "Details" link', () => {
     const withDetails = SAMPLE_SCENARIOS.filter(s => s.detailsUrl).map(s => s.id);
-    expect(withDetails).toEqual(['montecito']);
+    expect(withDetails).toEqual(['montecito', 'oso']);
     expect(SAMPLE_SCENARIOS.find(s => s.id === 'montecito')!.detailsUrl)
       .toMatch(/^https:\/\/en\.wikipedia\.org\/wiki\/2018_Southern_California_mudflows$/);
+    expect(SAMPLE_SCENARIOS.find(s => s.id === 'oso')!.detailsUrl)
+      .toMatch(/^https:\/\/en\.wikipedia\.org\/wiki\/2014_Oso_landslide$/);
   });
 
   SCENARIOS.forEach(scenario => {

@@ -138,6 +138,10 @@ const ICON_BY_NAME: Record<string, LocationIconId> = {
   'EOC': 'eoc',
   'Fire Station': 'fire-station',
   'Dock': 'dock',
+  // E-195 (Oso): water-supply badge for the two water-related place types; Search Division has
+  // no fitting pictogram and stays the generic pin.
+  'Decon': 'water',
+  'River Gauge': 'water',
 }
 
 /**

@@ -587,7 +587,10 @@ holds only demo data, and **Help** → *Start* has a **Load a demo** button. You
 reports in the demo area you pick (Grand Canyon by default) — useful for training, demonstrating to others, or just
 seeing what a busy mission looks like. **Montecito debris flows (large)** is the big one: about 400 radio
 log entries, 30 teams and 100 roster rows, *modeled on* the January 9, 2018 debris flows in Montecito,
-California (every person, team and message is invented).
+California (every person, team and message is invented). **Oso landslide (large)** is its bigger sibling: about 510 radio log entries
+(51 of them ICS-213 messages, so the Messages page is full too), 40 teams, 128 roster rows and a command
+post on each side of the slide, *modeled on* the March 22, 2014 SR 530 landslide near Oso, Washington
+(every person, team and message is invented).
 
 > This **replaces** your current roster and reports. Export first if you have anything you
 > need.

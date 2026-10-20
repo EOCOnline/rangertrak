@@ -55,6 +55,14 @@ describe('resolveLocationIcon', () => {
   })
 })
 
+describe('resolveLocationIcon, E-195 place types', () => {
+  it('resolves the Oso types by name: Decon and River Gauge to the water badge, Search Division to the pin', () => {
+    expect(resolveLocationIcon('Decon', [])).toBe('water');
+    expect(resolveLocationIcon('River Gauge', [])).toBe('water');
+    expect(resolveLocationIcon('Search Division', [])).toBe('pin');
+  });
+});
+
 describe('locationMarkerSvg', () => {
   it('draws a non-empty <svg> for every LocationIconId, each one visually distinct', () => {
     const drawn = new Set<string>()

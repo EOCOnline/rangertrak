@@ -3,7 +3,7 @@
  * to one place. DEFAULT_SAMPLE_SCENARIO below is what every picker (Entry, Mission > Danger
  * zone, Rangers) starts on. See SAMPLE_SCENARIOS below for the label/hint shown in each.
  */
-export type SampleScenarioId = 'vashon' | 'grand-canyon' | 'state-fair' | 'montecito' | 'near-me'
+export type SampleScenarioId = 'vashon' | 'grand-canyon' | 'state-fair' | 'montecito' | 'oso' | 'near-me'
 
 /**
  * 2026-09-25 (maintainer): Grand Canyon replaces Vashon as the default - a place a national
@@ -55,6 +55,16 @@ export const SAMPLE_SCENARIOS: ReadonlyArray<SampleScenarioOption> = [
       + 'messages are invented; the scale, phases and problems follow the public record. About 400 radio '
       + 'log entries, 30 teams and 100 roster rows: a busy mission, not a tidy sample.',
     detailsUrl: 'https://en.wikipedia.org/wiki/2018_Southern_California_mudflows',
+  },
+  {
+    id: 'oso',
+    label: 'Oso landslide, WA (large)',
+    // E-195 section 7.1, same pattern as Montecito: the approved about line, word for word.
+    hint: 'Modeled on the March 22, 2014 SR 530 landslide near Oso, Washington. The people, teams and '
+      + 'messages are invented; the scale, phases and problems follow the public record. About 510 radio '
+      + 'log entries (51 of them ICS-213 messages), 40 teams and 128 roster rows, with a command post on '
+      + 'each side of the slide: a busy mission, not a tidy sample.',
+    detailsUrl: 'https://en.wikipedia.org/wiki/2014_Oso_landslide',
   },
   {
     id: 'near-me',
