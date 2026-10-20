@@ -34,6 +34,10 @@ export const DEMO_DETAIL_MAPS: Partial<Record<SampleScenarioId, DemoDetailMap>> 
   'state-fair': { url: '/assets/maps/demo-state-fair-20260930.pmtiles', bbox: [-77.428, 37.842, -77.411, 37.854] },
   // 2026-10-18, E-195: every place in the scenario, the County EOC at the west edge to Shelter 2 at the east (5.0 MB).
   'montecito': { url: '/assets/maps/demo-montecito-20261018.pmtiles', bbox: [-119.80, 34.39, -119.51, 34.50] },
+  // 2026-10-20, E-195: every place in the scenario, the County EOC (Everett) at the southwest corner to the
+  // east command post (Darrington) at the northeast, padded. The box is 46 x 34 km, so this one stops at z14
+  // (z6-14, 5.0 MB; z15 would be 9.7 MB). Beyond z14 the map overzooms it.
+  'oso': { url: '/assets/maps/demo-oso-20261018.pmtiles', bbox: [-122.23, 47.96, -121.57, 48.30] },
 }
 
 /**
