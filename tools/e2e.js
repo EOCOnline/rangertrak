@@ -62,7 +62,7 @@ const KEEP_OPEN = args.includes('--keep-open')
 // page or functionality, so all need not run." Quiet is the default: only failures print (each
 // under its section heading) plus the final count. --verbose prints every PASS and note again.
 // --only=map,entry runs just those groups (see want() at each call in main()); groups: shell,
-// entry, map, radiolog, roster, mission, backup, attachments, board, view, controls. Combines with --full and --read-only.
+// entry, map, radiolog, roster, mission, backup, attachments, board, view, controls, cards. Combines with --full and --read-only.
 const VERBOSE = args.includes('--verbose')
 const ONLY = arg('only', '').split(',').map(g => g.trim()).filter(Boolean)
 const want = group => !ONLY.length || ONLY.includes(group)
@@ -2024,6 +2024,112 @@ async function checkControls() {
   await send('Emulation.clearDeviceMetricsOverride')
   await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: controlsViewId })
   await evaluate(`localStorage.removeItem('rt-view'); localStorage.removeItem('rt-view-source')`)
+}
+
+/**
+ * E-210 / ADR D-65: the card rule, read off the real layout.
+ *
+ * Mission, Radio Log, Rangers (Import, export & print open) and Map (the same panel open), at
+ * 1280 and 1920 px, on the Grand Canyon demo in Full view. For every `.rt-card-grid` on the page:
+ *   - no card is wider than one column unless it carries `.rt-mission-card--wide` (so the
+ *     Statuses and Location categories cards stay one column),
+ *   - no vertical gap taller than 2 rem sits between a card and the next one in its column
+ *     (the "hole beside a card" the AAR described),
+ * and on the page as a whole every box (card, expansion panel, AG Grid frame, Danger zone) has
+ * the same corner, --rt-box-radius (12 px).
+ * Then rule 6: with 40 Locations the Locations list scrolls INSIDE its card at 1280 px (a keyboard
+ * stop: tabindex, role=region, a label) and does not at 360 px or in print.
+ *
+ * Written to be provable: put `rt-mission-card--wide` back on the Statuses card and the "wider
+ * than one column" line goes red; set --rt-box-radius to 6px in _tokens.scss and the corner
+ * line does.
+ */
+const CARDS_COLLECTOR = `(() => {
+  const vis = el => { const r = el.getBoundingClientRect(); return r.width > 2 && r.height > 2 && getComputedStyle(el).visibility !== 'hidden' };
+  const items = grid => { const out = [];
+    for (const c of grid.children) { if (getComputedStyle(c).display === 'contents') out.push(...c.children); else out.push(c) }
+    return out.filter(vis) };
+  const label = el => ((el.querySelector('mat-card-title, .mat-expansion-panel-header-title') || el).textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 30);
+  const grids = [...document.querySelectorAll('.rt-card-grid')].filter(vis).map(g => {
+    const cols = getComputedStyle(g).gridTemplateColumns.split(' ').map(parseFloat).filter(n => n > 0);
+    const gr = g.getBoundingClientRect();
+    const cards = items(g).map(el => { const r = el.getBoundingClientRect();
+      return { name: label(el), left: Math.round(r.left), top: Math.round(r.top + scrollY), width: Math.round(r.width), bottom: Math.round(r.bottom + scrollY), wide: !!(el.classList.contains('rt-mission-card--wide') || el.querySelector(':scope > .rt-mission-card--wide')) } });
+    return { cols: cols.length, colWidth: cols[0] || gr.width, width: Math.round(gr.width), cards };
+  });
+  const boxes = [...document.querySelectorAll('mat-card, .rt-expandable-section, .ag-root-wrapper, .rt-danger-zone')]
+    .filter(el => vis(el) && !el.closest('mat-dialog-container, .cdk-overlay-container'))
+    .map(el => ({ name: label(el) || el.className.toString().slice(0, 24), kind: el.tagName.toLowerCase() + '.' + (el.className.toString().split(' ').find(c => /^(rt-|ag-root)/.test(c)) || ''), radius: parseFloat(getComputedStyle(el).borderTopLeftRadius) }));
+  return { grids, boxes };
+})()`
+
+async function checkCards() {
+  console.log('\nCards sit in one grid: one column wide, no holes, one corner, long lists scroll inside (E-210, D-65)')
+  // Removed at the end: left installed, it puts every later group in Full view.
+  const { identifier: cardsViewId } = await send('Page.addScriptToEvaluateOnNewDocument', { source: `try { if (localStorage.getItem('rt-view') === null) { localStorage.setItem('rt-view', 'full'); localStorage.setItem('rt-view-source', 'user') } } catch {}` })
+  await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false })
+  await goto('/'); await evaluate(`localStorage.clear()`); await idbClearAll()
+  await goto('/')
+  await evaluate(`document.querySelector('rangertrak-demo-picker mat-select')?.click()`)
+  await sleep(600)
+  await evaluate(`[...document.querySelectorAll('mat-option')].find(o => /Grand Canyon/.test(o.textContent))?.click()`)
+  await sleep(4000) // the picker loads the demo and reloads the page
+  const openImport = () => evaluate(`(() => { const h = document.querySelector('.rt-io-trigger mat-expansion-panel-header'); if (h && h.getAttribute('aria-expanded') !== 'true') h.click(); return !!h })()`)
+
+  const pages = [['Mission', '/mission', false], ['Radio Log', '/radio-log', false], ['Rangers', '/rangers', true], ['Map', '/map', true]]
+  for (const width of [1280, 1920]) {
+    await send('Emulation.setDeviceMetricsOverride', { width, height: width === 1280 ? 900 : 1080, deviceScaleFactor: 1, mobile: false })
+    for (const [name, route, io] of pages) {
+      await goto(route, 4000)
+      if (io) { check(`${name} @${width}: the Import, export & print panel is there to open`, await openImport(), true); await sleep(900) }
+      const { grids, boxes } = await evaluate(CARDS_COLLECTOR)
+      check(`${name} @${width}: has a .rt-card-grid with cards`, grids.length > 0 && grids.every(g => g.cards.length > 0), true)
+      for (const g of grids) {
+        for (const c of g.cards) {
+          if (c.wide) continue
+          check(`${name} @${width}: card "${c.name}" is no wider than one column (${c.width}px of ${Math.round(g.colWidth)}px)`, c.width <= g.colWidth + 2, true)
+        }
+        // Gap to the next card down the same column.
+        for (const c of g.cards) {
+          const below = g.cards.filter(o => o !== c && Math.abs(o.left - c.left) < 8 && o.top >= c.bottom - 2).sort((a, b) => a.top - b.top)[0]
+          if (below) check(`${name} @${width}: gap under "${c.name}" is at most 2rem (${below.top - c.bottom}px)`, below.top - c.bottom <= 32, true)
+        }
+      }
+      const odd = boxes.filter(b => Math.abs(b.radius - 12) > 0.5)
+      check(`${name} @${width}: every box has the same 12px corner${odd.length ? ' (off: ' + odd.map(b => `${b.kind} "${b.name}" ${b.radius}px`).join('; ') + ')' : ''}`, odd.length, 0)
+    }
+  }
+
+  // Rule 6: 40 Locations scroll inside their card on a laptop, not on a phone or on paper.
+  const raw = JSON.parse((await idbGetRaw('locations')) || '{}')
+  const have = Array.isArray(raw) ? raw : (raw.locations || [])
+  const extra = Array.from({ length: 40 }, (_, i) => ({ uid: 'e2e-card-' + i, name: 'E2E Place ' + String(i + 1).padStart(2, '0'), type: have[0]?.type || 'Command Post', lat: 36.05 + i / 1000, lng: -112.14 }))
+  await idbSetRaw('locations', JSON.stringify(Array.isArray(raw) ? [...have, ...extra] : { ...raw, locations: [...have, ...extra] }))
+  const box = () => evaluate(`(() => { const s = document.querySelector('.rt-card-scroll[aria-label="Locations"]'); if (!s) return null; const cs = getComputedStyle(s);
+    return { client: s.clientHeight, scroll: s.scrollHeight, overflowY: cs.overflowY, maxHeight: cs.maxHeight, tabindex: s.getAttribute('tabindex'), role: s.getAttribute('role'), vh: innerHeight,
+      sticky: getComputedStyle(s.querySelector('thead th')).position, sub: (s.closest('mat-card')?.querySelector('mat-card-subtitle')?.textContent || '').trim() } })()`)
+  await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false })
+  await goto('/mission', 4000)
+  const lap = await box()
+  check('1280: the Locations list is its own region (keyboard stop with a label)', lap && lap.tabindex === '0' && lap.role === 'region', true)
+  check('1280: with 40+ Locations the list scrolls inside its card', lap && lap.scroll > lap.client + 4 && lap.overflowY === 'auto', true)
+  check('1280: and stops at min(28rem, 60vh)', lap && lap.client <= Math.min(448, lap.vh * 0.6) + 2, true)
+  check('1280: its header row sticks', lap && lap.sticky === 'sticky', true)
+  check('1280: the subtitle counts the Locations', lap && /^\d+ locations$/.test(lap.sub), true)
+  await send('Emulation.setDeviceMetricsOverride', { width: 360, height: 800, deviceScaleFactor: 1, mobile: true })
+  await goto('/mission', 4000)
+  const phone = await box()
+  check('360: the Locations list does not scroll inside (the page scrolls)', phone && phone.overflowY === 'visible' && phone.scroll <= phone.client + 2, true)
+  await send('Emulation.setEmulatedMedia', { media: 'print' })
+  await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false })
+  await sleep(500)
+  const paper = await box()
+  await send('Emulation.setEmulatedMedia', { media: '' })
+  check('print: the whole Locations list prints (no inner scroll)', paper && paper.overflowY === 'visible' && paper.scroll <= paper.client + 2, true)
+
+  await send('Emulation.clearDeviceMetricsOverride')
+  await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: cardsViewId })
+  await goto('/'); await evaluate(`localStorage.clear()`); await idbClearAll()
 }
 
 /**
@@ -5357,6 +5463,7 @@ async function main() {
       // Insurance: no earlier check's unused dialog answers may reach these. (The 1064/1065 backup
       // failure was not this; it was a same-named download, see downloadSnapshot().)
       dialogQueue.length = 0
+      if (want('cards')) await checkCards() // E-210; seeds a demo and 40 Locations, wipes storage after
       if (want('mission')) await checkImportSafety(downloads) // E-198; wipes storage
       if (want('attachments')) await checkImportSafetyAttachments(downloads) // E-198 + D-60 item 8; wipes storage
       if (want('attachments')) await checkAttachments(downloads) // E-194; wipes storage
