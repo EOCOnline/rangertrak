@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.69-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.68-alpha...v0.99.69-alpha) (2026-10-21)
+
+
+### Features
+
+* **layout:** one card grid, one box corner, long lists scroll inside (E-210) ([839386c](https://github.com/SteadyEOC/RangerTrak/commit/839386c207a5766bf82ccfee6968a66da373455e))
+
+
+### Bug Fixes
+
+* **install:** the banner's Install button takes the control corner (E-210) ([8f0c9fe](https://github.com/SteadyEOC/RangerTrak/commit/8f0c9fe8510dfd2b2084df34355dbf13b8d7e57b))
+
 ### [0.99.68-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.67-alpha...v0.99.68-alpha) (2026-10-21)
 
 
