@@ -62,7 +62,7 @@ const KEEP_OPEN = args.includes('--keep-open')
 // page or functionality, so all need not run." Quiet is the default: only failures print (each
 // under its section heading) plus the final count. --verbose prints every PASS and note again.
 // --only=map,entry runs just those groups (see want() at each call in main()); groups: shell,
-// entry, map, radiolog, roster, mission, backup, attachments, board, view. Combines with --full and --read-only.
+// entry, map, radiolog, roster, mission, backup, attachments, board, view, controls. Combines with --full and --read-only.
 const VERBOSE = args.includes('--verbose')
 const ONLY = arg('only', '').split(',').map(g => g.trim()).filter(Boolean)
 const want = group => !ONLY.length || ONLY.includes(group)
@@ -1953,6 +1953,73 @@ async function checkWelcomePanelDismissAndReopen() {
   await evaluate(`document.querySelector('.readiness-dot')?.click()`)
   await sleep(1500)
   check('clicking the readiness dot inside the pill still goes to Mission, not hijacked', await evaluate(`location.pathname`), '/mission')
+}
+
+/**
+ * E-209 / ADR D-64: the control rule, read off the real computed styles.
+ *
+ * Entry, Map, Mission and Rangers at 1280 px (mouse) and 360 px (touch emulated, so
+ * `pointer: coarse` applies and the 44 px floor is in force). Every visible text button,
+ * toggle group, chip, the install pill and the header status cluster must have an 8 px corner,
+ * label-large text (14 px), and at least the control height (32 px; 44 px on touch). Toggle
+ * groups (first toggle) and chips must be exactly that height; a button may be taller when its
+ * label wraps. Left out on purpose, as in styles/_patterns.scss: icon-only buttons, Leaflet's
+ * and MapLibre's own controls, plain-text buttons that read as data (the Entry "other formats"
+ * copy rows, the x that dismisses a notice, the time picker's steppers).
+ *
+ * Written to be provable: revert one override in styles.scss (say the toggle shape) and the
+ * 'toggle' lines go red.
+ */
+const CONTROLS_COLLECTOR = `(() => {
+  const vis = el => { const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return false;
+    const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.display === 'none') return false;
+    for (let p = el; p; p = p.parentElement) { if (getComputedStyle(p).opacity === '0') return false } return true };
+  const textOf = el => { const c = el.cloneNode(true); c.querySelectorAll('mat-icon,.material-icons,.mat-icon,svg,.mat-badge-content').forEach(n => n.remove()); return (c.textContent || '').trim() };
+  const out = [];
+  const add = (kind, el, fontEl, heightEl) => { const cs = getComputedStyle(el), fs = getComputedStyle(fontEl || el), r = (heightEl || el).getBoundingClientRect();
+    out.push({ kind, name: (el.getAttribute('aria-label') || textOf(el) || el.className.toString()).slice(0, 28), radius: parseFloat(cs.borderTopLeftRadius), height: Math.round(r.height * 10) / 10, font: parseFloat(fs.fontSize) }) };
+  document.querySelectorAll('button, a.mat-mdc-button-base, [role=button].mat-mdc-button-base').forEach(el => {
+    if (!vis(el)) return;
+    if (el.closest('.mat-button-toggle, .mat-mdc-chip, .rt-install-update, .leaflet-control-zoom, .leaflet-control-layers, .leaflet-control-attribution, .mat-mdc-menu-panel, .mat-calendar, .mat-mdc-paginator, .mat-mdc-select, .mat-mdc-tab-header, .ag-root-wrapper')) return;
+    if (el.classList.contains('mat-mdc-icon-button') || el.classList.contains('mat-mdc-fab') || el.classList.contains('mat-mdc-mini-fab')) return;
+    if (!textOf(el)) return;
+    if (el.classList.contains('rt-other-formats__row') || el.classList.contains('privacy-bar__more') || el.classList.contains('rt-datetime__step') || (el.getAttribute('aria-label') || '').startsWith('Dismiss')) return;
+    add('button', el);
+  });
+  document.querySelectorAll('.rt-install-update').forEach(el => { if (vis(el)) add('button', el, el.querySelector('.rt-install-update__main') || el) });
+  document.querySelectorAll('.mat-button-toggle-group').forEach(el => { if (!vis(el)) return; const t = el.querySelector('.mat-button-toggle'); add('toggle', el, el.querySelector('.mat-button-toggle-label-content') || el, t) });
+  document.querySelectorAll('.mat-mdc-chip').forEach(el => { if (!vis(el)) return; add('chip', el, el.querySelector('.mdc-evolution-chip__text-label') || el) });
+  document.querySelectorAll('.status-cluster').forEach(el => { if (!vis(el)) return; add('cluster', el) });
+  return out;
+})()`
+
+async function checkControls() {
+  console.log('\nControls follow one rule: 8 px corner, 32 px (44 px on touch), 14 px text (E-209, D-64)')
+  await send('Page.addScriptToEvaluateOnNewDocument', { source: `try { if (localStorage.getItem('rt-view') === null) { localStorage.setItem('rt-view', 'full'); localStorage.setItem('rt-view-source', 'user') } } catch {}` })
+  const routes = [['Entry', '/'], ['Map', '/map'], ['Mission', '/mission'], ['Rangers', '/rangers']]
+  for (const [width, touch] of [[1280, false], [360, true]]) {
+    await send('Emulation.setDeviceMetricsOverride', { width, height: touch ? 800 : 900, deviceScaleFactor: 1, mobile: touch })
+    await send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 1 })
+    const expectH = touch ? 44 : 32
+    for (const [name, route] of routes) {
+      await goto(route, 4000)
+      const coarse = await evaluate(`matchMedia('(pointer: coarse)').matches`)
+      check(`${name} @${width}: pointer is ${touch ? 'coarse' : 'fine'}`, coarse, touch)
+      const rows = await evaluate(CONTROLS_COLLECTOR)
+      check(`${name} @${width}: finds controls to measure`, rows.length > 0, true)
+      for (const x of rows) {
+        const exactH = x.kind === 'toggle' || x.kind === 'chip'
+        const heightOk = exactH ? Math.abs(x.height - expectH) <= 1 : x.height >= expectH - 1
+        const bad = []
+        if (Math.abs(x.radius - 8) > 0.5) bad.push(`radius ${x.radius}px, want 8`)
+        if (!heightOk) bad.push(`height ${x.height}px, want ${exactH ? '' : 'at least '}${expectH}`)
+        if (Math.abs(x.font - 14) > 0.2) bad.push(`font ${x.font}px, want 14`)
+        check(`${name} @${width}: ${x.kind} "${x.name}" follows the rule${bad.length ? ' (' + bad.join('; ') + ')' : ''}`, bad.length, 0)
+      }
+    }
+  }
+  await send('Emulation.setTouchEmulationEnabled', { enabled: false })
+  await send('Emulation.clearDeviceMetricsOverride')
 }
 
 /**
@@ -5201,6 +5268,7 @@ async function main() {
     if (want('radiolog')) await checkFieldReportsPhoneLayout()
     if (want('shell')) await checkGridThemeUsesTokens()
     if (want('shell')) await checkHelpTabs()
+    if (want('controls')) await checkControls() // E-209; read-only
 
     if (READ_ONLY) {
       note('read-only: skipping roster, photo, submit and mission checks')
