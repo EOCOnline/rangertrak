@@ -61,6 +61,10 @@
   .badge--live { background: light-dark(#e3f2e3, #1c3a24); color: light-dark(#1a6b1a, #6fd97f); }
   .badge--stale { background: light-dark(#fff3cd, #4a3a12); color: light-dark(#8a6100, #f2c94c); }
   .badge--none { background: light-dark(#fde3e1, #4a1d1a); color: var(--warn); }
+  #themeToggle {
+    margin-left: auto; align-self: center; padding: 0.3rem 0.7rem; border: 1px solid var(--line);
+    border-radius: 6px; background: var(--surface); color: var(--ink); font-size: 0.85rem; cursor: pointer;
+  }
 
   .controls {
     display: flex;
@@ -162,6 +166,7 @@
   <h1>RangerTrak Board</h1>
   <span id="missionMeta" class="meta">No log yet</span>
   <span id="statusBadge" class="badge badge--none">no data yet</span>
+  <button id="themeToggle" type="button" title="Colours: follow this device, light, or dark">◐ Auto</button>
 </header>
 <p id="claimLine" class="meta" hidden></p>
 
@@ -233,6 +238,28 @@
   var pwNote = document.getElementById('pwNote');
   var filterEl = document.getElementById('filterInput');
   var sortBtn = document.getElementById('sortToggle');
+  var themeBtn = document.getElementById('themeToggle');
+
+  // ---- light / dark (John, 2026-10-21) ----
+  // Every colour above is a light-dark() pair, so setting color-scheme on <html> is the whole
+  // switch. Auto follows the device. Remembered per viewer device: a display preference only,
+  // nothing a scribe could mistake for mission data.
+  var THEMES = ['auto', 'light', 'dark'];
+  var THEME_LABELS = { auto: '◐ Auto', light: '☀ Light', dark: '☾ Dark' };
+  function applyTheme(t) {
+    document.documentElement.style.colorScheme = t === 'auto' ? '' : t;
+    themeBtn.textContent = THEME_LABELS[t];
+    themeBtn.setAttribute('aria-label', 'Colours: ' + t + '. Click to change.');
+  }
+  var theme = 'auto';
+  try { theme = localStorage.getItem('boardTheme') || 'auto'; } catch (e) { /* storage refused: Auto */ }
+  if (THEMES.indexOf(theme) === -1) { theme = 'auto'; }
+  applyTheme(theme);
+  themeBtn.addEventListener('click', function () {
+    theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
+    try { localStorage.setItem('boardTheme', theme); } catch (e) { /* kept for this visit only */ }
+    applyTheme(theme);
+  });
 
   // ---- the viewers' password (D-61) ----
   // From the QR link's #code=, kept for this tab only, and the hash removed so it is not left
