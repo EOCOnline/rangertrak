@@ -111,7 +111,7 @@
 // for this state's border.
 .rt-install-update--detailed .rt-install-update__main {
   flex         : none;
-  border-radius: var(--rt-radius);
+  border-radius: var(--rt-control-radius);
   background   : var(--rt-notice-line);
   color        : var(--rt-notice-ink);
 }

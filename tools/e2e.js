@@ -1986,7 +1986,7 @@ const CONTROLS_COLLECTOR = `(() => {
     if (el.classList.contains('rt-other-formats__row') || el.classList.contains('privacy-bar__more') || el.classList.contains('rt-datetime__step') || (el.getAttribute('aria-label') || '').startsWith('Dismiss')) return;
     add('button', el);
   });
-  document.querySelectorAll('.rt-install-update').forEach(el => { if (vis(el)) add('button', el, el.querySelector('.rt-install-update__main') || el) });
+  document.querySelectorAll('.rt-install-update').forEach(el => { if (!vis(el)) return; const main = el.querySelector('.rt-install-update__main') || el; el.classList.contains('rt-install-update--detailed') ? add('button', main) : add('button', el, main) }); // the detailed form is a notice box (D-65); its Install button is the control
   document.querySelectorAll('.mat-button-toggle-group').forEach(el => { if (!vis(el)) return; const t = el.querySelector('.mat-button-toggle'); add('toggle', el, el.querySelector('.mat-button-toggle-label-content') || el, t) });
   document.querySelectorAll('.mat-mdc-chip').forEach(el => { if (!vis(el)) return; add('chip', el, el.querySelector('.mdc-evolution-chip__text-label') || el) });
   document.querySelectorAll('.status-cluster').forEach(el => { if (!vis(el)) return; add('cluster', el) });
