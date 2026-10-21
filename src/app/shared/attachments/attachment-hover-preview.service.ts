@@ -5,10 +5,12 @@ import { ATTACH_CHIP_CLASS } from './attachment-chip-html'
 import { placePreview, previewRefs } from './attachment-hover-preview'
 import { AttachmentStoreService } from '../services/attachment-store.service'
 import { RadioLogService } from '../services/radio-log.service'
+import { AttachmentViewerService } from './attachment-viewer.service'
 
 /** Hover or focus this long before the panel appears, and leave this long before it goes. */
 const SHOW_MS = 300
-const HIDE_MS = 120
+/** Long enough to cross the gap from the chip onto the panel (John, 2026-10-21: 120 ms was not). */
+const HIDE_MS = 400
 /** Four-digit on purpose: it must beat Leaflet's controls (800-1000) and the map popup (700). */
 const Z_INDEX = 4000
 const THUMB_PX = 108
@@ -18,8 +20,10 @@ const THUMB_PX = 108
  * D-60). ONE delegated listener set on `document`, so the grid, the map popup, the phone cards
  * and the Messages pane need no wiring: anything carrying `.rt-attach-chip` and
  * `data-entry-uid` qualifies. Thumbnails only, never originals; every object URL is revoked
- * when the panel hides. The panel is `aria-hidden` and `pointer-events: none` - the chip's own
- * aria-label describes it, and the viewer (click) is the accessible path. Not shown where
+ * when the panel hides. The panel is `aria-hidden` - the chip's own aria-label describes it,
+ * and the viewer (click the chip) is the accessible path. The mouse can move onto the panel
+ * without it closing, and a click on a thumbnail opens the viewer at that attachment (John,
+ * 2026-10-21; it used to be `pointer-events: none` and vanished on the way). Not shown where
  * there is no hover (touch). Constructed once at startup from `AppComponent`.
  */
 @Injectable({ providedIn: 'root' })
@@ -27,6 +31,7 @@ export class AttachmentHoverPreviewService {
 
   private store = inject(AttachmentStoreService)
   private radioLog = inject(RadioLogService)
+  private viewer = inject(AttachmentViewerService)
 
   private panel?: HTMLElement
   private urls: string[] = []
@@ -42,7 +47,8 @@ export class AttachmentHoverPreviewService {
     d.addEventListener('focusin', e => this.enter(e))
     d.addEventListener('mouseout', e => this.leave(e))
     d.addEventListener('focusout', e => this.leave(e))
-    d.addEventListener('click', () => this.hide(), true)
+    // A click inside the panel is the panel's own (it opens the viewer, then hides).
+    d.addEventListener('click', e => { if (!this.panel?.contains(e.target as Node)) this.hide() }, true)
     d.addEventListener('keydown', e => { if (e.key === 'Escape') this.hide() })
     window.addEventListener('scroll', () => this.hide(), true)
   }
@@ -83,7 +89,7 @@ export class AttachmentHoverPreviewService {
     const panel = document.createElement('div')
     panel.setAttribute('aria-hidden', 'true')
     panel.setAttribute('data-testid', 'attachment-hover-preview')
-    panel.style.cssText = `position:fixed;z-index:${Z_INDEX};pointer-events:none;box-sizing:border-box;`
+    panel.style.cssText = `position:fixed;z-index:${Z_INDEX};box-sizing:border-box;`
       + 'max-width:min(92vw,520px);padding:8px;border-radius:var(--rt-radius,8px);'
       + 'background:var(--rt-surface,#fff);color:var(--rt-ink,#000);border:1px solid var(--rt-line-strong,#888);'
       + 'box-shadow:0 4px 16px rgba(0,0,0,.35);font:inherit;font-size:.85rem;visibility:hidden;top:0;left:0'
@@ -95,7 +101,8 @@ export class AttachmentHoverPreviewService {
     const urls: string[] = []
     for (const ref of shown) {
       const tile = document.createElement('div')
-      tile.style.cssText = `width:${THUMB_PX}px;text-align:center;overflow:hidden`
+      tile.style.cssText = `width:${THUMB_PX}px;text-align:center;overflow:hidden;cursor:pointer`
+      tile.addEventListener('click', () => { this.hide(); void this.viewer.open(uid, ref.sha256) })
       const thumb = ref.type.startsWith('image/') ? await this.thumb(ref.sha256) : undefined
       if (gen !== this.generation) { urls.forEach(u => URL.revokeObjectURL(u)); return }
       if (thumb) {
@@ -144,6 +151,14 @@ export class AttachmentHoverPreviewService {
     hint.textContent = 'Click to open'
     hint.style.cssText = 'margin-top:6px;color:var(--rt-ink-3,#666);font-size:.8em'
     panel.append(hint)
+
+    // On the panel it stays; off it, the same grace as leaving the chip.
+    panel.addEventListener('mouseenter', () => clearTimeout(this.hideTimer))
+    panel.addEventListener('mouseleave', (e: MouseEvent) => {
+      if ((e.relatedTarget as HTMLElement | null)?.closest?.(`.${ATTACH_CHIP_CLASS}`) === this.chip) return
+      clearTimeout(this.hideTimer)
+      this.hideTimer = setTimeout(() => this.hide(), HIDE_MS)
+    })
 
     document.body.append(panel)
     this.panel = panel
