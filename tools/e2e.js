@@ -3757,7 +3757,10 @@ const importSafetySeed = {
   }),
   seedLog: entries => idbSetRaw('radioLog', JSON.stringify({
     schemaVersion: 1, version: '0.0.0', date: new Date().toISOString(), event: 'e2e', bounds: {},
-    numReport: entries.length, maxId: entries.length, filter: 'All', logEntries: entries,
+    // maxId is the NEXT id (radio-log.service: `id = maxId++`). It was entries.length, which
+    // handed the next entry an id already in use; the grid keys rows by id and drew only one
+    // of the two (found 2026-10-21 when newest-first changed which one won).
+    numReport: entries.length, maxId: Math.max(0, ...entries.map(e => e.id + 1)), filter: 'All', logEntries: entries,
   })),
   seedPeople: list => idbSetRaw('rangers', JSON.stringify({ schemaVersion: 1, rangers: list.map(c => ({ uid: 'u-' + c, id: 'ID-' + c, callsign: c, fullName: 'Person ' + c, phone: '', image: '', team: '', role: '', note: '' })) })),
   entriesNow: async () => JSON.parse((await idbGetRaw('radioLog')) || '{}').logEntries || [],
