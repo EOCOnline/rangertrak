@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.75-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.74-alpha...v0.99.75-alpha) (2026-10-21)
+
+
+### Features
+
+* **board:** E-216 slice 1 - address cleanup, certificate hint, self-retry, /hello, start checks ([a8af13a](https://github.com/SteadyEOC/RangerTrak/commit/a8af13a862ef07578b76ebe344bcd650ced40c8b))
+
+
+### Bug Fixes
+
+* **forms:** E-219 placeholders read as examples, not values ([5759eb9](https://github.com/SteadyEOC/RangerTrak/commit/5759eb9a5bc9e3673d5a599fde3dccc8636d4e39))
+
 ### [0.99.74-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.73-alpha...v0.99.74-alpha) (2026-10-21)
 
 
