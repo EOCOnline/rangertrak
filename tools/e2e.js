@@ -1995,7 +1995,9 @@ const CONTROLS_COLLECTOR = `(() => {
 
 async function checkControls() {
   console.log('\nControls follow one rule: 8 px corner, 32 px (44 px on touch), 14 px text (E-209, D-64)')
-  await send('Page.addScriptToEvaluateOnNewDocument', { source: `try { if (localStorage.getItem('rt-view') === null) { localStorage.setItem('rt-view', 'full'); localStorage.setItem('rt-view-source', 'user') } } catch {}` })
+  // Removed again at the end: left installed, it puts every later group (the view group's
+  // clean profile included) in Full view.
+  const { identifier: controlsViewId } = await send('Page.addScriptToEvaluateOnNewDocument', { source: `try { if (localStorage.getItem('rt-view') === null) { localStorage.setItem('rt-view', 'full'); localStorage.setItem('rt-view-source', 'user') } } catch {}` })
   const routes = [['Entry', '/'], ['Map', '/map'], ['Mission', '/mission'], ['Rangers', '/rangers']]
   for (const [width, touch] of [[1280, false], [360, true]]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height: touch ? 800 : 900, deviceScaleFactor: 1, mobile: touch })
@@ -2020,6 +2022,8 @@ async function checkControls() {
   }
   await send('Emulation.setTouchEmulationEnabled', { enabled: false })
   await send('Emulation.clearDeviceMetricsOverride')
+  await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: controlsViewId })
+  await evaluate(`localStorage.removeItem('rt-view'); localStorage.removeItem('rt-view-source')`)
 }
 
 /**

@@ -115,7 +115,11 @@ body {
 // Icon buttons and FABs are untouched: a round icon button is the control's shape, not a
 // corner choice. Leaflet's save-tiles control and the other hand-rolled buttons read the same
 // tokens in their own stylesheets.
-:root {
+// Scoped to :root AND :root[data-skin]: each skin's mat.theme() above sets density -2's own
+// heights (chips 24px, toggles 40px) under :root[data-skin="..."], which outranks a bare :root.
+// Matching that specificity, and coming later, lets these win under every skin.
+:root,
+:root[data-skin] {
   @include mat.button-overrides((
     filled-container-shape: var(--rt-control-radius),
     outlined-container-shape: var(--rt-control-radius),
@@ -140,6 +144,19 @@ body {
     label-text-size: var(--mat-sys-label-large-size),
     label-text-weight: var(--mat-sys-label-large-weight),
   ));
+}
+
+// E-209: at 14px the five coordinate formats (DD ... UTM) no longer fit 360px, which the old
+// per-page 12px text hid. Narrow screens take a little side padding off each toggle, and any
+// group still too wide wraps instead of running off the screen.
+.mat-button-toggle-group {
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+@media (max-width: 480px) {
+  .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+    padding: 0 8px;
+  }
 }
 
 // 2026-09-27 (sticky navbar): in-page fragment links - Help's own tab anchors, and the
