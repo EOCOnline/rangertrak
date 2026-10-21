@@ -58,7 +58,7 @@
     </p>
 
     @if (view.isShown('attachments-budget')) {
-    <div [rtAdvanced]="'attachments-budget'">
+    <div class="mission__advanced-block" [rtAdvanced]="'attachments-budget'">
     <!-- E-194 / D-60: the attachment budget. The line is always shown; it warns at 80% and 100% when
          files are added and never blocks. The setting waits for the page's autosave like the rest. -->
     <h3 class="mission__subhead">Attachments</h3>
@@ -110,7 +110,7 @@
     <rangertrak-import-safety-card></rangertrak-import-safety-card>
 
     @if (view.isShown('setup-file', { setupFileAsked: setupFileAsked() })) {
-    <div [rtAdvanced]="'setup-file'">
+    <div class="mission__advanced-block" [rtAdvanced]="'setup-file'">
     <!-- E-187 phase D (ADR D-58): the old Setup files page (/prep) lives here now; /prep redirects
          to this heading (#setup-file). -->
     <h3 class="mission__subhead" id="setup-file">Setup file</h3>
@@ -119,7 +119,7 @@
     }
 
     @if (view.isShown('device-encryption')) {
-    <div [rtAdvanced]="'device-encryption'">
+    <div class="mission__advanced-block" [rtAdvanced]="'device-encryption'">
     <!-- E-122 Phase 2b: opt-in encryption at rest. The roster, radio log entries and ranger
          photos - the same data Mission backup's warning above names - can be encrypted on
          THIS device with a passphrase, rather than only on their way out in a backup file. -->

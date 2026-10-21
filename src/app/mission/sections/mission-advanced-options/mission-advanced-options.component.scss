@@ -25,6 +25,12 @@
 }
 
 
+// The Full-view edge is an inset shadow that takes no width; a card's own padding keeps it off the
+// text, but these blocks sit inside the card with none, so the edge clipped their first letter.
+.mission__advanced-block.rt-advanced {
+  padding-inline-start: 12px;
+}
+
 .mission__subhead {
   font-size  : var(--rt-type-body-size);
   line-height: var(--rt-type-body-line);
