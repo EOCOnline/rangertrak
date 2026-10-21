@@ -119,7 +119,14 @@
   # 2026-10-01, John: img-src gained https://basemap.nationalmap.gov for the USGS aerial photo
   # base map and USGS shaded relief overlay (saved for offline use through leaflet.offline's
   # fetch(), which connect-src's https: already allows).
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://*.tile.opentopomap.org https://server.arcgisonline.com https://tile.waymarkedtrails.org https://basemap.nationalmap.gov; connect-src 'self' https: https://nominatim.openstreetmap.org https://maps.googleapis.com https://*.tile.openstreetmap.org https://*.tile.opentopomap.org https://cloudflareinsights.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+  # 2026-10-21, John: script-src gained https://maps.googleapis.com. The optional Google address
+  # lookup (google-geocoder.ts, only with the user's own key) loads the Maps JS API as a script,
+  # and enforcing CSP had blocked it silently since 2026-09-22. Only that host: the loader, its
+  # common/util/geocoder modules, its CSP self-test and the JSONP auth and lookup calls all come
+  # from maps.googleapis.com (checked in Chrome against this file). Google's own allowlist
+  # example also adds 'unsafe-inline' and 'unsafe-eval' to script-src; not taken, a geocoder
+  # with no map does not need them.
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://maps.googleapis.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://*.tile.opentopomap.org https://server.arcgisonline.com https://tile.waymarkedtrails.org https://basemap.nationalmap.gov; connect-src 'self' https: https://nominatim.openstreetmap.org https://maps.googleapis.com https://*.tile.openstreetmap.org https://*.tile.opentopomap.org https://cloudflareinsights.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
 
 # Only the files that MUST NOT be cached are listed below. Everything else keeps
 # Cloudflare's default ETag revalidation, which is already correct for the
