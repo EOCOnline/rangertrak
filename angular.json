@@ -50,6 +50,11 @@
                 "output": "./"
               },
               {
+                "glob": "{console.*,room.*,lib/*.js,samples/**/*}",
+                "input": "./tools/exercise",
+                "output": "./exercise"
+              },
+              {
                 "glob": "**/*",
                 "input": "./src/assets",
                 "output": "./assets",

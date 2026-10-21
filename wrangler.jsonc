@@ -55,7 +55,9 @@
     // under these three prefixes IS a billed Worker invocation, even ones that don't end
     // up doing much (e.g. a non-.pmtiles path under /assets/maps/*) - see the "Abuse and
     // cost hardening" audit note in DEPLOYING.md.
-    "run_worker_first": ["/assets/maps/*", "/api/*", "/regions/*"]
+    // `/exercise` and `/exercise/` (exact paths, no wildcard) only redirect to the
+    // exercise console's real file; everything under /exercise/ is plain static assets.
+    "run_worker_first": ["/assets/maps/*", "/api/*", "/regions/*", "/exercise", "/exercise/"]
   },
 
   "observability": {

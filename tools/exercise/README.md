@@ -17,6 +17,15 @@ a Board context panel are a roadmap entry (E-197), not built.
 
 ## Start it
 
+**Hosted:** open <https://rangertrak.org/exercise/>. Nothing to install, no account, no keys. The build
+copies the browser files here (`console.*`, `room.*`, `lib/*.js`, `samples/`) to `/exercise/`
+(`angular.json`), and the Worker redirects `/exercise/` to `/exercise/console.html`. The app's service
+worker caches them lazily (`ngsw-config.json`, group `exercise`): open the app once in that browser, then
+the console once while online, and it runs offline after that. The console fetches the room display and
+the sample on load so they are cached too.
+
+**Local**, for your own scenario work or with no Internet at all:
+
 ```powershell
 node tools/exercise/serve.js          # then open http://127.0.0.1:8095/console.html
 ```

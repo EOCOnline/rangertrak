@@ -446,3 +446,9 @@ $('st-go').addEventListener('click', async () => {
   for (const f of files) { download(f.filename, f.text); await new Promise(r => setTimeout(r, 400)) }
   $('st-status').textContent = `Wrote ${files.length} file${files.length === 1 ? '' : 's'}, ${files.reduce((a, f) => a + f.count, 0)} entries.`
 })
+
+// Hosted at rangertrak.org/exercise/, the app's service worker caches these files only when
+// they are fetched. Fetch the room display and the sample once, so the next class can run offline.
+if (navigator.serviceWorker?.controller) {
+  for (const f of ['room.html', 'room.js', ...CORE.map(n => `samples/montecito/${n}`)]) fetch(f).catch(() => {})
+}

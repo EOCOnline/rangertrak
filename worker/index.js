@@ -395,6 +395,18 @@ export default {
       return handleRegionDownload(request, url.pathname, env)
     }
 
+    // The exercise console (E-196) is copied to /exercise/ by angular.json. `html_handling:
+    // "none"` means a directory URL never finds its page, and the SPA fallback would answer
+    // with the app, so the two short URLs redirect to the real file. A redirect, not a
+    // served copy: the service worker caches /exercise/console.html, so that is the URL a
+    // bookmark should hold for offline use.
+    if (url.pathname === '/exercise' || url.pathname === '/exercise/') {
+      return new Response(null, {
+        status: 302,
+        headers: { Location: '/exercise/console.html', 'Cache-Control': 'no-store' },
+      })
+    }
+
     if (!url.pathname.endsWith('.pmtiles')) {
       return env.ASSETS.fetch(request)
     }

@@ -413,3 +413,13 @@ test('a non-GET method on the regions path is rejected', async () => {
   )
   assert.equal(res.status, 405)
 })
+
+test('/exercise and /exercise/ redirect to the hosted console, without touching the asset store', async () => {
+  const env = { ASSETS: { fetch: async () => { throw new Error('asset store should not be called') } } }
+  for (const path of ['/exercise', '/exercise/']) {
+    const res = await worker.fetch(new Request(`https://rangertrak.org${path}`), env)
+    assert.equal(res.status, 302)
+    assert.equal(res.headers.get('Location'), '/exercise/console.html')
+    assert.equal(res.headers.get('Cache-Control'), 'no-store')
+  }
+})
