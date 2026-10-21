@@ -9,7 +9,7 @@
       <mat-form-field floatLabel="always">
         <mat-label>Default latitude</mat-label>
         <input matInput type="number" step=".01" [formField]="form.defLat"
-          placeholder="{{settings.defLat.toFixed(4)}}" data-lpignore="true" />
+          data-lpignore="true" />
         <!-- Was a `.text-sm.text-danger` div rendered by an @if beside the input. mat-error
              shows itself on the same condition Material already tracks, and takes the
              field's own error color rather than a hand-picked one. -->
@@ -21,7 +21,7 @@
       <mat-form-field floatLabel="always">
         <mat-label>Default longitude</mat-label>
         <input matInput type="number" step=".01" [formField]="form.defLng"
-          placeholder="{{settings.defLng.toFixed(4)}}" data-lpignore="true" />
+          data-lpignore="true" />
         @if (form.defLng().touched() && form.defLng().invalid()) {
         <mat-error>Must be between -179.99&deg; and 179.99&deg;</mat-error>
         }

@@ -16,7 +16,8 @@
     <div class="rt-field-grid rt-field-grid--compact">
       <mat-form-field floatLabel="always">
         <mat-label>Default zoom</mat-label>
-        <input matInput type="number" [formField]="form.leaflet.defZoom" placeholder="15" />
+        <input matInput type="number" [formField]="form.leaflet.defZoom" />
+        <mat-hint>Default 15</mat-hint>
         @if (form.leaflet.defZoom().touched() && form.leaflet.defZoom().invalid()) {
         <mat-error>1 to 22</mat-error>
         }
@@ -24,7 +25,8 @@
 
       <mat-form-field floatLabel="always">
         <mat-label>Overview offset</mat-label>
-        <input matInput type="number" [formField]="form.leaflet.overviewDifference" placeholder="5" />
+        <input matInput type="number" [formField]="form.leaflet.overviewDifference" />
+        <mat-hint>Default 5</mat-hint>
         @if (form.leaflet.overviewDifference().touched() && form.leaflet.overviewDifference().invalid()) {
         <mat-error>1 to 10</mat-error>
         }
@@ -32,7 +34,8 @@
 
       <mat-form-field floatLabel="always">
         <mat-label>Overview min</mat-label>
-        <input matInput type="number" [formField]="form.leaflet.overviewMinZoom" placeholder="5" />
+        <input matInput type="number" [formField]="form.leaflet.overviewMinZoom" />
+        <mat-hint>Default 5</mat-hint>
         @if (form.leaflet.overviewMinZoom().touched() && form.leaflet.overviewMinZoom().invalid()) {
         <mat-error>1 to 10</mat-error>
         }
@@ -40,7 +43,8 @@
 
       <mat-form-field floatLabel="always">
         <mat-label>Overview max</mat-label>
-        <input matInput type="number" [formField]="form.leaflet.overviewMaxZoom" placeholder="21" />
+        <input matInput type="number" [formField]="form.leaflet.overviewMaxZoom" />
+        <mat-hint>Default 16</mat-hint>
         @if (form.leaflet.overviewMaxZoom().touched() && form.leaflet.overviewMaxZoom().invalid()) {
         <mat-error>3 to 22</mat-error>
         }
@@ -51,7 +55,8 @@
     <div class="rt-field-grid rt-field-grid--compact">
       <mat-form-field floatLabel="always">
         <mat-label>Default zoom</mat-label>
-        <input matInput type="number" [formField]="form.maplibre.defZoom" placeholder="15" />
+        <input matInput type="number" [formField]="form.maplibre.defZoom" />
+        <mat-hint>Default 15</mat-hint>
         @if (form.maplibre.defZoom().touched() && form.maplibre.defZoom().invalid()) {
         <mat-error>3 to 22</mat-error>
         }
@@ -59,7 +64,8 @@
 
       <mat-form-field floatLabel="always">
         <mat-label>Overview offset</mat-label>
-        <input matInput type="number" [formField]="form.maplibre.overviewDifference" placeholder="5" />
+        <input matInput type="number" [formField]="form.maplibre.overviewDifference" />
+        <mat-hint>Default 5</mat-hint>
         @if (form.maplibre.overviewDifference().touched() && form.maplibre.overviewDifference().invalid()) {
         <mat-error>1 to 10</mat-error>
         }
@@ -67,7 +73,8 @@
 
       <mat-form-field floatLabel="always">
         <mat-label>Overview min</mat-label>
-        <input matInput type="number" [formField]="form.maplibre.overviewMinZoom" placeholder="5" />
+        <input matInput type="number" [formField]="form.maplibre.overviewMinZoom" />
+        <mat-hint>Default 5</mat-hint>
         @if (form.maplibre.overviewMinZoom().touched() && form.maplibre.overviewMinZoom().invalid()) {
         <mat-error>1 to 10</mat-error>
         }
@@ -75,7 +82,8 @@
 
       <mat-form-field floatLabel="always">
         <mat-label>Overview max</mat-label>
-        <input matInput type="number" [formField]="form.maplibre.overviewMaxZoom" placeholder="21" />
+        <input matInput type="number" [formField]="form.maplibre.overviewMaxZoom" />
+        <mat-hint>Default 16</mat-hint>
         @if (form.maplibre.overviewMaxZoom().touched() && form.maplibre.overviewMaxZoom().invalid()) {
         <mat-error>3 to 22</mat-error>
         }

@@ -404,3 +404,7 @@ rangertrak-footer {
   margin-left  : 0.4em;
   padding      : 0 0.5em;
 }
+
+// E-219: a placeholder is an example or an instruction, never a value. Italic tells them apart
+// without fading them (contrast in sunlight).
+::placeholder { font-style: italic; }

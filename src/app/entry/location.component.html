@@ -173,7 +173,7 @@
       <span class="rt-coord-group">
         <input #mgrsGridRef [formField]="mgrsForm.gridRef" type="text" (change)="onMgrsChg()" class="rt-coord-seg rt-coord-seg--mgrs-grid"
           id="enter__Where-mgrsGridRef" aria-label="MGRS grid zone, band, and 100km square" title="e.g. 10TFS"
-          placeholder="10TFS" [attr.tabindex]="ti(18)"
+          placeholder="e.g. 10TFS" [attr.tabindex]="ti(18)"
           [class.border-danger]="mgrsForm.gridRef().touched() && mgrsForm.gridRef().invalid()" />
         <input #mgrsEasting [formField]="mgrsForm.easting" type="number" (change)="onMgrsChg()" class="rt-coord-seg rt-coord-seg--mgrs-en"
           id="enter__Where-mgrsEasting" aria-label="MGRS easting" title="Easting" placeholder="Easting"

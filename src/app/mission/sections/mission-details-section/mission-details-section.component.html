@@ -17,12 +17,12 @@
     <div class="rt-field-grid">
       <mat-form-field floatLabel="always">
         <mat-label>ID or number</mat-label>
-        <input matInput [formField]="form.mission" placeholder="Mission #" type="text" data-lpignore="true" />
+        <input matInput [formField]="form.mission" placeholder="e.g. 26-0142" type="text" data-lpignore="true" />
       </mat-form-field>
 
       <mat-form-field floatLabel="always">
         <mat-label>Name</mat-label>
-        <input matInput [formField]="form.event" placeholder="Event name" type="text" data-lpignore="true" />
+        <input matInput [formField]="form.event" placeholder="e.g. Fernhollow storm response" type="text" data-lpignore="true" />
         <!-- D-32 signal 1: an unnamed mission is one of the six readiness checks, so say so
              here rather than only in the header dot's tooltip. -->
         <mat-hint>Required for mission readiness</mat-hint>
@@ -41,7 +41,7 @@
          identifier itself is still required to be unique (D-42/D-43, unchanged). -->
     <mat-form-field class="rt-field-grid__wide mission__id-label" floatLabel="always">
       <mat-label>Ranger ID field name</mat-label>
-      <input matInput [formField]="form.idFieldLabel" placeholder="Ranger ID" type="text" data-lpignore="true" />
+      <input matInput [formField]="form.idFieldLabel" placeholder="Blank uses &quot;Ranger ID&quot;" type="text" data-lpignore="true" />
       <mat-hint>What to call each ranger's unique identifier on the Rangers grid - e.g. "REW/TEW" for
         Washington, or whatever this mission's agency uses. Every responder should have their
         own; anyone without one shows as not yet checked in.</mat-hint>
@@ -58,7 +58,7 @@
   <mat-card-content>
     <mat-form-field class="mission__period-name" floatLabel="always">
       <mat-label>Period name</mat-label>
-      <input matInput [formField]="form.opPeriod" placeholder="Operational Period" type="text"
+      <input matInput [formField]="form.opPeriod" placeholder="e.g. OP 1, day shift" type="text"
         data-lpignore="true" />
     </mat-form-field>
 

@@ -3197,7 +3197,7 @@ async function checkMissionFormSave() {
   //    assigning .checked and dispatching a synthetic event: MatCheckbox emits its own
   //    change event from the native input's, and that is the path a real user takes.
   const before = await evaluate(`(() => {
-    const mission = document.querySelector('input[placeholder="Mission #"]');
+    const mission = document.querySelector('input[placeholder="e.g. 26-0142"]');
     const debugBox = document.querySelector('[data-testid="debug-mode"] input[type="checkbox"]');
     const setNative = (el, value) => {
       Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, value);
@@ -3225,7 +3225,7 @@ async function checkMissionFormSave() {
   // E-145: no click, no reload. The autosave fires ~800 ms after the last change.
   await sleep(1800)
   check('the page did not reload itself when saving',
-    await evaluate(`document.querySelector('input[placeholder="Mission #"]')?.value`), 'E2E-SIGNAL-FORMS')
+    await evaluate(`document.querySelector('input[placeholder="e.g. 26-0142"]')?.value`), 'E2E-SIGNAL-FORMS')
   check('the saved indicator says Saved',
     await evaluate(`document.querySelector('[data-testid="mission-save-status"]')?.textContent.includes('Saved')`), true)
 
@@ -3238,7 +3238,7 @@ async function checkMissionFormSave() {
   // ...and still there after a reload.
   await goto('/mission')
   check('autosaved mission value survives a reload',
-    await evaluate(`document.querySelector('input[placeholder="Mission #"]')?.value`), 'E2E-SIGNAL-FORMS')
+    await evaluate(`document.querySelector('input[placeholder="e.g. 26-0142"]')?.value`), 'E2E-SIGNAL-FORMS')
 }
 
 /**
@@ -3254,7 +3254,7 @@ async function checkMissionUnsavedChangesGuard() {
   await goto('/mission')
 
   const setMissionName = value => evaluate(`(() => {
-    const mission = document.querySelector('input[placeholder="Mission #"]');
+    const mission = document.querySelector('input[placeholder="e.g. 26-0142"]');
     Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(mission, ${JSON.stringify(value)});
     mission.dispatchEvent(new Event('input', { bubbles: true }));
   })()`)

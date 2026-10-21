@@ -17,7 +17,7 @@
       <mat-form-field class="mission__tactical-name" floatLabel="always">
         <mat-label>Tactical call</mat-label>
         <input matInput type="text" [ngModel]="row.name" (ngModelChange)="onNameChange(i, $event)"
-          (blur)="onNameBlur()" [ngModelOptions]="{standalone: true}" placeholder="CERT Team 1"
+          (blur)="onNameBlur()" [ngModelOptions]="{standalone: true}" placeholder="e.g. CERT Team 1"
           data-lpignore="true" spellcheck="false" />
         @if (isDuplicate(i)) {
         <mat-hint class="mission__tactical-error">Already in the list. It is not saved until renamed.</mat-hint>
