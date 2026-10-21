@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.68-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.67-alpha...v0.99.68-alpha) (2026-10-21)
+
+
+### Features
+
+* **mission:** coordinate format as a toggle group (E-209) ([d499d4d](https://github.com/SteadyEOC/RangerTrak/commit/d499d4daca6eae3f987043a41d971f3e375d8567))
+
+
+### Bug Fixes
+
+* **controls:** the control rule wins under every skin; toggle groups wrap on a phone (E-209) ([482bff0](https://github.com/SteadyEOC/RangerTrak/commit/482bff06a60b7dbf2e9392ba130e3e1a1e3f8a7d))
+
 ### [0.99.67-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.66-alpha...v0.99.67-alpha) (2026-10-21)
 
 
