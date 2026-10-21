@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.74-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.73-alpha...v0.99.74-alpha) (2026-10-21)
+
+
+### Features
+
+* **board:** light / dark switch on the viewer ([a2773ba](https://github.com/SteadyEOC/RangerTrak/commit/a2773baef407455fff26719481ccb915dd168cda))
+* **radio-log:** newest entry at the top by default ([f80b881](https://github.com/SteadyEOC/RangerTrak/commit/f80b88115a4260127983fa188e31154334b06716))
+
+
+### Bug Fixes
+
+* **attachments:** the hover preview stays open under the mouse, and a thumbnail click opens it ([4a5a6bb](https://github.com/SteadyEOC/RangerTrak/commit/4a5a6bb5019f075d843a5d581bb203fdfefbbd13))
+* **board:** hide the viewer's password prompt on open Boards; clearer wording; no example address in Server address ([a01a137](https://github.com/SteadyEOC/RangerTrak/commit/a01a137ae4884aeeba4a8143807d4c4ce8f21030))
+
 ### [0.99.73-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.72-alpha...v0.99.73-alpha) (2026-10-21)
 
 ### [0.99.72-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.71-alpha...v0.99.72-alpha) (2026-10-21)
