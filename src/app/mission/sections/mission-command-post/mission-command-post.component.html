@@ -1,7 +1,7 @@
 <mat-card appearance="outlined" class="rt-mission-card" [rtAdvanced]="'board'">
   <mat-card-header>
     <mat-card-title>RangerTrak Board</mat-card-title>
-    <mat-card-subtitle>Let nearby devices read the live comms log over this laptop's WiFi.</mat-card-subtitle>
+    <mat-card-subtitle>Let nearby devices read the live comms log over this Wi-Fi, from the computer running the Board.</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
     <!-- Simplified 2026-08-31 ("that server section explanation is long and technical.
@@ -41,7 +41,7 @@
       <mat-form-field class="mission-command-post__url" floatLabel="always">
         <mat-label>Server address</mat-label>
         <input matInput type="text" [formField]="form.commandPostServerUrl"
-          placeholder="Paste the address the Board printed" />
+          placeholder="Paste the address the Board printed" (blur)="tidyAddress()" />
         <!-- Not an example address: John read the old "https://192.168.1.5:8080" placeholder
              as the Board's real one and lost an hour to it (2026-10-21, E-216). -->
 
@@ -70,6 +70,12 @@
           {{ boardStatus() }} {{ publisher.message() }}
         </p>
       }
+      @if (publisher.unreachable() === 'quick') {
+        <p class="mission-command-post__certificate">
+          <a mat-stroked-button [href]="helloUrl()" target="_blank" rel="noopener">Open the Board</a>
+          If you see <em>Your connection is not private</em>, choose Advanced &rarr; Proceed, then come back.
+        </p>
+      }
       @if (publisher.state() === 'replaced') {
         <button mat-flat-button type="button" (click)="publisher.takeOver()">Take over</button>
       }
@@ -92,11 +98,10 @@
       <!-- Catches the one mistake this codebase now knows is silently fatal - see
            entersPlainHttp()'s own doc comment. -->
       @if (entersPlainHttp()) {
-        <div class="warn mission-command-post__http-warning">
-          This starts with <code>http://</code> — it needs to be <code>https://</code> or
-          publishing will fail silently. Copy the address from the server's own startup
-          output, which always prints it correctly.
-        </div>
+        <div class="warn mission-command-post__http-warning">{{ httpError }}</div>
+      }
+      @if (viewHint()) {
+        <p class="mission__note mission-command-post__view-hint" role="status">{{ viewHintText }}</p>
       }
 
       <!-- Raised live 2026-08-31: "a URL to click" to confirm /view actually works, without

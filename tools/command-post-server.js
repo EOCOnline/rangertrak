@@ -39,6 +39,7 @@ const { privateAddresses } = require('./board/net');
 const { createResponder, sanitizeLabel } = require('./board/mdns');
 const { createBoard } = require('./board/protocol');
 const qr = require('./board/qr');
+const { handleHello } = require('./board/hello');
 
 const ROOT = path.join(__dirname, '..', 'dist', 'rangertrak', 'browser');
 const DEFAULT_LABEL = 'rangertrak-board';
@@ -229,7 +230,7 @@ async function createServer({ port, cert, addresses = ['127.0.0.1'], name = '', 
       log('');
       log(`Scan to open the Board on a phone (${qr.plainUrl(s)}):`);
       log(await qr.terminalQr(qr.viewUrl(s)));
-      log(`To show it full screen on this laptop, open https://localhost${s.port === 443 ? '' : ':' + s.port}/qr`);
+      log(`To show it full screen on this computer, open https://localhost${s.port === 443 ? '' : ':' + s.port}/qr`);
     } catch (e) {
       log(`Could not draw the QR code (${e.message}); use the address above.`);
     }
@@ -237,6 +238,11 @@ async function createServer({ port, cert, addresses = ['127.0.0.1'], name = '', 
   const { handle, board, claimState } = createBoard({ log, name, ...boardOptions, onClaim: printQr });
   const handler = (req, res) => {
     if (req.url.startsWith('/api/')) return handle(req, res);
+    // E-216: reachability check. No data, no password, not a claim and not a viewer.
+    if (req.url.split('?')[0] === '/hello' && (req.method === 'GET' || req.method === 'HEAD')) {
+      handleHello(req, res, name);
+      return undefined;
+    }
     if (req.url.split('?')[0] === '/qr') {
       qr.handleQr(req, res, qrState).catch(() => { if (!res.headersSent) { res.writeHead(500); } res.end(); });
       return undefined;
@@ -336,8 +342,8 @@ function printBoardUrls({ name, label, port, addresses, skipped }) {
   }
   console.log(`  https://${hostPort('localhost')}/view   (this machine only)`);
   console.log('');
-  console.log(`To show a QR code for phones full screen, open https://${hostPort('localhost')}/qr on this laptop.`);
-  console.log('(It is shown here too once the scribe turns on publishing. That page works from this laptop only.)');
+  console.log(`To show a QR code for phones full screen, open https://${hostPort('localhost')}/qr on this computer.`);
+  console.log('(It is shown here too once the scribe turns on publishing. That page works from this computer only.)');
   if (name && name !== `${label}.local`) {
     console.log('');
     console.log(`Note: ${label}.local was already taken on this network, so this Board is ${name}.`);
@@ -348,7 +354,7 @@ function printBoardUrls({ name, label, port, addresses, skipped }) {
   console.log('certificate authority, the same warning router admin pages show. Click Advanced,');
   console.log('then Proceed. Needed ONCE per device and name; the browser remembers it after that.');
   console.log('');
-  console.log('In RangerTrak\'s own Mission Setup, turn on "Publish to Command Post Server" and');
+  console.log('In RangerTrak\'s own Mission Setup, turn on "Send this log to a RangerTrak Board" and');
   console.log('set the server address to the first address above (without /view), e.g.:');
   console.log(`  ${primaryUrl}`);
   console.log('(Visit that address directly in THIS device\'s own browser first, and accept the');

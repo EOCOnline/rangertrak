@@ -4,6 +4,7 @@ import { FieldTree, FormField } from '@angular/forms/signals'
 
 import { LogService, MissionType } from '../../../shared/services/'
 import { CommandPostPublishService } from '../../../shared/services/command-post-publish.service'
+import { BOARD_HTTP_ERROR, BOARD_VIEW_HINT, normaliseBoardAddress } from '../../../domain/board-address'
 import { replacedMessage } from '../../../domain/board-client'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
@@ -131,20 +132,36 @@ export class MissionCommandPostComponent implements OnDestroy {
    * down," and would be misleading either way until a device has clicked through once.
    */
   viewUrl(): string {
-    const base = (this.form.commandPostServerUrl().value() || '').trim().replace(/\/+$/, '')
+    const base = this.address().url
     return base ? `${base}/view` : ''
   }
 
-  /**
-   * Raised live 2026-08-31, same session as the HTTPS fix: nothing here validates the
-   * address at all, so a `http://` entry - old muscle memory, a stale note, a copied-down
-   * screenshot from before this fix - is accepted silently and fails with the EXACT SAME
-   * symptom ("is the server running?") that caused the whole mixed-content investigation.
-   * A field-level check catches this one specific, easy-to-hit mistake before it costs
-   * another round of "why isn't this working" - not general URL validation, just the one
-   * thing this codebase now knows is silently fatal.
-   */
-  entersPlainHttp(): boolean {
-    return /^http:\/\//i.test((this.form.commandPostServerUrl().value() || '').trim())
+  /** E-216: the cleaned address, or the reason it can't be used. */
+  private address() {
+    return normaliseBoardAddress(this.form.commandPostServerUrl().value())
   }
+
+  /** E-216: the Open the Board button's target - the page that holds no data. */
+  helloUrl(): string {
+    const base = this.address().url
+    return base ? `${base}/hello` : ''
+  }
+
+  /** E-216: shown once, when a pasted viewer address had /view taken off. */
+  viewHint = signal(false)
+  readonly viewHintText = BOARD_VIEW_HINT
+
+  /** E-216: tidy the address when the scribe leaves the field. http:// is left as typed, with the error showing. */
+  tidyAddress(): void {
+    const r = this.address()
+    if (r.url === undefined) return
+    if (r.url !== this.form.commandPostServerUrl().value()) this.form.commandPostServerUrl().value.set(r.url)
+    this.viewHint.set(!!r.strippedView)
+  }
+
+  entersPlainHttp(): boolean {
+    return this.address().error !== undefined
+  }
+
+  readonly httpError = BOARD_HTTP_ERROR
 }

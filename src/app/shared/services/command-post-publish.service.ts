@@ -1,12 +1,14 @@
 import { Subscription } from 'rxjs'
 
-import { Injectable, signal } from '@angular/core'
+import { Injectable, OnDestroy, signal } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
 import {
   attachmentFields, BoardAction, BoardAttachment, BoardEvent, BoardHolder, BoardState, boardStep, describeAgent,
   readClaimReply, readKeyedReply, replacedMessage, trimThumbs,
 } from '../../domain/board-client'
+import { normaliseBoardAddress } from '../../domain/board-address'
+import { BoardRetry } from '../../domain/board-retry'
 import { liveRefs } from '../../domain/attachments'
 import { AttachmentStoreService } from './attachment-store.service'
 import { DevicePrefsService } from './device-prefs.service'
@@ -85,9 +87,14 @@ export type CommandPostMission = {
 }
 
 const POLL_MS = 5000
+/** E-216: a network failure faster than this is most likely a certificate not yet accepted, or no Board running. */
+const QUICK_FAIL_MS = 3000
+
+export const UNREACHABLE_QUICK = "Can't reach the Board. Most likely your browser hasn't accepted its certificate yet, or the Board isn't running."
+export const UNREACHABLE_SLOW = "Can't reach the Board. Most likely this device is on a different Wi-Fi, or a firewall or VPN is in the way."
 
 @Injectable({ providedIn: 'root' })
-export class CommandPostPublishService {
+export class CommandPostPublishService implements OnDestroy {
 
   private id = 'Command Post Publish Service'
   private settings: MissionType | undefined
@@ -104,6 +111,12 @@ export class CommandPostPublishService {
   private messageSignal = signal('')
   /** Why the last claim failed, in words for the operator. Empty when there is nothing to say. */
   readonly message = this.messageSignal.asReadonly()
+
+  private unreachableSignal = signal<'quick' | 'slow' | undefined>(undefined)
+  /** E-216: set while the last request to the Board failed at the network. `quick` points at the certificate. */
+  readonly unreachable = this.unreachableSignal.asReadonly()
+  private retry = new BoardRetry(() => this.retryNow())
+  private listening = false
 
   /** The server and settings this run of publishing started from, to notice a change. */
   private active?: { base: string, password: string, show: boolean }
@@ -141,11 +154,43 @@ export class CommandPostPublishService {
       error: (e) => this.log.error(`Radio log subscription error: ${e}`, this.id),
     })
 
-    // The page coming back to the front: poll at once rather than wait out the timer, so a
-    // restart or a takeover that happened while it was hidden is seen straight away.
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden && this.stateSignal() === 'publishing') void this.poll()
-    })
+  }
+
+  /** The window got focus or the page came back to the front: poll at once, and retry a failure now. */
+  private onWake = (): void => {
+    if (document.hidden) return
+    const state = this.stateSignal()
+    if (state === 'publishing') {
+      if (this.unreachableSignal()) this.retry.now()
+      else void this.poll()
+    } else if (state === 'error' && this.unreachableSignal()) {
+      this.retry.now()
+    }
+  }
+
+  private listen(on: boolean): void {
+    if (on === this.listening) return
+    this.listening = on
+    const act = on ? 'addEventListener' : 'removeEventListener'
+    window[act]('focus', this.onWake)
+    document[act]('visibilitychange', this.onWake)
+  }
+
+  /** The retry timer fired: try again, in the same ways a log change would. Never a takeover. */
+  private retryNow(): void {
+    const base = this.active?.base
+    if (!base) return
+    const state = this.stateSignal()
+    if (state === 'publishing') void this.publish()
+    else if (state === 'error') this.start(base, false) // a plain claim, never a takeover
+  }
+
+  ngOnDestroy(): void {
+    this.retry.stop()
+    this.listen(false)
+    this.stopPolling()
+    this.missionSubscription?.unsubscribe()
+    this.radioLogSubscription?.unsubscribe()
   }
 
   /** The Mission card's Take over button: a claim without `reclaim`, with the password. */
@@ -159,7 +204,7 @@ export class CommandPostPublishService {
 
   private baseOf(settings: MissionType | undefined): string {
     if (!settings?.commandPostEnabled) return ''
-    return settings.commandPostServerUrl?.trim().replace(/\/+$/, '') ?? ''
+    return normaliseBoardAddress(settings.commandPostServerUrl).url ?? '' // an http:// address never publishes
   }
 
   private onSettings(settings: MissionType): void {
@@ -169,10 +214,14 @@ export class CommandPostPublishService {
     if (!base) {
       if (this.stateSignal() !== 'off') this.dispatch({ type: 'stop' })
       this.active = undefined
+      this.retry.stop()
+      this.unreachableSignal.set(undefined)
+      this.listen(false)
       return
     }
     const show = !!settings.boardShowAttachments
     this.active = { base, password, show }
+    this.listen(true)
     // The app's first look at the settings is a start-up, which keeps a `replaced` it remembers.
     // Any later switch-on is a person choosing to publish, which is a normal claim.
     const startUp = this.firstSettings
@@ -214,6 +263,7 @@ export class CommandPostPublishService {
     this.log.info(`Board publishing: ${before} -> ${now}.`, this.id)
     if (now === 'publishing') this.startPolling()
     else this.stopPolling()
+    if (now === 'off' || now === 'replaced') { this.retry.stop(); this.unreachableSignal.set(undefined) }
     if (now === 'replaced') {
       // Stop for good until a person says otherwise: forget the key, and remember that we were replaced.
       this.key = ''
@@ -286,7 +336,6 @@ export class CommandPostPublishService {
   private claimFailed(base: string, e: unknown): void {
     // Expected, not an error: the Board is a separate process a mission may not have running yet.
     this.log.warn(`Board not reachable - is the server running at ${base}? (${e})`, this.id)
-    this.messageSignal.set('Could not reach the Board. Is the server running? It will try again when the log changes.')
     this.refuse()
   }
 
@@ -454,14 +503,38 @@ export class CommandPostPublishService {
     base: string, method: 'GET' | 'POST', path: string,
     o: { headers?: Record<string, string>, key?: string, body?: BodyInit } = {},
   ): Promise<{ status: number, body: unknown }> {
-    const res = await fetch(`${base}${path}`, {
-      method,
-      headers: { ...o.headers, ...(o.key ? { 'X-Board-Key': o.key } : {}) },
-      ...(o.body !== undefined ? { body: o.body } : {}),
-    })
+    const started = Date.now()
+    let res: Response
+    try {
+      res = await fetch(`${base}${path}`, {
+        method,
+        headers: { ...o.headers, ...(o.key ? { 'X-Board-Key': o.key } : {}) },
+        ...(o.body !== undefined ? { body: o.body } : {}),
+      })
+    } catch (e) {
+      this.noteUnreachable(Date.now() - started)
+      throw e
+    }
+    this.noteReached()
     let body: unknown = null
     try { body = await res.json() } catch { /* 204, or not JSON */ }
     return { status: res.status, body }
+  }
+
+  /** A request failed at the network (not an HTTP status). Say what is most likely, and try again later. */
+  private noteUnreachable(elapsedMs: number): void {
+    const kind = elapsedMs < QUICK_FAIL_MS ? 'quick' : 'slow'
+    this.unreachableSignal.set(kind)
+    this.messageSignal.set(kind === 'quick' ? UNREACHABLE_QUICK : UNREACHABLE_SLOW)
+    if (this.active) this.retry.failed()
+  }
+
+  /** Any HTTP answer at all means the Board was reached. */
+  private noteReached(): void {
+    if (!this.unreachableSignal()) return
+    this.unreachableSignal.set(undefined)
+    this.messageSignal.set('')
+    this.retry.succeeded()
   }
 
   private by(settings: MissionType) {
