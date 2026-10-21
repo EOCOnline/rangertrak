@@ -2089,9 +2089,14 @@ async function checkCards() {
           if (c.wide) continue
           check(`${name} @${width}: card "${c.name}" is no wider than one column (${c.width}px of ${Math.round(g.colWidth)}px)`, c.width <= g.colWidth + 2, true)
         }
-        // Gap to the next card down the same column.
+        // A wide card goes first or last (D-65 item 2), so it cannot leave a hole in the middle.
+        g.cards.forEach((c, i) => { if (c.wide) check(`${name} @${width}: wide card "${c.name}" is first or last in its grid`, i === 0 || i === g.cards.length - 1, true) })
+        const last = g.cards[g.cards.length - 1]
+        if (last?.wide && g.cards.length > 1) check(`${name} @${width}: wide last card "${last.name}" sits below every other card`, last.top >= Math.max(...g.cards.slice(0, -1).map(o => o.bottom)) - 2, true)
+        // Gap to the next card down the same column. The space above a wide last row (Mission's
+        // Danger zone, Q25) is the accepted cost of keeping it last, so a wide card is never "below".
         for (const c of g.cards) {
-          const below = g.cards.filter(o => o !== c && Math.abs(o.left - c.left) < 8 && o.top >= c.bottom - 2).sort((a, b) => a.top - b.top)[0]
+          const below = g.cards.filter(o => o !== c && !o.wide && Math.abs(o.left - c.left) < 8 && o.top >= c.bottom - 2).sort((a, b) => a.top - b.top)[0]
           if (below) check(`${name} @${width}: gap under "${c.name}" is at most 2rem (${below.top - c.bottom}px)`, below.top - c.bottom <= 32, true)
         }
       }

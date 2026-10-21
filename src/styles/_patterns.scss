@@ -61,7 +61,8 @@
 //                  plain flow in print.
 //   2. One column. A card is as wide as one column, never full width "in case". Full width
 //                  is for the page's main data grid, the map and notices. A card that holds
-//                  a wide data grid adds .rt-mission-card--wide and goes first or last.
+//                  a wide data grid adds .rt-mission-card--wide and goes first or last. Mission's
+//                  Danger zone is --wide too, so it is the last row, as on every page (Q25).
 //   3. No box in a box. A panel that opens shows its cards in a grid with no second border.
 //   4. One corner. Cards, panels, grid frames, the Danger zone, the Entry map: --rt-box-radius
 //                  (12px). Controls stay 8px (D-64), so boxes are rounder than what is in them.
