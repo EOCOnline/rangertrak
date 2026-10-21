@@ -559,11 +559,13 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     // button while it is showing). Esri's own terms of use for World Imagery must be
     // re-checked before 1.0 (roadmap E-162). server.arcgisonline.com is already in the CSP.
     // maxZoom 19 is the service's usual detail limit; past it Leaflet just enlarges tiles.
+    // Attribution is the service's own copyrightText (MapServer?f=json); Esri changed Maxar to
+    // Vantor in 2026. E-162 re-check, 2026-10-20.
     const satelliteTiles = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       {
         maxZoom: 19, minZoom: 3,
-        attribution: 'Tiles &copy; <a href="https://www.esri.com">Esri</a> &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community',
+        attribution: 'Tiles &copy; <a href="https://www.esri.com">Esri</a> &mdash; Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community',
       }
     )
     // 2026-09-30, John: "can the map show both satellite and a road map together, layered?" -
