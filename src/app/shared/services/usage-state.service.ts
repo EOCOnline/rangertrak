@@ -1,6 +1,7 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
 
+import { ScenarioClock, readScenarioClock, scenarioInstantFromLocal, scenarioLabelAt, scenarioOffsetExplanation } from '../../domain/scenario'
 import { UsageInputs, UsageState, deriveUsageState, effectiveMode } from '../../domain/usage-state'
 import { setQuiet } from '../quiet-flag'
 import { clearActiveDemoScenario, demoRecord } from '../mapping/demo-map'
@@ -75,6 +76,22 @@ export class UsageStateService {
   readonly mode = computed<MissionModeType>(() => effectiveMode(this.inputs()))
   /** The mode in effect, with its labels; null while none is chosen and no demo is loaded. */
   readonly modeInfo = computed(() => this.modes.find(m => m.id === this.mode()) ?? null)
+  /** E-196 (D-66): the scenario clock, only while the mode is Exercise; undefined otherwise. Read
+   *  through the tolerant reader, so a bad stored value is simply "off". */
+  readonly scenarioClock = computed<ScenarioClock | undefined>(() =>
+    this.mode() === 'exercise' ? readScenarioClock(this.settings()?.scenarioClock) : undefined)
+  /** E-196 (D-66): "Scenario 14 Jan 14:12" at the given real moment, or '' when the clock is off
+   *  (not Exercise mode, or none set). The one call every read-out and print line uses. */
+  scenarioLabelAt(real: Date | number): string {
+    return scenarioLabelAt(this.scenarioClock(), real instanceof Date ? real.getTime() : real)
+  }
+
+  /** The hover text that explains the offset, or ''. */
+  scenarioHintAt(real: Date | number): string {
+    const clock = this.scenarioClock()
+    return clock ? scenarioOffsetExplanation(clock, real instanceof Date ? real.getTime() : real) : ''
+  }
+
   /** True when the app should stay out of the way (first-run tips, install prompt, ...). */
   readonly quiet = computed(() => this.state() === 'live')
 
@@ -125,7 +142,7 @@ export class UsageStateService {
     this.locationService.deleteAllLocations()
     this.aarNoteService.deleteAllNotes()
     this.activityLogHeaderService.clear()
-    this.missionService.ResetDefaults()
+    this.missionService.ResetDefaults()   // initMission() omits scenarioClock, so a real mission starts without one (D-66)
     clearActiveDemoScenario()
     if (mode) this.setMode(mode)
     this.log.warn(`Started a real mission (demo data cleared)${mode ? `, mode ${mode}` : ''}.`, this.id)
@@ -161,7 +178,30 @@ export class UsageStateService {
 
   /** The operator's choice, saved on the mission so a restored backup keeps it. */
   setMode(mode: MissionModeType | undefined): void {
-    this.missionService.updateMission({ ...this.missionService.settings, missionMode: mode })
+    // D-66: the scenario clock only means something in Exercise mode, so any other mode clears it.
+    const next = { ...this.missionService.settings, missionMode: mode }
+    if (mode !== 'exercise') delete next.scenarioClock
+    this.missionService.updateMission(next)
     this.log.warn(`Mission mode set to ${mode ?? 'not chosen'}.`, this.id)
+  }
+
+  /** E-196 (D-66): "the scenario stands at `scenarioLocal` right now" (a date and time as picked,
+   *  read as the scenario's own wall clock). Saved as { realAt: now, scenarioAt }. */
+  setScenarioClock(scenarioLocal: Date, nowMs = Date.now()): ScenarioClock {
+    const clock: ScenarioClock = { realAt: new Date(nowMs).toISOString(), scenarioAt: scenarioInstantFromLocal(scenarioLocal) }
+    this.saveScenarioClock(clock)
+    return clock
+  }
+
+  /** Saves a clock that is already in stored form (from a catch-up file). */
+  saveScenarioClock(clock: ScenarioClock): void {
+    this.missionService.updateMission({ ...this.missionService.settings, scenarioClock: clock })
+    this.log.warn(`Scenario clock set (${clock.scenarioAt} at ${clock.realAt}).`, this.id)
+  }
+
+  clearScenarioClock(): void {
+    const next = { ...this.missionService.settings }
+    delete next.scenarioClock
+    this.missionService.updateMission(next)
   }
 }

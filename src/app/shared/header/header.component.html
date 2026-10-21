@@ -34,6 +34,10 @@
       {{timeLeftDisplay()}}</span>
     <span class="status-divider status-divider--clock"></span>
     <span class="clock" [title]="clockDisplay()"><span class="clock__date">{{clockDate()}}, </span>{{clockTime()}}</span>
+    @if (scenarioLabel(); as sc) {
+    <span class="status-divider status-divider--clock"></span>
+    <span class="clock clock--scenario" data-testid="header-scenario" [title]="scenarioHint()">{{ sc }}</span>
+    }
 
     <div class="rt-mission-info-panel" role="tooltip" (click)="$event.stopPropagation()">
       @if (eventInfo()) {

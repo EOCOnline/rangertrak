@@ -33,6 +33,8 @@ import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 import { rangerColorFor } from '../shared/mapping/ranger-marker'
 import { buildIcs309Log, Ics309Log } from '../shared/export/ics309-log'
 import { formatStation } from '../domain/station-label'
+import { isScenarioEntry, formatScenarioTime, scenarioTimeAt, sameScenarioClock } from '../domain/scenario'
+import { UsageStateService } from '../shared/services/usage-state.service'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
 import { ImportSafetyService } from '../shared/services/import-safety.service'
 import { AttachmentChipComponent } from '../shared/attachments/attachment-chip.component'
@@ -76,6 +78,9 @@ export class myUnusedPipe implements PipeTransform {
 // restructuring, Reports -> Radio Log). Revisited and reversed: the class/file/service names
 // had become the exact stale-second-name problem the rest of that restructuring existed to
 // fix.
+/** E-196 (D-66): hover text for the scenario mark (Origin column and phone cards). */
+const SCENARIO_MARK_TITLE = 'Scenario traffic from the exercise controller, not typed by a player'
+
 @Component({
   selector: 'rangertrak-radio-log',
   standalone: true,
@@ -238,10 +243,10 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       // Evidence column's own evidenceCellRenderer below.
       {
         headerName: "Origin", field: "sourceUid", maxWidth: 70, editable: false,
-        headerTooltip: 'Shows a mark if this entry was merged in from another device\'s Report Packet. Blank if it was typed on this device. It cannot be edited.',
+        headerTooltip: 'Shows a mark if this entry was merged in from another device\'s Report Packet (a clapperboard if it is scenario traffic from the exercise controller). Blank if it was typed on this device. It cannot be edited.',
         cellRenderer: this.originCellRenderer,
         tooltipValueGetter: (params: { data: RadioLogEntryType }) =>
-          params.data.sourceUid ? 'Merged in from another device - not typed on this device' : undefined,
+          params.data.sourceUid ? (isScenarioEntry(params.data) ? SCENARIO_MARK_TITLE : 'Merged in from another device - not typed on this device') : undefined,
       },
       // E-165 (2026-09-30): the tactical call the From station used, immediately before the FCC
       // Callsign column. Read-only for this pass - an edit here would need the operator's
@@ -479,6 +484,8 @@ export class RadioLogComponent implements OnInit, OnDestroy {
   private attachmentStore = inject(AttachmentStoreService)
   private importSafety = inject(ImportSafetyService)
   private attachmentViewer = inject(AttachmentViewerService)
+  /** E-196 (D-66): the mode decides the catch-up wording and the import warnings. */
+  protected usage = inject(UsageStateService)
 
   constructor(
     private radioLogService: RadioLogService,
@@ -608,6 +615,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
    *  comment in buildColumnDefs() for why this isn't the existing Source column. */
   originCellRenderer = (params: { data: RadioLogEntryType }) => {
     if (!params.data.sourceUid) return ''
+    if (isScenarioEntry(params.data)) return `<span aria-hidden title="${SCENARIO_MARK_TITLE}">🎬</span>`
     return `<span aria-hidden title="Merged in from another device - not typed on this device">📦</span>`
   }
 
@@ -1043,6 +1051,13 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     this.handoverSummary.set(summary)
   }
 
+  /** E-196 (D-66): the scenario mark's hover text, also used by the phone cards. */
+  protected readonly scenarioMarkTitle = SCENARIO_MARK_TITLE
+  protected isScenario = isScenarioEntry
+
+  /** E-196 (D-66): the scenario time line on the printed 309, '' unless Exercise mode with a clock. */
+  protected scenarioLine(preparedAt: Date): string { return this.usage.scenarioLabelAt(preparedAt) }
+
   /** Reads a picked Report Packet file and hands it to `mergeIncomingEntries()` (E-114 Phase
    *  0). No confirm() dialog needed - a merge only ADDS new entries and never touches an
    *  existing one, unlike every other import on this page's own Danger Zone.
@@ -1085,8 +1100,20 @@ export class RadioLogComponent implements OnInit, OnDestroy {
         return
       }
 
+      // E-196 (D-66): a catch-up file from the exercise console. Warn, never block (D-46).
+      const isCatchUp = packet.event === 'EXERCISE'
+      const inExercise = this.usage.mode() === 'exercise'
+      if (isCatchUp && !inExercise) {
+        if (!confirm('This file is EXERCISE training traffic. This mission is not an exercise, so these '
+          + 'entries would sit in a real log. Import it anyway?')) {
+          this.log.verbose('onReportPacketFileSelected: user cancelled an EXERCISE file outside Exercise mode.', this.id)
+          return
+        }
+      }
+
       const currentMission = this.settings?.mission?.trim()
-      if (currentMission && packet.mission && packet.mission.trim() !== currentMission) {
+      // In Exercise mode a catch-up file is expected to name a different mission, so no question.
+      if (!(isCatchUp && inExercise) && currentMission && packet.mission && packet.mission.trim() !== currentMission) {
         if (!confirm(
           `This Report Packet says "${packet.mission}", but this device's current mission `
           + `is "${currentMission}".\n\nImport its ${packet.entries.length} report`
@@ -1104,11 +1131,13 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       }
 
       const { added, skipped, rejected } = this.radioLogService.mergeIncomingEntries(packet.entries, packet.operator)
-      const lines = [`Merged ${added} new report${added === 1 ? '' : 's'} from "${file.name}".`]
+      const lines = isCatchUp && inExercise
+        ? [`Added ${added} scenario entr${added === 1 ? 'y' : 'ies'} (${skipped} already here).`]
+        : [`Merged ${added} new report${added === 1 ? '' : 's'} from "${file.name}".`]
       if (media.length || packet.entries.some(e => e.attachments?.length)) {
         lines.push(...mediaSummary(await this.radioLogService.storePacketMedia(media, packet.entries)))
       }
-      if (skipped) {
+      if (skipped && !(isCatchUp && inExercise)) {
         lines.push(`${skipped} already present on this device were skipped.`)
       }
       if (rejected) {
@@ -1119,6 +1148,13 @@ export class RadioLogComponent implements OnInit, OnDestroy {
         lines.push('Undo is in Mission > Data safety for 24 hours.')
       }
       alert(lines.join('\n'))
+
+      // E-196 (D-66): offer the file's scenario clock whenever it differs from the mission's.
+      if (isCatchUp && inExercise && packet.scenarioClock
+        && !sameScenarioClock(packet.scenarioClock, this.usage.scenarioClock())) {
+        const label = formatScenarioTime(scenarioTimeAt(packet.scenarioClock, Date.now()))
+        if (confirm(`Set the scenario clock to ${label}?`)) this.usage.saveScenarioClock(packet.scenarioClock)
+      }
     } catch (e: any) {
       const label = file?.name ?? 'those files'
       this.log.error(`Could not read "${label}" as a Report Packet: ${e?.message ?? e}`, this.id)

@@ -69,6 +69,26 @@ describe('report-packet', () => {
     })
   })
 
+  describe('scenarioClock (E-196, D-66)', () => {
+    const base = () => buildReportPacket({
+      entries: [entry()], settings: { mission: 'EXERCISE - Montecito', event: 'EXERCISE', opPeriod: '1' },
+      operator: 'EXERCISE controller', appVersion: 'exercise-console',
+    })
+    const clock = { realAt: '2026-10-21T09:12:00.000Z', scenarioAt: '2018-01-14T14:12:00.000Z' }
+
+    it('keeps a readable clock on the envelope', () => {
+      const text = JSON.stringify({ ...base(), scenarioClock: clock })
+      expect(parseReportPacket(text).scenarioClock).toEqual(clock)
+    })
+    it('drops an unreadable clock instead of passing it on', () => {
+      const text = JSON.stringify({ ...base(), scenarioClock: { realAt: 'x', scenarioAt: 'y' } })
+      expect('scenarioClock' in parseReportPacket(text)).toBeFalse()
+    })
+    it('behaves exactly as before for a packet without one', () => {
+      expect('scenarioClock' in parseReportPacket(JSON.stringify(base()))).toBeFalse()
+    })
+  })
+
   describe('rejections', () => {
     it('rejects text that is not JSON at all', () => {
       expect(() => parseReportPacket('not json{{{')).toThrowError(/not valid JSON/)

@@ -67,6 +67,9 @@
           <dt>Generated</dt>
           <dd data-testid="summary-generated">{{ fmt(summary().generatedAt) }}@if (generatedBy()) { by {{ generatedBy() }}}</dd>
         </div>
+        @if (scenarioLine(); as sc) {
+        <div><dt>Scenario time</dt><dd data-testid="summary-scenario" [title]="scenarioHint()">{{ sc }}</dd></div>
+        }
       </dl>
     </mat-card>
 

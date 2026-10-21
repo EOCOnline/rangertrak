@@ -28,6 +28,9 @@
         <dd>{{ m.opPeriodStart | date:'MMM d, y, HH:mm' }} to {{ m.opPeriodEnd | date:'MMM d, y, HH:mm' }}</dd>
       </div>
       <div><dt>Printed</dt><dd>{{ printedAt() | date:'MMM d, y, HH:mm:ss' }}</dd></div>
+      @if (usage.scenarioLabelAt(printedAt()); as sc) {
+      <div><dt>Scenario time</dt><dd data-testid="map-print-scenario">{{ sc }}</dd></div>
+      }
     </dl>
     <!-- E-190: a filtered map must never pass for the whole picture on paper. Leaflet passes the
          chip labels in; MapLibre passes nothing, so no line. -->

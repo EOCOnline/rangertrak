@@ -103,6 +103,23 @@
             </button>
             }
           </div>
+          @if (usage.mode() === 'exercise') {
+          <!-- E-196 (D-66): the scenario time to READ beside the real clock. Entry times stay real. -->
+          <div class="mission__scenario" data-testid="mission-scenario">
+            <span class="mission__period-label">Scenario time now</span>
+            <rangertrak-time-picker [initialDate]="scenarioInitial" datePickerLabel="Scenario time now"
+              (newTimeEvent)="scenarioPicked.set($event)"></rangertrak-time-picker>
+            <div class="mission__mode-buttons">
+              <button matButton="outlined" type="button" data-testid="scenario-set" (click)="onSetScenarioClock()"
+                title="Show this as the scenario time beside the real clock. Entry times stay real.">Set</button>
+              <button matButton="outlined" type="button" data-testid="scenario-clear" (click)="usage.clearScenarioClock()"
+                [disabled]="!usage.scenarioClock()" title="Stop showing a scenario time">Clear</button>
+            </div>
+            <p class="mission__mode-now" data-testid="scenario-now">
+              @if (scenarioNowLabel(); as sc) { Showing <strong>{{ sc }}</strong>. } @else { No scenario time is showing. }
+            </p>
+          </div>
+          }
           <dl class="mission__mode-explain">
             <dt>Demo</dt>
             <dd>Made-up data from a demo scenario. None of it is real. To leave demo mode, choose Exercise or

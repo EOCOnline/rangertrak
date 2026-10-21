@@ -1,6 +1,7 @@
 import { MissionType } from '../services/mission.interface'
 import { RadioLogEntryType } from '../services/radio-log-entry.interface'
 import { stripBom } from '../../domain/import-diagnosis'
+import { readScenarioClock, type ScenarioClock } from '../../domain/scenario'
 import { localDateStamp } from './local-date'
 
 /**
@@ -44,6 +45,10 @@ export type ReportPacket = {
    *  ranger, so this is the same credential §1a's merge design resolves against the main
    *  roster - see `RadioLogService.mergeIncomingEntries()`'s own `reporterCredential` param. */
   operator: string
+  /** E-196 (D-66): written only by the exercise console - "when this file was made, the scenario
+   *  stood at ...". Optional and additive: a packet without it behaves exactly as before, and
+   *  parseReportPacket() keeps it only when both instants are readable. */
+  scenarioClock?: ScenarioClock
   entries: RadioLogEntryType[]
 }
 
@@ -97,6 +102,13 @@ export function parseReportPacket(text: string): ReportPacket {
   }
   if (!Array.isArray(parsed.entries)) {
     throw new Error('This file is not a valid Report Packet ("entries" is not an array).')
+  }
+
+  // D-66: keep the optional scenario clock only in its readable form (never trust the raw value).
+  if ('scenarioClock' in parsed) {
+    const clock = readScenarioClock(parsed.scenarioClock)
+    if (clock) parsed.scenarioClock = clock
+    else delete parsed.scenarioClock
   }
 
   return parsed as ReportPacket

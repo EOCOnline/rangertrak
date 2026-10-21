@@ -144,3 +144,9 @@
   dt { font-weight: 700; margin-top: 0.6rem; }
   dd { margin: 0.1rem 0 0; color: var(--rt-ink-2); }
 }
+
+// E-196 (D-66): the "Scenario time now" row inside the Mode card (Exercise mode only).
+.mission__scenario {
+  margin: 0 0 1rem;
+  .mission__period-label { display: block; margin: 0 0 0.25rem; font-weight: 600; }
+}

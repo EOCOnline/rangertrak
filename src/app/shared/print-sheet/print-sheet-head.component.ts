@@ -23,6 +23,9 @@ import { UsageStateService } from '../services/usage-state.service'
       </div>
       <p class="sheet-head__what"><strong>{{ title() }}</strong> &middot; {{ detail() }}</p>
       <p class="sheet-head__when">Printed {{ printedLabel() }}</p>
+      @if (scenarioLine(); as sc) {
+        <p class="sheet-head__when" data-testid="print-sheet-scenario">{{ sc }}</p>
+      }
     </header>
   `,
   styles: [`
@@ -53,5 +56,7 @@ export class PrintSheetHeadComponent {
     const mode = this.usage.mode()
     return mode === 'exercise' ? 'EXERCISE' : mode === 'demo' ? 'DEMO' : ''
   })
+  /** E-196 (D-66): a second time line, only in Exercise mode with a scenario clock set. */
+  readonly scenarioLine = computed(() => this.usage.scenarioLabelAt(this.printedAt()))
   readonly printedLabel = computed(() => formatDate(this.printedAt(), 'MMM d, y, HH:mm', 'en-US'))
 }

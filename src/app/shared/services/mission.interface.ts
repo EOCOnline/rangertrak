@@ -1,5 +1,6 @@
 import { RadioLogStatusType } from './radio-log-entry.interface'
 import { LocationCategoryType } from './mission-location.interface'
+import type { ScenarioClock } from '../../domain/scenario'
 
 /**
  * E-165 (2026-09-30): one mission-scoped tactical call - a position or team name ("Vashon EOC",
@@ -192,6 +193,16 @@ export type MissionType = {
   // and an older backup without the field restores as `undefined`. No MISSION_SCHEMA_VERSION
   // bump needed. The only writer for now is SampleDataService.loadSampleMission() ('demo').
   missionMode?: MissionModeType,
+
+  // E-196 phase 1 (ADR D-66, 2026-10-21): "at real time `realAt` the scenario stood at
+  // `scenarioAt`" (ISO instants; the scenario side is a wall clock read as UTC) - a clock to READ
+  // beside the real one in Exercise mode. Every stored time stays real. Treated exactly like
+  // `missionMode`: genuinely optional, no default, `undefined` means off, so
+  // backfillMissingFields() must NOT manufacture one (initMission() deliberately omits it), an
+  // older backup without it restores as `undefined`, and older versions ignore it. No
+  // MISSION_SCHEMA_VERSION bump. Writers: UsageStateService (setScenarioClock; cleared by
+  // setMode() away from Exercise and by startRealMission()). Pure rules: domain/scenario.ts.
+  scenarioClock?: ScenarioClock,
 }
 
 /** E-168a: the stored codes for MissionType.missionMode. Display labels live in the UI. */

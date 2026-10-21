@@ -3,7 +3,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { loadPackage } from './lib/package.js'
 import { buildScript } from './lib/settings.js'
-import { buildCatchUp, exerciseUid, statusFor, NOTE_PREFIX, REPORT_PACKET_SCHEMA_VERSION, packetFilename } from './lib/packet.js'
+import { buildCatchUp, makePacket, exerciseUid, statusFor, NOTE_PREFIX, REPORT_PACKET_SCHEMA_VERSION, packetFilename } from './lib/packet.js'
 import { generateStress, stressPackets } from './lib/stress.js'
 import { parseStamp } from './lib/time.js'
 import { row, makeTexts } from './test-helpers.js'
@@ -42,12 +42,23 @@ test('catch-up: a second file starts where the first stopped', () => {
   assert.equal(b.packet.opPeriod, '1')
 })
 
+test('catch-up: scenarioClock says where the scenario stood when the file was made', () => {
+  const p = pkg()
+  const T = parseStamp('2030-01-01T10:30')
+  const r = buildCatchUp({ pkg: p, script: buildScript(p, {}).rows, toMin: T, nowMs: NOW })
+  assert.deepEqual(r.packet.scenarioClock, { realAt: new Date(NOW).toISOString(), scenarioAt: '2030-01-01T10:30:00.000Z' })
+  // Same offset the entries were rebased with: the 08:00 row is 150 real minutes before realAt.
+  const offset = Date.parse(r.packet.scenarioClock.scenarioAt) - Date.parse(r.packet.scenarioClock.realAt)
+  assert.equal(Date.parse('2030-01-01T08:00:00Z') - offset, new Date(r.packet.entries[0].date).getTime())
+  assert.equal(makePacket({ entries: [], title: 't', opPeriod: '', nowMs: NOW }).scenarioClock, undefined, 'optional')
+})
+
 test('catch-up: the Report Packet shape the app reads', () => {
   const p = pkg()
   const r = buildCatchUp({ pkg: p, script: buildScript(p, {}).rows, toMin: parseStamp('2030-01-01T10:30'), nowMs: NOW })
   const k = r.packet
   assert.equal(k.schemaVersion, REPORT_PACKET_SCHEMA_VERSION)
-  assert.deepEqual(Object.keys(k).sort(), ['appVersion', 'entries', 'event', 'exportedAt', 'mission', 'notice', 'operator', 'opPeriod', 'schemaVersion'].sort())
+  assert.deepEqual(Object.keys(k).sort(), ['appVersion', 'entries', 'event', 'exportedAt', 'mission', 'notice', 'operator', 'opPeriod', 'scenarioClock', 'schemaVersion'].sort())
   assert.match(k.mission, /EXERCISE/); assert.match(k.notice, /EXERCISE/); assert.match(r.filename, /EXERCISE/)
   assert.match(r.filename, /^rangertrak-report-packet-.*\.txt$/)
   assert.deepEqual(JSON.parse(r.text), k)

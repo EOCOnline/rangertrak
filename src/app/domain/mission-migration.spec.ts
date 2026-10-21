@@ -106,6 +106,23 @@ describe('migrateMission', () => {
     })
   })
 
+  describe('scenarioClock (E-196, D-66)', () => {
+    // Same rule as missionMode: optional, never created by the backfill, kept when present.
+    const defaults = { ...v0Settings(), tacticalCalls: [] } as unknown as MissionType
+
+    it('is not created for a mission saved before the field existed', () => {
+      const out = migrateMission(v0Settings(), defaults)
+      expect(out.scenarioClock).toBeUndefined()
+      expect('scenarioClock' in out).toBe(false)
+    })
+
+    it('keeps a clock that was set', () => {
+      const clock = { realAt: '2026-10-21T09:12:00.000Z', scenarioAt: '2018-01-14T14:12:00.000Z' }
+      const stored = { ...v0Settings(), scenarioClock: clock } as unknown as MissionType
+      expect(migrateMission(stored, defaults).scenarioClock).toEqual(clock)
+    })
+  })
+
   describe('attachmentBudgetMB backfill (E-194)', () => {
     it('hands 512 to settings or older backups saved before the field existed', () => {
       const stored = v0Settings()

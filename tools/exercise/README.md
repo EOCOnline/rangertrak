@@ -88,7 +88,7 @@ differences are in real minutes, so read them with that in mind.
 
 A **Report Packet**, the same file the app's own export makes: plain JSON saved as `.txt`
 (`schemaVersion` 1, `notice`, `exportedAt`, `appVersion`, `mission`, `event`, `opPeriod`, `operator`,
-`entries`). Each entry is a radio log entry with `uid`, `id`, `callsign` and `tacticalCall` (the
+`scenarioClock`, `entries`). Each entry is a radio log entry with `uid`, `id`, `callsign` and `tacticalCall` (the
 sending station), `toTactical`, `location` (the place's coordinates and label), `date`, `status`,
 `notes`, `source` (Voice, or Phone for phone calls), `operator` and `loggedAt`.
 
@@ -96,6 +96,15 @@ Everything says EXERCISE: the file name, the packet's `mission` and `event`, the
 start of every entry's note (`[EXERCISE] ...`). Entry ids are stable per row, so importing two
 overlapping catch-up files never doubles an entry. A row with no place is pinned at the middle of
 the scenario's places with the address "EXERCISE (no place given)".
+
+`scenarioClock` is `{ realAt, scenarioAt }`: at the real moment the file was made, the scenario stood
+at that time (the scenario side is the scenario's own wall clock, written like a UTC time). In
+Exercise mode the app offers to show that scenario time beside the real clock (ADR D-66). It is
+optional: an older app ignores it, and a file without it imports as before. In Exercise mode the app
+also skips the "different mission name" question for these files, and marks the entries as scenario
+traffic because their `operator` is `EXERCISE controller`. That name is fixed in two places that must
+match: `EXERCISE_OPERATOR` in `lib/packet.js` and `EXERCISE_CONTROLLER` in the app's
+`src/app/domain/scenario.ts`; `operator-constant.test.js` goes red if one changes without the other.
 
 E-168 treats entries dated in the last 12 hours as live, so catch-up entries will look live
 on purpose. That is why step 3 asks for Exercise mode.

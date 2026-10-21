@@ -92,8 +92,16 @@ export function packetFilename(title, exportedAt, suffix = '') {
   return `rangertrak-report-packet-${label}${suffix ? '-' + suffix : ''}-${exportedAt.slice(0, 10)}.txt`
 }
 
-/** The packet envelope around a list of entries. */
-export function makePacket({ entries, title, opPeriod, nowMs, appVersion = APP_VERSION_MARK }) {
+/**
+ * The packet envelope around a list of entries. `scenarioMs` (optional) is the scenario wall clock
+ * at the moment the file is made, in ms (the console holds scenario time as minutes since the epoch
+ * read as UTC); with it the envelope carries `scenarioClock: { realAt, scenarioAt }`, which the app
+ * (D-66) offers to set as the mission's scenario clock. Without it the packet is exactly as before.
+ */
+export function makePacket({ entries, title, opPeriod, nowMs, scenarioMs, appVersion = APP_VERSION_MARK }) {
+  const scenarioClock = Number.isFinite(scenarioMs)
+    ? { scenarioClock: { realAt: new Date(nowMs).toISOString(), scenarioAt: new Date(scenarioMs).toISOString() } }
+    : {}
   return {
     schemaVersion: REPORT_PACKET_SCHEMA_VERSION,
     notice: PACKET_NOTICE,
@@ -103,6 +111,7 @@ export function makePacket({ entries, title, opPeriod, nowMs, appVersion = APP_V
     event: 'EXERCISE',
     opPeriod: String(opPeriod ?? ''),
     operator: EXERCISE_OPERATOR,
+    ...scenarioClock,
     entries,
   }
 }
@@ -126,7 +135,7 @@ export function buildCatchUp({ pkg, script, toMin, fromMin = -Infinity, nowMs, r
     n: i + 1, dateMs: rebaseMs(r.t, toMin, nowMs), placeById, fallback, scenarioId, runId,
   }))
   const op = opPeriodAt(pkg.opPeriods, toMin)?.n
-  const packet = makePacket({ entries, title: pkg.scenario?.title || 'scenario', opPeriod: op, nowMs })
+  const packet = makePacket({ entries, title: pkg.scenario?.title || 'scenario', opPeriod: op, nowMs, scenarioMs: toMin * 60000 })
   const suffix = `catch-up-to-${opLabel(op)}`
   return { packet, filename: packetFilename(pkg.scenario?.title, packet.exportedAt, suffix), text: JSON.stringify(packet, null, 2), count: entries.length }
 }

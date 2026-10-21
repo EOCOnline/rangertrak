@@ -9,6 +9,7 @@ import { PageComponent } from '../../shared/page/page.component'
 import { MissionService } from '../../shared/services'
 import { OperatorNameService } from '../../shared/services/operator-name.service'
 import { ViewService } from '../../shared/services/view.service'
+import { UsageStateService } from '../../shared/services/usage-state.service'
 import { AdvancedDirective } from '../../shared/view/advanced.directive'
 import type { ViewContext } from '../../domain/view'
 import { MapEngineService } from '../map-engine.service'
@@ -82,7 +83,8 @@ export class MapPageComponent implements OnInit, OnDestroy {
   printedAt = signal(new Date())
   private readonly onBeforePrint = () => this.printedAt.set(new Date())
 
-  constructor(private engineService: MapEngineService, private missionService: MissionService, public view: ViewService) { }
+  constructor(private engineService: MapEngineService, private missionService: MissionService, public view: ViewService,
+    protected usage: UsageStateService) { }
 
   /** E-207: the advanced controls on this page that Simple view can hide. */
   protected readonly advancedIds = ['maplibre', 'print-map', 'places-import'] as const

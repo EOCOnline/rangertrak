@@ -38,6 +38,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterLink } from '@angular/router'
 
 import { PageComponent } from '../shared/page/page.component'
+import { TimePickerComponent } from '../shared/time-picker/time-picker.component'
+import { localFromScenarioInstant, scenarioTimeAt } from '../domain/scenario'
 import {
   RadioLogStatusType, LocationCategoryType, LogService, MissionReadinessService,
   MISSION_SCHEMA_VERSION, DEFAULT_OP_PERIOD_HOURS, BUNDLED_IMAGE_DIRECTORY, MissionService, MissionType, TacticalCallType, UsageStateService
@@ -99,6 +101,7 @@ const blankMission: MissionType = {
     MatIconModule, MatButtonModule, MatCardModule,
     PageComponent,
     MasonryDirective,
+    TimePickerComponent,
     MissionDetailsSectionComponent,
     MissionLocationSectionComponent,
     MissionMapsSectionComponent,
@@ -253,6 +256,13 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
     return gaps
   })
 
+  /** E-196 (D-66): the "Scenario time now" picker. It starts at the scenario time now showing,
+   *  else at the real time; Set saves { realAt: now, scenarioAt: what is picked }. */
+  protected scenarioInitial: Date = new Date()
+  protected readonly scenarioPicked = signal<Date>(this.scenarioInitial)
+  protected scenarioNowLabel(): string { return this.usage.scenarioLabelAt(Date.now()) }
+  protected onSetScenarioClock(): void { this.usage.setScenarioClock(this.scenarioPicked()) }
+
   /** E-207: the advanced cards on this page, for the header Full view switch. */
   protected readonly advancedIds = ['statuses', 'location-categories', 'locations-list', 'maps', 'recipients213',
     'tactical-calls', 'board', 'attachments-budget', 'setup-file', 'device-encryption', 'advanced-debug'] as const
@@ -264,6 +274,12 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
     public usage: UsageStateService,
     public view: ViewService,
     @Inject(DOCUMENT) private document: Document) {
+
+    const clock = this.usage.scenarioClock()
+    if (clock) {
+      this.scenarioInitial = localFromScenarioInstant(new Date(scenarioTimeAt(clock, Date.now())).toISOString())
+      this.scenarioPicked.set(this.scenarioInitial)
+    }
 
     this.missionSubscription = this.missionService.getMissionObserver().subscribe({
       next: (newMission) => {

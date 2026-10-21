@@ -49,6 +49,8 @@ test('app accepts: the Montecito catch-up packet parses and every entry merges i
 
   const parsed = app.parseReportPacket(r.text)          // the app's own parser, on the file text
   assert.equal(parsed.entries.length, r.count)
+  assert.deepEqual(parsed.scenarioClock, r.packet.scenarioClock, 'the app keeps the scenarioClock from the packet')
+  assert.ok(parsed.scenarioClock)
   const merged = app.mergeEntries([], parsed.entries, { nextId: 0 })
   assert.equal(merged.rejected, 0, JSON.stringify(merged.rejectedNotes.slice(0, 3)))
   assert.equal(merged.added, r.count)

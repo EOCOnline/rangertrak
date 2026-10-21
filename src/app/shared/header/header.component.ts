@@ -1,6 +1,6 @@
 import { Subscription, timer } from 'rxjs'
 
-import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core'
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core'
 import { Router, RouterLink } from '@angular/router'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
@@ -99,6 +99,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public clockDate = signal('')
   public clockTime = signal('')
   public timeElapsedDisplay = signal('')
+  /** E-196 (D-66): ticks with the real clock; both read-outs are empty unless Exercise mode with a scenario clock. */
+  private nowMs = signal(Date.now())
+  public scenarioLabel = computed(() => this.usage.scenarioLabelAt(this.nowMs()))
+  public scenarioHint = computed(() => this.usage.scenarioHintAt(this.nowMs()))
   public timeLeftDisplay = signal('')
 
   private clockSubscription?: Subscription
@@ -113,6 +117,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
    *  ("24:00" instead of "00:00" in some engines) this app's own time-picker component
    *  already avoids the same way (padStart, not Intl). */
   private setClock(d: Date): void {
+    this.nowMs.set(d.getTime())
     this.clockDisplay.set(this.formatClock(d))
     this.clockDate.set(this.formatClockDate(d))
     this.clockTime.set(this.formatClockTime(d))

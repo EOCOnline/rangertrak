@@ -479,6 +479,9 @@ Notes for the storage freeze:
 - Mission mode (`missionMode`, E-168a) is a field inside `appSettings`, not a key of its own, so it
   rides in backups. The demo record (row 3) is device-only on purpose: it records which rows the
   demo loader created, which means nothing on another device.
+- The scenario clock (`scenarioClock`, E-196 phase 1, D-66) is likewise a field inside `appSettings`,
+  not a key of its own, so it rides in backups: optional, never created by the backfill, no schema
+  bump, cleared by leaving Exercise mode and by Start a real mission.
 - Rows 2 and 15 are written but nothing reads them back or cleans them up.
 
 ## One active tab per browser

@@ -182,9 +182,11 @@
               </button>
 
               <button matButton="outlined" type="button" (click)="reportPacketFileInput.click()"
-                title="Merge in the reports from a Report Packet someone handed you, with any photos, audio or video that came with it - never replaces anything already here">
+                [attr.title]="usage.mode() === 'exercise'
+                  ? 'Merge in the scenario entries from a catch-up file from the exercise controller - never replaces anything already here'
+                  : 'Merge in the reports from a Report Packet someone handed you, with any photos, audio or video that came with it - never replaces anything already here'">
                 <mat-icon>upload</mat-icon>
-                Load Report Packet
+                {{ usage.mode() === 'exercise' ? 'Load catch-up file' : 'Load Report Packet' }}
               </button>
               <input #reportPacketFileInput type="file" multiple accept="text/plain,.txt,.json,image/*,video/*,audio/*"
                 (change)="onReportPacketFileSelected($event)" hidden />
@@ -266,7 +268,9 @@
           <article class="radio-log-cards__card" role="listitem">
             <header class="radio-log-cards__header">
               <span class="radio-log-cards__callsign">{{ stationFrom(report) }}</span>
-              @if (report.sourceUid) {
+              @if (isScenario(report)) {
+                <span class="radio-log-cards__origin" [attr.title]="scenarioMarkTitle">🎬</span>
+              } @else if (report.sourceUid) {
                 <span class="radio-log-cards__origin"
                   title="Merged in from another device - not typed on this device">📦</span>
               }
@@ -424,6 +428,9 @@
           <td class="ics309-form__cell ics309-form__page">Page ____ of ____</td>
         </tr>
       </table>
+      @if (scenarioLine(log.header.datePrepared); as sc) {
+      <p class="ics309-form__note" data-testid="ics309-scenario">{{ sc }} (times in the log are real)</p>
+      }
       <p class="ics309-form__note">Printed from RangerTrak. Msg # and boxes 3–4 are left for hand entry.</p>
     </div>
     } @else {
@@ -438,6 +445,9 @@
       <p>Prepared: {{ formatLogDateTime(log.header.datePrepared) }}
         @if (log.header.preparedBy) { by {{ log.header.preparedBy }} }
       </p>
+      @if (scenarioLine(log.header.datePrepared); as sc) {
+      <p data-testid="ics309-scenario">{{ sc }} (times in the log are real)</p>
+      }
       <table>
         <thead>
           <tr>

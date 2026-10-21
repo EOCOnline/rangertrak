@@ -136,6 +136,9 @@ export class SummaryComponent implements OnDestroy {
 
   // ---- the stamp ----
   readonly isExercise = computed(() => this.usage.mode() === 'exercise')
+  /** E-196 (D-66): the scenario time when the summary was generated; '' unless Exercise mode with a clock set. */
+  readonly scenarioLine = computed(() => this.usage.scenarioLabelAt(this.summary().generatedAt))
+  readonly scenarioHint = computed(() => this.usage.scenarioHintAt(this.summary().generatedAt))
   readonly missionName = computed(() => {
     const s = this.settings()
     return s?.event?.trim() || s?.mission?.trim() || ''
