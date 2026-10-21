@@ -2,12 +2,12 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { FieldTree, FormField } from '@angular/forms/signals'
 
-import { CoordinateFormat, defaultCoordinateFormat } from '../../../domain/coordinate'
+import { COORDINATE_FORMATS, CoordinateFormat, defaultCoordinateFormat } from '../../../domain/coordinate'
 import { MissionType } from '../../../shared/services/'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatCardModule } from '@angular/material/card'
-import { MatRadioModule } from '@angular/material/radio'
+import { MatButtonToggleModule } from '@angular/material/button-toggle'
 
 /**
  * Location Defaults (lat/lng) and the coordinate systems Entry offers. Sprint C split out of the
@@ -17,7 +17,7 @@ import { MatRadioModule } from '@angular/material/radio'
 @Component({
   selector: 'rangertrak-mission-location-section',
   standalone: true,
-  imports: [CommonModule, FormField, MatFormFieldModule, MatInputModule, MatCardModule, MatRadioModule],
+  imports: [CommonModule, FormField, MatFormFieldModule, MatInputModule, MatCardModule, MatButtonToggleModule],
   templateUrl: './mission-location-section.component.html',
   styleUrls: ['./mission-location-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -37,6 +37,8 @@ export class MissionLocationSectionComponent {
    * Material CVA component, so [value]/(change) here rather than [formField], same reason
    * as the mat-checkbox group this replaces.
    */
+  readonly coordFormats = COORDINATE_FORMATS
+
   currentDefaultFormat(): CoordinateFormat {
     return defaultCoordinateFormat({
       showDD: this.form.showDD().value(), showDDM: this.form.showDDM().value(), showDMS: this.form.showDMS().value(),

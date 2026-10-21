@@ -53,21 +53,24 @@
          "always show as a derived field" behavior lives in location.component.html now,
          with no per-mission setting left to control it.
 
-         Material-M3 pass: mat-radio-group is a Material CVA component, so [value]/(change)
+         E-209 (D-64 point 6, John 2026-10-20): the five radios are now the same toggle group as the
+         Map and Entry (short names, long names as hover text) - choose-one-of-a-few is a toggle
+         group everywhere.
+
+         Material-M3 pass: mat-button-toggle-group (was mat-radio-group) is a Material CVA component, so [value]/(change)
          here, not [formField] - same angular/components#32072 avoidance as everywhere else
          a Signal Forms field drives one of these. -->
     <fieldset class="mission__coords">
       <legend class="mission__coords-legend">Default coordinate format (Entry and Map)</legend>
       <p class="mission__coords-note">Every format is always available on Entry - this only
         picks which one Entry and the Map open on for this mission.</p>
-      <mat-radio-group class="mission__coords-grid" aria-label="Default coordinate format for Entry"
+      <mat-button-toggle-group class="mission__coords-grid" hideSingleSelectionIndicator
+        aria-label="Default coordinate format for Entry"
         [value]="currentDefaultFormat()" (change)="selectDefaultFormat($event.value)">
-        <mat-radio-button value="DD">Decimal degrees</mat-radio-button>
-        <mat-radio-button value="DDM">Degrees decimal minutes</mat-radio-button>
-        <mat-radio-button value="DMS">Degrees minutes seconds</mat-radio-button>
-        <mat-radio-button value="MGRS">USNG/MGRS</mat-radio-button>
-        <mat-radio-button value="UTM">UTM</mat-radio-button>
-      </mat-radio-group>
+        @for (f of coordFormats; track f.id) {
+        <mat-button-toggle [value]="f.id" [title]="f.title">{{ f.label }}</mat-button-toggle>
+        }
+      </mat-button-toggle-group>
     </fieldset>
 
     <!-- E-48(6): moved here (and to FIELD-GUIDE.md) from the Entry screen, which isn't the

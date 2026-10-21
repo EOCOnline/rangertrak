@@ -43,13 +43,9 @@
   color      : var(--rt-ink-3);
 }
 
-// Two columns where there's room, one where there isn't. The six labels vary a lot in
-// length ("MGRS" vs "Degrees decimal minutes"), so a fixed multi-column grid leaves ragged
-// gaps; auto-fit against the longest label keeps the columns honest.
+// The same toggle group as the Map and Entry (E-209); it wraps to a second row on a narrow phone.
 .mission__coords-grid {
-  display              : grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-  gap                  : 0 var(--rt-gap);
+  flex-wrap: wrap;
 }
 
 .mission__datum-note {
