@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.76-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.75-alpha...v0.99.76-alpha) (2026-10-21)
+
+
+### Features
+
+* **training:** E-196 phase 1 (D-66) - scenario mark, scenario clock, catch-up import ([cf4f113](https://github.com/SteadyEOC/RangerTrak/commit/cf4f113de91707d5ac2de82eafc3ded8f39013ca))
+
 ### [0.99.75-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.74-alpha...v0.99.75-alpha) (2026-10-21)
 
 
