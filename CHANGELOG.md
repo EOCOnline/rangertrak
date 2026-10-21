@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.71-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.70-alpha...v0.99.71-alpha) (2026-10-21)
+
+
+### Features
+
+* **exercise:** host the exercise console at rangertrak.org/exercise/ (E-196) ([c6733a2](https://github.com/SteadyEOC/RangerTrak/commit/c6733a218e48221a6fc9d20124330c7957893c31))
+
+
+### Bug Fixes
+
+* **map:** satellite attribution follows Esri's current copyright text (E-162) ([a91886c](https://github.com/SteadyEOC/RangerTrak/commit/a91886cee1c28337a6cb4ca090eb0d432a9301ac))
+* **mission:** Data safety's Full-view edge no longer clips the first letter ([043fa87](https://github.com/SteadyEOC/RangerTrak/commit/043fa8750df8324e190708df3f3ce659e8ce7eda))
+
 ### [0.99.70-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.69-alpha...v0.99.70-alpha) (2026-10-21)
 
 
