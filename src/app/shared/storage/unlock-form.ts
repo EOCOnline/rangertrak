@@ -158,7 +158,7 @@ function injectStyles(): void {
     }
     .rt-unlock__card {
       max-width: 360px; width: 100%; background: #ffffff; border: 1px solid #ccc;
-      border-radius: 8px; padding: 24px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+      border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
       box-sizing: border-box;
     }
     .rt-unlock__title { margin: 0 0 8px; font-size: 1.25rem; }

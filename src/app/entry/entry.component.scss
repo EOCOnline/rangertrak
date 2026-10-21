@@ -1,3 +1,5 @@
+// PAGE KIND (E-210, ADR D-65): a FORM, not cards. One task (Who / Where / When / What); the map
+// box beside it takes the card border and corner, so it looks like the page's other boxes.
 @use "../../styles/breakpoints"as bp;
 @use "../../styles/section"as section;
 @use "../../styles/typography"as type;
@@ -34,7 +36,7 @@ $filledColor: var(--rt-surface-2);
   background   : var(--rt-surface-2);
   border       : 1px solid var(--rt-line);
   border-left  : 6px solid var(--rt-accent);
-  border-radius: var(--rt-radius);
+  border-radius: var(--rt-box-radius);
   padding      : var(--rt-space-sm) var(--rt-space-md);
   margin       : 0 0 var(--rt-space-lg) 0;
 }
@@ -113,7 +115,7 @@ $filledColor: var(--rt-surface-2);
   display      : inline-block;
   margin       : 0 0 var(--rt-space-md) 0;
   padding      : 0.1em 0.6em;
-  border-radius: var(--rt-radius);
+  border-radius: var(--rt-box-radius);
   font-size    : var(--rt-type-body-sm-size);
   background   : var(--rt-surface-2);
   color        : var(--rt-ink-2);
@@ -185,8 +187,8 @@ $filledColor: var(--rt-surface-2);
   margin-left     : 16px;
   margin-right    : 16px;
   background-color: $filledColor;
-  border          : 2px solid black;
-  border-radius   : 5px;
+  border          : 1px solid var(--mat-card-outlined-outline-color, var(--rt-line-strong));
+  border-radius   : var(--rt-box-radius);
   // Same reasoning as .mapLeaflet-container's own `contain: layout` - walls this subtree
   // off from ancestor layout the same way, height stays auto from the three rows below.
   contain         : layout;

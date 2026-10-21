@@ -144,6 +144,17 @@ body {
     label-text-size: var(--mat-sys-label-large-size),
     label-text-weight: var(--mat-sys-label-large-weight),
   ));
+  // E-210 / ADR D-65: ONE corner for every box. Cards and expansion panels read --rt-box-radius
+  // (12px); the AG Grid frame and the Danger zone read the same token in their own styles. Same
+  // :root + :root[data-skin] scope as above, for the same reason (a skin's theme would win).
+  @include mat.card-overrides((
+    elevated-container-shape: var(--rt-box-radius),
+    filled-container-shape: var(--rt-box-radius),
+    outlined-container-shape: var(--rt-box-radius),
+  ));
+  @include mat.expansion-overrides((
+    container-shape: var(--rt-box-radius),
+  ));
 }
 
 // E-209: at 14px the five coordinate formats (DD ... UTM) no longer fit 360px, which the old

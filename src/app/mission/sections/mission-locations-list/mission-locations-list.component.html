@@ -5,6 +5,9 @@
 <mat-card appearance="outlined" class="rt-mission-card" [rtAdvanced]="'locations-list'">
   <mat-card-header>
     <mat-card-title>Locations</mat-card-title>
+    @if (locations().length > 0) {
+    <mat-card-subtitle>{{ locations().length }} {{ locations().length === 1 ? 'location' : 'locations' }}</mat-card-subtitle>
+    }
   </mat-card-header>
   <mat-card-content>
     @if (locations().length === 0) {
@@ -12,6 +15,9 @@
       No Locations placed yet - use the Add Location button on the Map page to place one.
     </p>
     } @else {
+    <!-- E-210 rule 6: a long list scrolls inside the card (screen, tablet and wider), so the card
+         does not stretch its neighbours. A keyboard stop, named after the card. -->
+    <div class="rt-card-scroll" tabindex="0" role="region" aria-label="Locations">
     <table class="rt-locations-list">
       <thead>
         <tr>
@@ -41,6 +47,7 @@
         }
       </tbody>
     </table>
+    </div>
     }
   </mat-card-content>
 </mat-card>

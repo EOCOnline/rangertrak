@@ -48,6 +48,29 @@
 //  reads the computed values on Entry, Map, Mission and Rangers and fails on any that are off.
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+//  THE CARD RULE  (E-210, ADR D-65, John 2026-10-20)
+//
+//  How boxes sit on a page, set in ONE place (the .rt-card-grid section below, the
+//  --rt-box-radius token). A page is cards, a form or a report, and says which in its
+//  stylesheet header.
+//
+//   1. One grid.   Every page with more than one card puts them in .rt-card-grid (the
+//                  rtMasonry directive): DOM order is reading and tab order. Column floor
+//                  22rem on a tablet, 30rem on a laptop and up; one column on a phone;
+//                  plain flow in print.
+//   2. One column. A card is as wide as one column, never full width "in case". Full width
+//                  is for the page's main data grid, the map and notices. A card that holds
+//                  a wide data grid adds .rt-mission-card--wide and goes first or last.
+//   3. No box in a box. A panel that opens shows its cards in a grid with no second border.
+//   4. One corner. Cards, panels, grid frames, the Danger zone, the Entry map: --rt-box-radius
+//                  (12px). Controls stay 8px (D-64), so boxes are rounder than what is in them.
+//   5. Kind.       Cards: Mission, Radio Log tools, Import panels. Form: Entry. Report: Summary.
+//   6. Long lists. A card that grows with a list scrolls inside (.rt-card-scroll), on tablet
+//                  and laptop widths only. Settings cards never do.
+//  tools/e2e.js `cards` measures it.
+// ─────────────────────────────────────────────────────────────────────────────
+
 @use './breakpoints' as bp;
 @use './typography' as type;
 
@@ -98,61 +121,6 @@
   gap      : 0.6em;
 }
 
-// ── 5b. Action bar group (side-by-side bars) ─────────────────────────────────
-// Radio Log ask (maintainer, 2026-09-22): "on a wide screen the horizontal bars at the
-// bottom of the radio log are too wide, and could be next to one another saving vertical
-// room." Radio Log lays out THREE sections here (CSV export, Print ICS-309, Report Packet).
-//
-// Wraps a run of sections. Below laptop-up (D-33: <1024px) this stays a plain block -
-// children stack full width, one per row. At laptop-up and wider it becomes a grid, so
-// sections sit side by side only when there's genuinely room, falling back to fewer columns
-// rather than a fixed 3-across that would wrap mid-section on a narrower laptop.
-// `minmax(38ch, 1fr)` is eyeballed against these three sections' real content, not a
-// measured value - the CSV section (two selects + a checkbox + a button) is the widest of
-// the three, and 38ch is roughly where it stops wrapping to three rows at 1440px; revisit
-// this number if a future section's own content changes that.
-//
-// #237 (2026-09-26): each section used to be a plain `.rt-action-bar` div, and the group
-// itself was `position: sticky; bottom: 0` - three independently-sticky bars pinned to the
-// SAME viewport bottom is what the grid layout above was built to stop from overlapping, and
-// the children gave up their own border/shadow so the group read as one seamless band. That
-// seamlessness is exactly what a user filed as confusing ("Print ICS-309 log doesn't show as
-// a title, but just a random string floating") - nothing set the three sections apart. They
-// are real `<mat-card appearance="outlined" class="rt-mission-card">`s now (see
-// radio-log.component.html), each with its own border, rounded corners and a
-// `<mat-card-title>` - the same treatment Mission's own cards use. The group dropped its
-// sticky/bottom-pinned behavior along with that: three full cards (title + content each)
-// permanently docked across the bottom of a phone screen would swallow most of the viewport,
-// which a slim single-line action bar never did. `gap: 0 var(--rt-gap)` (row-gap 0) matches
-// `.mission__grid`'s own reasoning: vertical spacing between stacked cards comes from
-// `.rt-mission-card`'s own `margin-bottom`, not a second gap on top of it; the column-gap
-// still separates cards sitting side by side at laptop-up.
-//
-// Rangers deliberately does NOT use this yet (D4, 2026-09-22 scoping): its first action bar
-// alone already holds seven controls, and halving its width would only make it taller, not
-// more usable. Don't "finish the job" by wrapping Rangers' bars in this without re-checking
-// that reasoning first.
-.rt-action-bar-group {
-  display: block;
-  margin : 1.5em 0 0;
-
-  @include bp.laptop-up {
-    display               : grid;
-    grid-template-columns : repeat(auto-fit, minmax(38ch, 1fr));
-    gap                   : 0 var(--rt-gap);
-  }
-
-  // A bare `.rt-action-bar` can still land in here without losing its own sticky/border/
-  // shadow reset, in case a future section reuses the older pattern - only `.rt-mission-card`
-  // sections (the current radio-log content) are meant to keep their own border in this group.
-  .rt-action-bar {
-    position  : static;
-    margin    : 0;
-    border-top: none;
-    box-shadow: none;
-  }
-}
-
 // ── 6. Danger zone ───────────────────────────────────────────────────────────
 // Destructive actions only, fenced, always last on the page. The fence is the point:
 // before this, "Delete ALL Field Reports from local storage" sat in an `Advanced`
@@ -165,7 +133,7 @@
   margin       : 1.5em 0 0;
   padding      : 1em 1.25em;
   border       : 1px solid var(--rt-readiness-red);
-  border-radius: var(--rt-radius-lg);
+  border-radius: var(--rt-box-radius);
   // A tint, not a fill: 8% keeps the block readable in both schemes without the
   // solid-red panel that would pull the eye away from the page's real content.
   background   : color-mix(in srgb, var(--rt-readiness-red) 8%, var(--rt-surface));
@@ -196,7 +164,7 @@
   margin       : 1.5em 0 0;
   padding      : 1em 1.25em;
   border       : 1px solid var(--rt-io);
-  border-radius: var(--rt-radius-lg);
+  border-radius: var(--rt-box-radius);
   background   : var(--rt-io-tint);
 }
 
@@ -229,7 +197,7 @@
   margin       : 0 0 1em;
   padding      : 0.85em 1.15em;
   border       : 1px solid var(--rt-notice-line);
-  border-radius: var(--rt-radius-lg);
+  border-radius: var(--rt-box-radius);
   background   : var(--rt-notice);
   color        : var(--rt-notice-ink);
 }
@@ -287,15 +255,16 @@
   .rt-fade-in { animation: none; }
 }
 
-// ── Masonry (E-169) ──────────────────────────────────────────────────────────
-// Mission's card grid. Cards keep DOM order (so tab order and screen readers read the page
+// ── Card grid (E-169, E-210) ──────────────────────────────────────────────────────────
+// The one card grid, on every page that shows more than one card. Cards keep DOM order (so tab order and screen readers read the page
 // the way the template tells it) and each one spans as many small rows as it is tall;
 // `MasonryDirective` (shared/layout/masonry.directive.ts) measures them and sets
 // `--rt-masonry-span`. Row unit 4px = MASONRY_ROW_UNIT. The card's own margin-bottom is the
 // row gap (it is part of the measured height), so row-gap is 0. Phone: normal flow, one
 // column, the span is ignored. Print: same, so a page break never lands in a masonry gap.
-// Cards that need the whole width (a data grid) add `.rt-mission-card--wide`.
-.rt-masonry {
+// A card is one column wide. Only a card that holds a wide data grid adds `.rt-mission-card--wide`
+// (and then goes first or last, so it leaves no hole).
+.rt-card-grid {
   display: block;
 
   @include bp.tablet-up {
@@ -308,7 +277,9 @@
     row-gap              : 0;
     align-items          : start;
 
-    > .rt-mission-card,
+    // The item is the card itself, or a wrapper: a `display: contents` section host (its card is
+    // the item) or a plain block host such as <rangertrak-layers-card>, which gets the span itself.
+    > *,
     > * > .rt-mission-card {
       grid-row-end: span var(--rt-masonry-span, 1);
     }
@@ -324,6 +295,42 @@
 
   @media print {
     display: block;
+  }
+}
+
+// ── Long list inside a card (E-210 rule 6) ───────────────────────────────────
+// A card that grows with a list (Mission's Locations, Tactical call signs) scrolls the LIST
+// inside, so the card's title, explanation and Add button stay put and the card stops
+// stretching its neighbours. Only on tablet and laptop widths, where cards sit side by side:
+// on a phone the page is one column and a scroll box inside a scrolling page traps the thumb,
+// and in print the whole list prints (the media query is screen-only). The element is a
+// keyboard stop: the template gives it tabindex="0", role="region" and an aria-label named
+// after the card. A table's header row sticks; a soft fade on the bottom edge shows that
+// rows are cut off. Not for cards of settings (hiding settings in a scroll box hides them).
+.rt-card-scroll {
+  @include bp.tablet-up {
+    max-height: min(28rem, 60vh);
+    overflow  : auto;
+
+    // The fade is a 1.5rem strip after the last row, stuck to the bottom edge of the box: it sits
+    // over the cut-off rows while there are more, and over blank space at the end.
+    &::after {
+      content       : '';
+      display       : block;
+      position      : sticky;
+      bottom        : 0;
+      height        : 1.5rem;
+      background    : linear-gradient(transparent, var(--mat-card-outlined-container-color, var(--rt-surface)));
+      pointer-events: none;
+    }
+
+    thead th,
+    .rt-card-scroll__head {
+      position: sticky;
+      top     : 0;
+      z-index : 1;
+      background: var(--mat-card-outlined-container-color, var(--rt-surface));
+    }
   }
 }
 

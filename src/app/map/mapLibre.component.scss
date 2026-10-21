@@ -1,3 +1,5 @@
+// PAGE KIND (E-210, ADR D-65): the map is full width; the controls under it are CARDS in the one
+// card grid (.rt-card-grid, styles/_patterns.scss).
 @use "../../styles/breakpoints" as bp;
 
 // Raised live 2026-08-30: this component had NO host margin at all - #pmtiles-overview, the
@@ -36,7 +38,7 @@
 // float by itself. Below that it is plain blocks whose borders would run under the mini-map,
 // so make the group a block formatting context there too: it narrows to sit beside the float.
 @include bp.tablet-down {
-  .rt-action-bar-group {
+  .rt-card-grid {
     display: flow-root;
   }
 }
@@ -144,7 +146,7 @@ mat-slide-toggle {
 // map-page.component.scss already applies to its own .map-engine-switch/.fullscreen-toggle -
 // pointless on paper, and includes the very "Print map" button that triggered the print.
 @media print {
-  .rt-action-bar-group {
+  .rt-card-grid {
     display: none;
   }
 

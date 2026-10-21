@@ -1,3 +1,5 @@
+// PAGE KIND (E-210, ADR D-65): the data grid is full width; the Import, export & print panel is
+// CARDS in the one card grid (.rt-card-grid, styles/_patterns.scss), stacked above the Danger zone.
 @use "../../styles/print-sheet" as sheet;
 
 // https://www.ag-grid.com/angular-data-grid/themes-v23-migration/
@@ -122,7 +124,7 @@ label {
   margin-bottom   : 1em;
   background      : var(--rt-surface);
   border          : 1px dashed var(--rt-line-strong);
-  border-radius   : var(--rt-radius-lg);
+  border-radius   : var(--rt-box-radius);
 }
 
 .rangers__empty-state__icon {
@@ -167,7 +169,7 @@ label {
   color           : var(--rt-notice-ink);
   border          : 1px solid var(--rt-notice-line);
   border-left     : 6px solid var(--rt-notice-line);
-  border-radius   : var(--rt-radius);
+  border-radius   : var(--rt-box-radius);
   padding         : 0.5em 0.75em;
   margin          : 0 0 1em 0;
 }
@@ -273,16 +275,10 @@ label {
   font-weight: bold;
 }
 
-// 2026-09-30, John: E-144 - "Bulk roster tools" and "Danger zone" each took a full-width row on
-// a wide monitor. Same auto-fit/minmax pattern as Mission's .mission__grid: two columns when
-// there is room, one on a phone, no breakpoint. align-items: start so opening one section
-// does not stretch its neighbour. The 30rem floor is Mission's; min(100%, ..) keeps it from
-// widening a 390px page.
+// E-210 (ADR D-65): the Import, export & print panel and the Danger zone stack, one per row, the
+// Danger zone last (they used to sit side by side, so opening Import left a hole under the Danger zone).
 .rangers__cards {
-  display              : grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr));
-  gap                  : 0 var(--rt-gap);
-  align-items          : start;
+  display: block;
 }
 
 // E-187 phase D: while the Print card's contact sheet prints (body.rt-print-roster, set around

@@ -124,9 +124,8 @@
 
     <!-- ══ Import, export & print ══ E-187 (ADR D-58, 2026-10-15): replaces "Bulk roster tools"
          (2026-09-28, John). One shared panel (shared/io-panel/), cards in the Radio Log's
-         `.rt-action-bar-group` pattern, in the import/export colour (`--rt-io`). It shares the
-         `.rangers__cards` grid with Danger zone (E-144), as Bulk roster tools did. It hides
-         itself in field mode.
+         `.rt-card-grid` (E-210), in the import/export colour (`--rt-io`). It stacks above the Danger zone,
+         one panel per row, the Danger zone always last. It hides itself in field mode.
 
          The file input is still triggered from a real button via .click(), called synchronously
          inside the click handler: `matButton` only attaches to button/a elements, never a

@@ -28,6 +28,6 @@ export const rangertrakGridTheme = themeQuartz.withParams({
   headerBackgroundColor: 'var(--rt-surface-2)',
   headerTextColor: 'var(--rt-ink)',
   borderRadius: 'var(--rt-radius)',
-  wrapperBorderRadius: 'var(--rt-radius-lg)',
+  wrapperBorderRadius: 'var(--rt-box-radius)',
   fontFamily: 'inherit',
 })

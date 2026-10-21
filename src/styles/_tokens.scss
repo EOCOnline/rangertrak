@@ -140,8 +140,11 @@
   // ── Spacing and shape ─────────────────────────────────────────────
   // Small scale on purpose: these exist so component stylesheets stop inventing
   // one-off values, not to build a full design system in Sprint A.
+  // --rt-radius: tags, swatches and small insets (6px). Controls have --rt-control-radius (8px).
   --rt-radius: 6px;
-  --rt-radius-lg: 10px;
+  // --rt-box-radius (E-210, ADR D-65): ONE corner for every box - cards, expansion panels, data-grid
+  // frames, the Danger zone, notices, the Entry map. Rounder than the 8px controls inside them.
+  --rt-box-radius: 12px;
 
   // --rt-space-scale, raised live 2026-08-26: a single multiplier for the app's OWN
   // hand-rolled margins/padding/gaps below - separate from and unrelated to Material's

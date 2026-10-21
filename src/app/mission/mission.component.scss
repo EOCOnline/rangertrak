@@ -1,3 +1,5 @@
+// PAGE KIND (E-210, ADR D-65): CARDS. Every box on this page is a card in the one card grid
+// (.rt-card-grid, styles/_patterns.scss). The page has no layout of its own beyond that.
 // Material-M3 pass, 2026-08-25.
 //
 // This file lost most of its length, and that is the point. Removed as dead or superseded:
@@ -35,7 +37,7 @@
 // 30rem is the floor because the widest single control on any card (the geocoding API key
 // field) needs about that much before it starts scrolling its own value.
 .mission__grid {
-  // Layout lives in the shared `.rt-masonry` (styles/_patterns.scss), applied by the
+  // Layout lives in the shared `.rt-card-grid` (styles/_patterns.scss), applied by the
   // `rtMasonry` directive: a grid in DOM order whose cards each span the rows they need.
   // 2026-10-16 (E-169): replaces the 2026-09-30 CSS `columns` layout, which filled each
   // column top to bottom and so scrambled reading and tab order across columns.

@@ -54,48 +54,6 @@
       }
     </p>
 
-    <!-- E-168 (2026-10-01, John): the long-form home of the mission mode. The header pill's
-         panel holds the short version and the switch, and links here ("More about modes"). -->
-    <mat-card appearance="outlined" class="rt-mission-card mission__mode-card" id="mode" data-testid="mission-mode-card">
-      <mat-card-header>
-        <mat-card-title>Mode</mat-card-title>
-        <mat-card-subtitle>What this mission is being used for.</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <p class="mission__mode-now">
-          Now: <strong>{{ usage.modeInfo()?.label }}</strong>
-        </p>
-        <div class="mission__mode-buttons" role="group" aria-label="Mission mode">
-          @for (m of usage.modes; track m.id) {
-          <button matButton="outlined" type="button" [attr.data-mode]="m.id" [attr.aria-pressed]="usage.mode() === m.id"
-            [class.mission__mode-button--on]="usage.mode() === m.id"
-            [attr.title]="m.id === 'demo' && usage.mode() !== 'demo' ? 'Go to the demo picker (Mission, Danger zone).' : m.blurb"
-            (click)="usage.pickMode(m.id)">
-            <mat-icon aria-hidden="true">{{ m.icon }}</mat-icon>
-            {{ m.label }}
-          </button>
-          }
-        </div>
-        <dl class="mission__mode-explain">
-          <dt>Demo</dt>
-          <dd>Made-up data from a demo scenario. None of it is real. To leave demo mode, choose Exercise or
-            Incident (or press Start a real mission on the Entry page): that clears the demo data and starts
-            an empty mission. Demo data is never relabelled as real.</dd>
-          <dt>Exercise</dt>
-          <dd>A drill. The printed radio messages (ICS-213), the communications log (ICS-309), the After Action
-            report and the map sheet are stamped EXERCISE at the top, so nobody mistakes the paper for a real
-            event. Otherwise an exercise behaves like a real incident.</dd>
-          <dt>Incident</dt>
-          <dd>A real event. Nothing is stamped.</dd>
-          <dt>Quiet while real work is going on</dt>
-          <dd>When there is a report from the last 12 hours, an operating period that is running or starts
-            within 12 hours, or this is a field phone, RangerTrak stops offering first-run tips, the install
-            prompt and demos, and shows a small "Update ready" note instead of the Reload bar. Loading a demo or
-            resetting the mission then asks you to type the mission name first, and suggests a backup. You
-            can still do all of it.</dd>
-        </dl>
-      </mat-card-content>
-    </mat-card>
 
     <!-- E-145: the one setting the app only reads when it starts.Everything else on this page
          takes effect as soon as it is saved, so this is shown for this field alone. -->
@@ -123,6 +81,48 @@
          mission-advanced-options's placement. Nothing here changed a component's inputs,
          outputs, ids or data-testids - only which order they render in. -->
     <div class="mission__grid" rtMasonry (laidOut)="onGridLaidOut()">
+      <!-- E-168 (2026-10-01, John): the long-form home of the mission mode. E-210: an ordinary first card in the grid, one column wide. The header pill's
+           panel holds the short version and the switch, and links here ("More about modes"). -->
+      <mat-card appearance="outlined" class="rt-mission-card mission__mode-card" id="mode" data-testid="mission-mode-card">
+        <mat-card-header>
+          <mat-card-title>Mode</mat-card-title>
+          <mat-card-subtitle>What this mission is being used for.</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="mission__mode-now">
+            Now: <strong>{{ usage.modeInfo()?.label }}</strong>
+          </p>
+          <div class="mission__mode-buttons" role="group" aria-label="Mission mode">
+            @for (m of usage.modes; track m.id) {
+            <button matButton="outlined" type="button" [attr.data-mode]="m.id" [attr.aria-pressed]="usage.mode() === m.id"
+              [class.mission__mode-button--on]="usage.mode() === m.id"
+              [attr.title]="m.id === 'demo' && usage.mode() !== 'demo' ? 'Go to the demo picker (Mission, Danger zone).' : m.blurb"
+              (click)="usage.pickMode(m.id)">
+              <mat-icon aria-hidden="true">{{ m.icon }}</mat-icon>
+              {{ m.label }}
+            </button>
+            }
+          </div>
+          <dl class="mission__mode-explain">
+            <dt>Demo</dt>
+            <dd>Made-up data from a demo scenario. None of it is real. To leave demo mode, choose Exercise or
+              Incident (or press Start a real mission on the Entry page): that clears the demo data and starts
+              an empty mission. Demo data is never relabelled as real.</dd>
+            <dt>Exercise</dt>
+            <dd>A drill. The printed radio messages (ICS-213), the communications log (ICS-309), the After Action
+              report and the map sheet are stamped EXERCISE at the top, so nobody mistakes the paper for a real
+              event. Otherwise an exercise behaves like a real incident.</dd>
+            <dt>Incident</dt>
+            <dd>A real event. Nothing is stamped.</dd>
+            <dt>Quiet while real work is going on</dt>
+            <dd>When there is a report from the last 12 hours, an operating period that is running or starts
+              within 12 hours, or this is a field phone, RangerTrak stops offering first-run tips, the install
+              prompt and demos, and shows a small "Update ready" note instead of the Reload bar. Loading a demo or
+              resetting the mission then asks you to type the mission name first, and suggests a backup. You
+              can still do all of it.</dd>
+          </dl>
+        </mat-card-content>
+      </mat-card>
       <rangertrak-mission-details-section [form]="settingsForm" [opPeriodStart]="opPeriodStart()"
         [opPeriodEnd]="opPeriodEnd()" [timePickerLabelStart]="timePickerLabelStart"
         [timePickerLabelEnd]="timePickerLabelEnd" (timeEventStart)="onNewTimeEventStart($event)"
@@ -165,16 +165,17 @@
       @if (view.isShown('board')) {
       <rangertrak-mission-command-post [form]="settingsForm"></rangertrak-mission-command-post>
       }
+
+      <!-- ══ 6. DANGER ZONE ══ (plus the non-destructive Data safety card and the Advanced/Debug card
+           - see mission-advanced-options.component.html's own doc comment). E-210: these are cards
+           in the same grid now, last; the Danger zone is the final card. -->
+      <rangertrak-mission-advanced-options [form]="settingsForm" (resetDefaults)="onBtnResetDefaults()">
+      </rangertrak-mission-advanced-options>
     </div>
 
     <!-- ══ 5. (Action bar removed 2026-09-30, John: E-145 - settings autosave, so the Save
          settings and Cancel buttons are gone. The 'Mission data lives in this browser only'
          note had already moved into Data safety's subtitle on 2026-09-28.) ══ -->
-
-    <!-- ══ 6. DANGER ZONE ══ (plus the non-destructive Data safety card, and now the Advanced/
-         Debug card - see mission-advanced-options.component.html's own doc comment). -->
-    <rangertrak-mission-advanced-options [form]="settingsForm" (resetDefaults)="onBtnResetDefaults()">
-    </rangertrak-mission-advanced-options>
   </form>
 
 </rangertrak-page>

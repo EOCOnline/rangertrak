@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Injector, Input, OnChanges, Output, SimpleChanges, afterNextRender, inject, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 
@@ -45,6 +45,8 @@ export class MissionTacticalCallsComponent implements OnChanges {
   @Output() itemsChange = new EventEmitter<TacticalCallType[]>()
 
   private rangerService = inject(RangerService)
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
+  private readonly injector = inject(Injector)
 
   /** The live roster, so a deleted/renamed member is reflected without reloading the page. */
   readonly rangers = signal<RangerType[]>([])
@@ -100,6 +102,11 @@ export class MissionTacticalCallsComponent implements OnChanges {
 
   onAdd() {
     this.rows.update(rows => [...rows, { name: '', rangerUid: '', operatorText: '' }])
+    // E-210 rule 6: the list scrolls inside the card, so bring the new row into view.
+    afterNextRender(() => {
+      const rows = this.host.querySelectorAll('[data-testid="tacticalRow"]')
+      rows[rows.length - 1]?.scrollIntoView({ block: 'nearest' })
+    }, { injector: this.injector })
   }
 
   onRemove(index: number) {

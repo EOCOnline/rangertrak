@@ -7,7 +7,7 @@
 .rt-expandable-section {
   box-shadow: none;
   border: 1px solid var(--rt-line);
-  border-radius: var(--rt-radius);
+  border-radius: var(--rt-box-radius);
   margin-bottom: 0.5em;
 
   &::ng-deep .mat-expansion-panel-header {
@@ -55,7 +55,21 @@
     }
   }
 
+  // E-210 rule 3, no box inside a box: the panel is only its header bar (one border, the box
+  // corner); what opens beneath it is the card grid, whose cards carry their own borders.
   .rt-expandable-section {
-    border-color: var(--rt-io);
+    border: none;
+    box-shadow: none;
+    background: none;
+    overflow: visible;
+
+    &::ng-deep .mat-expansion-panel-header {
+      border: 1px solid var(--rt-io);
+      border-radius: var(--rt-box-radius);
+    }
+
+    &::ng-deep .mat-expansion-panel-body {
+      padding: 0.75em 0 0;
+    }
   }
 }

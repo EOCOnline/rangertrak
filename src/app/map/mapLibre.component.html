@@ -32,11 +32,11 @@
 <rangertrak-map-print-legend [entries]="legendEntries()" engine="maplibre"></rangertrak-map-print-legend>
 <!-- Card treatment matches Radio Log's bottom sections (commit e12f718) and Mission's own
      cards - `<mat-card appearance="outlined" class="rt-mission-card">` with a real
-     `<mat-card-title>`, grouped side by side at laptop-up via `.rt-action-bar-group`
-     (styles/_patterns.scss), stacked full-width below that. Raised live 2026-09-26: the
+     `<mat-card-title>`, laid out by the one card grid, `.rt-card-grid`
+     (styles/_patterns.scss, E-210). Raised live 2026-09-26: the
      controls below the map used to be a flat run of text/toggles/buttons with no visual
      grouping - the same "just floats there" problem #237 already fixed for Radio Log. -->
-<div class="rt-action-bar-group">
+<div class="rt-card-grid" rtMasonry>
   <mat-card appearance="outlined" class="rt-mission-card">
     <mat-card-header>
       <mat-card-title>Show on map</mat-card-title>

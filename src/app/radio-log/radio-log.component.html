@@ -54,9 +54,8 @@
            - see the comments on getParamValue()/onBtnExport() there for what each of those
            three reads would have done post-conversion (one throws, one silently exports the
            wrong rows). -->
-      <!-- Wraps the three sections below in the shared `.rt-action-bar-group` pattern
-           (styles/_patterns.scss) - side by side at laptop-up and wider, stacked full-width
-           below that.
+      <!-- Wraps the cards below in the one card grid, `.rt-card-grid` (E-210, styles/_patterns.scss):
+           two columns from tablet width, three or four on a wide screen, one on a phone.
 
            #237 (2026-09-26): each section used to be a bare `.rt-action-bar` div with a
            `<span class="rt-action-bar__status">` doing double duty as a section label - "Print
@@ -71,7 +70,7 @@
            replaces. `.rt-action-bar`/`.rt-action-bar__status` are no longer used here (still a
            shared pattern other pages rely on - see _patterns.scss's own comment); only
            `.rt-action-bar__buttons` is kept, now laying out each card's own content. -->
-      <div class="rt-action-bar-group">
+      <div class="rt-card-grid radio-log__cards" rtMasonry>
         <mat-card appearance="outlined" class="rt-mission-card rt-io-card">
           <mat-card-header>
             <mat-card-title>Export radio log entries</mat-card-title>

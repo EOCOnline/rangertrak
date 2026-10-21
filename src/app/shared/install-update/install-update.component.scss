@@ -97,7 +97,7 @@
   display      : flex;
   align-items  : center;
   gap          : 0.75em;
-  border-radius: var(--rt-radius-lg);
+  border-radius: var(--rt-box-radius);
   padding      : 0.75em 1em;
 }
 
@@ -190,7 +190,7 @@
   background   : var(--rt-surface);
   color        : var(--rt-ink);
   border       : 1px solid var(--rt-line);
-  border-radius: var(--rt-radius);
+  border-radius: var(--rt-box-radius);
   box-shadow   : 0 4px 12px rgba(0, 0, 0, 0.25);
   padding      : 0.6em 0.8em;
   font-size    : 0.85rem;

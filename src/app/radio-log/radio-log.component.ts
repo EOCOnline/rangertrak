@@ -1,3 +1,4 @@
+import { MasonryDirective } from '../shared/layout/masonry.directive'
 import { RouterLink } from '@angular/router'
 import { GridOptions, SelectionChangedEvent } from 'ag-grid-community'
 import { DEFAULT_CHECK_IN_INTERVAL_MIN, elapsedMinutes, overdueBand } from '../domain/overdue'
@@ -80,6 +81,7 @@ export class myUnusedPipe implements PipeTransform {
   standalone: true,
   imports: [
     CommonModule,
+    MasonryDirective,
     AgGridAngular,
     PageComponent,
     RouterLink,

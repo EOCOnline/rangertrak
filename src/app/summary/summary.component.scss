@@ -1,9 +1,12 @@
+// PAGE KIND (E-210, ADR D-65): a REPORT, not cards. One column that reads top to bottom like the
+// printed paper, centred so the spare width is shared on both sides.
 // E-189 Mission summary. Chart chrome uses the theme tokens; status colours come from the
 // mission's statuses. On paper everything is ink on white, and the "needing attention" share
 // of each bar is hatched so it still reads on a black-and-white printer.
 
 .rt-summary {
   max-width: 64rem;
+  margin-inline: auto;
   padding-bottom: var(--rt-space-xl, 1.5rem);
 }
 

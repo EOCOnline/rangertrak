@@ -7,14 +7,9 @@
      Storage Protection and the export half of Mission Backup are NOT destructive, so they
      stay outside the fence in their own card. -->
 
-<!-- F29-22 (2026-08-29): Data safety and the danger zone below used to always stack full
-     width, one per row, regardless of screen size - this component sits outside
-     mission.component.html's own `.mission__grid`, so `.rt-mission-card`'s "parent sets
-     align-items: start" contract (styles/_patterns.scss) had no grid parent to fulfil it
-     here. `.mission-advanced__grid` gives it one, same auto-fit/minmax pattern
-     `.mission__grid` already uses, so the two sit side by side once a wide monitor has room
-     for both, and stack on anything narrower with no breakpoint math needed. -->
-<div class="mission-advanced__grid">
+<!-- E-210: Data safety, Advanced and the Danger zone are cards in the Mission page's own card grid
+     (mission.component.html: this host is display: contents, so they are its grid items). The
+     separate `.mission-advanced__grid` that used to hold them is gone. -->
 
 <!-- F29-21 (2026-08-30): id is a fragment-scroll target for the header readiness dot's
      "Storage protected from eviction" row - see mission-readiness.component.ts's own
@@ -279,4 +274,3 @@
   </div>
 </rangertrak-expandable-section>
 
-</div>

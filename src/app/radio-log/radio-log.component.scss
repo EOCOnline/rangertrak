@@ -1,3 +1,5 @@
+// PAGE KIND (E-210, ADR D-65): the data grid is full width; the tools below it (export, print,
+// Report Packet, hand over) are CARDS in the one card grid (.rt-card-grid, styles/_patterns.scss).
 // Sprint F phone carve-out: a card-per-report read view of the comms log. The grid vs.
 // cards split is driven entirely by radio-log.component.ts's isPhone signal
 // (@if in the template, matching styles/_breakpoints.scss's 575px phone breakpoint),
@@ -11,7 +13,7 @@
 
 .radio-log-cards__card {
   border       : 1px solid var(--rt-line);
-  border-radius: var(--rt-radius-lg);
+  border-radius: var(--rt-box-radius);
   padding      : var(--rt-gap);
   background   : var(--rt-surface);
 }
@@ -301,4 +303,9 @@
     max-height: 24mm;
     max-width : 40mm;
   }
+}
+
+// The card grid under the data grid (E-210). The gap above it is the old action-bar-group margin.
+.radio-log__cards {
+  margin-top: 1.5em;
 }

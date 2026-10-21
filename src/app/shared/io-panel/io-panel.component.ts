@@ -1,3 +1,4 @@
+import { MasonryDirective } from '../layout/masonry.directive'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 
 import { MatIconModule } from '@angular/material/icon'
@@ -12,7 +13,7 @@ import { FieldModeService } from '../services/field-mode.service'
  *
  * Deliberately page-agnostic: it knows nothing about rosters or places. A page projects its own
  * `<mat-card appearance="outlined" class="rt-mission-card rt-io-card">`s into it and they sit in
- * the shared `.rt-action-bar-group` grid (side by side on a laptop, stacked on a phone).
+ * the one card grid, `.rt-card-grid` (E-210), with no second border around them.
  *
  * Shown whenever the device is not in field mode. `fieldModeGuard` already keeps a field phone
  * off both pages, so this is belt and braces and needs no setting of its own.
@@ -20,7 +21,7 @@ import { FieldModeService } from '../services/field-mode.service'
 @Component({
   selector: 'rangertrak-io-panel',
   standalone: true,
-  imports: [ExpandableSectionComponent, MatIconModule, MatCardModule],
+  imports: [ExpandableSectionComponent, MatIconModule, MatCardModule, MasonryDirective],
   changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './io-panel.component.html',
   styleUrls: ['./io-panel.component.scss'],

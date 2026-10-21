@@ -1,3 +1,4 @@
+import { MasonryDirective } from '../shared/layout/masonry.directive'
 import { GeoJSONSource, Map as MaplibreMap, MapLayerMouseEvent, MapMouseEvent, Marker, Popup, ScaleControl } from 'maplibre-gl'
 import type { FeatureCollection, Point } from 'geojson'
 // P1-5 (offline map coverage scoping, 2026-09-14): validating a scribe-picked .pmtiles file
@@ -87,7 +88,7 @@ function formatBytes(bytes: number): string {
   selector: 'rangertrak-mapLibre',
   standalone: true,
   imports: [NgTemplateOutlet, RouterLink, MatSlideToggleModule, MatButtonModule, MatCardModule, MatIconModule,
-    ExpandableSectionComponent, MapPrintLegendComponent, MapPrintFurnitureComponent, AdvancedDirective],
+    ExpandableSectionComponent, MapPrintLegendComponent, MapPrintFurnitureComponent, AdvancedDirective, MasonryDirective],
   templateUrl: './mapLibre.component.html',
   styleUrls: ['./mapLibre.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager

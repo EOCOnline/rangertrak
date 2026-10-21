@@ -22,8 +22,8 @@
   background-color: var(--rt-surface-2);
   margin-left     : 16px;
   margin-right    : 16px;
-  border-radius   : 5px;
-  border          : 2px solid black;
+  border-radius   : var(--rt-box-radius); /* E-210: the card border and corner */
+  border          : 1px solid var(--mat-card-outlined-outline-color, var(--rt-line-strong));
   // ROOT-CAUSED 2026-08-30 (live phone-width failure, tools/e2e.js's own overflow-culprit
   // diagnostic): Leaflet's internal .leaflet-proxy.leaflet-zoom-animated helper (created
   // for CSS3 zoom transitions) was found carrying a matrix(16384,...) transform - a 2^14
