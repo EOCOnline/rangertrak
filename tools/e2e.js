@@ -5029,6 +5029,9 @@ async function checkBoard(downloads) {
     const claimLine = await evaluate(`document.getElementById('claimLine').textContent`, v.sessionId)
     check('the viewer shows the claim line', /E2E Board, op period 2: published by .*\(.+ on .+\)/.test(claimLine) && /Password required/.test(claimLine), true)
     check('...the password is gone from the address bar', await evaluate(`location.hash`, v.sessionId), '')
+    // Rendered, not the attribute: an id rule's display:flex once kept the prompt on screen while
+    // .hidden was true, and the attribute-only check below could not see it (2026-10-21).
+    check('...and no password prompt is on screen', await evaluate(`document.getElementById('pwForm').offsetParent === null`, v.sessionId), true)
     check('...and the report row has a thumbnail button', await evaluate(`document.querySelectorAll('#rows .file-btn img').length`, v.sessionId), 1)
     await evaluate(`document.querySelector('#rows .file-btn').click()`, v.sessionId)
     const verified = await pollUntil(() => evaluate(`document.getElementById('ovStatus').textContent`, v.sessionId), t => /Verified|match/.test(t), 40, 500)

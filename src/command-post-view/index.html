@@ -127,6 +127,9 @@
   .notice { margin: 0 0 0.75rem; padding: 0.6rem 0.8rem; border-inline-start: 4px solid var(--accent); background: var(--surface); }
   .notice--warn { border-inline-start-color: var(--warn); }
   #pwForm { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  /* The id rule's display beats the browser's own [hidden] rule, so without this the prompt
+     showed on every Board, password or not (John, 2026-10-21). Same guard as #overlay's. */
+  #pwForm[hidden] { display: none; }
   #pwForm input { padding: 0.5rem 0.75rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); font-size: 1rem; }
   #pwForm button { padding: 0.5rem 0.9rem; border: 1px solid var(--accent); border-radius: 6px; background: var(--surface); color: var(--accent); font-size: 0.95rem; cursor: pointer; }
 
@@ -157,13 +160,13 @@
 
 <header>
   <h1>RangerTrak Board</h1>
-  <span id="missionMeta" class="meta">Waiting for the scribe…</span>
+  <span id="missionMeta" class="meta">No log yet</span>
   <span id="statusBadge" class="badge badge--none">no data yet</span>
 </header>
 <p id="claimLine" class="meta" hidden></p>
 
 <form id="pwForm" class="notice" hidden>
-  <label for="pwInput">This Board has a password.</label>
+  <label for="pwInput">Password for this Board (ask the scribe):</label>
   <input id="pwInput" type="password" autocomplete="off" autocapitalize="off" spellcheck="false">
   <button type="submit">Open</button>
   <span id="pwNote" role="status"></span>
@@ -387,7 +390,7 @@
     if (!latest) {
       rowsEl.innerHTML = '';
       emptyEl.hidden = false;
-      emptyEl.textContent = 'Waiting for the scribe…';
+      emptyEl.textContent = 'Nothing yet. The log appears here once the scribe turns on sending to this Board.';
       return;
     }
 

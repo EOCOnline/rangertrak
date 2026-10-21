@@ -41,7 +41,10 @@
       <mat-form-field class="mission-command-post__url" floatLabel="always">
         <mat-label>Server address</mat-label>
         <input matInput type="text" [formField]="form.commandPostServerUrl"
-          placeholder="https://192.168.1.5:8080" />
+          placeholder="Paste the address the Board printed" />
+        <!-- Not an example address: John read the old "https://192.168.1.5:8080" placeholder
+             as the Board's real one and lost an hour to it (2026-10-21, E-216). -->
+
         <!-- Raised live 2026-08-31: "display it so it can be copy/pasted elsewhere in the
              future" - once typed in here, this was the ONLY other place the address lived
              besides the server's own console (which scrolls away, or gets closed). Copies
