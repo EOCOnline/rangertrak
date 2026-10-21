@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.70-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.69-alpha...v0.99.70-alpha) (2026-10-21)
+
+
+### Bug Fixes
+
+* **mission:** the Danger zone is the last row, full width (E-210, Q25) ([3abf9d0](https://github.com/SteadyEOC/RangerTrak/commit/3abf9d06518a2134439c0de14bc4a12de344ab64))
+
 ### [0.99.69-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.68-alpha...v0.99.69-alpha) (2026-10-21)
 
 
