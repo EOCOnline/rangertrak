@@ -1,4 +1,5 @@
 @use "../../../styles/breakpoints" as bp;
+@use "../../../styles/controls";
 .map-engine-switch {
   margin: 0.5rem 0 1rem;
 
@@ -170,12 +171,11 @@
 // approach mapLeaflet.component.scss uses for the offline "save this area" control), not
 // borrowed browser/plugin chrome.
 .fullscreen-toggle {
+  @include controls.control;
   display      : block;
   margin       : 0 0 0.5rem auto;
-  padding      : 0.35rem 0.75rem;
-  min-height   : var(--rt-tap-min);
+  padding      : 0 0.75rem;
   border       : 1px solid var(--rt-ink-3);
-  border-radius: var(--rt-radius);
   background   : transparent;
   color        : var(--rt-ink);
   cursor       : pointer;

@@ -391,8 +391,7 @@
         <mat-chip-listbox class="enter__Source" aria-label="Source" [tabIndex]="sourceTabIndex"
           [value]="entryForm.source().value()" (change)="entryForm.source().value.set($event.value)">
           @for (opt of sourceOptions; track opt) {
-          <mat-chip-option [value]="opt" class="enter__source-option"
-            [class.enter__source-selected]="entryForm.source().value() === opt">{{ opt }}</mat-chip-option>
+          <mat-chip-option [value]="opt" class="enter__source-option">{{ opt }}</mat-chip-option>
           }
         </mat-chip-listbox>
       </fieldset>

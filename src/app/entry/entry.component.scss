@@ -1,6 +1,7 @@
 @use "../../styles/breakpoints"as bp;
 @use "../../styles/section"as section;
 @use "../../styles/typography"as type;
+@use "../../styles/controls";
 // Material-M3 pass, found and fixed 2026-08-26 (real bug, not just cleanup): this file still
 // had the pre-Sprint-A `@use "@material/theme" with ($primary: #962f10, $on-primary:
 // #442C2E)` block plus `@use "@material/button"`/`"@material/button/styles"` - mission
@@ -72,15 +73,14 @@ $filledColor: var(--rt-surface-2);
 // (canLoadDemoData(), entry.component.ts) - a real call-to-action, so it gets the accent
 // treatment rather than .entry-welcome__dismiss's own quiet plain-text style.
 .entry-welcome__demo {
-  display      : inline-block;
+  @include controls.control;
+  display      : inline-flex;
+  align-items  : center;
   margin-inline-start: 0.5em;
-  padding      : 0.15em 0.6em;
+  padding      : 0 0.75rem;
   border       : 1px solid var(--rt-accent);
-  border-radius: var(--rt-radius);
   background   : transparent;
   color        : var(--rt-accent);
-  font         : inherit;
-  font-weight  : 600;
   cursor       : pointer;
 
   &:hover,
@@ -428,20 +428,9 @@ mat-chip-option.enter__status-selected {
   }
 }
 
-// Source has no per-option color to carry (unlike Status's stored status.color), so this
-// is the same selected-chip treatment above minus the --rt-status-current override - it
-// falls straight through to --rt-accent, which is what that property's own fallback is for.
-mat-chip-option.enter__source-selected {
-  ::ng-deep.mat-mdc-chip-selected .mdc-evolution-chip__action--primary::before {
-    border-color: var(--rt-accent);
-  }
-
-  ::ng-deep.mat-mdc-chip-selected {
-    background-color: color-mix(in srgb, var(--rt-accent) 20%, var(--rt-surface));
-  }
-
-  font-weight: 600;
-}
+// Source has no per-option color to carry (unlike Status's stored status.color), so it takes the one
+// app-wide "selected" look: Material's secondary container, from the chips theme (E-209, D-64 point 5).
+// It used to tint --rt-accent here; that was a third "this one is on" look. Status keeps its own colours (D-39).
 
 // Raised live, 2026-08-26: "a stronger separator for the 213-only section" - the thin
 // left-border-only treatment (still used for the simpler evidence section below) read as too

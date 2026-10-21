@@ -1,5 +1,6 @@
 @use "../../../styles/typography" as type;
 @use "../../../styles/breakpoints" as bp;
+@use "../../../styles/controls";
 
 // E-57(1): simplified back to a v0.12-era shape - one small pill, icon + short label, no
 // separate sentence next to a separate CTA. One presentation for both states (update-ready
@@ -8,10 +9,10 @@
 .rt-install-update {
   display      : inline-flex;
   align-items  : stretch;
-  border-radius: 999px;
+  border-radius: var(--rt-control-radius);
   overflow     : hidden;
   border       : 1px solid transparent;
-  @include type.type-body-sm;
+  @include controls.control;
 }
 
 // Update-ready reuses --rt-notice rather than the skin accent, matching the existing
@@ -40,14 +41,12 @@
   display      : inline-flex;
   align-items  : center;
   gap          : 6px;
-  min-height   : var(--rt-tap-min);
+  min-height   : calc(var(--rt-control-height) - 2px); // inside the pill's 1px border
   padding      : 0 12px 0 10px;
   border       : none;
   background   : transparent;
   color        : inherit;
-  font-weight  : 600;
-  font-size    : inherit;
-  line-height  : inherit;
+  font         : inherit;
   cursor       : pointer;
   white-space  : nowrap;
 }
@@ -63,8 +62,8 @@
   display        : flex;
   align-items    : center;
   justify-content: center;
-  width          : var(--rt-tap-min);
-  min-height     : var(--rt-tap-min);
+  width          : var(--rt-control-height);
+  min-height     : var(--rt-control-height);
   border-left    : 1px solid currentColor;
   opacity        : 0.65;
   color          : inherit;
@@ -152,13 +151,7 @@
 
   // Live review, 2026-08-22: ~4px trimmed off top and bottom each (32px -> 24px) - this
   // pill still read as taller than the small brand/copyright text it sits next to.
-  .rt-install-update__main {
-    min-height: 24px;
-  }
-
-  .rt-install-update__help {
-    min-height: 24px;
-  }
+  // (E-209: the footer copy used to be cut to 24px here; every control is at least the control height now.)
 }
 
 // Printing a floating pill onto an ICS-309 log would be noise on the page, same reasoning

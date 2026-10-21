@@ -15,6 +15,39 @@
 //  page structure, and a component that needs one is by definition a routed page.
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+//  THE CONTROL RULE  (E-209, ADR D-64, John 2026-10-20)
+//
+//  Every control looks and sizes the same, set in ONE place each: the values are the
+//  --rt-control-* tokens (_tokens.scss); Material's own components read them through the
+//  override mixins in styles.scss (button, button-toggle, chips); a hand-rolled button takes
+//  them from the `controls.control` mixin (_controls.scss). A page does not override any of it.
+//
+//   1. Shape.    Every rectangular control - button, toggle group, chip, menu trigger, the
+//                header status cluster, a hand-rolled button - has one corner,
+//                --rt-control-radius (8px). Switches keep their round track and icon-only
+//                buttons stay round: that is the control's shape, not a corner choice.
+//                Cards and panels are not controls (E-210).
+//   2. Height.   One height, --rt-control-height (32px), for buttons, toggle groups and
+//                chips. On a touch screen (pointer: coarse) the same token is --rt-tap-min
+//                (44px), so every control is at least that. No per-page height overrides.
+//   3. Text.     Material's label-large (14px, medium) on every control. No per-control
+//                font-size.
+//   4. Spacing.  Controls in a row sit --rt-gap apart; icon to label is Material's own.
+//                No per-page margins on a control.
+//   5. Selected. One "on" look - Material's secondary container - for toggles, chips and
+//                pressed buttons. The one exception: Entry's Status chips carry their
+//                status colours (D-39).
+//   6. Choose one of a few (2-5 short options) is a toggle group everywhere. Radios only when
+//                each option needs a sentence (the import dialogs' "remove people not in
+//                the file").
+//
+//  Not covered, on purpose: Leaflet's and MapLibre's own zoom/layers controls, map markers,
+//  the print sheet, and plain-text buttons that read as data (the Entry "other formats" copy
+//  rows, the x that dismisses a notice, the time picker's steppers). tools/e2e.js `controls`
+//  reads the computed values on Entry, Map, Mission and Rangers and fails on any that are off.
+// ─────────────────────────────────────────────────────────────────────────────
+
 @use './breakpoints' as bp;
 @use './typography' as type;
 

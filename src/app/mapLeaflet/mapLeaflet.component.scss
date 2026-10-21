@@ -221,7 +221,7 @@ mat-slide-toggle {
     // the appended .offline-area-info text below) to its own content instead.
     width        : fit-content;
     height       : auto;
-    min-height   : var(--rt-tap-min);
+    min-height   : var(--rt-control-height);
     padding      : 0 0.75em;
     line-height  : 1.25;
     white-space  : nowrap;
@@ -233,7 +233,7 @@ mat-slide-toggle {
     background   : transparent;
     color        : var(--mat-sys-primary, var(--rt-ink));
     border       : 1px solid var(--mat-sys-outline, var(--rt-ink-3));
-    border-radius: 8px;
+    border-radius: var(--rt-control-radius);
     margin-bottom: 0;
   }
 
@@ -610,11 +610,8 @@ mat-slide-toggle {
   gap        : 4px 8px;
 }
 
-.map-show__choice {
-  --mat-button-toggle-height         : 32px;
-  --mat-standard-button-toggle-height: 32px;
-  font-size                          : 13px;
-}
+// (E-209: the Show and coordinate-format toggles used to carry their own height and font-size
+// here; both come from the global control rule now - styles/_patterns.scss.)
 
 // 2026-10-15, John (phone screenshot): at ~375 px the overview mini-map floated beside the
 // controls and left them a ~100 px column. On a phone it is a full-width band instead, the
@@ -634,8 +631,6 @@ mat-slide-toggle {
 
   .map-controls button {
     white-space: nowrap;
-    height     : auto;
-    min-height : var(--rt-tap-min, 44px);
   }
 
   .map-display__row mat-slide-toggle {
@@ -649,12 +644,6 @@ mat-slide-toggle {
   :host ::ng-deep .map-display .mdc-label {
     flex: 1 1 auto;
   }
-}
-
-.map-coords__format {
-  --mat-button-toggle-height           : 28px;
-  --mat-standard-button-toggle-height  : 28px;
-  font-size                            : 12px;
 }
 
 #Lmap-status {

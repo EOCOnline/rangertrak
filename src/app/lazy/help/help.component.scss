@@ -118,11 +118,15 @@ filter: brightness(30%);
 }
 
 :host ::ng-deep .help-tabs .mat-mdc-tab.mdc-tab {
-  height       : 36px;
+  // E-209 / D-64: the tabs are controls like any other - the control height (44 px on a touch
+  // screen), the control corner, label-large text (was 36 px and a full pill).
+  height       : var(--rt-control-height);
   min-width    : 0;
   padding-inline: 1rem;
   border       : 1px solid var(--rt-line-strong);
-  border-radius: 999px;
+  border-radius: var(--rt-control-radius);
+  --mat-tab-label-text-size  : var(--mat-sys-label-large-size);
+  --mat-tab-label-text-weight: var(--mat-sys-label-large-weight);
 }
 
 :host ::ng-deep .help-tabs .mat-mdc-tab.mdc-tab--active {

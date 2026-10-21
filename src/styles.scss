@@ -105,24 +105,40 @@ body {
   }
 }
 
-// 2026-09-28, John: AAR note - "less oval" buttons, if it's OK by Material style. M3's
-// default shape for every mat-button variant is `corner-full` (a full pill, its own
-// height/2 radius) - Material itself supports a smaller, less-round corner through the
-// official per-component override tokens rather than hand-rolled CSS fighting the MDC
-// styles, so this uses `mat.button-overrides()` the same way the rest of this file leans
-// on Material's own APIs instead of overriding `.mat-mdc-*` classes directly. One flat 8px
-// for every filled/outlined/text/tonal/raised button, app-wide - not a token, since this is
-// a one-off editorial call ("about 8px"), not a value anything else reads. Icon buttons and
-// FABs are untouched: a round icon button is normal M3, not the "oval" look being fixed,
-// and the app has no FABs to look out of place. Leaflet's own save-tiles control (not a
-// Material button) is matched to this by hand - see mapLeaflet.component.scss.
+// E-209 / ADR D-64 (2026-10-20, John: Q16-Q19 all "A"): ONE rule for every control's shape,
+// height and label - the rule itself is written at the top of styles/_patterns.scss; the values
+// are the --rt-control-* tokens in styles/_tokens.scss (8 px corner, 32 px high, 44 px on a
+// touch screen). Material's own per-component override mixins are the way to apply it, not
+// hand-rolled .mat-mdc-* CSS: buttons (the 2026-09-28 "less oval" call, until now a flat 8px
+// here), button-toggle groups (were M3's full pill, then sized per page on the Map) and chips.
+// Label type is Material's label-large (14px medium) already; the three mixins keep it.
+// Icon buttons and FABs are untouched: a round icon button is the control's shape, not a
+// corner choice. Leaflet's save-tiles control and the other hand-rolled buttons read the same
+// tokens in their own stylesheets.
 :root {
   @include mat.button-overrides((
-    filled-container-shape: 8px,
-    outlined-container-shape: 8px,
-    protected-container-shape: 8px,
-    text-container-shape: 8px,
-    tonal-container-shape: 8px,
+    filled-container-shape: var(--rt-control-radius),
+    outlined-container-shape: var(--rt-control-radius),
+    protected-container-shape: var(--rt-control-radius),
+    text-container-shape: var(--rt-control-radius),
+    tonal-container-shape: var(--rt-control-radius),
+    filled-container-height: var(--rt-control-height),
+    outlined-container-height: var(--rt-control-height),
+    protected-container-height: var(--rt-control-height),
+    text-container-height: var(--rt-control-height),
+    tonal-container-height: var(--rt-control-height),
+  ));
+  @include mat.button-toggle-overrides((
+    shape: var(--rt-control-radius),
+    height: var(--rt-control-height),
+    label-text-size: var(--mat-sys-label-large-size),
+    label-text-weight: var(--mat-sys-label-large-weight),
+  ));
+  @include mat.chips-overrides((
+    container-shape-radius: var(--rt-control-radius),
+    container-height: var(--rt-control-height),
+    label-text-size: var(--mat-sys-label-large-size),
+    label-text-weight: var(--mat-sys-label-large-weight),
   ));
 }
 

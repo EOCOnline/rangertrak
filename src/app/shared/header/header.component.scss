@@ -1,5 +1,6 @@
 @use "../../../styles/typography" as type;
 @use "../../../styles/breakpoints" as bp;
+@use "../../../styles/controls";
 
   // Flex Layout: https://tburleson-layouts-demos.firebaseapp.com/#/docs
 
@@ -51,7 +52,10 @@
   // overflowing; each piece still collapses to nothing when its own content is empty
   // (Angular interpolation), but now that emptiness reads as "a shorter pill", not as
   // debris floating in open space.
+  // E-209 / D-64: an 8 px box at button height (was a 999px pill), so it lines up with the
+  // AAR/214, Guide and Full view controls beside it. The navbar's round icons stay as they are.
   .status-cluster {
+    @include controls.control;
     position     : relative;
     display      : flex;
     align-items  : center;
@@ -59,7 +63,6 @@
     flex-wrap    : wrap;
     background   : var(--rt-surface);
     border       : 1px solid var(--rt-line);
-    border-radius: 999px;
     padding      : var(--rt-space-xs) var(--rt-gap);
     // E-83: the whole pill is a click target (reopens the Entry welcome panel) - the
     // readiness dot inside it is its own separate link and keeps its own pointer cursor.
@@ -212,15 +215,14 @@
     flex-wrap: wrap;
   }
   .rt-mode-choice {
+    @include controls.control;
     display      : inline-flex;
     align-items  : center;
     gap          : 0.2em;
-    padding      : 0.2em 0.55em;
+    padding      : 0 0.75em;
     border       : 1px solid var(--rt-line-strong);
-    border-radius: var(--rt-radius);
     background   : var(--rt-surface);
     color        : var(--rt-ink);
-    font         : inherit;
     cursor       : pointer;
 
     mat-icon { width: 18px; height: 18px; font-size: 18px; }

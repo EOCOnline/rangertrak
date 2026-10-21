@@ -1,0 +1,22 @@
+// ─────────────────────────────────────────────────────────────────────────────
+//  HAND-ROLLED CONTROLS  (E-209, ADR D-64)
+//
+//  Material's own buttons, toggle groups and chips get the control rule from the override
+//  mixins in styles.scss. A button that is NOT a Material component (a native <button>, a
+//  Leaflet control, a MapLibre control) takes the same rule from here: one radius, one
+//  height (44 px on a touch screen), Material's label-large text. The rule itself is written
+//  at the top of styles/_patterns.scss; the values are the --rt-control-* tokens.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Shape, size and text only. Colour, border and padding stay with the caller (a primary
+// action, an outline, a quiet button differ in colour, not in size).
+@mixin control {
+  box-sizing    : border-box;
+  min-height    : var(--rt-control-height);
+  border-radius : var(--rt-control-radius);
+  font-family   : var(--mat-sys-label-large-font, Roboto, sans-serif);
+  font-size     : var(--mat-sys-label-large-size, 0.875rem);
+  font-weight   : var(--mat-sys-label-large-weight, 500);
+  line-height   : var(--mat-sys-label-large-line-height, 1.25rem);
+  letter-spacing: var(--mat-sys-label-large-tracking, 0.00625rem);
+}

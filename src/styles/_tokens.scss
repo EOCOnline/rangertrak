@@ -163,6 +163,18 @@
   // 10 describes gloved hands outdoors - 44px is the floor for anything tappable.
   --rt-tap-min: 44px;
 
+  // ── Controls (E-209, ADR D-64) ─────────────────────────────────────
+  // One shape and one height for every rectangular control: buttons, toggle groups, chips,
+  // the header status cluster, hand-rolled buttons. The rule is written once at the top of
+  // styles/_patterns.scss; Material's own override mixins in styles.scss read these two.
+  // On a touch screen every control is at least --rt-tap-min (D-33 phone, gloved hands),
+  // so the height token is simply raised there and nothing else needs a touch rule.
+  --rt-control-radius: 8px;
+  --rt-control-height: 32px;
+  @media (pointer: coarse) {
+    --rt-control-height: var(--rt-tap-min);
+  }
+
   // ── Type scale (ADR D-39) ──────────────────────────────────────────
   // Five roles, small on purpose - same reasoning as the spacing tokens above. Applied
   // via the mixins in styles/_typography.scss rather than read directly by components.
