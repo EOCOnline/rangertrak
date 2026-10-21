@@ -72,7 +72,9 @@ $filledColor: var(--rt-surface-2);
   display    : flex;
   align-items: center;
   margin     : 0 0 0.5rem;
-  color      : var(--rt-ink-3);
+  // ink-2, not ink-3 (2026-10-20, PageSpeed a11y): ink-3 on the derived panel's surface-2
+  // ground measured 3.1:1 at 12px, under WCAG AA's 4.5:1. ink-2 clears it in every skin.
+  color      : var(--rt-ink-2);
   @include type.type-label;
 
   &::before,

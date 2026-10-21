@@ -260,10 +260,13 @@
          keyboard-first tab chain (same treatment the readonly derived inputs below already
          use) - a scribe tabbing through Entry to file a report must not have to tab past
          four copy buttons to reach When; it stays reachable by click, and by keyboard once
-         focused. Styled as plain text (see the .scss) so it reads as data, not a control. -->
+         focused. Styled as plain text (see the .scss) so it reads as data, not a control.
+         No aria-label on these rows (2026-10-20, PageSpeed a11y "label-content-name-mismatch"):
+         a label that starts "Copy ..." doesn't contain the visible text, so voice-control users
+         saying what they see couldn't hit the button. The name is now the visible text, and
+         the title still announces "Click to copy" as the description. -->
     <button type="button" class="rt-other-formats__row" tabindex="-1"
       (click)="copyCoordinate(row.system, row.value)"
-      [attr.aria-label]="'Copy ' + row.label + ' coordinates: ' + row.value"
       title="Click to copy"><span class="rt-other-formats__system">{{ row.label }}:</span>
       <span class="rt-other-formats__value">{{ row.value }}</span>
       @if (copiedSystem() === row.system) {
@@ -282,7 +285,6 @@
     <div class="enter__Where-Results" [class.enter__Where-Results--hidden]="!showDerived()">
       <button type="button" class="rt-other-formats__row" tabindex="-1"
         (click)="copyCoordinate('Address', derivedAddress())"
-        [attr.aria-label]="'Copy Address: ' + derivedAddress() + (!isOnline() ? ' (unavailable when offline)' : '')"
         title="Click to copy"><span class="rt-other-formats__system">Address:</span>
         @if (!isOnline()) {
         <span class="rt-other-formats__offline-tag">(offline)</span>
@@ -293,7 +295,6 @@
         }</button>
       <button type="button" class="rt-other-formats__row" tabindex="-1"
         (click)="copyCoordinate('+Code', derivedPCodes())"
-        [attr.aria-label]="'Copy +Code: ' + derivedPCodes()"
         title="Click to copy"><span class="rt-other-formats__system">+Code:</span>
         <span class="rt-other-formats__value" id="pCodes">{{ derivedPCodes() }}</span>
         @if (copiedSystem() === '+Code') {
@@ -304,7 +305,6 @@
            own comment), so this is unconditional now, same as Address/+Codes above it. -->
       <button type="button" class="rt-other-formats__row" tabindex="-1"
         (click)="copyCoordinate('Maidenhead', derivedMaidenhead())"
-        [attr.aria-label]="'Copy Maidenhead: ' + derivedMaidenhead()"
         title="Click to copy"><span class="rt-other-formats__system">Maidenhead:</span>
         <span class="rt-other-formats__value">{{ derivedMaidenhead() }}</span>
         @if (copiedSystem() === 'Maidenhead') {
