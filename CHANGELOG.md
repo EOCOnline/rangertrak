@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.72-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.71-alpha...v0.99.72-alpha) (2026-10-21)
+
+
+### Bug Fixes
+
+* **geocoding:** the CSP lets the optional Google lookup load; a bad key times out ([c0a9d11](https://github.com/SteadyEOC/RangerTrak/commit/c0a9d11a0ee23668f97a9d71b0ab75e581fcb562))
+
 ### [0.99.71-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.70-alpha...v0.99.71-alpha) (2026-10-21)
 
 
