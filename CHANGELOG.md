@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.67-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.66-alpha...v0.99.67-alpha) (2026-10-21)
+
+
+### Features
+
+* **coords:** one set of coordinate formats on Entry, Map and places (E-208) ([ddba545](https://github.com/SteadyEOC/RangerTrak/commit/ddba5458f8c64881870c8a2f3572d25237be0107))
+* **rangers:** compact Rangers grid on a phone (E-205) ([6f0266f](https://github.com/SteadyEOC/RangerTrak/commit/6f0266f7f2ce66c5b492db4c2a32d9087d32d1a7))
+* **rangers:** Replace roster warning names who will be removed ([f29c7dc](https://github.com/SteadyEOC/RangerTrak/commit/f29c7dcf9dc4077279984caa3f98cb3b2dfd48cf))
+* **summary:** traffic-by-team bars stacked by status (E-203) ([c80474c](https://github.com/SteadyEOC/RangerTrak/commit/c80474c90db78d1ce59c262db77c47dcf5fa285d))
+* **view:** Full view switch in the page header, replacing Show all options and the Mission View card ([c96178c](https://github.com/SteadyEOC/RangerTrak/commit/c96178cc7ebdea15c3245b37226c28856e74ee2c))
+
+
+### Bug Fixes
+
+* **rangers:** phone grid columns share the screen width (E-205) ([a5cbd50](https://github.com/SteadyEOC/RangerTrak/commit/a5cbd50e8b84ed14a322cf7edaaf3694b6516435))
+* **rangers:** Replace warning text builds correctly; fix summary spec title ([b214c2a](https://github.com/SteadyEOC/RangerTrak/commit/b214c2a831eb4f8877c1848ea13bee49bf74635a))
+* **view:** the Full view plum edge shows on cards ([3d012aa](https://github.com/SteadyEOC/RangerTrak/commit/3d012aa8ea302bb6382e8e11c4d409dda63bb7bb))
+
 ### [0.99.66-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.65-alpha...v0.99.66-alpha) (2026-10-20)
 
 
