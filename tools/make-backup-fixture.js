@@ -181,7 +181,7 @@ async function waitForDownload(dir) {
     //    800 ms after the last change, without reloading.
     await goto(b, '/mission')
     const named = await b.evaluate(`(() => {
-      const el = document.querySelector('input[placeholder="Mission #"]')
+      const el = document.querySelector('input[placeholder="e.g. 26-0142"]')
       if (!el) return false
       Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, ${JSON.stringify('FIXTURE-' + version)})
       el.dispatchEvent(new Event('input', { bubbles: true }))
