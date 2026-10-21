@@ -38,4 +38,13 @@ describe('RadioLogComponent', () => {
   it('defaults the Print 309 scope to "since the last print" (or all, if never printed)', () => {
     expect(component.printScope()).toBe('sincePrint');
   });
+
+  // 2026-10-21, John: newest entry at the top by default, sorted on the real time - the cell
+  // text "9-30 ..." would sort after "10-01 ..." as a string.
+  it('sorts Reported newest first by default, by time rather than by its text', () => {
+    const reported = (component.columnDefs as any[]).find(c => c.headerName === 'Reported');
+    expect(reported.sort).toBe('desc');
+    const node = (iso: string) => ({ data: { date: new Date(iso) } });
+    expect(reported.comparator(null, null, node('2026-09-30T17:16:05'), node('2026-10-01T08:00:00'))).toBeLessThan(0);
+  });
 });
