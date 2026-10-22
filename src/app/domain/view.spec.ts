@@ -6,7 +6,7 @@ describe('Simple view and Full view (E-207, D-62)', () => {
     statusesCustomised: false, locationCategoriesCustomised: false, locationCount: 0,
     mapSettingsCustomised: false, recipientsCustomised: false, tacticalCallCount: 0, boardInUse: false,
     attachmentCount: 0, encryptionOn: false, fieldMode: false, debugMode: false,
-    ics213EntryCount: 0, nonDefaultSourceCount: 0, toStationCount: 0, evidenceLocationCount: 0, layerCount: 0,
+    nonDefaultSourceCount: 0, toStationCount: 0, evidenceLocationCount: 0, layerCount: 0,
     mapEngineIsAlternative: false, mapExtraLayersOn: false,
     setupFileAsked: false, activityLineCount: 0,
   }
@@ -46,8 +46,6 @@ describe('Simple view and Full view (E-207, D-62)', () => {
       { id: 'source', ctx: { nonDefaultSourceCount: 1 } },
       { id: 'evidence-location', ctx: { evidenceLocationCount: 1 } },
       { id: 'attachments', ctx: { attachmentCount: 3 } },
-      { id: 'ics213', ctx: { ics213EntryCount: 1 } },
-      { id: 'ics213', ctx: { recipientsCustomised: true } },
       { id: 'places-import', ctx: { locationCount: 4 } },
       { id: 'maplibre', ctx: { mapEngineIsAlternative: true } },
       { id: 'map-layers-extra', ctx: { mapExtraLayersOn: true } },

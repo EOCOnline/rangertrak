@@ -453,8 +453,9 @@
            named as the 213's initial-version requirement, not a full ICS-213 form - see the
            field's own doc comment in radio-log-entry.interface.ts for the "not confirmed
            against the real form" caveat this carries forward. -->
-      @if (view.isShown('ics213', entryHere())) {
-      <div class="enter__213" [rtAdvanced]="'ics213'">
+      <!-- Core, not a Full view option (John, 2026-10-22): the checkbox shows in both views and
+           carries no Advanced marker; the 213 fields below still open only when it is ticked. -->
+      <div class="enter__213">
         <!-- Material-M3 pass: manual WritableSignal binding, not [formField] - same
              angular/components#32072 reasoning as Source above (entryForm.generates213 is a
              genuine Signal Forms field; mat-checkbox is a Material CVA component). -->
@@ -554,7 +555,6 @@
           </mat-checkbox>
         </div>
       </div>
-      }
     </div>
 
     <!-- ======================================= -->

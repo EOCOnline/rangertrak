@@ -410,7 +410,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** E-207: the advanced controls on this page (Simple view hides them while unused); also what shows the header Full view switch. The coordinate
    *  format picker lives in LocationComponent. */
-  protected readonly advancedIds = ['stations', 'source', 'attachments', 'ics213', 'evidence-location', 'coord-format'] as const
+  protected readonly advancedIds = ['stations', 'source', 'attachments', 'evidence-location', 'coord-format'] as const
 
   /**
    * E-207 / D-62 item 3: what THIS form already holds, so Simple view never hides a control the
@@ -423,8 +423,6 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
       nonDefaultSourceCount: f.source().value() === 'Voice' ? 0 : 1,
       attachmentCount: this.pendingFiles().length,
       evidenceLocationCount: this.showEvidenceLocation() ? 1 : 0,
-      ics213EntryCount: f.generates213().value() || f.replyRequested213().value() || !!f.message213().value().trim()
-        || !!f.recipients213().value().trim() || !!f.subject213().value().trim() ? 1 : 0,
     }
   }
   readonly attachReason = this.attachmentStore.unavailableReason()

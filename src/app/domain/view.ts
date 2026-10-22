@@ -42,8 +42,6 @@ export type ViewContext = {
   fieldMode: boolean,
   /** Debug mode is on. */
   debugMode: boolean,
-  /** Radio log entries with an ICS-213 (generated, addressed or with a message). */
-  ics213EntryCount: number,
   /** Radio log entries whose source is not the default. */
   nonDefaultSourceCount: number,
   /** Radio log entries with a To station. */
@@ -93,7 +91,6 @@ export const ADVANCED_FEATURES: ReadonlyArray<AdvancedFeature> = [
   { id: 'source', label: 'Source', isInUse: ctx => ctx.nonDefaultSourceCount > 0 },
   { id: 'coord-format', label: 'Coordinate format picker', isInUse: never },
   { id: 'attachments', label: 'Attachments', isInUse: ctx => ctx.attachmentCount > 0 },
-  { id: 'ics213', label: 'ICS-213 message fields', isInUse: ctx => ctx.ics213EntryCount > 0 || ctx.recipientsCustomised },
   { id: 'evidence-location', label: 'Evidence location', isInUse: ctx => ctx.evidenceLocationCount > 0 },
   // Map
   { id: 'maplibre', label: 'Alternative map', isInUse: ctx => ctx.mapEngineIsAlternative },
