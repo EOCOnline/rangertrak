@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RangerTrak Board</title>
+<!-- Same files as the app's own icons: the Board server serves the built app's root, so these
+     load from the scribe's laptop with no Internet. -->
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
 <!--
   E-87 Stage 1 (2026-08-31). Deliberately a hand-written static page, NOT an Angular route -
   see `E-87 Command Post Server.md` §2.3/§5 for why: this is served from a LAN IP, a THIRD
@@ -49,7 +53,8 @@
     padding-bottom: 0.75rem;
     border-bottom: 2px solid var(--line);
   }
-  h1 { font-size: 1.3rem; margin: 0; }
+  h1 { font-size: 1.3rem; margin: 0; display: flex; align-items: center; gap: 0.45rem; align-self: center; }
+  h1 img { width: 1.8rem; height: 1.8rem; flex: none; }
   .meta { color: var(--ink-2); font-size: 0.9rem; }
   .badge {
     display: inline-block;
@@ -103,6 +108,21 @@
     border-bottom: 2px solid var(--line);
     white-space: nowrap;
   }
+  /* Each header is a button, so sorting works from the keyboard; aria-sort on the <th> says which. */
+  th button {
+    border: none; background: none; padding: 0; color: inherit; font: inherit; font-weight: 700; cursor: pointer;
+  }
+  th button::after { content: ''; display: inline-block; width: 1em; color: var(--accent); }
+  th[aria-sort="ascending"] button::after { content: ' ▲'; }
+  th[aria-sort="descending"] button::after { content: ' ▼'; }
+  th[aria-sort="ascending"] button, th[aria-sort="descending"] button { color: var(--accent); }
+  .mark-btn {
+    border: none; background: none; padding: 0 0.2rem; cursor: pointer;
+    font-size: 1.2rem; line-height: 1; color: var(--ink-2);
+  }
+  .mark-btn[aria-pressed="true"] { color: light-dark(#b07800, #f2c94c); }
+  tbody tr.marked { background: light-dark(#fff8e1, #2e2a1a); }
+  tbody tr.marked td:first-child { box-shadow: inset 4px 0 0 light-dark(#e0a800, #f2c94c); }
   tbody td {
     padding: 0.5rem 0.6rem;
     border-bottom: 1px solid var(--line);
@@ -163,7 +183,7 @@
 <body>
 
 <header>
-  <h1>RangerTrak Board</h1>
+  <h1><img src="/assets/icons/rangertrak-mark.svg" alt="" width="29" height="29">RangerTrak Board</h1>
   <span id="missionMeta" class="meta">No log yet</span>
   <span id="statusBadge" class="badge badge--none">no data yet</span>
   <button id="themeToggle" type="button" title="Colours: follow this device, light, or dark">◐ Auto</button>
@@ -180,20 +200,21 @@
 
 <div class="controls">
   <input id="filterInput" type="search" placeholder="Filter by callsign, status, or message…" autocomplete="off">
-  <button id="sortToggle" type="button" aria-pressed="true">Newest first</button>
+  <button id="markedOnly" type="button" aria-pressed="false" title="Show only the reports marked with ★ on this device">★ Marked only</button>
 </div>
 
 <div class="table-scroll">
   <table>
-    <caption>Read-only. Filter and sort here affect only this screen - every viewer has its own independent view of the same log.</caption>
+    <caption>Read-only. Tap a heading to sort; tap ☆ to mark a report to come back to. Filter, sort and marks affect only this screen, and marks are kept on this device only - the scribe and other viewers never see them.</caption>
     <thead>
       <tr>
-        <th>Time</th>
-        <th>Callsign</th>
-        <th>Status</th>
-        <th>Source</th>
-        <th>Message</th>
-        <th>Files</th>
+        <th aria-sort="none"><button type="button" data-sort="mark" aria-label="Marked">★</button></th>
+        <th aria-sort="descending"><button type="button" data-sort="time">Time</button></th>
+        <th aria-sort="none"><button type="button" data-sort="callsign">Callsign</button></th>
+        <th aria-sort="none"><button type="button" data-sort="status">Status</button></th>
+        <th aria-sort="none"><button type="button" data-sort="source">Source</button></th>
+        <th aria-sort="none"><button type="button" data-sort="notes">Message</button></th>
+        <th aria-sort="none"><button type="button" data-sort="files">Files</button></th>
       </tr>
     </thead>
     <tbody id="rows"></tbody>
@@ -221,7 +242,9 @@
   var POLL_MS = 15000;
   var FETCH_POLL_MS = 2000;
   var FETCH_GIVE_UP_MS = 2 * 60 * 1000;
-  var newestFirst = true;
+  var sortKey = 'time';
+  var sortDir = -1; // -1 descending (newest first for Time), 1 ascending
+  var markedOnly = false;
   var filterText = '';
   var latest = null;
   var password = '';
@@ -237,7 +260,8 @@
   var pwInput = document.getElementById('pwInput');
   var pwNote = document.getElementById('pwNote');
   var filterEl = document.getElementById('filterInput');
-  var sortBtn = document.getElementById('sortToggle');
+  var markedOnlyBtn = document.getElementById('markedOnly');
+  var headRow = document.querySelector('thead tr');
   var themeBtn = document.getElementById('themeToggle');
 
   // ---- light / dark (John, 2026-10-21) ----
@@ -307,10 +331,78 @@
     render();
   });
 
-  sortBtn.addEventListener('click', function () {
-    newestFirst = !newestFirst;
-    sortBtn.textContent = newestFirst ? 'Newest first' : 'Oldest first';
-    sortBtn.setAttribute('aria-pressed', String(newestFirst));
+  // ---- sorting (John, 2026-10-22) ----
+  // A heading sorts by its column; the same heading again reverses it. Time, Files and ★ start
+  // descending (newest, most, marked first), the text columns A-Z. Ties fall back to newest first.
+  headRow.addEventListener('click', function (ev) {
+    var btn = ev.target && ev.target.closest ? ev.target.closest('button[data-sort]') : null;
+    if (!btn) { return; }
+    var key = btn.getAttribute('data-sort');
+    if (key === sortKey) { sortDir = -sortDir; }
+    else { sortKey = key; sortDir = (key === 'time' || key === 'files' || key === 'mark') ? -1 : 1; }
+    var ths = headRow.querySelectorAll('th');
+    for (var i = 0; i < ths.length; i++) {
+      var k = ths[i].querySelector('button').getAttribute('data-sort');
+      ths[i].setAttribute('aria-sort', k !== sortKey ? 'none' : sortDir < 0 ? 'descending' : 'ascending');
+    }
+    render();
+  });
+
+  function fileCount(r) {
+    return Array.isArray(r.attachments) ? r.attachments.length : (r.attachmentCount || 0);
+  }
+
+  function sortValue(r) {
+    switch (sortKey) {
+      case 'mark': return isMarked(r) ? 1 : 0;
+      case 'files': return fileCount(r);
+      case 'callsign': return station(r.tacticalCall, r.callsign).toLowerCase();
+      case 'status': return (r.status || '').toLowerCase();
+      case 'source': return (r.source || '').toLowerCase();
+      case 'notes': return (r.notes || '').toLowerCase();
+      default: return new Date(r.date).getTime() || 0;
+    }
+  }
+
+  function compareReports(a, b) {
+    var va = sortValue(a), vb = sortValue(b);
+    var d = typeof va === 'string' ? va.localeCompare(vb) : va - vb;
+    if (d) { return d * sortDir; }
+    return (new Date(b.date) - new Date(a.date)) || 0;
+  }
+
+  // ---- marks (John, 2026-10-22) ----
+  // A viewer's own reminder to come back to a report. Kept in this device's localStorage, so it
+  // survives a refresh but is per device AND per address (the .local name and the IP are
+  // different origins, so each has its own marks). Never sent to the scribe: this page stays
+  // read-only. Keyed on id + time because ids restart with each mission's log.
+  var MARKS_KEY = 'boardMarks';
+  var MAX_MARKS = 500;
+  var marks = {};
+  try { marks = JSON.parse(localStorage.getItem(MARKS_KEY) || '{}') || {}; } catch (e) { marks = {}; }
+  if (typeof marks !== 'object' || Array.isArray(marks)) { marks = {}; }
+
+  function markKey(r) { return String(r.id) + '@' + String(r.date); }
+  function isMarked(r) { return Object.prototype.hasOwnProperty.call(marks, markKey(r)); }
+
+  function toggleMark(key) {
+    if (Object.prototype.hasOwnProperty.call(marks, key)) { delete marks[key]; }
+    else {
+      marks[key] = Date.now();
+      // Oldest marks go first once there are too many, so storage cannot grow without limit.
+      var keys = Object.keys(marks);
+      if (keys.length > MAX_MARKS) {
+        keys.sort(function (a, b) { return marks[a] - marks[b]; });
+        keys.slice(0, keys.length - MAX_MARKS).forEach(function (k) { delete marks[k]; });
+      }
+    }
+    try { localStorage.setItem(MARKS_KEY, JSON.stringify(marks)); } catch (e) { /* kept for this visit only */ }
+    render();
+  }
+
+  markedOnlyBtn.addEventListener('click', function () {
+    markedOnly = !markedOnly;
+    markedOnlyBtn.setAttribute('aria-pressed', String(markedOnly));
     render();
   });
 
@@ -407,6 +499,7 @@
     var t = ev.target;
     var btn = t && t.closest ? t.closest('button') : null;
     if (!btn) { return; }
+    if (btn.hasAttribute('data-mark')) { toggleMark(btn.getAttribute('data-mark')); return; }
     if (btn.hasAttribute('data-more')) { expanded[btn.getAttribute('data-more')] = true; render(); return; }
     var sha = btn.getAttribute('data-sha');
     var a = sha && findAttachment(sha);
@@ -425,6 +518,9 @@
       + (latest.opPeriod ? ' — ' + latest.opPeriod : '');
 
     var reports = (latest.reports || []).slice();
+    var markedCount = reports.filter(isMarked).length;
+    markedOnlyBtn.textContent = '★ Marked only' + (markedCount ? ' (' + markedCount + ')' : '');
+    if (markedOnly) { reports = reports.filter(isMarked); }
     if (filterText) {
       reports = reports.filter(function (r) {
         return (r.callsign || '').toLowerCase().indexOf(filterText) !== -1
@@ -433,21 +529,22 @@
           || (r.notes || '').toLowerCase().indexOf(filterText) !== -1;
       });
     }
-    reports.sort(function (a, b) {
-      var d = new Date(a.date) - new Date(b.date);
-      return newestFirst ? -d : d;
-    });
+    reports.sort(compareReports);
 
     if (!reports.length) {
       rowsEl.innerHTML = '';
       emptyEl.hidden = false;
-      emptyEl.textContent = filterText ? 'No reports match that filter.' : 'No reports yet this mission.';
+      emptyEl.textContent = filterText ? 'No reports match that filter.'
+        : markedOnly ? 'No marked reports. Tap ☆ on a row to mark it.' : 'No reports yet this mission.';
       return;
     }
     emptyEl.hidden = true;
 
     rowsEl.innerHTML = reports.map(function (r) {
-      return '<tr>'
+      var marked = isMarked(r);
+      return '<tr' + (marked ? ' class="marked"' : '') + '>'
+        + '<td><button type="button" class="mark-btn" data-mark="' + escAttr(markKey(r)) + '" aria-pressed="' + marked
+        + '" aria-label="' + (marked ? 'Marked. Tap to unmark' : 'Mark this report') + '">' + (marked ? '★' : '☆') + '</button></td>'
         + '<td class="time">' + esc(fmtTime(r.date)) + '</td>'
         + '<td class="callsign">' + esc(station(r.tacticalCall, r.callsign) || '(not given)')
         + (station(r.toTactical, r.toCallsign) ? ' &rarr; ' + esc(station(r.toTactical, r.toCallsign)) : '') + '</td>'
