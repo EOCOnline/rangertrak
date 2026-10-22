@@ -1,7 +1,9 @@
-import { Injectable, computed, signal } from '@angular/core'
+import { Injectable, computed, inject, signal } from '@angular/core'
 
 import { wantedPmtilesUrls } from '../mapping/demo-map'
 import { CustomPmtilesService } from './custom-pmtiles.service'
+import { MapEngineService } from '../../map/map-engine.service'
+import { ViewService } from './view.service'
 import { LogService, RangerService, MissionService, StoragePersistenceService } from './'
 
 export type ReadinessLevel = 'red' | 'amber' | 'green'
@@ -28,6 +30,11 @@ export type ReadinessLevel = 'red' | 'amber' | 'green'
  *   the operating period has expired, or any of the three offline-prep signals is missing.
  *   The app works fine online; a real network loss would expose the gap.
  * - **green** - all six signals pass. Prepared for the worst case (total network loss).
+ *
+ * The "Alternative map warmed" signal counts only where the alternative map is offered:
+ * Simple view hides MapLibre unless it is the engine in use, so there the signal is left out
+ * of the level and of the readiness lists (`mapWarmedCounts`), instead of pointing at a
+ * switch the person cannot see.
  */
 @Injectable({ providedIn: 'root' })
 export class MissionReadinessService {
@@ -40,6 +47,13 @@ export class MissionReadinessService {
   readonly bundledMapWarmed = signal(false)
   readonly storagePersisted = signal(false)
 
+  private readonly view = inject(ViewService)
+  private readonly mapEngine = inject(MapEngineService)
+
+  /** False in Simple view unless MapLibre is the engine in use (see the class comment). */
+  readonly mapWarmedCounts = computed(() =>
+    this.view.isShown('maplibre', { mapEngineIsAlternative: this.mapEngine.engine() === 'maplibre' }))
+
   readonly level = computed<ReadinessLevel>(() => {
     if (!this.missionNamed() || !this.rosterLoaded()) {
       return 'red'
@@ -47,7 +61,7 @@ export class MissionReadinessService {
     if (
       !this.opPeriodCurrent() ||
       !this.offlineTilesSaved() ||
-      !this.bundledMapWarmed() ||
+      (this.mapWarmedCounts() && !this.bundledMapWarmed()) ||
       !this.storagePersisted()
     ) {
       return 'amber'

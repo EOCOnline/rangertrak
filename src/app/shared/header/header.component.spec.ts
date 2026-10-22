@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
 import { HeaderComponent } from './header.component';
+import { ViewService } from '../services/view.service';
 import { MissionType } from '../services';
 import { Utility } from '../';
 
@@ -33,6 +34,12 @@ describe('HeaderComponent', () => {
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  // The readiness tests below switch the view, which ViewService stores; put it back.
+  afterEach(() => {
+    localStorage.removeItem('rt-view');
+    localStorage.removeItem('rt-view-source');
   });
 
   it('should create', () => {
@@ -68,7 +75,8 @@ describe('HeaderComponent', () => {
   // `items` getter, since its per-row hover tooltip merged into this component's
   // `.rt-mission-info-panel` - see that component's own updated spec/comment for why.
   describe('readinessItems() (ported from MissionReadinessComponent)', () => {
-    it('has six items, each linking to the specific page+section that fixes it', () => {
+    it('has six items in Full view, each linking to the specific page+section that fixes it', () => {
+      TestBed.inject(ViewService).setView('full');
       const items = component.readinessItems();
       expect(items.length).toBe(6);
 
@@ -94,6 +102,13 @@ describe('HeaderComponent', () => {
       expect(mission?.fragment).toBe('readiness-mission-details');
       expect(opPeriod?.route).toBe('/mission');
       expect(opPeriod?.fragment).toBe('readiness-mission-details');
+    });
+
+    it('drops the alternative-map row in Simple view, which hides that map', () => {
+      TestBed.inject(ViewService).setView('simple');
+      const items = component.readinessItems();
+      expect(items.length).toBe(5);
+      expect(items.some(i => i.label.includes('Alternative map warmed'))).toBeFalse();
     });
   });
 

@@ -76,9 +76,11 @@ export class MissionReadinessComponent implements OnInit {
       line(r.rosterLoaded(), 'Real roster loaded'),
       line(r.opPeriodCurrent(), 'Operating period current'),
       line(r.offlineTilesSaved(), 'Offline map tiles saved (Leaflet)'),
-      line(r.bundledMapWarmed(), this.offlineBasemap.downloadProgress() === null
-        ? 'Alternative map warmed (MapLibre)'
-        : `Downloading offline world map… ${this.offlineBasemap.downloadProgress()}%`),
+      ...(r.mapWarmedCounts()
+        ? [line(r.bundledMapWarmed(), this.offlineBasemap.downloadProgress() === null
+          ? 'Alternative map warmed (MapLibre)'
+          : `Downloading offline world map… ${this.offlineBasemap.downloadProgress()}%`)]
+        : []),
       line(r.storagePersisted(), 'Storage protected from eviction'),
     ].join('\n')
   }

@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 
 import { MissionReadinessComponent } from './mission-readiness.component';
 import { MissionReadinessService } from '../services';
+import { ViewService } from '../services/view.service';
 
 describe('MissionReadinessComponent', () => {
   let component: MissionReadinessComponent;
@@ -22,6 +23,12 @@ describe('MissionReadinessComponent', () => {
     fixture.detectChanges();
   });
 
+  // The readiness tests below switch the view, which ViewService stores; put it back.
+  afterEach(() => {
+    localStorage.removeItem('rt-view');
+    localStorage.removeItem('rt-view-source');
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -37,6 +44,7 @@ describe('MissionReadinessComponent', () => {
   });
 
   it('the tooltip text names all six signals, never reading as a permission gate', () => {
+    TestBed.inject(ViewService).setView('full');
     expect(component.tooltip).toContain('Mission named');
     expect(component.tooltip).toContain('Real roster loaded');
     expect(component.tooltip).toContain('Operating period current');

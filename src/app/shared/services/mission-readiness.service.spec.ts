@@ -2,6 +2,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 
 import { MissionReadinessService } from './mission-readiness.service';
+import { ViewService } from './view.service';
+import { MapEngineService } from '../../map/map-engine.service';
 // E-122 Phase 2a: this service's constructor transitively constructs RangerService et al.,
 // whose keys now live behind RecordStore rather than localStorage - reset for isolation, same
 // as those services' own specs. This suite overrides every signal directly, so the roster
@@ -70,8 +72,26 @@ describe('MissionReadinessService', () => {
   });
 
   it('is amber when basic setup is done but the bundled map was never warmed', () => {
+    TestBed.inject(ViewService).setView('full');
     setAll(true);
     service.bundledMapWarmed.set(false);
+    expect(service.level()).toBe('amber');
+  });
+
+  it('leaves the bundled map out in Simple view, where the alternative map is hidden', () => {
+    TestBed.inject(ViewService).setView('simple');
+    setAll(true);
+    service.bundledMapWarmed.set(false);
+    expect(service.mapWarmedCounts()).toBeFalse();
+    expect(service.level()).toBe('green');
+  });
+
+  it('counts the bundled map in Simple view once MapLibre is the engine in use', () => {
+    TestBed.inject(ViewService).setView('simple');
+    TestBed.inject(MapEngineService).setEngine('maplibre');
+    setAll(true);
+    service.bundledMapWarmed.set(false);
+    expect(service.mapWarmedCounts()).toBeTrue();
     expect(service.level()).toBe('amber');
   });
 

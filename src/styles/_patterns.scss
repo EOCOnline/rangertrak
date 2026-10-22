@@ -313,16 +313,28 @@
     max-height: min(28rem, 60vh);
     overflow  : auto;
 
-    // The fade is a 1.5rem strip after the last row, stuck to the bottom edge of the box: it sits
-    // over the cut-off rows while there are more, and over blank space at the end.
+    // The fade is a 1.5rem strip stuck to the bottom edge of the box. Its negative top margin lays
+    // it over the last rows rather than adding blank space after them. It shows only while the
+    // list scrolls and is not yet at the end: a scroll-driven animation fades it in, and a list
+    // that does not scroll has no active timeline, so it keeps the hidden base. Where
+    // animation-timeline is unsupported (Firefox) there is no fade; cut-off rows still show.
     &::after {
       content       : '';
       display       : block;
       position      : sticky;
       bottom        : 0;
       height        : 1.5rem;
+      margin-top    : -1.5rem;
+      opacity       : 0;
       background    : linear-gradient(transparent, var(--mat-card-outlined-container-color, var(--rt-surface)));
       pointer-events: none;
+    }
+
+    @supports (animation-timeline: scroll()) {
+      &::after {
+        animation         : rt-card-scroll-fade linear both;
+        animation-timeline: scroll(nearest block);
+      }
     }
 
     thead th,
@@ -333,6 +345,11 @@
       background: var(--mat-card-outlined-container-color, var(--rt-surface));
     }
   }
+}
+
+@keyframes rt-card-scroll-fade {
+  0%, 92% { opacity: 1; }
+  100%    { opacity: 0; }
 }
 
 // ── Field layout ─────────────────────────────────────────────────────────────

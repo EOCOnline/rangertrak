@@ -301,7 +301,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
       { ok: r.rosterLoaded(), label: 'Real roster loaded', route: '/rangers', fragment: 'rangersgrid' },
       { ok: r.opPeriodCurrent(), label: 'Operating period current', route: '/mission', fragment: 'readiness-mission-details' },
       { ok: r.offlineTilesSaved(), label: 'Offline map tiles saved (Leaflet)', route: '/map', fragment: 'readiness-offline-tiles' },
-      { ok: r.bundledMapWarmed(), label: this.mapWarmedLabel(), route: '/map', fragment: 'readiness-map-engine-switch' },
+      ...(r.mapWarmedCounts()
+        ? [{ ok: r.bundledMapWarmed(), label: this.mapWarmedLabel(), route: '/map', fragment: 'readiness-map-engine-switch' }]
+        : []),
       { ok: r.storagePersisted(), label: 'Storage protected from eviction', route: '/mission', fragment: 'readiness-storage-protection' },
     ]
   }
