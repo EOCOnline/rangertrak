@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.78-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.77-alpha...v0.99.78-alpha) (2026-10-22)
+
+
+### Features
+
+* **board:** sort by any column, mark rows to come back to, show the logo ([37657a1](https://github.com/SteadyEOC/RangerTrak/commit/37657a1f96281bc3d00299761788a79b26ab91c6))
+
+
+### Bug Fixes
+
+* **entry:** ICS-213 checkbox is core, no Full view marker ([bc09a51](https://github.com/SteadyEOC/RangerTrak/commit/bc09a5118d378cd802c35523eb43f9d60032919c))
+
 ### [0.99.77-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.76-alpha...v0.99.77-alpha) (2026-10-22)
 
 
