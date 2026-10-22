@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.77-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.76-alpha...v0.99.77-alpha) (2026-10-22)
+
+
+### Bug Fixes
+
+* card-list fade without the blank strip; readiness map row only where offered ([a58f48b](https://github.com/SteadyEOC/RangerTrak/commit/a58f48b12f07029e4c37837ee11d3659e2e3ce06))
+* small pre-beta cleanups from the handoff ([6490a37](https://github.com/SteadyEOC/RangerTrak/commit/6490a375f6f3017b6501cae91792b45e04c4698f))
+
 ### [0.99.76-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.75-alpha...v0.99.76-alpha) (2026-10-21)
 
 
