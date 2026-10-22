@@ -159,13 +159,15 @@ body {
 
 // E-209: at 14px the five coordinate formats (DD ... UTM) no longer fit 360px, which the old
 // per-page 12px text hid. Narrow screens take a little side padding off each toggle, and any
-// group still too wide wraps instead of running off the screen.
+// group still too wide wraps instead of running off the screen. The padding rule names the group
+// too: Material's own `.mat-button-toggle-appearance-standard .mat-button-toggle-label-content`
+// (12px) has the same specificity and is injected after this sheet, so it won without it.
 .mat-button-toggle-group {
   flex-wrap: wrap;
   max-width: 100%;
 }
 @media (max-width: 480px) {
-  .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  .mat-button-toggle-group .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
     padding: 0 8px;
   }
 }

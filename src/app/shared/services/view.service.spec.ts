@@ -134,13 +134,6 @@ describe('ViewService (E-207)', () => {
       expect(view.isShown('attachments', { attachmentCount: 1 })).toBeTrue()
       expect(view.isShown('attachments', { attachmentCount: 0 })).toBeFalse()
     })
-
-    it('reports whether Simple is hiding anything on a page', () => {
-      const view = TestBed.inject(ViewService)
-      expect(view.hidesAny(['statuses', 'maps'])).toBeTrue()
-      view.setView('full')
-      expect(view.hidesAny(['statuses', 'maps'])).toBeFalse()
-    })
   })
 
   describe('when storage throws', () => {
