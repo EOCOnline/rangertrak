@@ -291,6 +291,12 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     this.numAllRows.set(this.radioLog.numReport)
     this.zoomDisplay.set(this.settings.maplibre.defZoom)
     this.mouseLatLng.set({ lat: this.settings.defLat, lng: this.settings.defLng })
+    this.armPlacingFromLink()
+  }
+
+  /** `/map?place=location` (Mission > Locations > Add on the map) arms the next click, same as the Add Location button. */
+  private armPlacingFromLink(): void {
+    if (new URLSearchParams(window.location.search).get('place') === 'location') this.placingLocation.set(true)
   }
 
   ngAfterViewInit(): void {

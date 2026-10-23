@@ -309,6 +309,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   // Initialize data or fetch external data from services or API (https://geeksarray.com/blog/angular-component-lifecycle)
   override ngOnInit() {
     super.ngOnInit()
+    // `/map?place=location` (Mission > Locations > Add on the map) arms the next click, same as the Add Location button.
+    if (new URLSearchParams(window.location.search).get('place') === 'location') this.placingLocation.set(true)
 
     // #81 finding (real, open - see the roadmap list): this used to be blamed for a
     // "mapLeaflet:1 Uncaught (in promise) {message: 'A listener indicated an asynchronous

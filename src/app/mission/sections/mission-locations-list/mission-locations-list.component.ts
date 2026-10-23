@@ -6,6 +6,8 @@ import { MatDialog } from '@angular/material/dialog'
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
 
 import { MatButtonModule } from '@angular/material/button'
+import { MatIconModule } from '@angular/material/icon'
+import { RouterLink } from '@angular/router'
 import { MatCardModule } from '@angular/material/card'
 import { LocationDialogComponent } from '../../../map/location-dialog/location-dialog.component'
 import { locationMarkerSvg, resolveLocationIcon } from '../../../shared/mapping/location-marker'
@@ -29,7 +31,7 @@ import { AdvancedDirective } from '../../../shared/view/advanced.directive'
 @Component({
   selector: 'rangertrak-mission-locations-list',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatCardModule, AdvancedDirective],
+  imports: [CommonModule, RouterLink, MatButtonModule, MatIconModule, MatCardModule, AdvancedDirective],
   templateUrl: './mission-locations-list.component.html',
   styleUrls: ['./mission-locations-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,

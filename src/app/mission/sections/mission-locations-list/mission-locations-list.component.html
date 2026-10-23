@@ -14,6 +14,13 @@
     <p class="rt-locations-list__empty">
       No Locations placed yet - use the Add Location button on the Map page to place one.
     </p>
+    <!-- Locations need a map click, so this opens the map with placing already armed. -->
+    <p>
+      <a matButton="outlined" routerLink="/map" [queryParams]="{ place: 'location' }" data-testid="locations-add-on-map">
+        <mat-icon>add_location</mat-icon>
+        Add on the map
+      </a>
+    </p>
     } @else {
     <!-- E-210 rule 6: a long list scrolls inside the card (screen, tablet and wider), so the card
          does not stretch its neighbours. A keyboard stop, named after the card. -->
@@ -48,6 +55,13 @@
       </tbody>
     </table>
     </div>
+    <!-- Locations need a map click, so this opens the map with placing already armed. -->
+    <p>
+      <a matButton="outlined" routerLink="/map" [queryParams]="{ place: 'location' }" data-testid="locations-add-on-map">
+        <mat-icon>add_location</mat-icon>
+        Add on the map
+      </a>
+    </p>
     }
   </mat-card-content>
 </mat-card>
