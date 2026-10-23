@@ -282,6 +282,22 @@ describe('entry-merge (D-59)', () => {
       expect(older.unchanged).toBe(1);
     });
 
+    it('a mark cleared after it was set stays cleared, and a later mark beats an older clear', () => {
+      const early = new Date('2026-10-15T11:00:00Z');
+      const late = new Date('2026-10-15T12:00:00Z');
+      const cleared = mergeEntries(
+        [entry({ uid: 'h1', handledClearedAt: late })],
+        [entry({ uid: 'h1', handled: { mark: 'handled', at: early } })], { nextId: 1 });
+      expect(cleared.entries[0].handled).toBeUndefined();
+      expect(cleared.unchanged).toBe(1);
+
+      const remarked = mergeEntries(
+        [entry({ uid: 'h1', handledClearedAt: early })],
+        [entry({ uid: 'h1', handled: { mark: 'passed', at: late } })], { nextId: 1 });
+      expect(remarked.entries[0].handled).toEqual({ mark: 'passed', at: late });
+      expect(remarked.updated).toBe(1);
+    });
+
     it("restores a mark's time from a file", () => {
       const incoming = JSON.parse(JSON.stringify([entry({ uid: 'n1', handled: { mark: 'passed', at: new Date('2026-10-15T12:00:00Z') } })]));
       const r = mergeEntries([], incoming, { nextId: 0 });

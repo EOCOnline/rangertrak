@@ -527,7 +527,10 @@ export class RadioLogService {
   public cycleHandledMark(entry: RadioLogEntryType): void {
     const mark = nextHandledMark(entry.handled?.mark)
     if (mark) entry.handled = { mark, at: new Date() }
-    else delete entry.handled
+    else {
+      delete entry.handled
+      entry.handledClearedAt = new Date()
+    }
     this.saveEditedRadioLog()
   }
 

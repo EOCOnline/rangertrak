@@ -243,9 +243,11 @@ export type RadioLogEntryType = {
   msgNo?: MsgNo,
   /**
    * E-218: the status mark (handled, passed on, needs action) set from the grid or the Messages page;
-   * absent when unset. On a merge the later `at` wins. Not journalled (D-67).
+   * absent when unset. On a merge the later change wins, a clear included. Not journalled (D-67).
    */
   handled?: { mark: HandledMark, at: Date },
+  /** E-218: when the mark was last cleared, so a merge can't bring back a mark cleared after it was set. */
+  handledClearedAt?: Date,
 }
 
 /**

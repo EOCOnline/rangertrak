@@ -105,9 +105,13 @@ function isValidCoordinate(location: { lat: number, lng: number } | null | undef
     && Number.isFinite(location.lng) && location.lng >= -180 && location.lng <= 180
 }
 
+/** E-218: when the mark last changed on this copy: set (`handled.at`) or cleared (`handledClearedAt`). */
 function handledMs(entry: RadioLogEntryType): number {
-  const t = entry.handled ? new Date(entry.handled.at).getTime() : NaN
-  return Number.isFinite(t) ? t : -Infinity
+  const ms = (d: Date | undefined) => {
+    const t = d ? new Date(d).getTime() : NaN
+    return Number.isFinite(t) ? t : -Infinity
+  }
+  return Math.max(ms(entry.handled?.at), ms(entry.handledClearedAt))
 }
 
 function revisedMs(entry: RadioLogEntryType): number {
@@ -157,15 +161,17 @@ export function mergeEntries(
         !== JSON.stringify(mergeAttachmentRefs(current.attachments, []))
       const withAttachments = (e: RadioLogEntryType): RadioLogEntryType =>
         (attachments.length ? { ...e, attachments } : e)
-      // E-218: the later status mark wins, whichever copy the other fields come from.
-      const laterHandled = handledMs(entry) > handledMs(current) ? entry.handled : current.handled
+      // E-218: the later status-mark change wins (a clear included), whichever copy the other fields come from.
+      const markFrom = handledMs(entry) > handledMs(current) ? entry : current
       const withHandled = (e: RadioLogEntryType): RadioLogEntryType => {
         const out = { ...e }
-        if (laterHandled) out.handled = laterHandled
+        if (markFrom.handled) out.handled = markFrom.handled
         else delete out.handled
+        if (markFrom.handledClearedAt) out.handledClearedAt = markFrom.handledClearedAt
+        else delete out.handledClearedAt
         return out
       }
-      const handledChanged = laterHandled !== current.handled
+      const handledChanged = markFrom !== current
       if (revisedMs(entry) > revisedMs(current)) {
         // Keep this device's display id, uid, number and merged-in mark; take the rest from the later copy.
         entries[matchIndex] = withHandled(withAttachments({
