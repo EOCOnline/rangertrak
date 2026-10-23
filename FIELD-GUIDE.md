@@ -259,6 +259,25 @@ filled in for you (left blank if they have none). The optional **To station** bo
 records which station the message went to, with the same choices; leave it blank if it does not
 matter. It is separate from **ICS-213 addressed to**, further down.
 
+**Message numbers.** Every entry gets a number when it is logged, such as **A007**: the station
+letter, then a count. In full it reads `26-0142 / OP 2 / A007` (mission, operational period,
+number), and that is what a printed ICS-213 shows in its top margin. The number never changes
+afterwards, and the count starts again at 001 in each operational period. The letter belongs to
+the device: set it on the Mission page, under **Operational period**, and give each device on
+your net its own. Reports that arrive from a ranger's phone get the next number on the scribe's
+device when they are loaded. If two different entries turn up with the same number, the app tells
+you and leaves both as they are; change one device's letter.
+
+**Marking entries.** The first column of the Radio Log is a small box. Click it to mark an entry
+handled (✓), passed on (→) or needing action (!), and again to clear it. The printed ICS-309 log
+shows the mark in its first column, with an empty box for entries you have not marked, so a paper
+copy can be ticked by hand.
+
+**Handing over to another scribe.** When you load a hand-over file, the entries keep the numbers
+they were given. The app then asks who this device is from now on: **Take over station A** (the
+other device stops logging and the count carries on from where it left off), or **Log alongside
+as station B** (both devices keep logging, each with its own letter).
+
 **Attaching photos, video and audio.** The **Attach** button under Notes (in Full view, or in
 Simple view once the mission has an attachment; it works in any browser) adds files to the entry you
 are typing (on a phone or tablet, **Take photo / video** opens the camera). They wait as chips and
