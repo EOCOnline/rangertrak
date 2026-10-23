@@ -431,7 +431,7 @@
       @if (scenarioLine(log.header.datePrepared); as sc) {
       <p class="ics309-form__note" data-testid="ics309-scenario">{{ sc }} (times in the log are real)</p>
       }
-      <p class="ics309-form__note">Printed from RangerTrak. Msg # and boxes 3–4 are left for hand entry.</p>
+      <p class="ics309-form__note">Printed from RangerTrak. Msg # and boxes 3–4 are left for hand entry. <span class="ics309-journal" data-testid="ics309-journal">{{ journal.shortHead() }}</span></p>
     </div>
     } @else {
     <div class="ics309-print">
@@ -448,6 +448,7 @@
       @if (scenarioLine(log.header.datePrepared); as sc) {
       <p data-testid="ics309-scenario">{{ sc }} (times in the log are real)</p>
       }
+      <p class="ics309-journal" data-testid="ics309-journal">{{ journal.shortHead() }}</p>
       <table>
         <thead>
           <tr>

@@ -1,15 +1,20 @@
 import {
-  ChangeDetectionStrategy, Component, computed, effect, ElementRef, signal, viewChild
+  ChangeDetectionStrategy, Component, computed, effect, ElementRef, inject, signal, viewChild
 } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatCardModule } from '@angular/material/card'
 import { MatButtonModule } from '@angular/material/button'
+import { MatTabsModule } from '@angular/material/tabs'
 
 import { PageComponent } from '../shared/page/page.component'
 import { Utility } from '../shared'
 import { LogLevel, LogService, LogType } from '../shared/services/'
+import { MissionJournalService } from '../shared/services/mission-journal.service'
+import { describeCheck, journalToCsv, verifyJournal } from '../domain/mission-journal'
+import { downloadCsv } from '../shared/export/csv'
+import { localDateStamp } from '../shared/export/local-date'
 
 /**
  * Displays the in-app event log.
@@ -34,7 +39,7 @@ import { LogLevel, LogService, LogType } from '../shared/services/'
 @Component({
   selector: 'rangertrak-log',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCheckboxModule, MatCardModule, MatButtonModule, PageComponent],
+  imports: [CommonModule, FormsModule, MatCheckboxModule, MatCardModule, MatButtonModule, MatTabsModule, PageComponent],
   templateUrl: './log.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./log.component.scss']
@@ -70,6 +75,13 @@ export class LogComponent {
   })
 
   public totalEntries = computed(() => this.logService.entries().length)
+
+  // E-222 / D-67: the Journal tab. Read-only: there is no clear or delete here, by design.
+  private journalService = inject(MissionJournalService)
+  /** Newest first. */
+  readonly journalRows = computed(() => [...this.journalService.entries()].reverse())
+  readonly journalCheck = computed(() => verifyJournal(this.journalService.entries()))
+  readonly journalStatus = computed(() => describeCheck(this.journalCheck()))
 
   constructor(private logService: LogService) {
     // Keep the newest entry in view, as the old implementation did. Deferred a tick so the
@@ -135,7 +147,13 @@ export class LogComponent {
     a.click()
     URL.revokeObjectURL(url)
 
-    this.logService.info(`Exported ${this.totalEntries()} log entries to ${fileName}`, this.id)
+    this.journalService.record('debug-log-exported', `Exported ${this.totalEntries()} debug log entries to ${fileName}.`)
+  }
+
+  /** Every journal field, including each entry's link to the one before and its own check value. */
+  onBtnExportJournal() {
+    this.journalService.record('journal-exported', `Exported the journal (${this.journalService.entries().length} entries before this one).`)
+    downloadCsv(journalToCsv(this.journalService.entries()), `rangertrak-journal-${localDateStamp()}.csv`)
   }
 
   onBtnClearLog() {

@@ -14,6 +14,7 @@ import { AdvancedDirective } from '../../shared/view/advanced.directive'
 import type { ViewContext } from '../../domain/view'
 import { MapEngineService } from '../map-engine.service'
 import { PlacesIoComponent } from '../places-io/places-io.component'
+import { MissionJournalService } from '../../shared/services/mission-journal.service'
 
 /**
  * E-64: a thin shell owning route `/map`. It owns ONLY the page wrapper, the engine
@@ -63,6 +64,7 @@ export class MapPageComponent implements OnInit, OnDestroy {
   // Prepared by: pre-filled from the Entry page's operator name (in-memory OperatorNameService,
   // never persisted). Once the user types here, their text wins and is never overwritten.
   private readonly operatorName = inject(OperatorNameService)
+  readonly journal = inject(MissionJournalService)
   private readonly typedPreparedBy = signal<string | null>(null)
   readonly preparedBy = computed(() => this.typedPreparedBy() ?? this.operatorName.name())
   onPreparedByInput(event: Event): void {

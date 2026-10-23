@@ -438,6 +438,8 @@ group:
    import one or add rangers — edits save automatically as you make them.
 3. **Radio Log** → *Danger zone* → **Delete radio log entries and messages**. You choose whether your After Action notes and ICS-214 lines go too; they stay unless you tick them.
 
+RangerTrak also keeps a **journal** of what was done to the mission's data on the device: loading a demo, restoring, importing, backing up, exporting, printing, clearing. Those steps above do not clear it. It lives on the Log page, on its Journal tab, which says whether it is intact; each entry is linked to the one before it. The newest entry's short code is printed on the radio log, the summary and the map sheet.
+
 Switching to a different browser or a different device also gives you a completely fresh
 environment — RangerTrak's data is per-browser, so Firefox knows nothing about what you did
 in Chrome. That is a convenient way to experiment without disturbing a real mission.

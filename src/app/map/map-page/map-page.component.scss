@@ -156,6 +156,12 @@
     min-width: 40mm;
   }
 
+  .map-print-footer__journal {
+    color: #444;
+    font-size: 7pt;
+    align-self: flex-end;
+  }
+
   // Controls that only make sense interactively - flipping engines or filling the
   // browser viewport - printed as inert chrome otherwise. 2026-09-30: the Full screen button
   // was still printing on the map sheet - the screen `.fullscreen-toggle { display: block }`

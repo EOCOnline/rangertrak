@@ -12,7 +12,7 @@ import type { GuideEntry } from './guide-content'
  * this list against GUIDE_CONTENT's keys so the two cannot drift.
  */
 export const GUIDE_ROUTES: readonly string[] = [
-  '/', '/radio-log', '/messages', '/after-action', '/rangers', '/mission', '/map'
+  '/', '/radio-log', '/messages', '/after-action', '/log', '/rangers', '/mission', '/map'
 ]
 
 function hasGuide(url: string): boolean {

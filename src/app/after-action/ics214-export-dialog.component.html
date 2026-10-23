@@ -50,7 +50,20 @@
     }
     <mat-radio-button value="all">All lines ({{ allCount }})</mat-radio-button>
   </mat-radio-group>
-  @if (selectedCount() === 0) {
+  @if (suggestions().length > 0) {
+  <details class="rt-214__suggest" data-testid="ics214-suggestions">
+    <summary>Suggested lines from this device's journal ({{ suggestions().length }})</summary>
+    <p class="rt-214__hint">Things done to the mission's data on this device. Nothing goes on the form unless you tick it.
+      A ticked one becomes an ordinary line you can edit afterwards.</p>
+    @for (s of suggestions(); track s.seq) {
+    <mat-checkbox class="rt-214__suggest-row" [checked]="ticked().has(s.seq)"
+      (change)="setTicked(s.seq, $event.checked)" [attr.data-testid]="'ics214-suggest-' + s.seq">
+      <span class="rt-214__suggest-time">{{ suggestionTime(s.at) }}</span> {{ s.summary }}
+    </mat-checkbox>
+    }
+  </details>
+  }
+  @if (exportCount() === 0) {
   <p class="rt-214__hint">There are no lines in this choice yet. Add some with the AAR/214 button.</p>
   }
   @if (error()) {
@@ -60,6 +73,6 @@
 
 <div mat-dialog-actions align="end">
   <button matButton type="button" (click)="onCancel()">Cancel</button>
-  <button matButton="filled" type="button" [disabled]="busy() || selectedCount() === 0" (click)="onExport()"
+  <button matButton="filled" type="button" [disabled]="busy() || exportCount() === 0" (click)="onExport()"
     data-testid="ics214-export">{{ busy() ? 'Making the form...' : 'Export ICS-214' }}</button>
 </div>

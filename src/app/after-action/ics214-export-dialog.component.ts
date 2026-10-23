@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
+import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
@@ -9,9 +10,11 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 
 import {
   ActivityLogResource, DEFAULT_ICS_POSITION, ICS214_MAX_RESOURCES, buildActivityRows, hasOpPeriod, selectActivityLines,
+  formatActivityTime, suggestActivityFromJournal,
 } from '../domain/activity-log'
 import { localDateStamp } from '../shared/export/local-date'
 import { ActivityLogHeaderService, AarNoteService, LogService, MissionService } from '../shared/services'
+import { MissionJournalService } from '../shared/services/mission-journal.service'
 
 type Scope = 'op' | 'all'
 
@@ -28,7 +31,7 @@ type Scope = 'op' | 'all'
 @Component({
   selector: 'rangertrak-ics214-export-dialog',
   standalone: true,
-  imports: [FormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatRadioModule],
+  imports: [FormsModule, MatDialogModule, MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatRadioModule],
   templateUrl: './ics214-export-dialog.component.html',
   styleUrls: ['./ics214-export-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -49,6 +52,18 @@ export class Ics214ExportDialogComponent {
   scope = signal<Scope>('all')
 
   readonly selectedCount = computed(() => this.scope() === 'op' ? this.opCount : this.allCount)
+
+  // E-222 / D-67 item 8: journal entries the scribe may add as lines. Never ticked by default.
+  private journal = inject(MissionJournalService)
+  /** Seqs of the ticked suggestions. */
+  readonly ticked = signal<ReadonlySet<number>>(new Set())
+  /** In the chosen scope, worth a line, and not already a line. */
+  readonly suggestions = computed(() => suggestActivityFromJournal(
+    this.journal.entries(), this.notes.getCurrentNotes(), this.missionService.settings, this.scope() === 'op'))
+  /** Ticked AND still offered (changing the scope can hide a ticked one). */
+  readonly tickedSuggestions = computed(() => this.suggestions().filter(s => this.ticked().has(s.seq)))
+  /** What the form will hold: the lines in the scope plus the ticked suggestions. */
+  readonly exportCount = computed(() => this.selectedCount() + this.tickedSuggestions().length)
   busy = signal(false)
   error = signal('')
 
@@ -74,6 +89,26 @@ export class Ics214ExportDialogComponent {
     this.scope.set(this.hasPeriod && this.opCount > 0 ? 'op' : 'all')
   }
 
+  setTicked(seq: number, on: boolean): void {
+    this.ticked.update(t => { const next = new Set(t); if (on) next.add(seq); else next.delete(seq); return next })
+  }
+
+  /** Time as the form shows it, local: `MM/dd HH:mm`. */
+  suggestionTime(iso: string): string {
+    return formatActivityTime(iso)
+  }
+
+  /**
+   * Adds every ticked suggestion as an ordinary 214 line (kind 'activity', timed when the action happened).
+   * The lines stay afterwards and can be edited like any other. Returns how many were added.
+   */
+  addTickedSuggestions(): number {
+    const chosen = this.tickedSuggestions()
+    for (const s of chosen) this.notes.addNote(s.summary, 'incident', 'Journal', 'activity', s.at)
+    this.ticked.set(new Set())
+    return chosen.length
+  }
+
   addResource(): void {
     if (this.resources().length >= ICS214_MAX_RESOURCES) return
     this.resources.update(r => [...r, { name: '', icsPosition: '', homeAgency: '' }])
@@ -92,7 +127,7 @@ export class Ics214ExportDialogComponent {
   }
 
   async onExport(): Promise<void> {
-    if (this.busy() || this.selectedCount() === 0) return
+    if (this.busy() || this.exportCount() === 0) return
     this.busy.set(true)
     this.error.set('')
     try {
@@ -104,6 +139,7 @@ export class Ics214ExportDialogComponent {
         resources: this.resources(),
       })
       const mission = this.missionService.settings
+      const fromJournal = this.addTickedSuggestions()   // before the lines are read, so they go on the form
       const lines = selectActivityLines(this.notes.getCurrentNotes(), mission, this.scope() === 'op')
       const rows = buildActivityRows(lines)
 
@@ -119,7 +155,7 @@ export class Ics214ExportDialogComponent {
       const filled = await fillIcs214Pdf(templateBytes, header, mission, rows, new Date(), mission.missionMode === 'exercise')
       const label = (mission.event || mission.mission || 'mission').replace(/[^a-z0-9_-]+/gi, '_')
       const outcome = await printIcs213(filled, `ics-214-${label}-${localDateStamp()}.pdf`, 1, mission, 'ICS-214')
-      this.log.info(`Exported the ICS-214 (${lines.length} lines): ${outcome}`, this.id)
+      this.journal.record('export-214', `Exported the ICS-214 (${lines.length} lines${fromJournal ? `, ${fromJournal} added from the journal` : ''}): ${outcome}`)
       this.snackBar.open(outcome === 'printed' ? 'ICS-214 sent to print' : 'ICS-214 saved as a file', undefined, { duration: 4000 })
       this.dialogRef.close(true)
     } catch (e) {

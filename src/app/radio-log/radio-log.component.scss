@@ -239,6 +239,12 @@
   color: var(--rt-ink-3);
 }
 
+// E-222 / D-67: the mission journal's latest entry on the printed 309, small and muted.
+.ics309-journal {
+  color: #444;
+  font-size: 0.65rem;
+}
+
 // Same treatment Mission's own danger-zone buttons get: the warn palette, so a destructive
 // action never reads as an ordinary outlined button.
 .reports__danger-button {

@@ -91,3 +91,48 @@ h3 {
   --mat-button-outlined-outline-color   : var(--rt-readiness-red);
   color                                 : var(--rt-readiness-red);
 }
+
+// E-222 / D-67: the Journal tab.
+.journal {
+  padding: 0.75rem 0.25rem;
+}
+
+.journal__status {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  color: var(--rt-readiness-green);
+
+  &--broken {
+    color: var(--rt-readiness-red);
+  }
+}
+
+.journal__help {
+  margin: 0 0 0.75rem;
+  font-size: 0.85em;
+  color: var(--rt-ink-2);
+}
+
+.journal__list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.journal__row {
+  display: grid;
+  grid-template-columns: 9.5rem 12rem 1fr;
+  gap: 0 0.75rem;
+  padding: 0.35rem 0.25rem;
+  border-bottom: 1px solid var(--rt-line-strong);
+  font-size: 0.9em;
+
+  @media (max-width: 40rem) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.journal__when,
+.journal__where {
+  color: var(--rt-ink-2);
+}

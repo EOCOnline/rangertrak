@@ -99,5 +99,7 @@
     <!-- 2026-10-05, John: E-172 - never blank: the print time, in the title block's PRINTED format.
          Still ruled, so a hand-corrected time can be written over it. -->
     <span>Date / time: <span class="map-print-footer__line map-print-footer__line--short">{{ printedAt() | date:'MMM d, y, HH:mm:ss' }}</span></span>
+    <!-- E-222 / D-67: the mission journal's latest entry, small and muted: a later edit no longer matches the paper. -->
+    <span class="map-print-footer__journal" data-testid="map-print-journal">{{ journal.shortHead() }}</span>
   </div>
 </rangertrak-page>

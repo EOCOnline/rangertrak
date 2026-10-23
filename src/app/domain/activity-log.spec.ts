@@ -1,8 +1,9 @@
 import type { AarNoteType } from '../shared/services/aar-note.interface'
 import {
   ACTIVITY_CELL_MAX_WIDTH, buildActivityRows, chunkActivityRows, formatActivityTime, hasOpPeriod,
-  normalizeActivityLogHeader, selectActivityLines, toWinAnsi, wrapText,
+  normalizeActivityLogHeader, selectActivityLines, suggestActivityFromJournal, toWinAnsi, wrapText,
 } from './activity-log'
+import { JournalEntry, appendEntry } from './mission-journal'
 
 let uid = 0
 const line = (createdAt: string, over: Partial<AarNoteType> = {}): AarNoteType => ({
@@ -102,6 +103,27 @@ describe('activity-log (E-04 / D-63)', () => {
     it('is idempotent', () => {
       const once = normalizeActivityLogHeader({ name: 'Pat', resources: [{ name: 'A', homeAgency: 'B' }] })
       expect(normalizeActivityLogHeader(once)).toEqual(once)
+    })
+  })
+  describe('suggestActivityFromJournal (E-222)', () => {
+    const OPW = { opPeriodStart: new Date(2026, 9, 20, 8), opPeriodEnd: new Date(2026, 9, 20, 20) }
+    const at = (h: number) => new Date(2026, 9, 20, h)
+    function journalOf(...items: [number, JournalEntry['action'], string][]): JournalEntry[] {
+      let list: JournalEntry[] = []
+      for (const [h, action, summary] of items) list = appendEntry(list, { action, summary, mission: 'm', mode: '' }, at(h))
+      return list
+    }
+
+    it('keeps mission and data actions in scope, drops the 213 print and out-of-period ones', () => {
+      const j = journalOf([9, 'print-309', 'a'], [10, 'print-213', 'b'], [23, 'backup-exported', 'c'], [11, 'roster-imported', 'd'])
+      expect(suggestActivityFromJournal(j, [], OPW, true).map(e => e.summary)).toEqual(['a', 'd']);
+      expect(suggestActivityFromJournal(j, [], OPW, false).map(e => e.summary)).toEqual(['a', 'c', 'd']);
+    })
+
+    it('hides one that already has a line with the same time and text', () => {
+      const j = journalOf([9, 'print-309', 'a'], [11, 'roster-imported', 'd'])
+      const existing = line(j[0].at, { text: 'a', at: j[0].at })
+      expect(suggestActivityFromJournal(j, [existing], OPW, false).map(e => e.summary)).toEqual(['d']);
     })
   })
 })

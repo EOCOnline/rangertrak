@@ -321,6 +321,43 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
     ]
   },
 
+  '/log': {
+    // E-222 / D-67
+    screen: 'Log and journal',
+    tabs: [
+      {
+        label: 'Journal',
+        blocks: [
+          {
+            heading: 'What the journal records',
+            text: 'The Journal tab lists what was done to the mission data on this device: loading a demo, starting a real mission, restoring, importing, backing up, exporting, printing, clearing and turning encryption on or off. It records that something happened and how many, never what a report or note said. It stays when you load a demo, start a real mission or clear the radio log.'
+          },
+          {
+            heading: 'Intact or broken',
+            text: 'Each entry is linked to the one before it. "Intact" means every link checks out. "Broken at entry 57" means entry 57 or the one before it was changed or lost. The short code of the newest entry is printed on the radio log, the summary and the map sheet, so a printed copy can be compared with this page later.'
+          },
+          {
+            heading: 'Not tamper-proof',
+            text: 'The check catches accidents and casual edits. It cannot stop someone determined who controls this device, and there is no way to delete an entry from here. Export journal gives a spreadsheet of every entry.'
+          },
+          {
+            heading: 'ICS-214',
+            text: 'When you export an ICS-214, the dialog can suggest journal entries as lines. Nothing goes on the form unless you tick it.'
+          }
+        ]
+      },
+      {
+        label: 'Event log',
+        blocks: [
+          {
+            heading: 'Event log',
+            text: 'The Event log tab is for diagnosing problems. It is kept in memory only, can be cleared and is lost when the page reloads. The journal is separate and is saved.'
+          }
+        ]
+      }
+    ]
+  },
+
   '/rangers': {
     screen: 'Rangers & Teams',
     tabs: [

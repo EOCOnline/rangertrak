@@ -39,3 +39,25 @@
   display       : flex;
   flex-direction: column;
 }
+
+// E-222 / D-67: journal suggestions, collapsed until opened; each is an unticked checkbox.
+.rt-214__suggest {
+  summary {
+    cursor     : pointer;
+    font-weight: 600;
+  }
+
+  .rt-214__hint {
+    margin: 0.25em 0 0.5em;
+  }
+}
+
+.rt-214__suggest-row {
+  display: block;
+}
+
+.rt-214__suggest-time {
+  color      : var(--rt-muted, #666);
+  font-size  : 0.85em;
+  margin-right: 0.4em;
+}

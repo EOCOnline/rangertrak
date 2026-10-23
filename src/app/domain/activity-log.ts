@@ -1,5 +1,7 @@
 import type { AarNoteType } from '../shared/services/aar-note.interface'
 import { noteTime } from './aar-note-migration'
+import { SUGGEST_FOR_214 } from './mission-journal'
+import type { JournalEntry } from './mission-journal'
 
 /**
  * E-04 / ADR D-63: the ICS-214 activity log, as pure rules - which lines go on the form, how a
@@ -85,6 +87,27 @@ export function selectActivityLines(
   return lines.filter(n => {
     const t = ms(noteTime(n))
     return Number.isFinite(t) && t >= s && t <= e
+  })
+}
+
+/**
+ * E-222 / D-67 item 8: journal entries the scribe may tick to become 214 lines. Mission and data actions
+ * (SUGGEST_FOR_214) whose time falls in the same window selectActivityLines() uses, minus any that already
+ * have a line with the same time and text, so a suggestion never doubles one. Oldest first.
+ */
+export function suggestActivityFromJournal(
+  entries: readonly JournalEntry[], notes: readonly AarNoteType[], mission: ActivityLogMission, onlyOpPeriod: boolean,
+): JournalEntry[] {
+  const window = onlyOpPeriod && hasOpPeriod(mission)
+  const s = ms(mission.opPeriodStart)
+  const e = ms(mission.opPeriodEnd)
+  const have = new Set(activityLines(notes).map(n => `${ms(noteTime(n))}|${n.text}`))
+  return entries.filter(j => {
+    if (!SUGGEST_FOR_214.has(j.action)) return false
+    const t = ms(j.at)
+    if (!Number.isFinite(t)) return false
+    if (window && !(t >= s && t <= e)) return false
+    return !have.has(`${t}|${j.summary}`)
   })
 }
 
