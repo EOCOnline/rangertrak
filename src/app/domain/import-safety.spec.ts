@@ -103,6 +103,7 @@ describe('import safety copy rules (E-198)', () => {
       expect(describeLastImport(meta('2026-10-17T14:02:00.000Z'))).toMatch(/^Last import: Restore of "rangertrak-Ops-2026-10-17\.json", \d\d:\d\d\.$/)
       expect(describeLastImport({ ...meta('2026-10-17T14:02:00.000Z'), reason: 'report-packet', fileName: 'p.txt' })).toContain('Report Packet "p.txt"')
       expect(describeLastImport({ ...meta('2026-10-17T14:02:00.000Z'), reason: 'setup-file', fileName: 's.zip' })).toContain('Setup file "s.zip"')
+      expect(describeLastImport({ ...meta('2026-10-17T14:02:00.000Z'), reason: 'roster', fileName: 'r.csv' })).toMatch(/^Last import: roster import of "r\.csv" at \d\d:\d\d\.$/)
     })
   })
 })

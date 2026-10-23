@@ -413,25 +413,44 @@ export class BackupService {
     layerService.prune('people', new Set(this.rangerService.rangers.map(r => r.uid).filter((u): u is string => !!u)))
     layerService.prune('places', new Set(this.locationService.getCurrentLocations().map(l => l.uid).filter((u): u is string => !!u)))
 
-    // 2026-10-01, John: photos present (even empty) replace the device's; absent (older
-    // backup) leaves them alone. importFiles() matches by stem against the roster just restored
-    // and encrypts when device encryption is on, so nothing is duplicated here.
-    // A photo failure must not stop the restore part-way: settings, roster and radio log are
-    // already applied by now, and the flush below is what makes them stick. Photos are the
-    // least critical part of a backup, so log it and carry on.
-    if (payload.photos) {
-      try {
-        await this.photoService.clear()
-        const files = payload.photos.map(p => new File([base64ToBytes(p.data)], `${p.stem}.${extFor(p.type)}`, { type: p.type }))
-        await this.photoService.importFiles(files, this.rangerService.rangers)
-      } catch (e: any) {
-        this.log.error(`Mission restored, but its ranger photos could not be restored: ${e?.message ?? e}`, this.id)
-      }
-    }
+    await this.restorePhotos(payload)
 
     // E-222: the journal entry (with the file name) is recorded by the caller; this line is only the debug trace.
     this.log.verbose(`Restore applied: export dated ${payload.exportedAt} (schema v${payload.schemaVersion}, app v${payload.appVersion}).`, this.id)
 
+    await recordStore.flush()
+  }
+
+  /**
+   * 2026-10-01, John: photos present (even empty) replace the device's; absent (older backup) leaves
+   * them alone. importFiles() matches by stem against the roster just restored and encrypts when
+   * device encryption is on, so nothing is duplicated here.
+   * A photo failure must not stop the restore part-way: settings, roster and radio log are already
+   * applied by now, and the flush is what makes them stick. Photos are the least critical part of a
+   * backup, so log it and carry on.
+   */
+  private async restorePhotos(payload: MissionExport): Promise<void> {
+    if (!payload.photos) return
+    try {
+      await this.photoService.clear()
+      const files = payload.photos.map(p => new File([base64ToBytes(p.data)], `${p.stem}.${extFor(p.type)}`, { type: p.type }))
+      await this.photoService.importFiles(files, this.rangerService.rangers)
+    } catch (e: any) {
+      this.log.error(`Mission restored, but its ranger photos could not be restored: ${e?.message ?? e}`, this.id)
+    }
+  }
+
+  /**
+   * Puts back ONLY the roster parts of a backup: rangers, the layers that name them, and ranger photos.
+   * Never settings, the radio log, places or notes. Used by Undo of a roster import (E-198), so entries
+   * logged since the import are never lost.
+   */
+  async restoreRosterParts(payload: MissionExport): Promise<void> {
+    this.rangerService.replaceAllRangers(normalizeRangerIds(payload.rangers).rangers)
+    const layerService = await this.layerService()
+    if (payload.layers) layerService.replaceAll(payload.layers)
+    layerService.prune('people', new Set(this.rangerService.rangers.map(r => r.uid).filter((u): u is string => !!u)))
+    await this.restorePhotos(payload)
     await recordStore.flush()
   }
 

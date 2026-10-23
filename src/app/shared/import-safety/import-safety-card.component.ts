@@ -32,6 +32,8 @@ const EXPIRY_CHECK_MS = 30_000
           {{ describe(meta) }}
           @if (meta.reason === 'restore') {
             Undo puts back the mission as it was just before.
+          } @else if (meta.reason === 'roster') {
+            Undo puts back the roster (and ranger photos) as they were just before. The log and settings are not touched.
           } @else {
             Undo puts back the whole mission as it was just before this merge, so anything logged since goes too.
           }

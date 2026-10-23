@@ -10,8 +10,11 @@ import type { AttachmentRef } from './attachments'
 /** The RecordStore key the copy lives under (in MIGRATED_KEYS and ENCRYPTED_KEYS; ARCHITECTURE.md row 13c). */
 export const IMPORT_SAFETY_KEY = 'importSafetyCopy'
 
-/** Which import took the copy. The Report Packet and Setup file imports merge; Restore replaces. */
-export type ImportSafetyReason = 'restore' | 'report-packet' | 'setup-file'
+/**
+ * Which import took the copy. The Report Packet and Setup file imports merge; Restore replaces. A 'roster' import
+ * (Rangers page, Add or Replace) takes the whole copy too, but Undo puts back only the roster parts.
+ */
+export type ImportSafetyReason = 'restore' | 'report-packet' | 'setup-file' | 'roster'
 
 /** What is recorded beside the copy, so the card can say what the last import was. */
 export type ImportSafetyMeta = {
@@ -102,5 +105,6 @@ export function describeLastImport(meta: ImportSafetyMeta): string {
     case 'restore': return `Last import: Restore of ${file}, ${at}.`
     case 'report-packet': return `Last import: Report Packet ${file}, ${at}.`
     case 'setup-file': return `Last import: Setup file ${file}, ${at}.`
+    case 'roster': return `Last import: roster import of ${file} at ${at}.`
   }
 }

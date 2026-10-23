@@ -269,6 +269,17 @@ export class RangerService implements OnInit {
     this.recordImport(source, 'merge', uids)
   }
 
+  /** The stored baseline text as it is, for the import safety copy (E-198: Undo of a roster import puts it back). */
+  importBaselineRaw(): string | null {
+    return recordStore.getItem(this.importBaselineKey)
+  }
+
+  /** Puts a baseline back exactly as `importBaselineRaw()` returned it (null removes it). */
+  restoreImportBaselineRaw(raw: string | null): void {
+    if (raw === null) recordStore.removeItem(this.importBaselineKey)
+    else recordStore.setItem(this.importBaselineKey, raw)
+  }
+
   /** The baseline of the last import on this device, or null when none is recorded. */
   importBaseline(): RosterImportBaseline | null {
     return parseRosterImportBaseline(recordStore.getItem(this.importBaselineKey))

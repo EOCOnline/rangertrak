@@ -232,7 +232,7 @@ settings, roster, ranger photos, and any reports. If any report carries a photo,
 is included only when you protect the backup with a passphrase.) Keep it somewhere safe — a USB stick, another device.
 If the browser data is ever lost, **Restore mission** restores everything.
 
-> **Tip:** restored the wrong file? **Mission > Data safety > Undo last import**, within 24 hours.
+> **Tip:** restored the wrong file, or imported the wrong roster? **Mission > Data safety > Undo last import** (also shown on the Rangers page after a roster import), within 24 hours. Undoing a roster import puts back only the roster and photos, never your log.
 
 > ⚠️ That export file contains personal information about your people — names, home
 > addresses, phone numbers, and call signs — and it is **not encrypted**, even if you have

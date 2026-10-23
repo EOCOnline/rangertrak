@@ -47,6 +47,8 @@ import {
 // token"), the same way the barrel broke `imports:` arrays during Sprint B.
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { MissionJournalService } from '../shared/services/mission-journal.service'
+import { ImportSafetyService } from '../shared/services/import-safety.service'
+import { ImportSafetyCardComponent } from '../shared/import-safety/import-safety-card.component'
 // E-122 Phase 2a: reloadPage() below awaits this before reloading - see its own doc comment.
 import { RecordStore } from '../shared/storage/record-store'
 import { DevicePrefsService } from '../shared/services/device-prefs.service'
@@ -66,7 +68,7 @@ import { localDateStamp } from '../shared/export/local-date'
 @Component({
   selector: 'rangertrak-rangers',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, LayersCardComponent, PrintSheetHeadComponent, RouterLink, FilterChipsComponent, MatFormFieldModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule, AdvancedDirective],
+  imports: [CommonModule, AgGridAngular, PageComponent, ExpandableSectionComponent, IoPanelComponent, LayersCardComponent, PrintSheetHeadComponent, RouterLink, FilterChipsComponent, MatFormFieldModule, MatIconModule, MatButtonModule, MatCardModule, MatCheckboxModule, MatSelectModule, AdvancedDirective, ImportSafetyCardComponent],
   templateUrl: './rangers.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./rangers.component.scss']
@@ -86,6 +88,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   private readonly appRef = inject(ApplicationRef)
   private readonly journal = inject(MissionJournalService)
+  private readonly importSafety = inject(ImportSafetyService)
   title = 'Rangers & Teams'
   pageDescr = `Grid display of rangers & teams on this mission`
 
@@ -644,8 +647,13 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     return await new Promise(resolve => ref.afterClosed().subscribe(result => resolve(result)))
   }
 
-  /** Saves what the dialog chose, records the import baseline, and says what happened. */
-  private applyImport(fileName: string, result: RosterImportDialogResult, layer = ''): string {
+  /**
+   * Saves what the dialog chose, records the import baseline, and says what happened. First keeps the E-198
+   * safety copy, so "Undo last import" can put the roster back; returns null (nothing saved) when the person
+   * cancels because the copy could not be kept.
+   */
+  private async applyImport(fileName: string, result: RosterImportDialogResult, layer = ''): Promise<string | null> {
+    if (await this.importSafety.ensureBeforeImport('roster', fileName) === 'cancelled') return null
     if (result.action === 'replace') {
       this.rangerService.replaceAllRangers(result.incoming)
       this.rangerService.recordImport(fileName, 'replace')
@@ -660,6 +668,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.journal.record('roster-imported', summary)
     this.gridApi?.setGridOption('rowData', this.rangers())
     this.refreshGrid()
+    await this.importSafety.markImportDone()
     return summary
   }
 
@@ -740,7 +749,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       return
     }
 
-    const summary = this.applyImport(file.name, result, named)
+    const summary = await this.applyImport(file.name, result, named)
+    if (summary === null) return
     // E-207 / D-62 item 6: a Setup file may suggest a view (a device in Simple view has no Setup file
     // card to load it from). Applied once, and never over the person's own choice.
     this.view.suggest(manifest.suggestedView)
@@ -848,7 +858,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
         const incoming = this.rangerService.parseRosterJson(text)
         const result = await this.openImportDialog(file.name, { incoming })
         if (result) {
-          this._snackBar.open(this.applyImport(file.name, result), 'OK', { duration: 20000 })
+          const summary = await this.applyImport(file.name, result)
+          if (summary !== null) this._snackBar.open(summary, 'OK', { duration: 20000 })
         }
         return
       }
@@ -856,7 +867,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       const sheet = await readSheetFile(file)
       const result = await this.openImportDialog(file.name, { sheet })
       if (result) {
-        this._snackBar.open(this.applyImport(file.name, result), 'OK', { duration: 20000 })
+        const summary = await this.applyImport(file.name, result)
+        if (summary !== null) this._snackBar.open(summary, 'OK', { duration: 20000 })
       }
     } catch (error: any) {
       this.log.error(`onImportFileSelected: ${file.name} rejected: ${error.message}`, this.id)

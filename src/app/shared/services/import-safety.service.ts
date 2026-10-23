@@ -10,6 +10,7 @@ import { AttachmentStoreService } from './attachment-store.service'
 import { BackupService } from './backup.service'
 import type { MissionExport } from './backup.service'
 import { LogService } from './log.service'
+import { RangerService } from './ranger.service'
 import { MissionJournalService } from './mission-journal.service'
 import { RadioLogService } from './radio-log.service'
 
@@ -18,7 +19,11 @@ import { RadioLogService } from './radio-log.service'
  * `afterImport` is the entry uids on the device once the import finished (`markImportDone()`), so
  * Undo's warning counts only entries logged after the import, not the ones it brought in.
  */
-type StoredSafetyCopy = { meta: ImportSafetyMeta, payload: MissionExport, afterImport?: string[] }
+type StoredSafetyCopy = {
+  meta: ImportSafetyMeta, payload: MissionExport, afterImport?: string[]
+  /** A roster copy only: the roster import baseline as it was (null = none), which the backup payload does not carry. */
+  rosterBaseline?: string | null
+}
 
 /** The safety copy could not be kept (storage full, or writes are off in this tab). */
 export class SafetyCopyFailedError extends Error {
@@ -54,6 +59,7 @@ export class ImportSafetyService {
   private attachmentStore = inject(AttachmentStoreService)
   private radioLog = inject(RadioLogService)
   private log = inject(LogService)
+  private rangers = inject(RangerService)
   private journal = inject(MissionJournalService)
   private dialog = inject(MatDialog)
 
@@ -122,6 +128,7 @@ export class ImportSafetyService {
     }
     const meta: ImportSafetyMeta = { takenAt: new Date().toISOString(), reason, fileName, appVersion: payload.appVersion }
     const stored: StoredSafetyCopy = { meta, payload }
+    if (reason === 'roster') stored.rosterBaseline = this.rangers.importBaselineRaw()
     const value = JSON.stringify(stored)
 
     recordStore.setItem(IMPORT_SAFETY_KEY, value)
@@ -189,6 +196,7 @@ export class ImportSafetyService {
   /** How many entries logged since the import finished Undo would lose. */
   entriesLostByUndo(): number {
     if (!this.lastSignal()) return 0
+    if (this.lastSignal()!.reason === 'roster') return 0   // a roster Undo never touches the log
     return entriesLoggedSinceImport(this.copyEntryStubs, this.afterImportUids,
       this.radioLog.getCurrentRadioLog().logEntries).length
   }
@@ -201,8 +209,14 @@ export class ImportSafetyService {
     const raw = recordStore.getItem(IMPORT_SAFETY_KEY)
     if (raw === null) throw new Error('There is no safety copy to put back.')
     const stored = JSON.parse(raw) as StoredSafetyCopy
-    // The hold is still in force here, so this import's own sweep keeps the copy's bytes.
-    await this.backup.importMission(stored.payload)
+    if (stored.meta.reason === 'roster') {
+      // Roster parts only: never settings or the radio log, so entries logged since are kept.
+      await this.backup.restoreRosterParts(stored.payload)
+      this.rangers.restoreImportBaselineRaw(stored.rosterBaseline ?? null)
+    } else {
+      // The hold is still in force here, so this import's own sweep keeps the copy's bytes.
+      await this.backup.importMission(stored.payload)
+    }
     await this.discard()
     this.journal.record('import-undone', `Undid the last import (a ${stored.meta.reason} import at ${stored.meta.takenAt}).`)
   }

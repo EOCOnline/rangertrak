@@ -5,6 +5,8 @@ import { IMPORT_SAFETY_KEY, IMPORT_SAFETY_TTL_MS } from '../../domain/import-saf
 import { AttachmentStoreService } from './attachment-store.service';
 import { ImportSafetyService, SafetyCopyFailedError } from './import-safety.service';
 import { RadioLogService } from './radio-log.service';
+import { RangerService } from './ranger.service';
+import { MissionService } from './mission.service';
 import { DB_NAME, STORE, recordStore } from '../storage/record-store';
 import { isEncryptedEnvelope } from '../storage/record-encryption';
 
@@ -207,6 +209,35 @@ describe('ImportSafetyService (E-198)', () => {
       expect(notes).toEqual(['original one', 'original two']);
       expect(safety.last()).toBeNull();
       expect(recordStore.getItem(IMPORT_SAFETY_KEY)).toBeNull();
+    });
+
+    it('a roster copy puts back only the roster, and leaves the log and settings alone', async () => {
+      const rangers = TestBed.inject(RangerService);
+      const mission = TestBed.inject(MissionService);
+      const person = (uid: string, callsign: string) =>
+        ({ uid, callsign, fullName: callsign, phone: '', image: '', team: '', role: '', note: '' });
+      rangers.replaceAllRangers([person('u1', 'ORIGINAL')]);
+      rangers.recordImport('first.csv', 'replace');
+      const baselineBefore = rangers.importBaselineRaw();
+      addEntry('logged before');
+
+      await safety.take('roster', 'new.csv');
+      // The "import": the roster is replaced and re-baselined.
+      rangers.replaceAllRangers([person('u2', 'IMPORTED')]);
+      rangers.recordImport('new.csv', 'replace');
+      await safety.markImportDone();
+      addEntry('logged after the import');
+      mission.updateMission({ ...mission.settings, mission: 'Changed after' });
+
+      expect(safety.entriesLostByUndo()).toBe(0);   // a roster Undo never touches the log
+      await safety.undo();
+
+      expect(rangers.rangers.map(r => r.callsign)).toEqual(['ORIGINAL']);
+      expect(rangers.importBaselineRaw()).toBe(baselineBefore);
+      expect(radioLog.getCurrentRadioLog().logEntries.map(e => e.notes).sort())
+        .toEqual(['logged after the import', 'logged before']);
+      expect(mission.settings.mission).toBe('Changed after');
+      expect(safety.last()).toBeNull();
     });
 
     it('refuses plainly when there is no copy', async () => {
