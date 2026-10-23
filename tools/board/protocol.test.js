@@ -9,6 +9,7 @@ const os = require('node:os');
 const path = require('node:path');
 const selfsigned = require('selfsigned');
 const { createServer, getOrCreateCert } = require('../command-post-server');
+const { createBoard } = require('./protocol');
 
 let cert;
 test.before(async () => {
@@ -40,7 +41,7 @@ async function start(boardOptions) {
       req.end(payload);
     });
   }
-  return { call, lines, close: () => server.close() };
+  return { call, lines, server, close: () => server.close() };
 }
 
 // Runs fn with a fresh instance and always closes it.
@@ -384,3 +385,87 @@ test('getOrCreateCert: names go in the SAN list, and a cert lacking today\'s nam
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+// ---- E-216 slice 2: /api/hello, the scribe's heartbeat, the viewer count, the Wi-Fi name ----
+
+test('GET /api/hello names the Board with no password, even on a protected Board, and says nothing else', withBoard(async (b) => {
+  await claim(b, 'hunter2');
+  const r = await b.call('GET', '/api/hello');
+  assert.strictEqual(r.status, 200);
+  assert.deepStrictEqual(r.json, { app: 'rangertrak-board', name: 'rangertrak-board.local', version: '9.9.9' });
+  assert.strictEqual(r.headers['access-control-allow-origin'], '*');
+  assert.strictEqual((await b.call('POST', '/api/hello', { json: {} })).status, 405);
+}, { version: '9.9.9' }));
+
+test('scribeSeenAt moves on a keyed call and not on a viewer call; wifi is told to viewers when known', async () => {
+  let t = Date.parse('2026-10-23T12:00:00Z');
+  const b = createBoard({ now: () => t, wifi: 'CERT-Net' });
+  const res = () => { const r = { status: 0, body: '', setHeader() {}, writeHead(st) { r.status = st; }, end(x) { r.body = x || ''; } }; return r; };
+  const req = (method, url, headers = {}, addr = '10.0.0.5') => ({ method, url, headers, socket: { remoteAddress: addr }, on() {}, destroy() {} });
+  const call = async (method, url, headers, body) => {
+    const r = res();
+    const q = req(method, url, headers);
+    if (body !== undefined) {
+      const raw = Buffer.from(JSON.stringify(body));
+      q.headers['content-length'] = String(raw.length);
+      q.on = (ev, fn) => { if (ev === 'data') setImmediate(() => fn(raw)); if (ev === 'end') setImmediate(() => setImmediate(fn)); return q; };
+    }
+    b.handle(q, r);
+    for (let i = 0; i < 20 && !r.body && r.status === 0; i++) await new Promise((ok) => setImmediate(ok));
+    return { status: r.status, json: r.body ? JSON.parse(r.body) : undefined };
+  };
+  const key = (await call('POST', '/api/claim', {}, { by: BY })).json.key;
+  assert.ok(key);
+  await call('POST', '/api/mission', { 'x-board-key': key }, { mission: 'M', reports: [] });
+  const first = (await call('GET', '/api/mission', {})).json.board;
+  assert.strictEqual(first.scribeSeenAt, new Date(t).toISOString());
+  assert.strictEqual(first.wifi, 'CERT-Net');
+
+  t += 90_000;
+  const viewerOnly = (await call('GET', '/api/mission', {})).json.board;
+  assert.strictEqual(viewerOnly.scribeSeenAt, first.scribeSeenAt, 'a viewer call does not move it');
+
+  assert.strictEqual((await call('GET', '/api/requests', { 'x-board-key': key })).status, 200);
+  const after = (await call('GET', '/api/mission', {})).json.board;
+  assert.strictEqual(after.scribeSeenAt, new Date(t).toISOString(), 'the keyed heartbeat moves it');
+  assert.strictEqual((await call('GET', '/api/requests', { 'x-board-key': 'wrong' })).status, 403);
+  assert.strictEqual((await call('GET', '/api/mission', {})).json.board.scribeSeenAt, after.scribeSeenAt, 'a refused key does not');
+});
+
+test('the Board has no wifi field when the name is unknown', async () => {
+  const b = createBoard({});
+  assert.strictEqual(b.status().scribeSeenAt, 0);
+  assert.strictEqual(b.status().claimed, false);
+});
+
+test('viewerCount counts distinct addresses in the last minute, forgets them after, and no reply mentions viewers', async () => {
+  let t = 1_000_000;
+  const b = createBoard({ now: () => t });
+  const seen = [];
+  const get = (addr, url = '/api/mission') => new Promise((resolve) => {
+    const r = { setHeader() {}, writeHead() {}, end(x) { seen.push(String(x || '')); resolve(); } };
+    b.handle({ method: 'GET', url, headers: {}, socket: { remoteAddress: addr }, on() {}, destroy() {} }, r);
+  });
+  assert.strictEqual(b.viewerCount(), 0);
+  await get('192.168.1.20');
+  await get('192.168.1.21');
+  await get('192.168.1.20');
+  assert.strictEqual(b.viewerCount(), 2);
+  t += 30_000;
+  await get('192.168.1.21');
+  t += 40_000;   // .20 last seen 70 s ago, .21 40 s ago
+  assert.strictEqual(b.viewerCount(), 1);
+  t += 30_000;
+  assert.strictEqual(b.viewerCount(), 0);
+  assert.strictEqual(b.status().viewers, 0);
+  const everything = seen.join('|');
+  assert.doesNotMatch(everything, /192\.168\.1\.2\d|viewer/i, 'no address and no viewer count is ever returned');
+});
+
+test('a wrong viewer password is not counted as a viewer', withBoard(async (b) => {
+  await claim(b, 'hunter2');
+  assert.strictEqual((await b.call('GET', '/api/mission', { headers: { 'X-Board-Password': 'nope' } })).status, 401);
+  assert.strictEqual(b.server.viewerCount(), 0);
+  assert.strictEqual((await b.call('GET', '/api/mission', { headers: { 'X-Board-Password': 'hunter2' } })).status, 200);
+  assert.strictEqual(b.server.viewerCount(), 1);
+}));

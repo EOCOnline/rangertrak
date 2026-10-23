@@ -35,11 +35,15 @@ const { execSync, spawnSync } = require('child_process');
 // bundle) - same exception this doc's own scoping already accepted for a QR code. See
 // getOrCreateCert() below for why this server needs to generate a certificate at all.
 const selfsigned = require('selfsigned');
-const { privateAddresses } = require('./board/net');
+const { privateAddresses, isVirtualAdapter } = require('./board/net');
 const { createResponder, sanitizeLabel } = require('./board/mdns');
 const { createBoard } = require('./board/protocol');
 const qr = require('./board/qr');
 const { handleHello } = require('./board/hello');
+const { boardCause } = require('./board/causes');
+const selfcheck = require('./board/selfcheck');
+const { startStatusLine } = require('./board/statusline');
+const { version: APP_VERSION } = require('../package.json');
 
 const ROOT = path.join(__dirname, '..', 'dist', 'rangertrak', 'browser');
 const DEFAULT_LABEL = 'rangertrak-board';
@@ -235,7 +239,7 @@ async function createServer({ port, cert, addresses = ['127.0.0.1'], name = '', 
       log(`Could not draw the QR code (${e.message}); use the address above.`);
     }
   };
-  const { handle, board, claimState } = createBoard({ log, name, ...boardOptions, onClaim: printQr });
+  const { handle, board, claimState, viewerCount, status } = createBoard({ log, name, ...boardOptions, onClaim: printQr });
   const handler = (req, res) => {
     if (req.url.startsWith('/api/')) return handle(req, res);
     // E-216: reachability check. No data, no password, not a claim and not a viewer.
@@ -270,7 +274,7 @@ async function createServer({ port, cert, addresses = ['127.0.0.1'], name = '', 
     await closeAll();
     throw e;
   }
-  return { servers, port: servers[0].address().port, board, close: closeAll };
+  return { servers, port: servers[0].address().port, board, viewerCount, status, close: closeAll };
 }
 
 // 443 is the clean address (no port to type), but it needs privileges on Linux/macOS and is
@@ -316,7 +320,7 @@ function copyToClipboard(text) {
   }
 }
 
-function printBoardUrls({ name, label, port, addresses, skipped }) {
+function printBoardUrls({ name, label, port, addresses, skipped, checkLines = [], boxed = false }) {
   const hostPort = (host) => (port === 443 ? host : `${host}:${port}`);
   const nameUrl = name ? `https://${hostPort(name)}` : null;
   const primaryUrl = nameUrl || `https://${hostPort(addresses[0] || 'localhost')}`;
@@ -326,6 +330,10 @@ function printBoardUrls({ name, label, port, addresses, skipped }) {
   console.log('================');
   console.log(`Serving ${ROOT}`);
   console.log('');
+  // E-216: what was found out about this computer and its network. ✔ fine, ✖ will stop devices connecting, · worth knowing.
+  for (const line of checkLines) console.log(line);
+  if (checkLines.length) console.log('');
+  if (boxed) for (const line of selfcheck.boxedAddress(`${primaryUrl}/view`)) console.log(line);
   if (skipped.length > 0) {
     console.log(`Not listening on public address${skipped.length > 1 ? 'es' : ''} ${skipped.join(', ')} - the Board is for the local network only.`);
     console.log('');
@@ -395,6 +403,8 @@ async function start() {
     if (found.skipped.length > 0) console.log(`(Only public address${found.skipped.length > 1 ? 'es' : ''} found: ${found.skipped.join(', ')})`);
     process.exit(1);
   }
+  // The Wi-Fi name is told to viewers ("Still on <name>?"), so it is read before the Board starts. Never fatal.
+  const wifiPromise = selfcheck.readWifi();
   const listenOn = args.allowPublic ? [...found.listen, ...found.skipped] : found.listen;
   const reachable = args.allowPublic ? [...found.lan, ...found.skipped] : found.lan;
   const skipped = args.allowPublic ? [] : found.skipped;
@@ -408,7 +418,8 @@ async function start() {
   let running;
   try {
     const cert = await getOrCreateCert(reachable, name ? [name] : []);
-    running = await listenWithFallback({ cert, addresses: listenOn, name: name || '', log: console.log }, args.port);
+    const wifi = await wifiPromise;
+    running = await listenWithFallback({ cert, addresses: listenOn, name: name || '', log: console.log, boardOptions: { version: APP_VERSION, wifi } }, args.port);
   } catch (e) {
     await responder.stop();
     const where = e.address ? ` on ${e.address}` : '';
@@ -417,7 +428,32 @@ async function start() {
   }
 
   responder.announce();
-  printBoardUrls({ name, label: args.label, port: running.port, addresses: reachable, skipped });
+
+  // E-216: the start-up self-check. Every part is best-effort; none can stop the Board.
+  const wifi = await wifiPromise;
+  const nets = os.networkInterfaces();
+  const inUse = Object.keys(nets).filter((n) => !isVirtualAdapter(n) && (nets[n] || []).some((a) => reachable.includes(a.address)));
+  const fellBack = !args.port && running.port !== PREFERRED_PORT;
+  const owner = fellBack ? await selfcheck.portOwner({ port: PREFERRED_PORT }) : '';
+  const portLine = fellBack
+    ? `✖ ${boardCause('port-taken', { port: PREFERRED_PORT, other: running.port, name: owner }).message}`
+    : '';
+  const runChecks = () => selfcheck.runSelfCheck({ port: running.port, inUse });
+  let check = await runChecks();
+  const listFor = (c) => selfcheck.formatSelfCheck({ check: c, wifi, virtual: found.virtual, portLine });
+  // John 10-21: offer the fixes after one Windows prompt, never silently, and only at a keyboard.
+  const fixes = selfcheck.offerableFixes(check);
+  if (process.stdin.isTTY && (fixes.publicAliases.length || fixes.addRule)) {
+    console.log('');
+    console.log('Checking this computer:');
+    for (const line of listFor(check)) console.log(line);
+    if (await selfcheck.offerFixes({ check }) === 'ran') {
+      check = await runChecks();   // look again, and say what the fix did
+      console.log('Checked again after the fix.');
+    }
+  }
+  printBoardUrls({ name, label: args.label, port: running.port, addresses: reachable, skipped, checkLines: listFor(check), boxed: fellBack });
+  startStatusLine({ status: running.status });
 
   let stopping = false;
   const shutdown = async () => {

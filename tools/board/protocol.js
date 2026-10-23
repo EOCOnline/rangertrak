@@ -82,8 +82,11 @@ function safeContentType(type) {
  * @param {string}   [o.name]           the .local name actually taken, shown to viewers
  * @param {function} [o.onClaim]        called after a claim, a takeover or a password change, so the
  *                                      server can show the viewer QR code. Never given anything to log.
+ * @param {string}   [o.version]        the RangerTrak version, told to GET /api/hello (E-216)
+ * @param {string}   [o.wifi]           the Wi-Fi network's name when the server could read it, told to viewers
+ *                                      so "Lost the Board" can ask "Still on <name>?" (E-216)
  */
-function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, uploadCap = MB500, name = '', onClaim = () => {} } = {}) {
+function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, uploadCap = MB500, name = '', onClaim = () => {}, version = '', wifi = '' } = {}) {
   let claim = null; // { key, password, by, at, previous? }
   let snapshot = null;
   let refs = new Map(); // sha -> { size, type }, the non-removed attachment refs in the snapshot
@@ -93,6 +96,10 @@ function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, upl
   const retiredKeys = []; // SHA-256 hex of keys superseded by a takeover, newest last, capped
   const attempts = new Map(); // remote address -> { fails: number[], blockedUntil }
   const board = { name };
+  // E-216: when the scribe's device last made a keyed call (the heartbeat), and which viewer addresses have
+  // read the mission lately. The addresses are only ever counted: they are never printed, logged or returned.
+  let scribeSeenAt = 0;
+  const viewers = new Map(); // remote address -> last time it read /api/mission
 
   const clock = (t) => new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -150,6 +157,7 @@ function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, upl
       send(res, 403, !claim.password || known ? { state: 'replaced', by: claim.by, at: claim.at } : { state: 'replaced' });
       return false;
     }
+    scribeSeenAt = now();
     return true;
   }
   // A viewer's calls. No claim means no password exists yet, so there is nothing to check.
@@ -273,13 +281,26 @@ function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, upl
     send(res, 200, { state: 'ok', requests: [...requests] });
   }
 
+  // Counts each address that read the mission in the last minute. Nothing else is kept about it.
+  function noteViewer(req) {
+    viewers.set(req.socket.remoteAddress || '', now());
+  }
+  function viewerCount(windowMs = 60000) {
+    const t = now();
+    for (const [addr, seen] of viewers) if (t - seen >= windowMs) viewers.delete(addr);
+    return viewers.size;
+  }
+
   function getMission(req, res) {
-    if (!claim) { send(res, 200, { waiting: true }); return; }
+    if (!claim) { noteViewer(req); send(res, 200, { waiting: true }); return; }
     // Password before "no snapshot yet": a protected Board shouldn't tell a stranger even that
     // much, and a viewer with a saved password just sees "Waiting for the scribe..." after it.
     if (!viewerAllowed(req, res)) return;
+    noteViewer(req);
     if (!snapshot) { send(res, 200, { waiting: true }); return; }
     const info = { by: claim.by, at: claim.at, open: !claim.password, name: board.name };
+    if (scribeSeenAt) info.scribeSeenAt = new Date(scribeSeenAt).toISOString();
+    if (wifi) info.wifi = wifi;
     if (claim.previous) info.previous = claim.previous;
     send(res, 200, { ...snapshot, board: info });
   }
@@ -332,6 +353,8 @@ function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, upl
   async function route(req, res, urlPath) {
     const m = req.method;
     const wrongMethod = () => send(res, 405, { error: 'Method not allowed' });
+    // E-216: lets the app tell "a RangerTrak Board" from "something else". No password, no claim, no state read.
+    if (urlPath === '/api/hello') return m === 'GET' ? send(res, 200, { app: 'rangertrak-board', name: board.name, version }) : wrongMethod();
     if (urlPath === '/api/claim') return m === 'POST' ? postClaim(req, res) : wrongMethod();
     if (urlPath === '/api/password') return m === 'POST' ? postPassword(req, res) : wrongMethod();
     if (urlPath === '/api/requests') return m === 'GET' ? getRequests(req, res) : wrongMethod();
@@ -372,7 +395,21 @@ function createBoard({ log = () => {}, now = Date.now, originalsCap = MB500, upl
   // For the QR code: whether anyone has claimed the Board, and the viewer password if there is one.
   const claimState = () => ({ claimed: !!claim, password: claim ? claim.password : '' });
 
-  return { handle, board, claimState };
+  // For the server's own console status line (E-216). Times are epoch ms (0 = never); no addresses.
+  function status() {
+    const reports = snapshot && Array.isArray(snapshot.reports) ? snapshot.reports : [];
+    const last = reports.reduce((m, r) => Math.max(m, Date.parse(r && r.date) || 0), 0);
+    return {
+      claimed: !!claim,
+      scribe: claim ? claim.by.scribe || '(unnamed)' : '',
+      claimedAt: claim ? Date.parse(claim.at) : 0,
+      scribeSeenAt,
+      viewers: viewerCount(),
+      lastReportAt: last,
+    };
+  }
+
+  return { handle, board, claimState, viewerCount, status };
 }
 
 module.exports = { createBoard, SHA_RE };

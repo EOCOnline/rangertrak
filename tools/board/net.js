@@ -26,17 +26,28 @@ function classifyIPv4(ip) {
   return 'public';
 }
 
+// E-216 (#7): adapters that exist inside this computer (virtual machines, containers, VPN tunnels, packet
+// capture). A phone can never be on their network, so an address on one is no use to give out. Matched on the
+// adapter's name. Windows' own hotspot ("Local Area Connection* 10"), Wi-Fi, Ethernet, en0 and wlan0 are NOT here.
+const VIRTUAL_ADAPTER = /^vEthernet|WSL|Hyper-V|Default Switch|VirtualBox|VMware|VMnet|docker|^br-|^veth|Npcap|^TAP-|NordLynx|ZeroTier|^utun/i;
+function isVirtualAdapter(name) {
+  return VIRTUAL_ADAPTER.test(String(name || ''));
+}
+
 /**
  * Splits this machine's IPv4 addresses into what the Board may listen on and what it must not.
  *  - listen:  private, link-local and loopback addresses (one server is started per address);
  *  - lan:     the listen addresses minus loopback - the ones other devices can actually reach,
  *             so the ones the mDNS name should resolve to;
- *  - skipped: public addresses, reported to the person at the laptop rather than silently dropped.
+ *  - skipped: public addresses, reported to the person at the laptop rather than silently dropped;
+ *  - virtual: addresses on virtual adapters (isVirtualAdapter), { name, address }. Left out of listen and lan,
+ *             and out of skipped; the start-up check says they were left out and why.
  */
 function privateAddresses(nets) {
   const listen = [];
   const lan = [];
   const skipped = [];
+  const virtual = [];
   const seen = new Set();
   for (const name of Object.keys(nets || {})) {
     for (const net of nets[name] || []) {
@@ -45,6 +56,10 @@ function privateAddresses(nets) {
       if (seen.has(net.address)) continue;
       seen.add(net.address);
       const kind = classifyIPv4(net.address);
+      if (kind !== 'loopback' && kind !== null && isVirtualAdapter(name)) {
+        virtual.push({ name, address: net.address });
+        continue;
+      }
       if (kind === 'loopback') {
         listen.push(net.address);
       } else if (kind === 'private' || kind === 'link-local') {
@@ -55,7 +70,7 @@ function privateAddresses(nets) {
       }
     }
   }
-  return { listen, lan, skipped };
+  return { listen, lan, skipped, virtual };
 }
 
-module.exports = { classifyIPv4, privateAddresses };
+module.exports = { classifyIPv4, privateAddresses, isVirtualAdapter };
