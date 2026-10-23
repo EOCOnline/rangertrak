@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.80-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.79-alpha...v0.99.80-alpha) (2026-10-23)
+
+
+### Features
+
+* **log:** E-220 message numbers and E-218 status mark (D-68) ([1e982a2](https://github.com/SteadyEOC/RangerTrak/commit/1e982a298a9f5f25456b83a1935c037a9682219e))
+
+
+### Bug Fixes
+
+* **log:** E-218 a cleared status mark stays cleared after a merge ([fbf195d](https://github.com/SteadyEOC/RangerTrak/commit/fbf195d5b183e30f5f1cf0eea9def317e96858e5))
+
 ### [0.99.79-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.78-alpha...v0.99.79-alpha) (2026-10-23)
 
 
