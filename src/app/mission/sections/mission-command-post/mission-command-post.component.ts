@@ -55,14 +55,28 @@ export class MissionCommandPostComponent implements OnDestroy {
   isPhone = signal(this.phoneMediaQuery.matches)
   private onPhoneMediaChange = (e: MediaQueryListEvent) => this.isPhone.set(e.matches)
 
-  /** D-61: what the Board is doing, in words, for the line under the switch. */
+  /**
+   * D-61 / E-216: what the Board is doing, in words, for the line under the switch. Four states only:
+   * Connected, Trying, Can't reach the Board (the cause follows, from `statusMessage()`), and Another device has it.
+   */
   boardStatus(): string {
     switch (this.publisher.state()) {
-      case 'claiming': return 'Connecting to the Board...'
-      case 'publishing': return 'Publishing to the Board.'
+      case 'claiming': return this.publisher.unreachable() ? "Can't reach the Board." : 'Trying to reach the Board...'
+      case 'publishing': return 'Connected to the Board.'
       case 'replaced': return replacedMessage(this.publisher.holder())
-      default: return ''
+      default: return this.publisher.unreachable() ? "Can't reach the Board." : ''
     }
+  }
+
+  /** The cause sentence under the status. Left out when the diagnosis block below already says the same thing. */
+  statusMessage(): string {
+    const m = this.publisher.message()
+    return m && m !== this.publisher.diagnosis()?.message ? m : ''
+  }
+
+  /** E-216: the Test connection button. The result shows in the diagnosis block under it. */
+  async testConnection(): Promise<void> {
+    await this.publisher.testConnection(this.form.commandPostServerUrl().value())
   }
 
   ngOnDestroy(): void {

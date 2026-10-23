@@ -196,4 +196,21 @@
     set a viewers' password on the same card, and photos can be shown there too if you switch
     that on.
   </rangertrak-expandable-section>
+
+  <rangertrak-expandable-section id="board-wont-connect" summary="The Board won't connect. What do the messages mean?">
+    On the Mission page's RangerTrak Board card, press <span class="ui">Test connection</span>. It asks the Board to
+    say hello and names the most likely reason in one sentence. These are best guesses, because a browser can't see
+    exactly why a connection failed. The usual ones: this device isn't on a network; it is on a different Wi-Fi from
+    the Board laptop (check the Wi-Fi name in the Board laptop's window); the browser hasn't accepted the Board's
+    certificate yet (press <span class="ui">Open the Board</span>, choose Advanced, then Proceed, and come back); the
+    browser is blocking access to devices on this network (allow local network access for this site in the
+    browser's site settings); or something answered that isn't a RangerTrak Board. <span class="ui">Details</span>
+    holds the technical line for whoever is helping.
+    <p>
+      On a viewer's screen, <strong>lost</strong> means that viewer can't reach the Board. The last reports stay on
+      screen, and it says when it lost the Board and asks whether the Board laptop is awake. <strong>Scribe
+      quiet</strong> means the Board is fine, but the scribe's device hasn't checked in for over 2 minutes, so the
+      log may be out of date.
+    </p>
+  </rangertrak-expandable-section>
 </mat-accordion>

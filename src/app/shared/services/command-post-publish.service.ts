@@ -10,6 +10,9 @@ import {
 } from '../../domain/board-client'
 import { normaliseBoardAddress } from '../../domain/board-address'
 import { BoardRetry } from '../../domain/board-retry'
+import { boardCause } from '../../domain/board-causes'
+import { QUICK_FAIL_MS, diagnoseBoard } from '../../domain/board-diagnosis'
+import type { BoardDiagnosis, HelloResult, LocalNetworkPermission } from '../../domain/board-diagnosis'
 import { liveRefs } from '../../domain/attachments'
 import { AttachmentStoreService } from './attachment-store.service'
 import { DevicePrefsService } from './device-prefs.service'
@@ -92,11 +95,8 @@ export type CommandPostMission = {
 }
 
 const POLL_MS = 5000
-/** E-216: a network failure faster than this is most likely a certificate not yet accepted, or no Board running. */
-const QUICK_FAIL_MS = 3000
-
-export const UNREACHABLE_QUICK = "Can't reach the Board. Most likely your browser hasn't accepted its certificate yet, or the Board isn't running."
-export const UNREACHABLE_SLOW = "Can't reach the Board. Most likely this device is on a different Wi-Fi, or a firewall or VPN is in the way."
+/** E-216: how long Test connection waits for the Board's /api/hello before calling it a timeout. */
+const HELLO_TIMEOUT_MS = 8000
 
 @Injectable({ providedIn: 'root' })
 export class CommandPostPublishService implements OnDestroy {
@@ -120,6 +120,12 @@ export class CommandPostPublishService implements OnDestroy {
   private unreachableSignal = signal<'quick' | 'slow' | undefined>(undefined)
   /** E-216: set while the last request to the Board failed at the network. `quick` points at the certificate. */
   readonly unreachable = this.unreachableSignal.asReadonly()
+  private diagnosisSignal = signal<BoardDiagnosis | undefined>(undefined)
+  /** E-216: the latest answer to "why can't I reach the Board?" (Test connection, or the automatic check after a failure). */
+  readonly diagnosis = this.diagnosisSignal.asReadonly()
+  private testingSignal = signal(false)
+  /** True while Test connection is waiting for the Board. */
+  readonly testing = this.testingSignal.asReadonly()
   private retry = new BoardRetry(() => this.retryNow())
   private listening = false
 
@@ -271,7 +277,7 @@ export class CommandPostPublishService implements OnDestroy {
     else this.log.info(`Board publishing: ${before} -> ${now}.`, this.id)
     if (now === 'publishing') this.startPolling()
     else this.stopPolling()
-    if (now === 'off' || now === 'replaced') { this.retry.stop(); this.unreachableSignal.set(undefined) }
+    if (now === 'off' || now === 'replaced') { this.retry.stop(); this.unreachableSignal.set(undefined); this.diagnosisSignal.set(undefined) }
     if (now === 'replaced') {
       // Stop for good until a person says otherwise: forget the key, and remember that we were replaced.
       this.key = ''
@@ -529,12 +535,27 @@ export class CommandPostPublishService implements OnDestroy {
     return { status: res.status, body }
   }
 
-  /** A request failed at the network (not an HTTP status). Say what is most likely, and try again later. */
+  /**
+   * A request failed at the network (not an HTTP status). Say what is most likely at once (the fast/slow guess),
+   * try again later, and - once per failure streak - ask the Board `GET /api/hello` to name the cause properly.
+   */
   private noteUnreachable(elapsedMs: number): void {
-    const kind = elapsedMs < QUICK_FAIL_MS ? 'quick' : 'slow'
-    this.unreachableSignal.set(kind)
-    this.messageSignal.set(kind === 'quick' ? UNREACHABLE_QUICK : UNREACHABLE_SLOW)
+    const firstOfStreak = !this.unreachableSignal()
+    const cause = elapsedMs < QUICK_FAIL_MS ? 'certificate-not-accepted' : 'different-network'
+    this.unreachableSignal.set(cause === 'certificate-not-accepted' ? 'quick' : 'slow')
+    this.messageSignal.set(boardCause(cause).message)
     if (this.active) this.retry.failed()
+    if (firstOfStreak) void this.diagnoseStreak()
+  }
+
+  /** The automatic Test connection after a failure: its answer replaces the guess, unless the Board turns out reachable. */
+  private async diagnoseStreak(): Promise<void> {
+    const base = this.active?.base
+    if (!base) return
+    const d = await this.runTest(base)
+    if (d.ok || !this.unreachableSignal()) return
+    this.unreachableSignal.set(d.cause === 'certificate-not-accepted' ? 'quick' : 'slow')
+    this.messageSignal.set(d.message)
   }
 
   /** Any HTTP answer at all means the Board was reached. */
@@ -542,7 +563,72 @@ export class CommandPostPublishService implements OnDestroy {
     if (!this.unreachableSignal()) return
     this.unreachableSignal.set(undefined)
     this.messageSignal.set('')
+    this.diagnosisSignal.set(undefined)
     this.retry.succeeded()
+  }
+
+  // ---- Test connection (E-216 slice 2) ----
+
+  /**
+   * The Mission card's Test connection button: asks the Board `GET {address}/api/hello` and names the most likely
+   * cause (domain/board-diagnosis.ts). Works with publishing off, from whatever address the scribe has typed.
+   * A browser cannot see why a request failed, so the answer is a best guess, worded that way.
+   */
+  async testConnection(address?: string): Promise<BoardDiagnosis> {
+    const typed = normaliseBoardAddress(address ?? this.settings?.commandPostServerUrl)
+    if (!typed.url) {
+      const d: BoardDiagnosis = {
+        ok: false, message: typed.error ?? 'Type the address the Board printed, then test it.', detail: '',
+      }
+      this.diagnosisSignal.set(d)
+      return d
+    }
+    return this.runTest(typed.url)
+  }
+
+  private async runTest(base: string): Promise<BoardDiagnosis> {
+    this.testingSignal.set(true)
+    try {
+      const localNetwork = await this.localNetworkPermission()
+      const hello = await this.askHello(base)
+      const d = diagnoseBoard({ online: navigator.onLine, localNetwork, hello })
+      this.diagnosisSignal.set(d)
+      this.log.info(`Board test: ${d.ok ? 'connected' : d.cause}.`, this.id)
+      return d
+    } finally {
+      this.testingSignal.set(false)
+    }
+  }
+
+  /** `GET /api/hello`. Never throws: every outcome is a HelloResult. */
+  private async askHello(base: string): Promise<HelloResult> {
+    const started = Date.now()
+    try {
+      const res = await fetch(`${base}/api/hello`, { signal: AbortSignal.timeout(HELLO_TIMEOUT_MS) })
+      let body: { app?: unknown, name?: unknown } | null = null
+      try { body = await res.json() } catch { /* not JSON: not a Board */ }
+      return body && body.app === 'rangertrak-board'
+        ? { kind: 'ok', name: typeof body.name === 'string' ? body.name : '' }
+        : { kind: 'not-board' }
+    } catch (e) {
+      const name = (e as { name?: string })?.name
+      if (name === 'TimeoutError' || name === 'AbortError') return { kind: 'timeout' }
+      return { kind: 'failed', elapsedMs: Date.now() - started }
+    }
+  }
+
+  /**
+   * Chrome's local network permission for this site. The name is still settling between browsers, so each is tried
+   * in turn (an unknown name throws); the first answer wins, else 'unknown'.
+   */
+  private async localNetworkPermission(): Promise<LocalNetworkPermission> {
+    for (const name of ['local-network-access', 'local-network']) {
+      try {
+        const status = await navigator.permissions.query({ name: name as PermissionName })
+        if (status.state === 'granted' || status.state === 'denied' || status.state === 'prompt') return status.state
+      } catch { /* this browser does not know that name */ }
+    }
+    return 'unknown'
   }
 
   private by(settings: MissionType) {

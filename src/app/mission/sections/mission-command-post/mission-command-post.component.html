@@ -62,18 +62,36 @@
           automatically - or copy it again from here later.</mat-hint>
       </mat-form-field>
 
-      <!-- D-61: where publishing stands. `replaced` keeps the switch on but stops sending, and offers
-           Take over, which claims the Board back with the password above. -->
-      @if (boardStatus() || publisher.message()) {
-        <p class="mission-command-post__status" role="status"
+      <!-- E-216 slice 2: Test connection works from whatever address is typed above, with publishing on or off. -->
+      <button mat-stroked-button type="button" class="mission-command-post__test" data-testid="board-test"
+        [disabled]="publisher.testing()" (click)="testConnection()">
+        <mat-icon>wifi_find</mat-icon>
+        {{ publisher.testing() ? 'Testing...' : 'Test connection' }}
+      </button>
+
+      <!-- D-61: where publishing stands. Four states only (E-216): Connected, Trying, Can't reach the Board plus the
+           cause in a sentence, and Another device has the Board (`replaced`, which offers Take over, which claims
+           the Board back with the password below). -->
+      @if (boardStatus() || statusMessage()) {
+        <p class="mission-command-post__status" role="status" data-testid="board-status"
           [class.mission-command-post__status--stopped]="publisher.state() === 'replaced' || publisher.state() === 'error'">
-          {{ boardStatus() }} {{ publisher.message() }}
+          {{ boardStatus() }} {{ statusMessage() }}
         </p>
       }
-      @if (publisher.unreachable() === 'quick') {
+      @if (publisher.diagnosis(); as d) {
+        <div class="mission-command-post__diagnosis" data-testid="board-diagnosis">
+          <p role="status" [class.mission-command-post__status--stopped]="!d.ok">{{ d.message }}</p>
+          @if (d.detail) {
+            <details class="mission-command-post__details">
+              <summary>Details</summary>
+              <p>{{ d.detail }}</p>
+            </details>
+          }
+        </div>
+      }
+      @if (publisher.unreachable() === 'quick' || publisher.diagnosis()?.cause === 'certificate-not-accepted') {
         <p class="mission-command-post__certificate">
           <a mat-stroked-button [href]="helloUrl()" target="_blank" rel="noopener">Open the Board</a>
-          If you see <em>Your connection is not private</em>, choose Advanced &rarr; Proceed, then come back.
         </p>
       }
       @if (publisher.state() === 'replaced') {

@@ -59,3 +59,22 @@
   color: var(--rt-notice-ink);
   font-weight: 600;
 }
+
+// E-216: Test connection and its one-sentence result, with the helper's "Details" folded away.
+.mission-command-post__test {
+  margin-top: 0.5rem;
+}
+
+.mission-command-post__diagnosis p {
+  margin: 0.5rem 0 0;
+}
+
+.mission-command-post__details {
+  margin-top: 0.25rem;
+  color: var(--rt-ink-2);
+  font-size: var(--rt-type-body-sm-size);
+
+  summary {
+    cursor: pointer;
+  }
+}
