@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.79-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.78-alpha...v0.99.79-alpha) (2026-10-23)
+
+
+### Features
+
+* **journal:** E-222 Journal tab, printed head, ICS-214 suggestions, guide ([ad7070d](https://github.com/SteadyEOC/RangerTrak/commit/ad7070d1dc20f087d61bac026081cb7ad50feab8))
+* **journal:** E-222 mission journal service, hash-chained (D-67), in backups ([56ad09e](https://github.com/SteadyEOC/RangerTrak/commit/56ad09e1c430f05889a7ff0d2e9d6ed0be51d12d))
+* **journal:** E-222 record mission actions at their call sites ([943aa72](https://github.com/SteadyEOC/RangerTrak/commit/943aa729e517fc1295b2f925e7249b1f1ccc315c))
+* **mission:** E-221 demo load, real mission, leave Demo and clear log use the dialog ([1aac9a4](https://github.com/SteadyEOC/RangerTrak/commit/1aac9a42a46c50063288541e5c6eb90af8d657bf))
+* **mission:** E-221 What to clear dialog, services clear photos and chosen notes ([d953c30](https://github.com/SteadyEOC/RangerTrak/commit/d953c30d7f402fe0bea3b25d31db025401e42ed1))
+
+
+### Bug Fixes
+
+* **log:** E-223 log levels by meaning, plain wording, no contents ([6f28c01](https://github.com/SteadyEOC/RangerTrak/commit/6f28c0135b8cefc4aedae0fdee6aa4c9b9e81453))
+
 ### [0.99.78-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.77-alpha...v0.99.78-alpha) (2026-10-22)
 
 
