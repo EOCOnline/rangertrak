@@ -1,7 +1,9 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
+import { MatDialog } from '@angular/material/dialog'
 
 import { ScenarioClock, readScenarioClock, scenarioInstantFromLocal, scenarioLabelAt, scenarioOffsetExplanation } from '../../domain/scenario'
+import { ClearContext, ClearCounts, ClearId, DEFAULT_REPLACE_CLEAR, buildClearRows, countNotes, noteMatcher } from '../../domain/clear-choices'
 import { UsageInputs, UsageState, deriveUsageState, effectiveMode } from '../../domain/usage-state'
 import { setQuiet } from '../quiet-flag'
 import { clearActiveDemoScenario, demoRecord } from '../mapping/demo-map'
@@ -15,6 +17,7 @@ import { LogService } from './log.service'
 import { MissionModeType, MissionType } from './mission.interface'
 import { MissionService } from './mission.service'
 import { RadioLogService } from './radio-log.service'
+import { RangerPhotoService } from './ranger-photo.service'
 import { RangerService } from './ranger.service'
 
 /** How often the time-based edges (a report aging past 12 h, an op period about to start)
@@ -97,6 +100,8 @@ export class UsageStateService {
 
   private router = inject(Router)
   private attachmentStore = inject(AttachmentStoreService)
+  private rangerPhotoService = inject(RangerPhotoService)
+  private dialog = inject(MatDialog)
 
   constructor(
     private missionService: MissionService,
@@ -131,17 +136,54 @@ export class UsageStateService {
   }
 
   /**
-   * "Start a real mission": clears the demo (roster, radio log entries, locations, after-action
-   * notes, settings back to defaults) rather than relabelling demo data as real, then records the
-   * chosen mode, if any. Destructive: the caller confirms first and reloads after it resolves,
-   * as for loading a demo.
+   * E-221: the live counts the "What to clear" dialog shows, from the services that hold the data.
+   * Notes and 214 lines are counted apart, as on the Restore preview.
    */
-  async startRealMission(mode?: MissionModeType): Promise<void> {
+  clearCounts(): ClearCounts {
+    return {
+      rangers: this.rangerService.rangers.length,
+      photos: this.rangerPhotoService.count(),
+      entries: this.radioLogService.getCurrentRadioLog().logEntries.length,
+      places: this.locationService.getCurrentLocations().length,
+      ...countNotes(this.aarNoteService.getCurrentNotes()),
+    }
+  }
+
+  /**
+   * E-221: asks what to clear before an action that replaces or empties the mission (Load a demo,
+   * Start a real mission, leaving Demo, Clear radio log). Returns the ids to clear (the locked rows
+   * plus the ticked ones), or null if the operator cancelled. In a live mission the dialog carries
+   * E-168's guard. The dialog is loaded when first needed.
+   */
+  async chooseWhatToClear(context: ClearContext, title: string, confirmLabel: string): Promise<ReadonlySet<ClearId> | null> {
+    const attachmentNote = await this.attachmentStore.deletionNotice([])
+    const { ClearDialogComponent } = await import('../clear-dialog/clear-dialog.component')
+    const ref = this.dialog.open(ClearDialogComponent, {
+      width: '36rem', maxWidth: '95vw',
+      data: {
+        title, confirmLabel, context, attachmentNote,
+        rows: buildClearRows(context, this.clearCounts()),
+        live: this.state() === 'live',
+        missionName: this.missionService.settings.mission,
+      },
+    })
+    return (await new Promise<ReadonlySet<ClearId> | null | undefined>(resolve => ref.afterClosed().subscribe(r => resolve(r)))) ?? null
+  }
+
+  /**
+   * "Start a real mission": clears the demo (roster, ranger photos, radio log entries, locations,
+   * settings back to defaults) rather than relabelling demo data as real, then records the chosen
+   * mode, if any. E-221: the notes, 214 lines and 214 header go only when `clear` names them
+   * (default: the incident notes, lines and header; RangerTrak notes stay). Destructive: the
+   * caller confirms first and reloads after it resolves, as for loading a demo.
+   */
+  async startRealMission(mode?: MissionModeType, clear: ReadonlySet<ClearId> = DEFAULT_REPLACE_CLEAR): Promise<void> {
     this.rangerService.deleteAllRangers()
+    await this.rangerPhotoService.clear()   // keyed by callsign: real photos must not outlive the roster
     await this.radioLogService.deleteAllRadioLogEntries()
     this.locationService.deleteAllLocations()
-    this.aarNoteService.deleteAllNotes()
-    this.activityLogHeaderService.clear()
+    this.aarNoteService.deleteWhere(noteMatcher(clear))
+    if (clear.has('header')) this.activityLogHeaderService.clear()
     this.missionService.ResetDefaults()   // initMission() omits scenarioClock, so a real mission starts without one (D-66)
     clearActiveDemoScenario()
     if (mode) this.setMode(mode)
@@ -164,12 +206,10 @@ export class UsageStateService {
     if (this.mode() === 'demo') {
       // 2026-10-05, John: "I clicked Exercise and it asked whether to start a real mission" - the
       // question names the mode picked; "real" read as Incident.
-      const attachmentNote = await this.attachmentStore.deletionNotice([])
       const start = mode === 'exercise' ? 'Leave the demo and start an exercise?' : 'Leave the demo and start a real incident?'
-      if (!confirm(start + '\n\nThis clears the demo data (rangers, radio log entries and '
-        + 'locations) and resets the mission settings to their defaults. Demo data is not '
-        + 'carried over.' + attachmentNote)) return
-      await this.startRealMission(mode)
+      const clear = await this.chooseWhatToClear('replace', start, mode === 'exercise' ? 'Start exercise' : 'Start incident')
+      if (!clear) return
+      await this.startRealMission(mode, clear)
       window.location.reload()
       return
     }

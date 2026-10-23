@@ -9,8 +9,12 @@ import { newRangerUid } from '../../domain/ranger-migration'
 import type { TacticalCallType } from './mission.interface'
 import { recordStore } from '../storage/record-store'
 import { setActiveDemoScenario } from '../mapping/demo-map'
+import { ClearId, DEFAULT_REPLACE_CLEAR, noteMatcher } from '../../domain/clear-choices'
 import { DEFAULT_SAMPLE_SCENARIO, SampleScenarioId } from './sample-scenarios'
 import { AttachmentStoreService } from './attachment-store.service'
+import { AarNoteService } from './aar-note.service'
+import { ActivityLogHeaderService } from './activity-log-header.service'
+import { RangerPhotoService } from './ranger-photo.service'
 
 // Re-exported so the spec keeps one import. Anything that must stay out of the eager bundle
 // imports sample-scenarios.ts directly (E-192).
@@ -143,6 +147,9 @@ export class SampleDataService {
   }
 
   private attachmentStore = inject(AttachmentStoreService)
+  private aarNoteService = inject(AarNoteService)
+  private activityLogHeaderService = inject(ActivityLogHeaderService)
+  private rangerPhotoService = inject(RangerPhotoService)
 
   constructor(
     private missionService: MissionService,
@@ -175,8 +182,15 @@ export class SampleDataService {
    * exactly like Entry's own field-mode GPS auto-fill) before it can generate any points.
    * The other three scenarios resolve synchronously under the hood but still return a
    * Promise, so every caller has exactly one code path to await rather than a branch.
+   *
+   * E-221: ranger photos always go too (they are keyed by callsign, so a real photo would show
+   * under a demo roster). The notes, 214 lines and 214 header go only when `clear` names them;
+   * left out, that is the incident notes, lines and header (RangerTrak notes stay).
    */
-  public async loadSampleMission(scenario: SampleScenarioId = DEFAULT_SAMPLE_SCENARIO): Promise<void> {
+  public async loadSampleMission(
+    scenario: SampleScenarioId = DEFAULT_SAMPLE_SCENARIO,
+    clear: ReadonlySet<ClearId> = DEFAULT_REPLACE_CLEAR,
+  ): Promise<void> {
     const data = await this.buildScenario(scenario)
 
     // Settings first, then rangers, then reports - the same ordering (and for the same
@@ -216,6 +230,9 @@ export class SampleDataService {
     // E-194 / D-60 item 8: a demo replaces the entries, so bytes the old ones named go.
     await this.attachmentStore.sweepOrphans(radioLog.logEntries)
     this.missionLocationService.replaceAllLocations(data.locations)
+    await this.rangerPhotoService.clear()
+    this.aarNoteService.deleteWhere(noteMatcher(clear))
+    if (clear.has('header')) this.activityLogHeaderService.clear()
 
     this.log.warn(
       `Loaded sample mission "${scenario}": ${data.rangers.length} rangers, `

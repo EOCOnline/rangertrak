@@ -6,6 +6,9 @@ import { MissionService } from './mission.service';
 import { RangerService } from './ranger.service';
 import { RadioLogService } from './radio-log.service';
 import { MissionLocationService } from './mission-location.service';
+import { AarNoteService } from './aar-note.service';
+import { ActivityLogHeaderService } from './activity-log-header.service';
+import { RangerPhotoService } from './ranger-photo.service';
 // E-122 Phase 2a: rangers/radioLog/locations now live behind RecordStore, not localStorage
 // directly - see that module's own doc comment.
 import { recordStore } from '../storage/record-store';
@@ -243,6 +246,30 @@ describe('SampleDataService', () => {
       expect(commandPost).toBeDefined();
       expect(commandPost!.location.lat).toBeCloseTo(10, 6);
       expect(commandPost!.location.lng).toBeCloseTo(20, 6);
+    });
+
+    it('E-221: clears ranger photos always, and the notes, 214 lines and header it is told to', async () => {
+      const notes = TestBed.inject(AarNoteService);
+      const header = TestBed.inject(ActivityLogHeaderService);
+      const photos = TestBed.inject(RangerPhotoService);
+      const clearPhotos = spyOn(photos, 'clear').and.resolveTo();
+      notes.addNote('incident note', 'incident', 'Map');
+      notes.addNote('app note', 'app', 'Map');
+      notes.addNote('a 214 line', 'incident', 'Map', 'activity');
+      header.save({ name: 'Pat', icsPosition: 'Scribe', homeAgency: 'CERT', resources: [] });
+
+      await TestBed.inject(SampleDataService).loadSampleMission('vashon');
+
+      // Defaults: the incident notes, lines and header go; the RangerTrak note stays.
+      expect(notes.notes().map(n => n.text)).toEqual(['app note']);
+      expect(header.getCurrentHeader().name).toBe('');
+      expect(clearPhotos).toHaveBeenCalledTimes(1);
+
+      // Told to clear nothing optional: the note stays; photos are cleared regardless.
+      notes.addNote('another incident note', 'incident', 'Map');
+      await TestBed.inject(SampleDataService).loadSampleMission('vashon', new Set());
+      expect(notes.notes().map(n => n.text)).toEqual(['app note', 'another incident note']);
+      expect(clearPhotos).toHaveBeenCalledTimes(2);
     });
 
     it('does not call any geocoding/network address lookup - offline by construction', async () => {

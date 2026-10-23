@@ -80,6 +80,23 @@ describe('AarNoteService (E-116)', () => {
     expect(service.notes().filter(n => n.kind === 'activity').length).toBe(2);
   });
 
+  // E-221
+  it('deleteWhere removes only the notes the predicate accepts, and leaves the rest', () => {
+    const service = TestBed.inject(AarNoteService);
+    service.addNote('about the incident', 'incident', 'Map');
+    service.addNote('about the app', 'app', 'Map');
+    service.addNote('Shift change', 'incident', 'Map', 'activity');
+
+    service.deleteWhere(n => n.kind === 'aar' && n.about === 'app');
+    expect(service.notes().map(n => n.text)).toEqual(['about the incident', 'Shift change']);
+
+    service.deleteWhere(() => false);
+    expect(service.notes().length).toBe(2);
+    service.deleteWhere(n => n.kind === 'activity');
+    expect(service.notes().map(n => n.text)).toEqual(['about the incident']);
+    expect(JSON.parse(recordStore.getItem('aarNotes')!).notes.length).toBe(1);
+  });
+
   it('reads schema 1 storage as AAR notes', () => {
     recordStore.setItem('aarNotes', JSON.stringify({ schemaVersion: 1, notes: [{ uid: 'a', createdAt: '2026-09-27T10:00:00.000Z', text: 'old', page: 'Map', about: 'incident' }] }));
     expect(TestBed.inject(AarNoteService).notes()[0].kind).toBe('aar');

@@ -1,0 +1,107 @@
+import type { AarNoteType } from '../shared/services/aar-note.interface'
+
+/**
+ * E-221: what a "this replaces the mission" or "clear the radio log" action may clear. The
+ * dialog (shared/clear-dialog) shows these rows; the services take the set of ids that were
+ * chosen. Pure rules here, so the defaults and the counts are testable without a dialog.
+ */
+export type ClearId =
+  | 'roster' | 'photos' | 'log' | 'places' | 'settings'
+  | 'incidentNotes' | 'lines' | 'header'
+  | 'appNotes'
+
+/** `replace`: a demo load / Start a real mission / leaving Demo. `log`: Clear radio log. */
+export type ClearContext = 'replace' | 'log'
+
+export interface ClearRow {
+  id: ClearId
+  label: string
+  /** How many there are, or null for a row with no count (settings, the 214 header). */
+  count: number | null
+  /** Cannot be kept: the action always clears it. Shown ticked and disabled. */
+  locked: boolean
+  checked: boolean
+}
+
+/** The live counts a caller passes in. */
+export interface ClearCounts {
+  rangers: number
+  photos: number
+  entries: number
+  places: number
+  /** `kind === 'aar'` and `about === 'incident'`. */
+  incidentNotes: number
+  /** ICS-214 activity lines (`kind === 'activity'`). */
+  lines: number
+  /** `kind === 'aar'` and `about === 'app'`. */
+  appNotes: number
+}
+
+const NOUNS: Partial<Record<ClearId, [string, string]>> = {
+  roster: ['ranger', 'rangers'],
+  photos: ['photo', 'photos'],
+  log: ['entry', 'entries'],
+  places: ['place', 'places'],
+  incidentNotes: ['note', 'notes'],
+  lines: ['line', 'lines'],
+  appNotes: ['note', 'notes'],
+}
+
+/** "42 rangers", "1 note"; '' for a row with no count. */
+export function countText(id: ClearId, count: number | null): string {
+  if (count === null) return ''
+  const noun = NOUNS[id]
+  return noun ? `${count} ${count === 1 ? noun[0] : noun[1]}` : String(count)
+}
+
+/**
+ * The rows for one context, in display order. Rows with a count of 0 are left out; rows with no
+ * count (settings, the 214 header) always show. For `replace` the roster, photos, log, places and
+ * settings are locked; for `log` only the radio log is, and nothing else is ticked (John 2026-10-23:
+ * be conservative, offer the choice).
+ */
+export function buildClearRows(context: ClearContext, c: ClearCounts): ClearRow[] {
+  const replace = context === 'replace'
+  const rows: ClearRow[] = replace
+    ? [
+      { id: 'roster', label: 'Roster', count: c.rangers, locked: true, checked: true },
+      { id: 'photos', label: 'Ranger photos', count: c.photos, locked: true, checked: true },
+      { id: 'log', label: 'Radio log entries (+ attachments)', count: c.entries, locked: true, checked: true },
+      { id: 'places', label: 'Locations', count: c.places, locked: true, checked: true },
+      { id: 'settings', label: 'Mission settings & tactical calls', count: null, locked: true, checked: true },
+    ]
+    : [
+      { id: 'log', label: 'Radio log entries (+ attachments)', count: c.entries, locked: true, checked: true },
+    ]
+  rows.push(
+    { id: 'incidentNotes', label: 'After Action notes: this incident', count: c.incidentNotes, locked: false, checked: replace },
+    { id: 'lines', label: 'ICS-214 activity lines', count: c.lines, locked: false, checked: replace },
+  )
+  if (replace) rows.push({ id: 'header', label: 'ICS-214 header (name, position, unit)', count: null, locked: false, checked: true })
+  rows.push({ id: 'appNotes', label: 'After Action notes: about RangerTrak', count: c.appNotes, locked: false, checked: false })
+  return rows.filter(r => r.count === null || r.count > 0)
+}
+
+/** The ids a caller gets when the operator accepts the dialog as shown: locked rows plus ticked ones. */
+export function chosenIds(rows: readonly ClearRow[], ticked: ReadonlySet<ClearId>): Set<ClearId> {
+  return new Set(rows.filter(r => r.locked || ticked.has(r.id)).map(r => r.id))
+}
+
+/** What a service clears when its caller names nothing: the dialog's defaults for a replace. */
+export const DEFAULT_REPLACE_CLEAR: ReadonlySet<ClearId> = new Set<ClearId>(['incidentNotes', 'lines', 'header'])
+
+/** True for the notes the chosen ids say to delete. Incident notes and 214 lines are told apart by kind. */
+export function noteMatcher(clear: ReadonlySet<ClearId>): (n: AarNoteType) => boolean {
+  return n => (n.kind === 'activity' && clear.has('lines'))
+    || (n.kind !== 'activity' && n.about === 'incident' && clear.has('incidentNotes'))
+    || (n.kind !== 'activity' && n.about === 'app' && clear.has('appNotes'))
+}
+
+/** The counts for the three note rows, from the stored notes. */
+export function countNotes(notes: readonly AarNoteType[]): Pick<ClearCounts, 'incidentNotes' | 'lines' | 'appNotes'> {
+  return {
+    incidentNotes: notes.filter(n => n.kind !== 'activity' && n.about === 'incident').length,
+    lines: notes.filter(n => n.kind === 'activity').length,
+    appNotes: notes.filter(n => n.kind !== 'activity' && n.about === 'app').length,
+  }
+}

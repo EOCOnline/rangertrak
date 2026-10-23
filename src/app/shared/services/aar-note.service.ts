@@ -12,10 +12,10 @@ import { recordStore } from '../storage/record-store'
  * E-116: per-device storage for After Action notes. Same shape as MissionLocationService -
  * signal + ReplaySubject, a versioned wrapper in RecordStore, uid-keyed CRUD.
  *
- * Notes are NOT cleared when the radio log is deleted or a demo is loaded: they are the
- * debrief's raw material, and losing them as a side effect of another button would be worse
- * than having to delete them on the After Action page. Restore mission replaces them, since a
- * backup carries them.
+ * Notes are not cleared silently when the radio log is deleted or a demo is loaded: they are the
+ * debrief's raw material. Those actions ask what to clear first (E-221, deleteWhere below), and
+ * Clear radio log keeps every note unless the operator ticks them. Restore mission replaces
+ * them, since a backup carries them.
  */
 @Injectable({ providedIn: 'root' })
 export class AarNoteService {
@@ -123,11 +123,22 @@ export class AarNoteService {
   }
 
   /**
-   * E-04 / D-63: deletes every note of one kind, so "Delete all notes" on the After Action page
+   * E-04 / D-63: deletes every note of one kind, so "Delete all after-action notes" on the After Action page
    * leaves the ICS-214 lines alone (and the other way round).
    */
   deleteAllOfKind(kind: AarNoteKind): void {
     this.list = this.list.filter(n => n.kind !== kind)
+    this.saveAndPublish()
+  }
+
+  /**
+   * E-221: deletes every note the predicate accepts (the "What to clear" dialog's choices; see
+   * noteMatcher() in domain/clear-choices.ts). Saves only when something went.
+   */
+  deleteWhere(pred: (n: AarNoteType) => boolean): void {
+    const kept = this.list.filter(n => !pred(n))
+    if (kept.length === this.list.length) return
+    this.list = kept
     this.saveAndPublish()
   }
 
