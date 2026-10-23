@@ -29,6 +29,21 @@ describe('fillIcs213Pdf', () => {
     expect((await PDFDocument.load(stamped)).getPageCount()).toBe(1)
   })
 
+  // E-220 / D-68: the number is small text in the top margin; the form's fields are not touched.
+  it('prints the message number in the margin only when the entry has one (E-220)', async () => {
+    const fields = { '4 Subject': 'Road collapse' }
+    const msgNo = { mission: '26-0142', opPeriod: 'OP 2', station: 'A', seq: 7 }
+    const plain = await fillIcs213Pdf(templateBytes, fields, false)
+    const numbered = await fillIcs213Pdf(templateBytes, fields, false, false, [], msgNo)
+
+    expect(numbered.length).toBeGreaterThan(plain.length)
+    expect((await PDFDocument.load(numbered)).getPageCount()).toBe(1)
+    // The form's own fields are exactly as without the number.
+    expect((await PDFDocument.load(numbered)).getForm().getTextField('4 Subject').getText()).toBe('Road collapse')
+    // An entry with no number draws nothing.
+    expect((await fillIcs213Pdf(templateBytes, fields, false, false, [], undefined)).length).toBe(plain.length)
+  })
+
   // E-194: attachments are listed after the form; the form's own page is untouched.
   it('lists attachments on extra pages, running to more pages when the list is long (E-194)', async () => {
     const fields = { '4 Subject': 'Road collapse' }

@@ -12,6 +12,7 @@ import { AarNoteService } from './aar-note.service';
 import { ActivityLogHeaderService } from './activity-log-header.service';
 import { RangerPhotoService } from './ranger-photo.service';
 import { MissionJournalService } from './mission-journal.service';
+import { DevicePrefsService } from './device-prefs.service';
 import { verifyJournal } from '../../domain/mission-journal';
 // E-122 Phase 2a: the roster (and radio log) now live behind RecordStore, not localStorage
 // directly - see that module's own doc comment.
@@ -66,6 +67,32 @@ describe('BackupService', () => {
       expect(payload.radioLog.logEntries.some(r => r.notes === 'export test report')).toBeTrue();
       expect((payload.radioLog as any).bounds).toBeUndefined();
       expect(payload.exportedAt).toBeTruthy();
+    });
+  });
+
+  describe('station letter (E-220, D-68)', () => {
+    it('is carried by a backup, and a restore puts it back on the device', async () => {
+      const prefs = new DevicePrefsService();
+      prefs.setMsgStation('D');
+      const backup = TestBed.inject(BackupService);
+      const payload = await backup.buildExportPayload();
+      expect(payload.devicePrefs).toEqual({ msgStation: 'D' });
+
+      localStorage.removeItem('rt-msg-station');
+      expect(prefs.getMsgStation()).toBe('A');
+      await backup.importMission(JSON.parse(JSON.stringify(payload)));
+      expect(prefs.getMsgStation()).toBe('D');
+    });
+
+    it('is left alone by a backup made before it existed', async () => {
+      const prefs = new DevicePrefsService();
+      prefs.setMsgStation('E');
+      const backup = TestBed.inject(BackupService);
+      const payload = JSON.parse(JSON.stringify(await backup.buildExportPayload()));
+      delete payload.devicePrefs;
+
+      await backup.importMission(payload);
+      expect(prefs.getMsgStation()).toBe('E');
     });
   });
 

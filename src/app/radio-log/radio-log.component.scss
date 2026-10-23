@@ -139,6 +139,20 @@
     th {
       background: #eee;
     }
+
+    // E-218: an unset mark prints as a blank box, so a paper copy can be ticked by hand.
+    .ics309-form__mark {
+      width: 1.6rem;
+      text-align: center;
+    }
+
+    .ics309-form__box-empty {
+      display: inline-block;
+      width: 0.8rem;
+      height: 0.8rem;
+      border: 1px solid #000;
+      vertical-align: middle;
+    }
   }
 
   // The standard-form layout (2026-09-25). Same fixed-black-on-white rule as above: paper
@@ -210,6 +224,21 @@
 
     .ics309-form__msgno {
       width: 6%;
+    }
+
+    // E-218 / E-220: our own leftmost columns, narrow so the table still fits portrait and landscape.
+    .ics309-form__mark {
+      width: 4%;
+      text-align: center;
+    }
+
+    .ics309-form__ownno {
+      width: 7%;
+      white-space: nowrap;
+    }
+
+    .ics309-form__context {
+      font-weight: 400;
     }
 
     .ics309-form__via {

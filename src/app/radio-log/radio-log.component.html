@@ -347,7 +347,7 @@
   @if (ics309Log(); as log) {
     @if (printLayout() === 'form') {
     <!-- The standard ICS 309 layout (see printLayout's comment in the .ts). Boxes RangerTrak
-         has no data for - 3, 4, the TO column, both Msg # columns, the signature - print
+         has no data for - 3, 4, the TO column, FEMA's two Msg # columns, the signature - print
          empty, to be filled in by hand the way the paper form is. -->
     <div class="ics309-print ics309-form">
       <table class="ics309-form__box">
@@ -382,8 +382,10 @@
 
       <table class="ics309-form__log">
         <thead>
-          <tr><th colspan="6" class="ics309-form__section">5. Communications Log</th></tr>
+          <tr><th colspan="8" class="ics309-form__section">5. Communications Log@if (log.header.msgNoContext) {<span class="ics309-form__context" data-testid="ics309-msgno-context"> &nbsp; {{ log.header.msgNoContext }}</span>}</th></tr>
           <tr>
+            <th rowspan="2" class="ics309-form__mark" title="Status mark">&#10003;</th>
+            <th rowspan="2" class="ics309-form__ownno">Msg #</th>
             <th rowspan="2" class="ics309-form__time">Time<br />(24:00)</th>
             <th colspan="2">FROM</th>
             <th colspan="2">TO</th>
@@ -399,6 +401,8 @@
         <tbody>
           @for (row of log.rows; track $index) {
             <tr>
+              <td class="ics309-form__mark" [attr.title]="row.markLabel || null">@if (row.mark) { {{ row.mark }} } @else {<span class="ics309-form__box-empty"></span>}</td>
+              <td class="ics309-form__ownno">{{ row.msgNo }}</td>
               <td>{{ formatLogTime(row.time) }}</td>
               <td>{{ row.from }}</td>
               <td></td>
@@ -409,7 +413,7 @@
           }
           <!-- A few empty rows for traffic logged by hand after printing, as on the paper form. -->
           @for (blank of [1, 2, 3]; track blank) {
-            <tr class="ics309-form__blank"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr class="ics309-form__blank"><td><span class="ics309-form__box-empty"></span></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
           }
         </tbody>
       </table>
@@ -431,7 +435,7 @@
       @if (scenarioLine(log.header.datePrepared); as sc) {
       <p class="ics309-form__note" data-testid="ics309-scenario">{{ sc }} (times in the log are real)</p>
       }
-      <p class="ics309-form__note">Printed from RangerTrak. Msg # and boxes 3–4 are left for hand entry. <span class="ics309-journal" data-testid="ics309-journal">{{ journal.shortHead() }}</span></p>
+      <p class="ics309-form__note">Printed from RangerTrak. The first Msg # is RangerTrak's own number; the two under FROM and TO, and boxes 3–4, are left for hand entry. <span class="ics309-journal" data-testid="ics309-journal">{{ journal.shortHead() }}</span></p>
     </div>
     } @else {
     <div class="ics309-print">
@@ -441,6 +445,9 @@
       }
       @if (log.header.operationalPeriod) {
         <p>Operational Period: {{ log.header.operationalPeriod }}</p>
+      }
+      @if (log.header.msgNoContext) {
+        <p data-testid="ics309-msgno-context">{{ log.header.msgNoContext }}</p>
       }
       <p>Prepared: {{ formatLogDateTime(log.header.datePrepared) }}
         @if (log.header.preparedBy) { by {{ log.header.preparedBy }} }
@@ -452,6 +459,8 @@
       <table>
         <thead>
           <tr>
+            <th class="ics309-form__mark" title="Status mark">&#10003;</th>
+            <th>Msg #</th>
             <th>Time</th>
             <th>From</th>
             <th>To</th>
@@ -462,6 +471,8 @@
         <tbody>
           @for (row of log.rows; track $index) {
             <tr>
+              <td class="ics309-form__mark" [attr.title]="row.markLabel || null">@if (row.mark) { {{ row.mark }} } @else {<span class="ics309-form__box-empty"></span>}</td>
+              <td>{{ row.msgNo }}</td>
               <td>{{ formatLogTime(row.time) }}</td>
               <td>{{ row.from }}</td>
               <td>{{ row.to }}</td>
@@ -469,7 +480,7 @@
               <td>{{ row.message }}@for (a of row.attachments; track a.sha256) {<span class="ics309-attach">📎 {{ a.name }} ({{ a.fingerprint }})@if (a.smallerCopy) {<small> - {{ a.smallerCopy }}</small>}@if (a.isImage && printThumbs()[a.sha256]) {<img [src]="printThumbs()[a.sha256]" alt="" />}</span>}</td>
             </tr>
           } @empty {
-            <tr><td colspan="5">No reports in this range.</td></tr>
+            <tr><td colspan="7">No reports in this range.</td></tr>
           }
         </tbody>
       </table>

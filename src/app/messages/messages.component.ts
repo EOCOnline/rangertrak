@@ -13,6 +13,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 import { formatReportTime } from '../shared'
 import { fillIcs213Pdf, ics213FieldsFromReport } from '../shared/export/ics213-pdf'
 import { formatStation } from '../domain/station-label'
+import { formatMsgNoFull, formatMsgNoShort, HANDLED_MARK_GLYPH, HANDLED_MARK_LABEL } from '../domain/msg-no'
 // 2026-09-28, John (item 8b): "one click to the print dialog" - the same iframe/print()
 // machinery entry.component.ts's auto-print-on-submit already uses (D1, 2026-09-22). Static
 // import, not the dynamic one entry.component.ts uses: /messages is already its own lazy
@@ -148,6 +149,29 @@ export class MessagesComponent implements OnInit, OnDestroy {
     return formatReportTime(date)
   }
 
+  /** E-220 / D-68: 'A007', beside the time; blank for an entry with no number. */
+  msgNoShort(report: RadioLogEntryType): string {
+    return formatMsgNoShort(report.msgNo)
+  }
+
+  msgNoFull(report: RadioLogEntryType): string {
+    return formatMsgNoFull(report.msgNo)
+  }
+
+  /** E-218: the status mark's glyph and words; blank when unset. */
+  markGlyph(report: RadioLogEntryType): string {
+    return report.handled ? HANDLED_MARK_GLYPH[report.handled.mark] : ''
+  }
+
+  markLabel(report: RadioLogEntryType): string {
+    return report.handled ? HANDLED_MARK_LABEL[report.handled.mark] : ''
+  }
+
+  /** E-218: one step round blank, handled, passed on, needs action, blank; saved at once. */
+  cycleMark(report: RadioLogEntryType): void {
+    this.radioLogService.cycleHandledMark(report)
+  }
+
   /** E-165: From / To station in the shared "CERT Team 1 (K7ABC)" format; blank when none recorded. */
   stationFrom(report: RadioLogEntryType): string {
     return formatStation(report.tacticalCall, report.callsign)
@@ -224,7 +248,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
     }
     const templateBytes = new Uint8Array(await res.arrayBuffer())
     return fillIcs213Pdf(templateBytes, ics213FieldsFromReport(report, this.settings), true, this.settings?.missionMode === 'exercise',
-      await ics213AttachmentsFor(report, this.attachmentStore))
+      await ics213AttachmentsFor(report, this.attachmentStore), report.msgNo)
   }
 
   /**

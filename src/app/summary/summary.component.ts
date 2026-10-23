@@ -11,6 +11,7 @@ import {
 } from '../domain/mission-summary'
 import { formatStation } from '../domain/station-label'
 import { printAttachments } from '../domain/attachments'
+import { formatMsgNoFull, formatMsgNoShort } from '../domain/msg-no'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
 import { MissionJournalService } from '../shared/services/mission-journal.service'
 import { MatIconModule } from '@angular/material/icon'
@@ -311,6 +312,10 @@ export class SummaryComponent implements OnDestroy {
   })
 
   // ---- formatting ----
+  /** E-220: the message number beside the time, short ('A007'); the full form is its tooltip. */
+  msgNoShort(e: { msgNo?: RadioLogEntryType['msgNo'] }): string { return formatMsgNoShort(e.msgNo) }
+  msgNoFull(e: { msgNo?: RadioLogEntryType['msgNo'] }): string { return formatMsgNoFull(e.msgNo) }
+
   fmt(d: Date | string | undefined | null): string {
     const date = d ? new Date(d) : null
     if (!date || isNaN(date.getTime())) return ''

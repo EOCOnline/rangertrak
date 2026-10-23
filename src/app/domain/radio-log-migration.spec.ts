@@ -180,3 +180,55 @@ describe('migrateRadioLog date rehydration', () => {
       .sort((a, b) => a.date.getTime() - b.date.getTime())).not.toThrow();
   });
 });
+
+/** E-220 / D-68: schema 2 -> 3 numbers the unnumbered entries. */
+describe('migrateRadioLog 2 -> 3 (message numbers)', () => {
+  const entry = (id: number, minutes: number, extra: Record<string, unknown> = {}) => ({
+    id, uid: `u${id}`, callsign: 'A', status: 'Normal', notes: '',
+    location: { lat: 0, lng: 0, address: '', derivedFromAddress: false },
+    date: new Date(Date.UTC(2026, 9, 23, 10, minutes)), ...extra,
+  });
+  const v2 = (logEntries: unknown[]) => ({
+    version: '0.99.79', schemaVersion: 2, date: new Date(), event: '',
+    bounds: { north: 1, south: -1, east: 1, west: -1 }, numReport: logEntries.length, maxId: logEntries.length,
+    filter: '', logEntries,
+  });
+
+  it('numbers entries in time order as station A with the current mission and op period', () => {
+    // Stored out of time order on purpose.
+    const result = migrateRadioLog(v2([entry(0, 30), entry(1, 10), entry(2, 20)]), { mission: '26-0142', opPeriod: 'OP 2' })!;
+
+    expect(result.schemaVersion).toBe(3);
+    expect(result.logEntries.map(e => e.msgNo!.seq)).toEqual([3, 1, 2]);
+    expect(result.logEntries[0].msgNo).toEqual({ mission: '26-0142', opPeriod: 'OP 2', station: 'A', seq: 3 });
+    expect(result.msgNoHighWater!['OP 2\u0000A']).toBe(3);
+  });
+
+  it('keeps a number an entry already has and numbers the rest after it', () => {
+    const had = { mission: 'm', opPeriod: 'OP 2', station: 'A', seq: 5 };
+    const result = migrateRadioLog(v2([entry(0, 10, { msgNo: had }), entry(1, 20)]), { mission: 'm', opPeriod: 'OP 2' })!;
+
+    expect(result.logEntries[0].msgNo).toEqual(had);
+    expect(result.logEntries[1].msgNo!.seq).toBe(6);
+  });
+
+  it('is inert on a second run', () => {
+    const once = migrateRadioLog(v2([entry(0, 10), entry(1, 20)]))!;
+    const twice = migrateRadioLog(JSON.parse(JSON.stringify(once)))!;
+
+    expect(twice.logEntries.map(e => e.msgNo)).toEqual(once.logEntries.map(e => e.msgNo));
+    expect(twice.msgNoHighWater).toEqual(once.msgNoHighWater);
+  });
+
+  it('numbers nothing on a field phone, which stamps nothing', () => {
+    const result = migrateRadioLog(v2([entry(0, 10)]), { number: false })!;
+    expect(result.logEntries[0].msgNo).toBeUndefined();
+  });
+
+  it("restores a status mark's time after a round trip", () => {
+    const marked = entry(0, 10, { msgNo: { mission: '', opPeriod: '', station: 'A', seq: 1 }, handled: { mark: 'handled', at: new Date(Date.UTC(2026, 9, 23, 11)) } });
+    const result = migrateRadioLog(JSON.parse(JSON.stringify({ ...v2([marked]), schemaVersion: 3 })))!;
+
+    expect(result.logEntries[0].handled!.at instanceof Date).toBeTrue();
+  });
+});

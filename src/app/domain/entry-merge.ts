@@ -1,5 +1,7 @@
 import { rehydrateDateFields } from './json-dates'
-import { RADIO_LOG_ENTRY_DATE_FIELDS } from './radio-log-migration'
+import { RADIO_LOG_ENTRY_DATE_FIELDS, rehydrateHandled } from './radio-log-migration'
+import { bumpHighWater, findMsgNoClashes, nextMsgNo } from './msg-no'
+import type { MsgNoContext } from './msg-no'
 import { mergeAttachmentRefs } from './attachments'
 import { newUid } from './uid'
 import type { RadioLogEntryType } from '../shared/services/radio-log-entry.interface'
@@ -31,6 +33,12 @@ import type { RadioLogEntryType } from '../shared/services/radio-log-entry.inter
  * `toRangerUid`. `reporterCredential` / `resolvedUid` (E-114 section 1a) fill a missing
  * `rangerUid` on a Report Packet. A hand-over must NOT pass them: its operator is the scribe,
  * not the ranger (D-44), and each entry keeps its own `operator`.
+ *
+ * **Message numbers (E-220, D-68).** An incoming entry with a `msgNo` keeps it. One without (a phone's
+ * Report Packet, a console catch-up file) gets this device's next number when it is first appended, when
+ * `msgNo` context is given. A matched entry never has its number changed. The result names any incoming
+ * number that is already on a different entry here (`clashes`); nothing is renumbered. `handled` (E-218):
+ * on a match the later `at` wins, whichever copy is otherwise kept.
  */
 export type EntryMergeOptions = {
   /** The display `id` the first appended entry will get (the device's `maxId`). */
@@ -41,6 +49,10 @@ export type EntryMergeOptions = {
   reporterCredential?: string
   /** The roster uid that credential resolved to, used when an entry names no ranger. */
   resolvedUid?: string
+  /** This device's mission, op period and station letter, for stamping an entry that has no number. */
+  msgNo?: MsgNoContext
+  /** The log's high-water map, so a stamped number is never one that was handed out before. */
+  msgNoHighWater?: Record<string, number>
 }
 
 export type EntryMergeNote = { id: number, uid: string, callsign: string, reason?: string }
@@ -58,6 +70,10 @@ export type EntryMergeResult = {
   /** Named, so the summary can say which (never just a count). */
   updatedNotes: EntryMergeNote[]
   rejectedNotes: EntryMergeNote[]
+  /** Incoming numbers already held by a different entry here (D-68). Both keep their numbers. */
+  clashes: Array<{ msgNo: string, uids: [string, string] }>
+  /** The high-water map after stamping (the input one when nothing was stamped). */
+  msgNoHighWater?: Record<string, number>
 }
 
 /** Why an incoming entry cannot be merged, or null when it is fine (moved from RadioLogService). */
@@ -89,6 +105,11 @@ function isValidCoordinate(location: { lat: number, lng: number } | null | undef
     && Number.isFinite(location.lng) && location.lng >= -180 && location.lng <= 180
 }
 
+function handledMs(entry: RadioLogEntryType): number {
+  const t = entry.handled ? new Date(entry.handled.at).getTime() : NaN
+  return Number.isFinite(t) ? t : -Infinity
+}
+
 function revisedMs(entry: RadioLogEntryType): number {
   const t = entry.revisedAt ? new Date(entry.revisedAt).getTime() : NaN
   return Number.isFinite(t) ? t : -Infinity   // never revised = older than any revision
@@ -108,6 +129,7 @@ export function mergeEntries(
   })
 
   let nextId = opts.nextId
+  let msgNoHighWater = opts.msgNoHighWater
   let added = 0
   let updated = 0
   let unchanged = 0
@@ -123,7 +145,7 @@ export function mergeEntries(
     }
 
     // Dates arrive as ISO strings from a JSON file; validating is not converting.
-    const entry = rehydrateDateFields({ ...raw }, [...RADIO_LOG_ENTRY_DATE_FIELDS])
+    const entry = rehydrateHandled(rehydrateDateFields({ ...raw }, [...RADIO_LOG_ENTRY_DATE_FIELDS]))
     if (entry.rangerUid) entry.rangerUid = remap(entry.rangerUid)
     if (entry.toRangerUid) entry.toRangerUid = remap(entry.toRangerUid)
 
@@ -135,16 +157,32 @@ export function mergeEntries(
         !== JSON.stringify(mergeAttachmentRefs(current.attachments, []))
       const withAttachments = (e: RadioLogEntryType): RadioLogEntryType =>
         (attachments.length ? { ...e, attachments } : e)
+      // E-218: the later status mark wins, whichever copy the other fields come from.
+      const laterHandled = handledMs(entry) > handledMs(current) ? entry.handled : current.handled
+      const withHandled = (e: RadioLogEntryType): RadioLogEntryType => {
+        const out = { ...e }
+        if (laterHandled) out.handled = laterHandled
+        else delete out.handled
+        return out
+      }
+      const handledChanged = laterHandled !== current.handled
       if (revisedMs(entry) > revisedMs(current)) {
-        // Keep this device's display id, uid and merged-in mark; take the rest from the later copy.
-        entries[matchIndex] = withAttachments({ ...entry, id: current.id, uid: current.uid, sourceUid: current.sourceUid })
+        // Keep this device's display id, uid, number and merged-in mark; take the rest from the later copy.
+        entries[matchIndex] = withHandled(withAttachments({
+          ...entry, id: current.id, uid: current.uid, sourceUid: current.sourceUid,
+          ...((current.msgNo ?? entry.msgNo) ? { msgNo: current.msgNo ?? entry.msgNo } : {}),
+        }))
         updated++
         updatedNotes.push({ id: current.id, uid: current.uid ?? '', callsign: entry.callsign })
       } else if (attachmentsChanged) {
         // The other side's fields lose, but its attachments still arrive.
-        entries[matchIndex] = withAttachments(current)
+        entries[matchIndex] = withHandled(withAttachments(current))
         updated++
         updatedNotes.push({ id: current.id, uid: current.uid ?? '', callsign: current.callsign, reason: 'attachments' })
+      } else if (handledChanged) {
+        entries[matchIndex] = withHandled(current)
+        updated++
+        updatedNotes.push({ id: current.id, uid: current.uid ?? '', callsign: current.callsign, reason: 'status mark' })
       } else {
         unchanged++
       }
@@ -162,14 +200,27 @@ export function mergeEntries(
     const uid = entry.uid || newUid()
     const fresh: RadioLogEntryType = { ...entry, id: nextId++, uid, sourceUid }
     if (!fresh.rangerUid && opts.resolvedUid) fresh.rangerUid = opts.resolvedUid
+    if (!fresh.msgNo && opts.msgNo) {
+      // D-68: a phone or console entry has no number; it gets this device's next one, once.
+      fresh.msgNo = nextMsgNo(entries, msgNoHighWater, opts.msgNo)
+      msgNoHighWater = bumpHighWater(msgNoHighWater, fresh.msgNo)
+    } else if (fresh.msgNo && opts.msgNo) {
+      // A numbered entry keeps its number; the mark still covers it so a later number here skips past it.
+      msgNoHighWater = bumpHighWater(msgNoHighWater, fresh.msgNo)
+    }
     entries.push(fresh)
     byUid.set(uid, entries.length - 1)
     bySourceUid.add(sourceUid)
     added++
   }
 
+  const existingNumbered = existing.filter(e => e.msgNo)
+  const clashes = existingNumbered.length
+    ? findMsgNoClashes(existingNumbered, incoming.filter(e => !invalidIncomingEntryReason(e)))
+    : []
+
   return {
     entries, nextId, added, updated, unchanged,
-    rejected: rejectedNotes.length, updatedNotes, rejectedNotes,
+    rejected: rejectedNotes.length, updatedNotes, rejectedNotes, clashes, msgNoHighWater,
   }
 }

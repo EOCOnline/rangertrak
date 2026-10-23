@@ -62,6 +62,10 @@ import type { AttachmentFile } from '../shared/export/attachments-zip'
 import type { HandoverDialogResult } from './handover-dialog/handover-dialog.component'
 // E-122 Phase 2a: reloadPage() below awaits this before reloading - see its own doc comment.
 import { RecordStore } from '../shared/storage/record-store'
+import {
+  formatMsgNoFull, formatMsgNoShort, HANDLED_MARK_GLYPH, HANDLED_MARK_LABEL, msgNoClashSentence, msgNoCsvFields, MSG_NO_CSV_COLUMNS,
+} from '../domain/msg-no'
+import { DevicePrefsService } from '../shared/services/device-prefs.service'
 import { showFirstPrintTip } from '../shared/export/print-tip'
 import { armPrintTitle } from '../shared/export/print-title'
 
@@ -233,7 +237,27 @@ export class RadioLogComponent implements OnInit, OnDestroy {
    */
   private buildColumnDefs(): any[] {
     return [
-      { headerName: "#", field: "id", headerTooltip: 'This entry\'s line number in the radio log. Numbered automatically; it cannot be edited.', maxWidth: 90, editable: false },
+      // E-218 (Q35): the status mark, first. A click cycles blank, then handled, passed on, needs action,
+      // and back to blank. Filterable by its glyph; the cell is a button for the keyboard and a screen reader.
+      {
+        colId: 'handledMark', headerName: HANDLED_MARK_GLYPH.handled, maxWidth: 70, editable: false, floatingFilter: false,
+        headerTooltip: 'Status mark. Click a box to cycle: handled (check), passed on (arrow), needs action (!), then blank. Prints in the first column of the ICS-309 log.',
+        valueGetter: (params: { data: RadioLogEntryType }) => params.data?.handled ? HANDLED_MARK_GLYPH[params.data.handled.mark] : '',
+        cellRenderer: this.handledCellRenderer,
+        onCellClicked: (params: { data: RadioLogEntryType, node: any, api: any }) => this.onHandledClicked(params),
+        tooltipValueGetter: (params: { data: RadioLogEntryType }) =>
+          params.data?.handled ? HANDLED_MARK_LABEL[params.data.handled.mark] : 'No mark. Click to mark handled.',
+      },
+      // E-220 / D-68: the message number (short form) replaces the visible line number; `id` stays
+      // internal (row identity, selection). The full form is the tooltip. Typing "A007" in the filter finds it.
+      {
+        colId: 'msgNo', headerName: 'Msg #', maxWidth: 110, editable: false,
+        headerTooltip: 'The message number: station letter and sequence, such as A007. Set when the entry is logged and never changed. Hover a number for the mission and operational period. It cannot be edited.',
+        valueGetter: (params: { data: RadioLogEntryType }) => formatMsgNoShort(params.data?.msgNo),
+        tooltipValueGetter: (params: { data: RadioLogEntryType }) => formatMsgNoFull(params.data?.msgNo) || undefined,
+        comparator: (_a: unknown, _b: unknown, nodeA: { data: RadioLogEntryType }, nodeB: { data: RadioLogEntryType }) =>
+          (nodeA.data.msgNo?.seq ?? 0) - (nodeB.data.msgNo?.seq ?? 0),
+      },
       // E-114 open question 5 (2026-08-31, decided: "yes, imported rows can have that
       // reflected"). Deliberately NOT the existing "Source" column below - that already means
       // the communications medium the report itself arrived over (Voice/Phone/Packet/APRS/
@@ -371,6 +395,11 @@ export class RadioLogComponent implements OnInit, OnDestroy {
         headerTooltip: 'What was said, in your own words. Free text, and it can be blank. Double-click to edit.',
         tooltipField: "notes"
       },
+      // E-220 / E-218: the message number's parts and the mark's words, for the CSV export only.
+      ...MSG_NO_CSV_COLUMNS.map(key => ({
+        colId: key, headerName: key, hide: true, suppressColumnsToolPanel: true,
+        valueGetter: (params: { data: RadioLogEntryType }) => msgNoCsvFields(params.data ?? {})[key],
+      })),
       // E-194: two columns that exist for the CSV export only (hidden on screen; the 📎 chip in the
       // Notes cell is the on-screen face of the same data). onBtnExport() adds them to the export.
       {
@@ -484,6 +513,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
   }
 
   private attachmentStore = inject(AttachmentStoreService)
+  private devicePrefs = inject(DevicePrefsService)
   private importSafety = inject(ImportSafetyService)
   private attachmentViewer = inject(AttachmentViewerService)
   /** E-196 (D-66): the mode decides the catch-up wording and the import warnings. */
@@ -605,6 +635,20 @@ export class RadioLogComponent implements OnInit, OnDestroy {
   onGridClick(event: Event): void {
     const uid = attachmentChipUid(event)
     if (uid) void this.attachmentViewer.open(uid)
+  }
+
+  /** E-218: the status mark's glyph, or an empty box; a button for assistive tech with the mark in its label. */
+  handledCellRenderer = (params: { data: RadioLogEntryType }) => {
+    const h = params.data?.handled
+    const label = h ? `Status mark: ${HANDLED_MARK_LABEL[h.mark]}. Click to change.` : 'Status mark: none. Click to mark handled.'
+    return `<span role="button" tabindex="0" class="rt-mark-cell" aria-label="${label}">${h ? HANDLED_MARK_GLYPH[h.mark] : '&#9744;'}</span>`
+  }
+
+  /** E-218: a click on the mark cell moves it one step round the cycle and saves. */
+  private onHandledClicked(params: { data: RadioLogEntryType, node: any, api: any }): void {
+    if (!params.data) return
+    this.radioLogService.cycleHandledMark(params.data)
+    params.api.refreshCells({ rowNodes: [params.node], force: true })
   }
 
   /** E-11: a compact flag icon when this report has an evidence/clue location, blank otherwise. */
@@ -861,7 +905,12 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     this.gridApi.exportDataAsCsv({
       ...params,
       // E-194: what the grid shows, plus the two hidden attachment columns.
-      columnKeys: [...this.gridApi.getAllDisplayedColumns().map((c: any) => c.getColId()), 'attachmentCount', 'attachmentFiles'],
+      // E-220: the two on-screen columns for the number and mark give way to the full-form CSV columns.
+      columnKeys: [
+        ...this.gridApi.getAllDisplayedColumns().map((c: any) => c.getColId())
+          .filter((id: string) => id !== 'handledMark' && id !== 'msgNo'),
+        ...MSG_NO_CSV_COLUMNS, 'attachmentCount', 'attachmentFiles',
+      ],
       fileName: onlySelected ? params.fileName.replace(/\.csv$/, '-selected.csv') : params.fileName,
       exportedRows: this.allRows() ? 'all' : 'filteredAndSorted',
       onlySelected,
@@ -1027,6 +1076,9 @@ export class RadioLogComponent implements OnInit, OnDestroy {
         + (unmatched.length ? `, ${unmatched.length} unmatched` : ''))
     }
 
+    // E-220 / D-68: the letter is set BEFORE the merge, so an entry in the file that has no number yet
+    // is stamped as the station this device now logs as. Numbered entries keep theirs either way.
+    if (result.station) this.devicePrefs.setMsgStation(result.station)
     const entries = this.radioLogService.mergeHandoverEntries(
       result.manifest.entries ?? [], result.rangerMerge?.uidRemap ?? {})
     const bits = [`${entries.added} added`]
@@ -1038,6 +1090,9 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       bits.push(`${entries.rejected} could not be read (${entries.rejectedNotes.map(n => n.callsign || '?').join(', ')})`)
     }
     parts.push(`radio log entries: ${bits.join('; ')}`)
+    if (result.station) parts.push(`this device now logs as station ${result.station}`)
+    const clashLine = msgNoClashSentence(entries.clashes)
+    if (clashLine) parts.push(clashLine.replace(/\.$/, ''))
 
     // E-194 / D-60: the bytes for the merged references, each re-hashed (putVerified) so a bad file
     // is named and never stored; then the bytes a merged-in removal made unwanted go.
@@ -1140,7 +1195,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
         return
       }
 
-      const { added, skipped, rejected } = this.radioLogService.mergeIncomingEntries(packet.entries, packet.operator)
+      const { added, skipped, rejected, clashes } = this.radioLogService.mergeIncomingEntries(packet.entries, packet.operator)
       const lines = isCatchUp && inExercise
         ? [`Added ${added} scenario entr${added === 1 ? 'y' : 'ies'} (${skipped} already here).`]
         : [`Merged ${added} new report${added === 1 ? '' : 's'} from "${file.name}".`]
@@ -1153,6 +1208,9 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       if (rejected) {
         lines.push(`${rejected} report${rejected === 1 ? '' : 's'} could not be read (bad timestamp or location) and were NOT imported - see the Log page for which.`)
       }
+      // E-220 / D-68: two entries with one number are named, not renumbered.
+      const clashLine = msgNoClashSentence(clashes ?? [])
+      if (clashLine) lines.push(clashLine)
       if (safetyCopy === 'kept') {
         await this.importSafety.markImportDone()
         lines.push('Undo is in Mission > Data safety for 24 hours.')

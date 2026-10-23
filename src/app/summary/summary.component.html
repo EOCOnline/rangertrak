@@ -260,7 +260,7 @@
           <tbody>
             @for (e of summary().attention; track e.id) {
             <tr>
-              <td class="nowrap">{{ fmt(e.date) }}</td>
+              <td class="nowrap">{{ fmt(e.date) }}@if (e.msgNo) { <span class="rt-summary__msgno" [attr.title]="msgNoFull(e)" data-testid="summary-msgno">{{ msgNoShort(e) }}</span>}</td>
               <td>{{ station(e) }}</td>
               <td><i class="rt-summary__status-swatch" [style.background-color]="statusFillFor(e.status)"></i>{{ e.status }}</td>
               <td>{{ e.notes }}

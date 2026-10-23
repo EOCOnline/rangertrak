@@ -1,5 +1,6 @@
 import { rehydrateDateFields } from './json-dates'
 import { newUid } from './uid'
+import { numberEntries } from './msg-no'
 import type { RadioLogType } from '../shared/services/radio-log-entry.interface'
 
 /**
@@ -43,8 +44,17 @@ import type { RadioLogType } from '../shared/services/radio-log-entry.interface'
  *     information and never compared - it is not, and never was, a schema version.
  * 1 - the same wrapper carrying an explicit numeric `schemaVersion`.
  * 2 - every entry carries a permanent `uid` (ADR D-59, E-188); entries without one get one.
+ * 3 - every entry carries a `msgNo` (ADR D-68, E-220) and the wrapper a `msgNoHighWater` map;
+ *     unnumbered entries are numbered in time order as station A.
  */
-export const RADIO_LOG_SCHEMA_VERSION = 2
+export const RADIO_LOG_SCHEMA_VERSION = 3
+
+/** What the 2 -> 3 step stamps onto entries that have no message number yet. */
+export type MsgNoMigrationContext = {
+  mission?: string, opPeriod?: string, station?: string,
+  /** False on a field phone (E-114): a phone stamps nothing, the scribe's device numbers its entries when they merge in. */
+  number?: boolean,
+}
 
 /**
  * Brings a persisted radio log store up to RADIO_LOG_SCHEMA_VERSION.
@@ -59,7 +69,7 @@ export const RADIO_LOG_SCHEMA_VERSION = 2
  * understands is passed through untouched rather than mangled - same reasoning as
  * `migrateMission()`.
  */
-export function migrateRadioLog(raw: unknown): RadioLogType | null {
+export function migrateRadioLog(raw: unknown, ctx: MsgNoMigrationContext = {}): RadioLogType | null {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
     return null
   }
@@ -89,7 +99,27 @@ export function migrateRadioLog(raw: unknown): RadioLogType | null {
     logEntries = logEntries.map(entry => entry.uid ? entry : { ...entry, uid: newUid() })
   }
 
-  return restoreDates({ ...incoming, logEntries, schemaVersion: RADIO_LOG_SCHEMA_VERSION })
+  // v2 -> v3 (D-68): number the unnumbered entries in time order as this device's station, with the
+  // current mission and op period, and record the high-water mark so a later delete never reuses one.
+  let msgNoHighWater = incoming.msgNoHighWater
+  if (version < 3 && ctx.number !== false) {
+    const numbered = numberEntries(logEntries, {
+      mission: ctx.mission ?? '', station: ctx.station || 'A', opPeriodOf: () => ctx.opPeriod ?? '', highWater: msgNoHighWater,
+    })
+    logEntries = numbered.entries
+    msgNoHighWater = numbered.highWater
+  }
+
+  return restoreDates({
+    ...incoming, logEntries, schemaVersion: RADIO_LOG_SCHEMA_VERSION,
+    ...(msgNoHighWater ? { msgNoHighWater } : {}),
+  })
+}
+
+/** E-218: `handled.at` is a Date; restores it after a JSON round-trip. Other entries pass through. */
+export function rehydrateHandled<T extends { handled?: { mark: unknown, at: Date } }>(entry: T): T {
+  if (!entry.handled) return entry
+  return { ...entry, handled: rehydrateDateFields(entry.handled, ['at']) }
 }
 
 /** `RadioLogType`'s own Date-typed field. */
@@ -115,6 +145,6 @@ function restoreDates(store: RadioLogType): RadioLogType {
   return {
     ...withStoreDate,
     logEntries: withStoreDate.logEntries.map(
-      entry => rehydrateDateFields(entry, RADIO_LOG_ENTRY_DATE_FIELDS)),
+      entry => rehydrateHandled(rehydrateDateFields(entry, RADIO_LOG_ENTRY_DATE_FIELDS))),
   }
 }

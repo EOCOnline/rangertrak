@@ -1,6 +1,7 @@
 import { RadioLogEntryType } from '../services/radio-log-entry.interface'
 import { formatStation } from '../../domain/station-label'
 import { PrintAttachment, printAttachments } from '../../domain/attachments'
+import { formatMsgNoContextLine, formatMsgNoFull, formatMsgNoShort, HANDLED_MARK_GLYPH, HANDLED_MARK_LABEL } from '../../domain/msg-no'
 
 /**
  * Shapes radio log entries into an ICS-309 (Communications Log) structure - the DATA, not a
@@ -45,10 +46,19 @@ export interface Ics309LogHeader {
   // mission has no operational period at all (the same case that string is blank for).
   opPeriodStart: Date | null
   opPeriodEnd: Date | null
+  /** E-220: "Mission 26-0142 · Op period OP 2", printed once above the table; blank parts are left out. */
+  msgNoContext: string
 }
 
 export interface Ics309LogRow {
   time: Date
+  /** E-218: the status mark's glyph (✓ → !), or '' when unset - the printed box is then left empty to tick by hand. */
+  mark: string
+  /** Reads as the mark's meaning, for the aria/title text. */
+  markLabel: string
+  /** E-220 / D-68: the message number, short ('A007') and full ('26-0142 / OP 2 / A007'). Blank for none. */
+  msgNo: string
+  msgNoFull: string
   from: string
   // E-165 (2026-09-30): the station the message went TO, same `CERT Team 1 (K7ABC)` format as
   // `from` (formatStation) but blank - not "(not given)" - when none was recorded: the paper
@@ -94,6 +104,10 @@ export function buildIcs309Log(
     .sort((a, b) => a.date.getTime() - b.date.getTime())
     .map((r): Ics309LogRow => ({
       time: r.date,
+      mark: r.handled ? HANDLED_MARK_GLYPH[r.handled.mark] ?? '' : '',
+      markLabel: r.handled ? HANDLED_MARK_LABEL[r.handled.mark] ?? '' : '',
+      msgNo: formatMsgNoShort(r.msgNo),
+      msgNoFull: formatMsgNoFull(r.msgNo),
       // E-153 (ARES review row 21): "(no callsign)" read as a missing FCC call sign, the wrong
       // word for tactical-only teams; the scribe types a tactical name there too, so blank means
       // the sender simply wasn't recorded.
@@ -114,6 +128,7 @@ export function buildIcs309Log(
       preparedBy,
       opPeriodStart: hasOperationalPeriod(mission) ? mission.opPeriodStart : null,
       opPeriodEnd: hasOperationalPeriod(mission) ? mission.opPeriodEnd : null,
+      msgNoContext: formatMsgNoContextLine(mission.mission, mission.opPeriod),
     },
     rows,
   }

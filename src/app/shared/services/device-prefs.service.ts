@@ -13,6 +13,9 @@ const IMPORT_MAPPINGS_KEY = 'rt-import-mappings'
 const BOARD_PUBLISHER_KEY = 'rt-board-publisher'
 // E-04 / D-63: the kind the AAR/214 capture box opens on ('aar' or 'activity'): the one used last on this device.
 const AAR_NOTE_LAST_KIND_KEY = 'aarNoteLastKind'
+// E-220 / D-68: the station letter this device's message numbers carry. A device pref, not a Mission
+// setting, so a Setup file sent to ten phones does not give them all the same letter.
+const MSG_STATION_KEY = 'rt-msg-station'
 
 /**
  * D-61: what this device remembers about publishing to a Board. `key` is the hidden publish key the
@@ -42,6 +45,18 @@ export class DevicePrefsService {
 
   setAarNoteLastKind(kind: 'aar' | 'activity'): void {
     this.write(AAR_NOTE_LAST_KIND_KEY, kind)
+  }
+
+  /** E-220 / D-68: this device's station letter, A-Z, default A. Anything else reads as A. */
+  getMsgStation(): string {
+    const letter = (this.read(MSG_STATION_KEY) ?? '').trim().toUpperCase()
+    return /^[A-Z]$/.test(letter) ? letter : 'A'
+  }
+
+  /** False when the letter is not A-Z or storage refused the write. */
+  setMsgStation(letter: string): boolean {
+    const clean = (letter ?? '').trim().toUpperCase()
+    return /^[A-Z]$/.test(clean) && this.write(MSG_STATION_KEY, clean)
   }
 
   getLastCoordinateFormat(): string | null {

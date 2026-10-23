@@ -52,6 +52,29 @@
         </p>
       }
 
+      @if (fileStation()) {
+        <!-- E-220 / D-68 (Q33): who this device is, from now on, among the stations that have been logging. -->
+        <h3 class="rid__h">Message numbers</h3>
+        <fieldset class="rid__choice" data-testid="handover-station">
+          <legend class="rid__note">The entries in this file keep their numbers. From now on this device logs as:</legend>
+          <label>
+            <input type="radio" name="handover-station" value="takeover" [checked]="stationChoice() === 'takeover'"
+              (change)="stationChoice.set('takeover')" data-testid="handover-takeover" />
+            Take over station {{ fileStation() }}
+            <span class="rid__note">(the other device stops logging; numbering carries on from where it left off)</span>
+          </label>
+          <label>
+            <input type="radio" name="handover-station" value="alongside" [checked]="stationChoice() === 'alongside'"
+              (change)="stationChoice.set('alongside')" data-testid="handover-alongside" />
+            Log alongside as station {{ alongsideStation() }}
+            <span class="rid__note">(both devices keep logging, each with its own letter)</span>
+          </label>
+        </fieldset>
+        @if (clashLine()) {
+          <p class="rid__warn" role="alert" data-testid="handover-clash">{{ clashLine() }}</p>
+        }
+      }
+
       @if (rangerMerge(); as m) {
         <h3 class="rid__h">People</h3>
         <p class="rid__counts" role="status">

@@ -62,6 +62,22 @@
         data-lpignore="true" />
     </mat-form-field>
 
+    <!-- E-220 / D-68: this device's station letter for message numbers. A device preference, not a
+         Mission setting (a Setup file must not give every phone the same letter), so it is not part of the form. -->
+    <mat-form-field class="mission__station" floatLabel="always">
+      <mat-label>This station logs as</mat-label>
+      <input matInput type="text" maxlength="1" [value]="station()" (input)="onStationInput($event)"
+        data-testid="msg-station" data-lpignore="true" autocapitalize="characters" />
+      <mat-hint>One letter, A to Z. Message numbers read like {{ station() }}007 (the letter, then a count that
+        starts again at 001 in each operational period). If two devices log on the same net, give each its
+        own letter.</mat-hint>
+    </mat-form-field>
+    @if (clashes().length) {
+    <p class="mission__station-warning" role="alert" data-testid="msg-station-clash">
+      {{ clashText() }}
+    </p>
+    }
+
     <!-- E-72: the `class="filled timepicker"` boxes are gone - the picker draws its own
          unified pill (time-picker.component.scss's .rt-datetime). These two only need
          labelling and a row to sit in. -->

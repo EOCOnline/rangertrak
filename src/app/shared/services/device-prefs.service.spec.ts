@@ -1,7 +1,7 @@
 import { DevicePrefsService } from './device-prefs.service'
 
 describe('DevicePrefsService', () => {
-  const keys = ['lastCoordinateFormat', 'rangertrak.rangers.privacyNoticeDismissed', 'rt-board-publisher']
+  const keys = ['lastCoordinateFormat', 'rangertrak.rangers.privacyNoticeDismissed', 'rt-board-publisher', 'rt-msg-station']
   let prefs: DevicePrefsService
 
   beforeEach(() => {
@@ -45,5 +45,16 @@ describe('DevicePrefsService', () => {
     expect(prefs.isRangersPrivacyNoticeDismissed()).toBeFalse()
     expect(() => prefs.setLastCoordinateFormat('DD')).not.toThrow()
     expect(prefs.dismissRangersPrivacyNotice()).toBeFalse()
+  })
+
+  it('keeps the message-number station letter on the device: A by default, A to Z only (E-220)', () => {
+    expect(prefs.getMsgStation()).toBe('A')
+    expect(prefs.setMsgStation('c')).toBeTrue()
+    expect(prefs.getMsgStation()).toBe('C')
+    expect(prefs.setMsgStation('AB')).toBeFalse()
+    expect(prefs.setMsgStation('1')).toBeFalse()
+    expect(prefs.getMsgStation()).toBe('C')
+    localStorage.setItem('rt-msg-station', '9')
+    expect(prefs.getMsgStation()).toBe('A')
   })
 })

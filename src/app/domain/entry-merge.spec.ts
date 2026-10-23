@@ -221,4 +221,71 @@ describe('entry-merge (D-59)', () => {
 
     expect(JSON.stringify([existing, incoming])).toBe(snap);
   });
+
+  // E-220 / D-68 and E-218.
+  describe('message numbers and status marks', () => {
+    const ctx = { mission: 'M', opPeriod: 'OP 1', station: 'A' };
+    const no = (seq: number, station = 'A') => ({ mission: 'M', opPeriod: 'OP 1', station, seq });
+
+    it("stamps an incoming entry that has no number with this device's next one", () => {
+      const here = [entry({ uid: 'h1', msgNo: no(1) })];
+      const r = mergeEntries(here, [entry({ uid: 'p1' }), entry({ uid: 'p2' })], { nextId: 1, msgNo: ctx });
+
+      expect(r.entries.map(e => e.msgNo?.seq)).toEqual([1, 2, 3]);
+      expect(r.msgNoHighWater!['OP 1\u0000A']).toBe(3);
+    });
+
+    it("keeps the number an incoming entry already has, and never changes a matched entry's", () => {
+      const here = [entry({ uid: 'h1', msgNo: no(1) })];
+      const incoming = [
+        entry({ uid: 'b1', msgNo: no(7, 'B') }),
+        entry({ uid: 'h1', msgNo: no(9), revisedAt: new Date('2026-10-16T10:00:00Z'), notes: 'edited' }),
+      ];
+      const r = mergeEntries(here, incoming, { nextId: 1, msgNo: ctx });
+
+      expect(r.entries.find(e => e.uid === 'b1')!.msgNo).toEqual(no(7, 'B'));
+      expect(r.entries.find(e => e.uid === 'h1')!.msgNo).toEqual(no(1));
+      expect(r.entries.find(e => e.uid === 'h1')!.notes).toBe('edited');
+    });
+
+    it('stamps nothing when the caller gives no number context (the pure merge)', () => {
+      const r = mergeEntries([], [entry({ uid: 'p1' })], { nextId: 0 });
+      expect(r.entries[0].msgNo).toBeUndefined();
+    });
+
+    it('reports the same number on a different entry, and renumbers nothing', () => {
+      const here = [entry({ uid: 'h1', msgNo: no(7) })];
+      const r = mergeEntries(here, [entry({ uid: 'x1', msgNo: no(7) })], { nextId: 1, msgNo: ctx });
+
+      expect(r.clashes).toEqual([{ msgNo: 'M / OP 1 / A007', uids: ['h1', 'x1'] }]);
+      expect(r.entries.map(e => e.msgNo!.seq)).toEqual([7, 7]);
+    });
+
+    it('reports no clash for the same entry arriving again', () => {
+      const here = [entry({ uid: 'h1', msgNo: no(7) })];
+      expect(mergeEntries(here, [entry({ uid: 'h1', msgNo: no(7) })], { nextId: 1, msgNo: ctx }).clashes).toEqual([]);
+    });
+
+    it('takes the later status mark on a match, whichever copy is otherwise kept', () => {
+      const early = new Date('2026-10-15T11:00:00Z');
+      const late = new Date('2026-10-15T12:00:00Z');
+      const here = [entry({ uid: 'h1', handled: { mark: 'handled', at: early } })];
+
+      const newer = mergeEntries(here, [entry({ uid: 'h1', handled: { mark: 'action', at: late } })], { nextId: 1 });
+      expect(newer.entries[0].handled).toEqual({ mark: 'action', at: late });
+      expect(newer.updated).toBe(1);
+
+      const older = mergeEntries(
+        [entry({ uid: 'h1', handled: { mark: 'action', at: late } })],
+        [entry({ uid: 'h1', handled: { mark: 'handled', at: early } })], { nextId: 1 });
+      expect(older.entries[0].handled).toEqual({ mark: 'action', at: late });
+      expect(older.unchanged).toBe(1);
+    });
+
+    it("restores a mark's time from a file", () => {
+      const incoming = JSON.parse(JSON.stringify([entry({ uid: 'n1', handled: { mark: 'passed', at: new Date('2026-10-15T12:00:00Z') } })]));
+      const r = mergeEntries([], incoming, { nextId: 0 });
+      expect(r.entries[0].handled!.at instanceof Date).toBeTrue();
+    });
+  });
 });

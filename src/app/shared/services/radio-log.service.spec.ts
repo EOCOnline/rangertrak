@@ -4,6 +4,8 @@ import { TestBed } from '@angular/core/testing';
 import { RadioLogService } from './radio-log.service';
 import { RadioLogType, RadioLogEntryType } from './radio-log-entry.interface';
 import { RangerService } from './ranger.service';
+import { MissionService } from './mission.service';
+import { DevicePrefsService } from './device-prefs.service';
 // E-122 Phase 2a: radio log entries now live behind RecordStore, not localStorage directly - see
 // that module's own doc comment. resetForTests() is this suite's equivalent of the
 // localStorage.clear() it used to rely on for isolation between specs.
@@ -450,6 +452,105 @@ describe('RadioLogService', () => {
       expect(reports.bounds.north).toBeGreaterThan(47.4472);
       expect(reports.bounds.west).toBeLessThan(-122.4627);
       expect(reports.bounds.east).toBeGreaterThan(-122.4627);
+    });
+  });
+
+  // E-220 / D-68: the message number, stamped once at save and when a phone's entry first merges in.
+  describe('message numbers (E-220, D-68)', () => {
+    const short = (e: RadioLogEntryType) => e.msgNo ? `${e.msgNo.station}${String(e.msgNo.seq).padStart(3, '0')}` : '';
+
+    it('stamps A001, A002, then restarts at A001 under a renamed op period', () => {
+      const mission = TestBed.inject(MissionService);
+      const service = TestBed.inject(RadioLogService);
+      mission.updateMission({ ...mission.settings, mission: '26-0142', opPeriod: 'OP 1' });
+
+      const a = service.addRadioLogEntry(makeReport());
+      const b = service.addRadioLogEntry(makeReport());
+      mission.updateMission({ ...mission.settings, opPeriod: 'OP 2' });
+      const c = service.addRadioLogEntry(makeReport());
+
+      expect([a, b, c].map(short)).toEqual(['A001', 'A002', 'A001']);
+      expect(c.msgNo).toEqual({ mission: '26-0142', opPeriod: 'OP 2', station: 'A', seq: 1 });
+    });
+
+    it('never changes a number once stamped, and does not reuse one after a delete', () => {
+      const mission = TestBed.inject(MissionService);
+      const service = TestBed.inject(RadioLogService);
+      mission.updateMission({ ...mission.settings, opPeriod: 'OP 1' });
+      const first = service.addRadioLogEntry(makeReport());
+      const second = service.addRadioLogEntry(makeReport());
+
+      // Mission fields change later: the stored number does not.
+      mission.updateMission({ ...mission.settings, mission: 'changed' });
+      expect(first.msgNo!.mission).not.toBe('changed');
+
+      // Delete the last entry, in place the way the service holds its list: the next number still moves on.
+      const log = service.getCurrentRadioLog();
+      log.logEntries = log.logEntries.filter(e => e !== second);
+      log.numReport = log.logEntries.length;
+      expect(short(service.addRadioLogEntry(makeReport()))).toBe('A003');
+    });
+
+    it('uses the station letter from the device preference', () => {
+      const service = TestBed.inject(RadioLogService);
+      new DevicePrefsService().setMsgStation('c');
+
+      expect(short(service.addRadioLogEntry(makeReport()))).toBe('C001');
+    });
+
+    it('keeps a number the entry already carries', () => {
+      const service = TestBed.inject(RadioLogService);
+      const msgNo = { mission: 'm', opPeriod: 'o', station: 'B', seq: 9 };
+
+      expect(service.addRadioLogEntry(makeReport({ msgNo })).msgNo).toEqual(msgNo);
+    });
+
+    it('stamps nothing on a field phone', () => {
+      localStorage.setItem('fieldMode', 'true');
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({ providers: [provideHttpClient()] });
+      const service = TestBed.inject(RadioLogService);
+
+      expect(service.addRadioLogEntry(makeReport()).msgNo).toBeUndefined();
+    });
+
+    it("gives a phone entry this device's next number when it merges in, and a hand-over entry keeps its own", () => {
+      const service = TestBed.inject(RadioLogService);
+      service.addRadioLogEntry(makeReport());   // A001 here
+      const phone = JSON.parse(makeReport({ callsign: 'PHONE', uid: 'phone-1' })) as RadioLogEntryType;
+      const handed = JSON.parse(makeReport({
+        callsign: 'HAND', uid: 'hand-1', msgNo: { mission: '', opPeriod: '', station: 'B', seq: 4 },
+      })) as RadioLogEntryType;
+
+      service.mergeIncomingEntries([phone], 'REW-9');
+      service.mergeHandoverEntries([handed], {});
+
+      const entries = service.getCurrentRadioLog().logEntries;
+      expect(short(entries.find(e => e.uid === 'phone-1')!)).toBe('A002');
+      expect(short(entries.find(e => e.uid === 'hand-1')!)).toBe('B004');
+    });
+
+    it('reports a clash when another device also logged A001, and renumbers nothing', () => {
+      const service = TestBed.inject(RadioLogService);
+      const mine = service.addRadioLogEntry(makeReport());
+      const theirs = JSON.parse(makeReport({ uid: 'other-1', msgNo: mine.msgNo })) as RadioLogEntryType;
+
+      const result = service.mergeHandoverEntries([theirs], {});
+
+      expect(result.clashes.length).toBe(1);
+      expect(service.lastMergeClashes().length).toBe(1);
+      const entries = service.getCurrentRadioLog().logEntries;
+      expect(entries.map(short)).toEqual(['A001', 'A001']);
+    });
+
+    it('cycles the status mark: blank, handled, passed on, needs action, blank', () => {
+      const service = TestBed.inject(RadioLogService);
+      const entry = service.addRadioLogEntry(makeReport());
+      const seen: Array<string | undefined> = [];
+      for (let i = 0; i < 4; i++) { service.cycleHandledMark(entry); seen.push(entry.handled?.mark); }
+
+      expect(seen).toEqual(['handled', 'passed', 'action', undefined]);
+      expect('handled' in entry).toBeFalse();
     });
   });
 });

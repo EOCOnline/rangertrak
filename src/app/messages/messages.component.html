@@ -12,7 +12,7 @@
             <button type="button" class="messages__list-item"
               [class.messages__list-item--selected]="m.id === selectedId()" (click)="select(m)">
               <span class="messages__list-callsign">{{ stationFrom(m) || '(not given)' }}</span>
-              <span class="messages__list-time">{{ formatTime(m.date) }}</span>
+              <span class="messages__list-time">{{ msgNoShort(m) }}@if (m.msgNo) { · }{{ formatTime(m.date) }}@if (m.handled) { · <span [attr.aria-label]="markLabel(m)">{{ markGlyph(m) }}</span> }</span>
               <span class="messages__list-preview">{{ m.message213 }}</span>
             </button>
           </li>
@@ -41,6 +41,18 @@
                 <dt>Reply</dt>
                 <dd>Requested</dd>
                 }
+                @if (m.msgNo) {
+                <dt>Msg #</dt>
+                <dd [attr.title]="msgNoFull(m)" data-testid="messages-msgno">{{ msgNoShort(m) }}</dd>
+                }
+                <dt>Mark</dt>
+                <dd>
+                  <!-- E-218: the same status mark as the Radio Log grid; a click cycles blank, handled, passed on, needs action. -->
+                  <button matButton type="button" data-testid="messages-mark" (click)="cycleMark(m)"
+                    [attr.aria-label]="'Status mark: ' + (m.handled ? markLabel(m) : 'none') + '. Click to change.'">
+                    {{ m.handled ? markGlyph(m) + ' ' + markLabel(m) : '☐ None' }}
+                  </button>
+                </dd>
                 <dt>Time</dt>
                 <dd>
                   {{ formatTime(m.date) }}

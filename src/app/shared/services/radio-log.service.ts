@@ -14,6 +14,10 @@ import {
 import { migrateRadioLog, RADIO_LOG_ENTRY_DATE_FIELDS } from '../../domain/radio-log-migration'
 import { rehydrateDateFields } from '../../domain/json-dates'
 import { newUid } from '../../domain/uid'
+import { bumpHighWater, nextHandledMark, nextMsgNo } from '../../domain/msg-no'
+import type { MsgNoContext } from '../../domain/msg-no'
+import { DevicePrefsService } from './device-prefs.service'
+import { FieldModeService } from './field-mode.service'
 import { mergeAttachmentRefs } from '../../domain/attachments'
 import type { AttachmentRef } from '../../domain/attachments'
 import { EntryMergeOptions, EntryMergeResult, mergeEntries } from '../../domain/entry-merge'
@@ -57,6 +61,8 @@ export class RadioLogService {
 
   private attachmentStore = inject(AttachmentStoreService)
   private journal = inject(MissionJournalService)
+  private devicePrefs = inject(DevicePrefsService)
+  private fieldMode = inject(FieldModeService)
 
   private radioLog!: RadioLogType
   // radioLogSignal is the single source of truth for state.
@@ -91,6 +97,13 @@ export class RadioLogService {
    * submitted one report."
    */
   public readonly reportSubmittedSignal = signal(0)
+
+  /**
+   * E-220 / D-68: message numbers the LAST merge found already on a different entry here (two devices
+   * logging as the same station letter). Session-only; Mission > Operational period shows a warning.
+   * Nothing is renumbered.
+   */
+  public readonly lastMergeClashes = signal<Array<{ msgNo: string, uids: [string, string] }>>([])
 
   private storageLocalName = 'radioLog'
   private serverUri = 'https://localhost:4000/products' // FUTURE:
@@ -183,7 +196,16 @@ export class RadioLogService {
       // raw JSON - same class of bug as [[settings-marker-field-trap]]. 'schemaVersion'
       // happens to contain that substring, which is luck rather than design; do not remove
       // the 'version' field without replacing that check with a structural test.
-      return migrateRadioLog(JSON.parse(localStorageFieldReports)) ?? this.initEmptyRadioLog()
+      return migrateRadioLog(JSON.parse(localStorageFieldReports), { ...this.msgNoContext(), number: !this.fieldMode.enabled() }) ?? this.initEmptyRadioLog()
+    }
+  }
+
+  /** E-220: this device's mission, op period and station letter, as they are right now. */
+  private msgNoContext(): MsgNoContext {
+    return {
+      mission: this.settings?.mission ?? '',
+      opPeriod: this.settings?.opPeriod ?? '',
+      station: this.devicePrefs.getMsgStation(),
     }
   }
 
@@ -289,6 +311,14 @@ export class RadioLogService {
     // here and never edited. `date` is when the traffic happened, which the scribe may set back;
     // the gap between the two is what lets a replay flag an entry that was logged late.
     newReport.loggedAt = new Date()
+    // E-220 / D-68: the message number, stamped once and never changed (a number the caller already
+    // supplied is kept). The high-water mark makes sure a deleted entry's number is not handed out again.
+    // A field phone stamps nothing (scoping 2): it is not a station on the log, and the scribe's device
+    // numbers its entries when the Report Packet merges in. That keeps phones out of the letter question.
+    if (!newReport.msgNo && !this.fieldMode.enabled()) {
+      newReport.msgNo = nextMsgNo(this.radioLog.logEntries, this.radioLog.msgNoHighWater, this.msgNoContext())
+      this.radioLog.msgNoHighWater = bumpHighWater(this.radioLog.msgNoHighWater, newReport.msgNo)
+    }
     this.radioLog.numReport++
     this.radioLog.logEntries.push(newReport)
 
@@ -326,7 +356,7 @@ export class RadioLogService {
   public mergeIncomingEntries(
     incoming: readonly RadioLogEntryType[],
     reporterCredential?: string,
-  ): { added: number, skipped: number, rejected: number, updated?: number } {
+  ): { added: number, skipped: number, rejected: number, updated?: number, clashes?: Array<{ msgNo: string, uids: [string, string] }> } {
     const resolvedCredentialId = normalizeRangerId(reporterCredential)
     const resolvedUid = resolvedCredentialId
       ? this.rangerService.rangers.find(r => normalizeRangerId(r.id) === resolvedCredentialId)?.uid
@@ -339,6 +369,7 @@ export class RadioLogService {
     // there was one, so a packet with no revisions returns exactly what it always did.
     return {
       added, skipped: result.unchanged, rejected,
+      ...(result.clashes.length ? { clashes: result.clashes } : {}),
       ...(result.updated ? { updated: result.updated } : {}),
     }
   }
@@ -361,14 +392,19 @@ export class RadioLogService {
     incoming: readonly RadioLogEntryType[],
     uidRemap: Record<string, string>,
   ): EntryMergeResult {
-    return mergeEntries(this.radioLog.logEntries, incoming, { nextId: this.radioLog.maxId, uidRemap })
+    return mergeEntries(this.radioLog.logEntries, incoming, {
+      nextId: this.radioLog.maxId, uidRemap, msgNo: this.msgNoContext(), msgNoHighWater: this.radioLog.msgNoHighWater,
+    })
   }
 
   private applyEntryMerge(
     incoming: readonly RadioLogEntryType[],
     opts: Omit<EntryMergeOptions, 'nextId'>,
   ): EntryMergeResult {
-    const result = mergeEntries(this.radioLog.logEntries, incoming, { ...opts, nextId: this.radioLog.maxId })
+    const result = mergeEntries(this.radioLog.logEntries, incoming, {
+      ...opts, nextId: this.radioLog.maxId, msgNo: this.msgNoContext(), msgNoHighWater: this.radioLog.msgNoHighWater,
+    })
+    this.lastMergeClashes.set(result.clashes)
 
     for (const note of result.rejectedNotes) {
       this.log.warn(`Rejected incoming entry ${note.id} (${note.reason}).`, this.id)
@@ -377,6 +413,7 @@ export class RadioLogService {
     if (result.added || result.updated) {
       this.radioLog.logEntries = result.entries
       this.radioLog.maxId = result.nextId
+      if (result.msgNoHighWater) this.radioLog.msgNoHighWater = result.msgNoHighWater
       this.radioLog.numReport = this.radioLog.logEntries.length
       this.recalcRadioLogBounds(this.radioLog)
       this.updateRadioLogAndPublish()
@@ -479,6 +516,19 @@ export class RadioLogService {
   public saveEditedRadioLog() {
     this.recalcRadioLogBounds(this.radioLog)
     this.updateRadioLogAndPublish()
+  }
+
+  /**
+   * E-218: moves an entry's status mark one step round blank, handled, passed on, needs action, blank,
+   * stamps when, and saves. Works on the entry in place (the grid and the Messages page hold the
+   * service's own objects). Not journalled (D-67): a mark is changed often and is not a record.
+   * An entry passed that is not in the log (a copy) is changed and saved all the same.
+   */
+  public cycleHandledMark(entry: RadioLogEntryType): void {
+    const mark = nextHandledMark(entry.handled?.mark)
+    if (mark) entry.handled = { mark, at: new Date() }
+    else delete entry.handled
+    this.saveEditedRadioLog()
   }
 
   /**

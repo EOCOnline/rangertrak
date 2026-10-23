@@ -1,5 +1,6 @@
 import type { AttachmentRef } from '../../domain/attachments'
 import { LocationType } from './location.interface'
+import type { HandledMark, MsgNo } from '../../domain/msg-no'
 
 // 2026-08-31: renamed from field-report.interface.ts / FieldReportType / FieldReportsType /
 // FieldReportStatusType / FieldReportSource / fieldReportArray, a naming holdover from before
@@ -67,6 +68,12 @@ export type RadioLogType = {
   bounds: BoundsType,
   numReport: number,
   maxId: number,
+  /**
+   * E-220 / D-68: the highest message-number sequence ever handed out, keyed by
+   * `opPeriod + '\u0000' + station` (see domain/msg-no.ts). Kept beside the entries so deleting the
+   * last one never lets its number be used again. Optional/additive: absent reads as none.
+   */
+  msgNoHighWater?: Record<string, number>,
   filter: string, // All reports or not? Guard to ensure a subset never gets writen to localstorage?
   logEntries: RadioLogEntryType[]
 }
@@ -228,6 +235,17 @@ export type RadioLogEntryType = {
    * removed reference stays, marked, so the removal is on the record.
    */
   attachments?: AttachmentRef[],
+  /**
+   * E-220 / ADR D-68: the message number (mission, op period, station letter, sequence), stamped once
+   * when the entry first enters a log and never changed by edit, merge, hand-over or restore.
+   * `uid` stays the identity; this is the number people read.
+   */
+  msgNo?: MsgNo,
+  /**
+   * E-218: the status mark (handled, passed on, needs action) set from the grid or the Messages page;
+   * absent when unset. On a merge the later `at` wins. Not journalled (D-67).
+   */
+  handled?: { mark: HandledMark, at: Date },
 }
 
 /**

@@ -16,6 +16,8 @@ import { AarNoteService } from './aar-note.service'
 import { MissionJournalService } from './mission-journal.service'
 import { ActivityLogHeaderService } from './activity-log-header.service'
 import { RangerPhotoService } from './ranger-photo.service'
+import { DevicePrefsService } from './device-prefs.service'
+import { numberEntries } from '../../domain/msg-no'
 
 // Re-exported so the spec keeps one import. Anything that must stay out of the eager bundle
 // imports sample-scenarios.ts directly (E-192).
@@ -152,6 +154,7 @@ export class SampleDataService {
   private journal = inject(MissionJournalService)
   private activityLogHeaderService = inject(ActivityLogHeaderService)
   private rangerPhotoService = inject(RangerPhotoService)
+  private devicePrefs = inject(DevicePrefsService)
 
   constructor(
     private missionService: MissionService,
@@ -235,7 +238,8 @@ export class SampleDataService {
     // The demo is an import like any other, so "Export changes since import" can be tried on it:
     // edit a ranger, add a walk-up, export, and the file holds just those two.
     this.rangerService.recordImport(`sample mission (${scenario})`, 'replace')
-    const radioLog = this.assembleRadioLog(data.rows, rangers, data.event, tacticalCalls)
+    const radioLog = this.assembleRadioLog(data.rows, rangers, data.event, tacticalCalls,
+      { name: data.opPeriod?.name ?? 'Op 1', start: opPeriodStart })
     this.radioLogService.replaceAllRadioLog(radioLog)
     // E-194 / D-60 item 8: a demo replaces the entries, so bytes the old ones named go.
     await this.attachmentStore.sweepOrphans(radioLog.logEntries)
@@ -359,6 +363,7 @@ export class SampleDataService {
    */
   private assembleRadioLog(
     rows: Row[], rangers: RangerType[], event: string, tacticalCalls: TacticalCallType[] = [],
+    opPeriod?: { name: string, start: Date },
   ): Omit<RadioLogType, 'bounds'> {
     const statuses = this.statusNames()
     const now = Date.now()
@@ -407,14 +412,23 @@ export class SampleDataService {
       })
     })
 
+    // E-220 / D-68: message numbers per op period, oldest first. A demo that loads in a later op period
+    // ("Op 2") has earlier traffic from "Op 1", so the sequence restarts where the period does.
+    const numbered = numberEntries(logEntries, {
+      mission: this.missionService.settings.mission,
+      station: this.devicePrefs.getMsgStation(),
+      opPeriodOf: e => (opPeriod && new Date(e.date) >= opPeriod.start ? opPeriod.name : 'Op 1'),
+    })
+
     return {
       version: this.missionService.settings.version,
       date: new Date(),
       event,
       numReport: logEntries.length,
       maxId: logEntries.length,
+      msgNoHighWater: numbered.highWater,
       filter: '',
-      logEntries,
+      logEntries: numbered.entries,
     }
   }
 

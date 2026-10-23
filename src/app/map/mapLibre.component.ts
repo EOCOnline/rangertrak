@@ -59,6 +59,7 @@ import { RecordStore } from '../shared/storage/record-store'
 // exclusion from shared/mapping/index.ts, just applied to an import site instead.
 import { Utility } from '../shared/utility'
 import { formatReportTime } from '../shared/mapping/report-time'
+import { formatMsgNoShort } from '../domain/msg-no'
 import { LocationDialogComponent } from './location-dialog/location-dialog.component'
 import { MapPrintFurnitureComponent } from './map-print/map-print-furniture.component'
 import { MapPrintLegendComponent } from './map-print/map-print-legend.component'
@@ -812,7 +813,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
             type: 'Feature' as const,
             geometry: { type: 'Point' as const, coordinates: [r.location.lng, r.location.lat] },
             properties: {
-              title: `${r.callsign} at ${formatReportTime(r.date)} with ${r.status}`,
+              title: `${r.callsign} at ${formatReportTime(r.date)}${r.msgNo ? ` (${formatMsgNoShort(r.msgNo)})` : ''} with ${r.status}`,
               statusColor: rawColor ? resolveCssColorForCanvas(rawColor) : '#888888',
               // F29-7/8: same identity key (rangerUid preferred, callsign fallback - D-42
               // phase 5) and same color function Leaflet's markers/trails already use, so a

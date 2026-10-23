@@ -1,5 +1,6 @@
 import { Subscription } from 'rxjs'
 
+import { formatMsgNoFull, formatMsgNoShort } from '../../domain/msg-no'
 import { Injectable, OnDestroy, inject, signal } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
@@ -60,6 +61,9 @@ import { RadioLogType } from './radio-log-entry.interface'
  *  why this needs to be its own shape rather than a flag on the existing export). */
 export type CommandPostReport = {
   id: number
+  // E-220 / D-68: the message number, short ('A007') and full ('26-0142 / OP 2 / A007'). Blank for an entry with none.
+  msgNo?: string
+  msgNoFull?: string
   callsign: string
   // E-165: tactical call and the To station, as recorded on the entry. Names and FCC call signs
   // only - the roster links (rangerUid/toRangerUid) stay on the device, like the roster itself.
@@ -566,6 +570,8 @@ export class CommandPostPublishService implements OnDestroy {
       opPeriodEnd: new Date(settings.opPeriodEnd).toISOString(),
       reports: radioLog.logEntries.map((r): CommandPostReport => ({
         id: r.id,
+        msgNo: formatMsgNoShort(r.msgNo),
+        msgNoFull: formatMsgNoFull(r.msgNo),
         callsign: r.callsign,
         tacticalCall: r.tacticalCall ?? '',
         toTactical: r.toTactical ?? '',

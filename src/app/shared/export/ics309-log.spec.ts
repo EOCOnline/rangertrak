@@ -178,4 +178,45 @@ describe('buildIcs309Log with reports that have been through JSON', () => {
 
     expect(() => buildIcs309Log(restored(['2026-08-26T14:00:00']), restoredMission)).not.toThrow()
   })
+
+  // E-220 / E-218: the leftmost mark and Msg # columns, and the line printed once above them.
+  describe('mark and message number columns', () => {
+    const report = (over: Partial<RadioLogEntryType>): RadioLogEntryType => ({
+      id: 0, callsign: 'ACS1',
+      location: { lat: 0, lng: 0, address: '', derivedFromAddress: false },
+      date: new Date('2026-08-26T14:00:00'), status: 'Normal', notes: 'test', ...over,
+    })
+
+    it('gives each row the mark glyph (blank when unset) and the short and full number', () => {
+      const log = buildIcs309Log([
+        report({
+          date: new Date('2026-08-26T12:00:00'),
+          msgNo: { mission: '26-0142', opPeriod: 'OP 2', station: 'A', seq: 7 },
+          handled: { mark: 'action', at: new Date('2026-08-26T12:05:00') },
+        }),
+        report({ date: new Date('2026-08-26T13:00:00') }),
+      ], mission);
+
+      expect(log.rows[0].mark).toBe('!');
+      expect(log.rows[0].markLabel).toBe('Needs action');
+      expect(log.rows[0].msgNo).toBe('A007');
+      expect(log.rows[0].msgNoFull).toBe('26-0142 / OP 2 / A007');
+      expect(log.rows[1].mark).toBe('');
+      expect(log.rows[1].msgNo).toBe('');
+    });
+
+    it('uses the three glyphs for the three marks', () => {
+      const marks = (['handled', 'passed', 'action'] as const).map((m, i) =>
+        report({ date: new Date(2026, 7, 26, 12, i), handled: { mark: m, at: new Date() } }));
+
+      expect(buildIcs309Log(marks, mission).rows.map(r => r.mark)).toEqual(['✓', '→', '!']);
+    });
+
+    it('prints "Mission ... · Op period ..." once, leaving out a blank part', () => {
+      expect(buildIcs309Log([report({})], { ...mission, mission: '26-0142', opPeriod: 'OP 2' }).header.msgNoContext)
+        .toBe('Mission 26-0142 · Op period OP 2');
+      expect(buildIcs309Log([report({})], { ...mission, mission: '', opPeriod: 'OP 2' }).header.msgNoContext)
+        .toBe('Op period OP 2');
+    });
+  });
 })

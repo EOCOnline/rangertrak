@@ -71,6 +71,19 @@ describe('handover file', () => {
   });
 
   describe('plain hand-over', () => {
+    it('never carries the station letter (E-220: it stays on the device, not in a file sent around)', async () => {
+      localStorage.setItem('rt-msg-station', 'Q');
+      try {
+        const file = await buildHandoverFile(input());
+        const json = JSON.stringify(file.manifest);
+        expect(json).not.toContain('msgStation');
+        expect(json).not.toContain('devicePrefs');
+        expect(json).not.toContain('rt-msg-station');
+      } finally {
+        localStorage.removeItem('rt-msg-station');
+      }
+    });
+
     it('carries people, entries, photos and the advisory context, but no settings', async () => {
       const file = await buildHandoverFile(input());
 

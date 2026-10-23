@@ -51,6 +51,7 @@ import { MissionJournalService } from '../shared/services/mission-journal.servic
 import { LocationDialogComponent } from '../map/location-dialog/location-dialog.component'
 import { MapEngineService } from '../map/map-engine.service'
 import { liveRefs } from '../domain/attachments'
+import { formatMsgNoShort } from '../domain/msg-no'
 import { attachmentChipHtml, attachmentChipUid } from '../shared/attachments/attachment-chip-html'
 import { AttachmentViewerService } from '../shared/attachments/attachment-viewer.service'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
@@ -995,7 +996,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     this.legendEntries.set([...shown])
     shown.forEach(i => {
       if (i.location.lat && i.location.lng) {  // TODO: Do this in the FieldReports Service - or also the GMap; thewse only happened when location was broken???
-        let title = `${i.callsign} at ${formatReportTime(i.date)} with ${i.status}`
+        let title = `${i.callsign} at ${formatReportTime(i.date)}${i.msgNo ? ` (${formatMsgNoShort(i.msgNo)})` : ''} with ${i.status}`
 
         // E-86 (narrowed): a distinct shape+color per ranger callsign, team ignored for now.
         // Raised live 2026-08-26: the status halo behind it, colored per the Mission page's

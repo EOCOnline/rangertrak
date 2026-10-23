@@ -18,6 +18,8 @@ import { ActivityLogHeader, normalizeActivityLogHeader } from '../../domain/acti
 import { recordStore } from '../storage/record-store'
 import { AttachmentStoreService } from './attachment-store.service'
 import { MissionJournalService } from './mission-journal.service'
+import { DevicePrefsService } from './device-prefs.service'
+import { FieldModeService } from './field-mode.service'
 import type { JournalEntry } from '../../domain/mission-journal'
 import { shortHead } from '../../domain/mission-journal'
 import { clearActiveDemoScenario } from '../mapping/demo-map'
@@ -56,6 +58,10 @@ import { localDateStamp } from '../export/local-date'
  * `journal` (E-222 / D-67, 2026-10-23): a copy of this device's mission journal with its latest hash and
  * count. Additive and optional like `aarNotes`, so no schema bump. It is for the record only: Restore never
  * replaces the device's own journal; it adds one entry naming this file and the head it carried.
+ *
+ * `devicePrefs` (E-220 / D-68, 2026-10-23): the station letter this device logs message numbers as, so a
+ * restored device carries on as the same station. Optional, no schema bump; ABSENT leaves this device's
+ * letter alone. Hand-over and Setup files never carry it.
  */
 export type MissionExport = {
   schemaVersion: number,
@@ -70,6 +76,7 @@ export type MissionExport = {
   layers?: LayerRecord[],
   photos?: { stem: string, type: string, data: string }[],
   journal?: { head: string, count: number, entries: JournalEntry[] },
+  devicePrefs?: { msgStation?: string },
 }
 
 export const MISSION_EXPORT_SCHEMA_VERSION = 1
@@ -122,6 +129,8 @@ export class BackupService {
 
   private injector = inject(Injector)
   private attachmentStore = inject(AttachmentStoreService)
+  private devicePrefs = inject(DevicePrefsService)
+  private fieldMode = inject(FieldModeService)
 
   /** Loaded on demand: layers are Rangers/Map-page code, kept out of the always-loaded bundle. */
   private async layerService() {
@@ -165,6 +174,7 @@ export class BackupService {
       layers: (await this.layerService()).snapshot(),
       photos: await this.photosForExport(),
       journal: { ...this.journal.head(), entries: this.journal.snapshot() },
+      devicePrefs: { msgStation: this.devicePrefs.getMsgStation() },
     }
   }
 
@@ -378,8 +388,13 @@ export class BackupService {
     // canonical id. Without this, importing a mission would put un-keyed rangers straight
     // into the store, bypassing RangerService's own load-path migration.
     this.rangerService.replaceAllRangers(normalizeRangerIds(payload.rangers).rangers)
+    // E-220: a restored device carries on as the station the backup was made on. An older backup has
+    // none and leaves this device's letter alone.
+    if (payload.devicePrefs?.msgStation) this.devicePrefs.setMsgStation(payload.devicePrefs.msgStation)
     this.radioLogService.replaceAllRadioLog(
-      migrateRadioLog(payload.radioLog) ?? payload.radioLog)
+      migrateRadioLog(payload.radioLog, {
+        number: !this.fieldMode.enabled(), mission: incoming.mission, opPeriod: incoming.opPeriod, station: this.devicePrefs.getMsgStation(),
+      }) ?? payload.radioLog)
     // E-194 / D-60 item 8: bytes the old entries named and the restored ones do not are swept,
     // after the entries are in. Bytes a restored reference still names stay.
     await this.attachmentStore.sweepOrphans(this.radioLogService.getCurrentRadioLog().logEntries)

@@ -217,10 +217,30 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             ]
           },
           {
+            heading: 'Message numbers',
+            bullets: [
+              'Every entry gets a number when it is logged, such as A007: a station letter, then a count. Hover a number to see it in full, for example 26-0142 / OP 2 / A007 (mission, operational period, number).',
+              'The number never changes afterwards, even if you edit the entry or rename the operational period. The count starts again at 001 in each operational period, and a number is never used twice, even if an entry is deleted.',
+              'The station letter belongs to this device. Set it on the Mission page, under Operational period ("This station logs as"). If two devices log on the same net, give each its own letter.',
+              'Entries that arrive from a ranger\'s phone get this device\'s next number when you load them. Entries from a hand-over file keep the number they already have.',
+              'If two different entries end up with the same number (two devices used the same letter), the merge says so and the Mission page shows a warning. Nothing is renumbered; change one device\'s letter.',
+              'Typing a number such as A007 in the Msg # filter finds the entry.'
+            ]
+          },
+          {
+            heading: 'Status marks',
+            bullets: [
+              'The first column is a small box. Click it to mark the entry: ✓ handled, → passed on, ! needs action. Click again to move to the next mark, and once more to clear it.',
+              'The same mark is on the Messages page. Marks print in the first column of the ICS-309 log, and an unmarked entry prints an empty box you can tick by hand.',
+              'If two devices mark the same entry, the later mark is kept when they are merged.'
+            ]
+          },
+          {
             heading: 'Exporting',
             bullets: [
               'Only the filtered and sorted rows are exported, unless you tick All rows.',
               'Comma-separated imports into Excel most cleanly.',
+              'The message number is exported in parts (msg_mission, msg_op_period, msg_station, msg_seq) and in full (msg_no), with the status mark in handled.',
               'The file has an Attachments count and the attachments\' file names, joined with a semicolon.'
             ]
           },

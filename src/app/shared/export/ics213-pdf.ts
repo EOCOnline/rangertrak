@@ -4,6 +4,8 @@ import { formatStation } from '../../domain/station-label'
 // mission.interface.ts's own runtime code (there isn't any) into whichever chunk imports this
 // module. Kept as narrow Pick<>s below rather than the full types, so this file states exactly
 // which fields the mapping actually reads.
+import { formatMsgNoFull } from '../../domain/msg-no'
+import type { MsgNo } from '../../domain/msg-no'
 import type { RadioLogEntryType } from '../services/radio-log-entry.interface'
 import type { MissionType } from '../services/mission.interface'
 
@@ -65,6 +67,8 @@ export async function fillIcs213Pdf(
   exercise = false,
   /** E-194: listed on extra page(s) after the form; the printed list may run to several pages. */
   attachments: readonly Ics213Attachment[] = [],
+  /** E-220 / D-68: the entry's message number, printed small in the top margin. FEMA's form has no box for it. */
+  msgNo?: MsgNo,
 ): Promise<Uint8Array> {
   const pdf = await PDFDocument.load(templateBytes)
   const form = pdf.getForm()
@@ -100,6 +104,15 @@ export async function fillIcs213Pdf(
     const y = pageHeight - 26
     page.drawRectangle({ x: x - 10, y: y - 5, width: width + 20, height: size + 8, color: rgb(1, 1, 1), borderColor: rgb(0, 0, 0), borderWidth: 1.5 })
     page.drawText(text, { x, y, size, font, color: rgb(0, 0, 0) })
+  }
+
+  // E-220: "26-0142 / OP 2 / A007" as small text in the top-left margin, clear of the form fields and
+  // of the EXERCISE box above. Nothing is drawn for an entry with no number.
+  const msgNoText = formatMsgNoFull(msgNo)
+  if (msgNoText) {
+    const page = pdf.getPage(0)
+    const font = await pdf.embedFont(StandardFonts.Helvetica)
+    page.drawText(`Msg ${msgNoText}`, { x: 36, y: page.getSize().height - 20, size: 8, font, color: rgb(0, 0, 0) })
   }
 
   if (attachments.length) await appendAttachmentPages(pdf, attachments, exercise)

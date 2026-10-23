@@ -130,6 +130,7 @@
   }
   tbody tr:hover { background: light-dark(#eef3f8, #23272e); }
   .callsign { font-weight: 600; white-space: nowrap; }
+  .msgno { white-space: nowrap; font-variant-numeric: tabular-nums; }
   .status-pill {
     display: inline-block;
     padding: 0.1em 0.5em;
@@ -199,7 +200,7 @@
 <p id="notice" class="notice notice--warn" role="status" hidden></p>
 
 <div class="controls">
-  <input id="filterInput" type="search" placeholder="Filter by callsign, status, or message…" autocomplete="off">
+  <input id="filterInput" type="search" placeholder="Filter by number, callsign, status, or message…" autocomplete="off">
   <button id="markedOnly" type="button" aria-pressed="false" title="Show only the reports marked with ★ on this device">★ Marked only</button>
 </div>
 
@@ -209,6 +210,7 @@
     <thead>
       <tr>
         <th aria-sort="none"><button type="button" data-sort="mark" aria-label="Marked">★</button></th>
+        <th aria-sort="none"><button type="button" data-sort="msgno">Msg #</button></th>
         <th aria-sort="descending"><button type="button" data-sort="time">Time</button></th>
         <th aria-sort="none"><button type="button" data-sort="callsign">Callsign</button></th>
         <th aria-sort="none"><button type="button" data-sort="status">Status</button></th>
@@ -352,10 +354,17 @@
     return Array.isArray(r.attachments) ? r.attachments.length : (r.attachmentCount || 0);
   }
 
+  // Sorts by station then number: 'A007' -> letter, then the digits as a number.
+  function msgNoSeq(r) {
+    var m = /^([A-Z])(\d+)$/.exec(r.msgNo || '');
+    return m ? m[1].charCodeAt(0) * 1000000 + parseInt(m[2], 10) : 0;
+  }
+
   function sortValue(r) {
     switch (sortKey) {
       case 'mark': return isMarked(r) ? 1 : 0;
       case 'files': return fileCount(r);
+      case 'msgno': return msgNoSeq(r);
       case 'callsign': return station(r.tacticalCall, r.callsign).toLowerCase();
       case 'status': return (r.status || '').toLowerCase();
       case 'source': return (r.source || '').toLowerCase();
@@ -526,6 +535,7 @@
         return (r.callsign || '').toLowerCase().indexOf(filterText) !== -1
           || (r.tacticalCall || '').toLowerCase().indexOf(filterText) !== -1
           || (r.status || '').toLowerCase().indexOf(filterText) !== -1
+          || (r.msgNo || '').toLowerCase().indexOf(filterText) !== -1
           || (r.notes || '').toLowerCase().indexOf(filterText) !== -1;
       });
     }
@@ -545,6 +555,7 @@
       return '<tr' + (marked ? ' class="marked"' : '') + '>'
         + '<td><button type="button" class="mark-btn" data-mark="' + escAttr(markKey(r)) + '" aria-pressed="' + marked
         + '" aria-label="' + (marked ? 'Marked. Tap to unmark' : 'Mark this report') + '">' + (marked ? '★' : '☆') + '</button></td>'
+        + '<td class="msgno" title="' + escAttr(r.msgNoFull || '') + '">' + esc(r.msgNo || '') + '</td>'
         + '<td class="time">' + esc(fmtTime(r.date)) + '</td>'
         + '<td class="callsign">' + esc(station(r.tacticalCall, r.callsign) || '(not given)')
         + (station(r.toTactical, r.toCallsign) ? ' &rarr; ' + esc(station(r.toTactical, r.toCallsign)) : '') + '</td>'

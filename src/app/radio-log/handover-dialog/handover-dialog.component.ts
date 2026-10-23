@@ -9,6 +9,8 @@ import { DecryptionFailedError } from '../../shared/crypto/encrypted-file'
 import { LocationMergeResult, mergeLocations } from '../../domain/location-merge'
 import { mergeRangers, RangerMergeResult } from '../../domain/ranger-migration'
 import type { EntryMergeResult } from '../../domain/entry-merge'
+import { msgNoClashSentence, nextFreeStation, stationsByUse } from '../../domain/msg-no'
+import { DevicePrefsService } from '../../shared/services/device-prefs.service'
 import { openHandoverFile, readEnvelope } from '../../shared/export/handover-file'
 import { layerName, MissionZipAttachment, MissionZipManifest, MissionZipPhoto } from '../../shared/export/mission-zip'
 import { AttachmentStoreService, sha256Hex } from '../../shared/services/attachment-store.service'
@@ -30,6 +32,8 @@ export type HandoverDialogResult = {
   attachments: MissionZipAttachment[]
   rangerMerge: RangerMergeResult | null
   locationMerge: LocationMergeResult | null
+  /** E-220 / D-68: the station letter this device logs as from now on, when the file carries numbered entries. */
+  station?: string
 }
 
 type Step = 'passphrase' | 'preview' | 'error'
@@ -61,6 +65,7 @@ export class HandoverDialogComponent {
   private radioLogService = inject(RadioLogService)
   private missionService = inject(MissionService)
   private attachmentStore = inject(AttachmentStoreService)
+  private devicePrefs = inject(DevicePrefsService)
 
   step = signal<Step>('preview')
   busy = signal(false)
@@ -80,6 +85,12 @@ export class HandoverDialogComponent {
   /** Advisory only (D-59): a mismatch warns, it never blocks. */
   mismatches = signal<string[]>([])
   fromName = signal('')
+  /** E-220 / D-68: the sender's station letter (the one most used in the file); '' when the file has no numbered entries. */
+  fileStation = signal('')
+  /** The next letter seen neither in the file nor in this device's own log. */
+  alongsideStation = signal('')
+  /** Take over is first and the default (Q33). */
+  stationChoice = signal<'takeover' | 'alongside'>('takeover')
 
   constructor() {
     if (readEnvelope(this.data.bytes)) {
@@ -127,6 +138,12 @@ export class HandoverDialogComponent {
       ? this.radioLogService.previewHandoverEntries(manifest.entries, rangerMerge?.uidRemap ?? {})
       : null)
 
+    const inFile = stationsByUse(manifest.entries ?? [])
+    this.fileStation.set(inFile[0] ?? '')
+    this.alongsideStation.set(inFile.length
+      ? nextFreeStation([...inFile, ...stationsByUse(this.radioLogService.getCurrentRadioLog().logEntries), this.devicePrefs.getMsgStation()])
+      : '')
+
     const here = this.missionService.settings
     const there = manifest.context
     const out: string[] = []
@@ -159,6 +176,11 @@ export class HandoverDialogComponent {
     return !!this.manifest()?.entries
   }
 
+  /** The plain line for numbers already held by a different entry here; '' for none. */
+  clashLine(): string {
+    return msgNoClashSentence(this.entryMerge()?.clashes ?? [])
+  }
+
   updatedPeople() {
     return (this.rangerMerge()?.overwritten ?? []).slice(0, MORE)
   }
@@ -189,6 +211,9 @@ export class HandoverDialogComponent {
     this.ref.close({
       manifest, photos: this.photos(), attachments: this.attachments(),
       rangerMerge: this.rangerMerge(), locationMerge: this.locationMerge(),
+      ...(this.fileStation()
+        ? { station: this.stationChoice() === 'takeover' ? this.fileStation() : this.alongsideStation() }
+        : {}),
     })
   }
 }
