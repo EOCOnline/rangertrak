@@ -2026,7 +2026,8 @@ async function checkControls() {
       const coarse = await evaluate(`matchMedia('(pointer: coarse)').matches`)
       check(`${name} @${width}: pointer is ${touch ? 'coarse' : 'fine'}`, coarse, touch)
       const rows = await evaluate(CONTROLS_COLLECTOR)
-      check(`${name} @${width}: finds controls to measure`, rows.length > 0, true)
+      // Most Help tabs are text only; whatever controls they do have are still measured below.
+      if (!name.startsWith('Help ')) check(`${name} @${width}: finds controls to measure`, rows.length > 0, true)
       for (const x of rows) {
         const exactH = x.kind === 'toggle' || x.kind === 'chip'
         const heightOk = exactH ? Math.abs(x.height - expectH) <= 1 : x.height >= expectH - 1
