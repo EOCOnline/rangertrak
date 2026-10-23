@@ -293,3 +293,25 @@ label {
 }
 
 @include sheet.print-sheet(rt-print-roster, (16%, 28%, 25%, 17%, 14%));
+
+// Pre-beta fix: at 360 px the ag-Grid paging panel (page size, "1 to 9 of 40", first/prev/page/next/last) was
+// one row wider than the screen and the whole page scrolled sideways. Let it wrap, and tighten the gaps on a
+// small screen. ::ng-deep is needed because ag-Grid draws the panel itself; #rangersgrid keeps it to this grid.
+#rangersgrid ::ng-deep .ag-paging-panel {
+  flex-wrap: wrap;
+  height: auto;
+  min-height: 48px;
+  row-gap: 0.25rem;
+}
+
+@media (max-width: 400px) {
+  #rangersgrid ::ng-deep .ag-paging-panel {
+    justify-content: center;
+    column-gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+
+    > span {
+      margin: 0 0.25rem;
+    }
+  }
+}
