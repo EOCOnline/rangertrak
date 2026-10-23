@@ -173,6 +173,8 @@ async function acceptClearDialog(typed = '') {
   const opened = await pollUntil(() => evaluate(`!!document.querySelector('[data-testid="clear-confirm"]')`), v => v === true)
   if (!opened) return false
   if (typed) await evaluate(`(() => { const i = document.querySelector('[data-testid="clear-type"]'); if (i) { i.value = ${JSON.stringify(typed)}; i.dispatchEvent(new Event('input', { bubbles: true })) } })()`)
+  // A disabled button (live mission, name not typed) would make the click a silent no-op.
+  if (await evaluate(`document.querySelector('[data-testid="clear-confirm"]')?.disabled`)) return false
   await evaluate(`document.querySelector('[data-testid="clear-confirm"]')?.click()`)
   return true
 }
@@ -4296,10 +4298,13 @@ async function checkAttachments(downloads) {
   check('on a demo, an attachment is stored', await pollUntil(attachmentKeys, k => k.length === 1), [wavSha])
   await goto('/')
   await evaluate(`document.querySelector('.rt-mode-choice[data-mode="exercise"]')?.click()`)
-  await acceptClearDialog()
-  await sleep(4000)   // startRealMission() clears the demo, sweeps, and reloads
-  await goto('/')
-  check('Start a real mission leaves the attachments store empty', await attachmentKeys(), [])
+  // The demo now holds a typed entry, so the mission counts as live and the dialog wants the name typed.
+  check('leaving Demo with an attachment: the "What to clear" dialog accepts after REPLACE is typed (E-221)',
+    await acceptClearDialog('REPLACE'), true)
+  // E-221 made startRealMission() do more before it sweeps (photos, the chosen notes, the journal),
+  // so poll rather than read once after a flat sleep, and don't navigate away mid-sweep.
+  check('Start a real mission leaves the attachments store empty',
+    await pollUntil(attachmentKeys, k => k.length === 0, 40, 300), [])
 
   await evaluate(`localStorage.clear()`); await idbClearAll(); await attachmentsWipe()
   await send('Emulation.setDeviceMetricsOverride', { width: 1360, height: 900, deviceScaleFactor: 1, mobile: false })
@@ -5167,9 +5172,11 @@ async function checkSimpleView(fx) {
     check('Entry keeps Who, Where, When, Notes and Submit',
       [await has('#enter__Callsign-input'), await has('#enter__Where-latI'), await has('rangertrak-time-picker'),
         await has('#enter__What--area'), await has('.enter__Submit-button')], [true, true, true, true, true])
-    check('Entry hides To station, Source, attachments, ICS-213, the evidence location and the format picker',
-      await firstPresent(['#enter__To-input', '.enter__Source', '[data-testid=entry-attach]', '[data-testid=generates213-toggle]',
+    check('Entry hides To station, Source, attachments, the evidence location and the format picker',
+      await firstPresent(['#enter__To-input', '.enter__Source', '[data-testid=entry-attach]',
         '[data-testid=evidence-toggle]', '.enter__Where-switcher']), null)
+    // bc09a51 (0.99.78): the ICS-213 checkbox is core, shown in both views (D-62 item 8).
+    check('Entry keeps the ICS-213 checkbox (core since 0.99.78)', await has('[data-testid=generates213-toggle]'), true)
     check('Entry has the header Full view switch', await has('[data-testid=view-switch-header]'), true)
 
     await goto('/map', 5500)
