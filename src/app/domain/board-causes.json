@@ -1,0 +1,107 @@
+[
+  {
+    "id": "no-network",
+    "seenFrom": ["app", "phone"],
+    "message": "This device isn't on any network. Join the command post's Wi-Fi.",
+    "detail": "The browser reports it is offline (navigator.onLine is false).",
+    "anchor": "no-network"
+  },
+  {
+    "id": "different-network",
+    "seenFrom": ["app", "phone"],
+    "message": "Nothing answered. Most likely this device isn't on the same Wi-Fi as the Board laptop[[: {ssid}]]. A VPN or firewall may also be in the way.",
+    "detail": "The request timed out or failed slowly. Next suspects: a VPN or web-protection app on this device, a firewall on the Board laptop, or a guest Wi-Fi that keeps devices apart.",
+    "anchor": "cant-reach-board-different-network"
+  },
+  {
+    "id": "firewall-public",
+    "seenFrom": ["server"],
+    "message": "Windows is treating this Wi-Fi as Public, so it blocks other devices from reaching the Board.",
+    "detail": "Get-NetConnectionProfile reports NetworkCategory Public. As administrator: Set-NetConnectionProfile -InterfaceAlias '<adapter>' -NetworkCategory Private",
+    "anchor": "cant-reach-board-public-network"
+  },
+  {
+    "id": "port-taken",
+    "seenFrom": ["server"],
+    "message": "Another program on this computer already answers on {port}[[ ({name})]]. The Board is using {other} instead, so give out the address printed below.",
+    "detail": "The usual web port is in use. The Board falls back to {other}; every address given to a device must include it.",
+    "anchor": "cant-reach-board-address-in-use"
+  },
+  {
+    "id": "node-too-old",
+    "seenFrom": ["start-script"],
+    "message": "This computer's Node.js is too old. The Board needs version 24 or newer.",
+    "detail": "Run node --version to see the installed version, then install the current LTS from nodejs.org.",
+    "anchor": "start-node-too-old"
+  },
+  {
+    "id": "not-built",
+    "seenFrom": ["start-script"],
+    "message": "RangerTrak isn't built yet. Run: npm run build",
+    "detail": "The dist folder (dist\\rangertrak\\browser) is missing, so the Board has no viewer page to serve.",
+    "anchor": "start-not-built"
+  },
+  {
+    "id": "certificate-not-accepted",
+    "seenFrom": ["app", "phone"],
+    "message": "Most likely this browser hasn't accepted the Board's certificate yet, or the Board isn't running. Open the Board, choose Advanced, then Proceed, and come back.",
+    "detail": "The request failed within a few seconds, which usually means the browser refused the Board's self-signed certificate. A browser cannot tell this from a Board that is not running.",
+    "anchor": "cant-reach-board-certificate"
+  },
+  {
+    "id": "blocked-by-browser",
+    "seenFrom": ["app"],
+    "message": "Your browser is blocking RangerTrak from reaching devices on this network. Allow local network access for this site in the browser's site settings.",
+    "detail": "The browser's local network access permission is denied for this site. In Chrome: the padlock next to the address, Site settings, Local network access, Allow.",
+    "anchor": "cant-reach-board-blocked"
+  },
+  {
+    "id": "vpn-or-shield",
+    "seenFrom": ["app", "phone"],
+    "message": "A VPN or web-protection app can block the Board. Turn it off while you use the Board.",
+    "detail": "VPN apps and web-protection or ad-blocking apps can route or filter traffic to local addresses.",
+    "anchor": "cant-reach-board-vpn"
+  },
+  {
+    "id": "wrong-address",
+    "seenFrom": ["app"],
+    "message": "That's the viewer's address. The scribe's address is the same without /view.",
+    "detail": "The address ended in /view. RangerTrak removes it automatically.",
+    "anchor": "cant-reach-board-wrong-address"
+  },
+  {
+    "id": "not-a-board",
+    "seenFrom": ["app"],
+    "message": "Something answered at that address, but it isn't a RangerTrak Board.",
+    "detail": "The reply to /api/hello did not carry the RangerTrak Board signature. Check the address, or whether another program uses that address.",
+    "anchor": "cant-reach-board-not-a-board"
+  },
+  {
+    "id": "board-lost",
+    "seenFrom": ["viewer"],
+    "message": "Lost the Board at {time}.[[ Still on {ssid}?]] Is the Board laptop awake?",
+    "detail": "The viewer's last request to the Board failed. What is on screen is the last report received.",
+    "anchor": "cant-reach-board-lost"
+  },
+  {
+    "id": "scribe-quiet",
+    "seenFrom": ["viewer"],
+    "message": "The Board is fine. The scribe's device last checked in {minutes} min ago.",
+    "detail": "The scribe's RangerTrak checks in about every 30 seconds while publishing. It has been quiet longer than 2 minutes: the device may be asleep, offline or no longer publishing.",
+    "anchor": "scribe-quiet"
+  },
+  {
+    "id": "phone-left-wifi",
+    "seenFrom": ["phone"],
+    "message": "If your phone says No internet on this Wi-Fi, choose Stay connected.",
+    "detail": "Android's switch to mobile data and iOS Wi-Fi Assist both leave a Wi-Fi network that has no internet.",
+    "anchor": "cant-reach-board-phone-left-wifi"
+  },
+  {
+    "id": "laptop-asleep",
+    "seenFrom": ["server"],
+    "message": "Keep this computer plugged in with the lid open. If it sleeps, the Board stops.",
+    "detail": "The Board only runs while this computer is awake. On battery, set sleep to Never while the Board is in use.",
+    "anchor": "cant-reach-board-asleep"
+  }
+]

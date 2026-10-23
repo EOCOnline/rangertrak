@@ -328,6 +328,12 @@
     noticeEl.textContent = text || '';
   }
 
+  // For a sentence with a bold part: every piece is passed through esc() by the caller.
+  function showNoticeHtml(html) {
+    noticeEl.hidden = !html;
+    noticeEl.innerHTML = html || '';
+  }
+
   filterEl.addEventListener('input', function () {
     filterText = filterEl.value.trim().toLowerCase();
     render();
@@ -578,9 +584,31 @@
     badgeEl.textContent = text;
   }
 
+  // E-216: when the Board last answered, and the Wi-Fi name it gave, for the "lost" message below.
+  var lastGoodAt = 0;
+  var lastWifi = '';
+  var firstFailAt = 0;
+
+  // The two sentences below are the shared causes `board-lost` and `scribe-quiet` in
+  // src/app/domain/board-causes.json. This page cannot import it, so the words are copied here;
+  // tools/board/causes.test.js fails if they drift apart.
+  function boardLostHtml(atMs, ssid) {
+    return 'Lost the Board at ' + esc(fmtClock(atMs)) + '.' +
+      (ssid ? ' Still on <strong>' + esc(ssid) + '</strong>?' : '') +
+      ' Is the Board laptop awake?';
+  }
+  function scribeQuietText(minutes) {
+    return "The Board is fine. The scribe's device last checked in " + minutes + ' min ago.';
+  }
+  function fmtClock(ms) {
+    try { return new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; }
+  }
+  var SCRIBE_QUIET_MS = 2 * 60 * 1000;
+
   function poll() {
     api('/api/mission')
       .then(function (res) {
+        if (res.ok || res.status === 401 || res.status === 429) { lastGoodAt = Date.now(); firstFailAt = 0; }
         if (res.status === 401) {
           latest = null;
           renderClaim(null);
@@ -610,13 +638,22 @@
         }
         latest = data;
         renderClaim(data.board);
-        var ageMs = Date.now() - new Date(data.publishedAt).getTime();
-        setBadge(ageMs < 60000 ? 'live' : 'stale',
-          ageMs < 60000 ? 'live' : ('last update ' + Math.round(ageMs / 60000) + 'm ago'));
+        if (data.board && data.board.wifi) { lastWifi = String(data.board.wifi); }
+        var seen = data.board && data.board.scribeSeenAt ? new Date(data.board.scribeSeenAt).getTime() : NaN;
+        var quietMs = Date.now() - seen;
+        if (isFinite(quietMs) && quietMs > SCRIBE_QUIET_MS) {
+          setBadge('stale', 'scribe quiet');
+          showNotice(scribeQuietText(Math.floor(quietMs / 60000)));
+        } else {
+          setBadge('live', 'live');
+        }
         render();
       })
       .catch(function (e) {
-        setBadge('none', 'server unreachable');
+        // The last data stays on screen (latest is not cleared); only the badge and the notice change.
+        if (!lastGoodAt && !firstFailAt) { firstFailAt = Date.now(); }
+        setBadge('none', 'lost');
+        showNoticeHtml(boardLostHtml(lastGoodAt || firstFailAt, lastWifi));
         console.warn('Command Post view: could not reach /api/mission -', e);
       });
   }
