@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
 import { LayerKind, LayerRecord, layersOfKind, liveCount } from '../../domain/layers'
 import { LogService } from '../services/log.service'
+import { MissionJournalService } from '../services/mission-journal.service'
 import { MissionLocationService } from '../services/mission-location.service'
 import { RangerService } from '../services/ranger.service'
 import { LayerService } from '../services/layer.service'
@@ -36,6 +37,7 @@ export class LayersCardComponent {
   private readonly rangerService = inject(RangerService)
   private readonly locationService = inject(MissionLocationService)
   private readonly log = inject(LogService)
+  private readonly journal = inject(MissionJournalService)
 
   /** The uids now on the device for this kind, so counts reflect hand deletions too. */
   private readonly peopleUids = signal<ReadonlySet<string>>(new Set())
@@ -89,7 +91,7 @@ export class LayersCardComponent {
       }
     }
     this.layerService.forget(layer.name, kind)
-    this.log.info(`Removed layer "${layer.name}" (${kind}): ${toRemove.length} removed, ${shared} kept because another layer holds them.`, this.id)
+    this.journal.record('layer-removed', `Removed layer "${layer.name}" (${kind}): ${toRemove.length} removed, ${shared} kept because another layer holds them.`)
   }
 }
 

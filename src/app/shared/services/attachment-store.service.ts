@@ -4,6 +4,7 @@ import { formatBytes, formatFingerprint, isGone, orphans, removedOnly } from '..
 import type { AttachmentRef } from '../../domain/attachments'
 import { IMPORT_SAFETY_KEY, holdAsEntries } from '../../domain/import-safety'
 import { LogService } from './log.service'
+import { MissionJournalService } from './mission-journal.service'
 import { StoragePersistenceService } from './storage-persistence.service'
 // Direct import of the module-level singleton, for the same reason RangerPhotoService does it
 // (see the comment on its own `recordStore` import).
@@ -120,6 +121,8 @@ export class AttachmentStoreService {
   private changesSignal = signal(0)
   /** Bumps whenever bytes are added or removed, so budgets and chips can refresh. */
   readonly changes = this.changesSignal.asReadonly()
+
+  private journal = inject(MissionJournalService)
 
   constructor(private log: LogService, private persistence: StoragePersistenceService) {
     this.ready = this.open()
@@ -269,7 +272,7 @@ export class AttachmentStoreService {
     await this.txMulti([ORIGINALS, THUMBS], s => { for (const sha of gone) s.delete(sha) })
     for (const sha of gone) this.forget(sha)
     this.bump()
-    this.log.info(`Removed ${gone.length} attachments nothing refers to from this device.`, this.id)
+    this.journal.record('attachments-removed', `Removed ${gone.length} attachments nothing refers to from this device.`)
     return gone.length
   }
 
@@ -288,7 +291,7 @@ export class AttachmentStoreService {
     await this.txMulti([ORIGINALS, THUMBS], s => { for (const sha of gone) s.delete(sha) })
     for (const sha of gone) this.forget(sha)
     this.bump()
-    this.log.info(`Deleted ${gone.length} removed attachments' bytes from this device.`, this.id)
+    this.journal.record('attachments-removed', `Deleted ${gone.length} removed attachments' bytes from this device.`)
     return gone.length
   }
 
@@ -322,7 +325,7 @@ export class AttachmentStoreService {
         else throw e
       }
     }
-    this.log.info(`Restored ${stored} attachments to this device; ${mismatched.length} did not match their fingerprint.`, this.id)
+    this.journal.record('attachments-restored', `Restored ${stored} attachments to this device; ${mismatched.length} did not match their fingerprint.`)
     return { stored, alreadyHere, unreferenced, mismatched }
   }
 

@@ -30,6 +30,7 @@ import { AdvancedDirective } from '../shared/view/advanced.directive'
 // Direct path, not the shared/services barrel - see the note in rangers.component.ts.
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
+import { MissionJournalService } from '../shared/services/mission-journal.service'
 import { ics213AttachmentsFor } from '../shared/attachments/attachment-print'
 import { AttachmentIntakeService } from '../shared/attachments/attachment-intake.service'
 import type { PendingAttachment } from '../shared/attachments/attachment-intake.service'
@@ -400,6 +401,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   private attachmentStore = inject(AttachmentStoreService)
+  private journal = inject(MissionJournalService)
   private attachmentIntake = inject(AttachmentIntakeService)
   /** The budget line shows beside Attach once past 80% (D-60 item 7). */
   readonly attachmentBudget = inject(AttachmentBudgetService)
@@ -632,10 +634,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     const outcome = await sendReportPacket(text, filename, media, this.document,
       (why) => this.log.warn(`Sharing the Report Packet was cancelled or failed, so it was downloaded instead: ${why}`, this.id))
     if (outcome === 'downloaded') {
-      this.log.info(`Downloaded Report Packet: ${filename} (${count} reports, ${media.length} files).`, this.id)
+      this.journal.record('packet-exported', `Downloaded Report Packet: ${filename} (${count} reports, ${media.length} files).`)
       return
     }
-    this.log.info(`Shared Report Packet: ${filename} (${count} reports, ${outcome === 'shared' ? media.length : 0} files).`, this.id)
+    this.journal.record('packet-exported', `Shared Report Packet: ${filename} (${count} reports, ${outcome === 'shared' ? media.length : 0} files).`)
     if (outcome === 'shared-text-only') alert(PHOTOS_LEFT_OUT_MESSAGE)
   }
 
@@ -1169,7 +1171,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
           : `Entry id # ${report.id} saved - 213 saved as a file (this browser won't print it directly): open the file to print`
         Utility.resetMaterialFadeAnimation(this.submitInfo)
       }
-      this.log.info(`Auto-printed ICS-213 for report ${report.id}: ${outcome}.`, this.id)
+      this.journal.record('print-213-auto', `Auto-printed ICS-213 for report ${report.id}: ${outcome}.`)
     } catch (e) {
       // No throw, no snackbar (debug-mode-only here, deliberately - see onFormSubmit()'s own
       // comment on AlertsComponent.OpenSnackBar) - just the same fading line beside Submit a

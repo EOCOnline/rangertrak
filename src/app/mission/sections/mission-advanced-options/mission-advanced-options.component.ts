@@ -12,7 +12,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatDialog } from '@angular/material/dialog'
 import { ExpandableSectionComponent } from '../../../shared/expandable-section/expandable-section.component'
 import {
-  AarNoteService, BackupService, FieldModeService, LogService, MissionExport, MissionLocationService, MissionType,
+  AarNoteService, BackupService, FieldModeService, LogService, MissionExport, MissionJournalService, MissionLocationService, MissionType,
   RadioLogService, RangerPhotoService, RangerService, StoragePersistenceService
 } from '../../../shared/services/'
 import { DemoPickerComponent } from '../../../shared/demo-picker/demo-picker.component'
@@ -112,6 +112,7 @@ export class MissionAdvancedOptionsComponent {
     private importSafety: ImportSafetyService,
     private locationService: MissionLocationService,
     private aarNoteService: AarNoteService,
+    private journal: MissionJournalService,
     private dialog: MatDialog,
     private log: LogService) { }
 
@@ -251,7 +252,7 @@ export class MissionAdvancedOptionsComponent {
       alert(`Device encryption is on, but not everything was encrypted yet:\n\n${errors.join('\n\n')}`)
       return
     }
-    this.log.info('Turned device encryption on: roster, radio log entries, photos and attachments are now encrypted at rest.', this.id)
+    this.journal.record('encryption-on', 'Turned device encryption on: roster, radio log entries, photos and attachments are now encrypted at rest.')
     alert('Device encryption is on. You will be asked for this passphrase on your next visit '
       + 'and after every app update.')
   }
@@ -292,7 +293,7 @@ export class MissionAdvancedOptionsComponent {
       // E-194: attachments the same way, for the same reason, before the key is cleared.
       await this.attachmentStore.decryptAll(key)
       await this.recordStore.disableEncryption()
-      this.log.info('Turned device encryption off: roster, radio log entries, photos and attachments are stored unencrypted again.', this.id)
+      this.journal.record('encryption-off', 'Turned device encryption off: roster, radio log entries, photos and attachments are stored unencrypted again.')
       alert('Device encryption is off.')
     } catch (error: any) {
       this.log.error(`onBtnDisableEncryption: failed: ${error.message}`, this.id)
@@ -323,6 +324,7 @@ export class MissionAdvancedOptionsComponent {
       aarNotes: this.aarNoteService.getCurrentNotes().filter(n => n.kind !== 'activity').length,
       activityLines: this.aarNoteService.getCurrentNotes().filter(n => n.kind === 'activity').length,
       photos: this.rangerPhotoService.count(),
+      journal: this.journal.entries().length,
     }
     const file: RestoreSide = {
       mission: payload.settings.mission,
@@ -334,6 +336,7 @@ export class MissionAdvancedOptionsComponent {
       aarNotes: (payload.aarNotes ?? []).filter(n => n?.kind !== 'activity').length,
       activityLines: (payload.aarNotes ?? []).filter(n => n?.kind === 'activity').length,
       photos: payload.photos ? payload.photos.length : null,
+      journal: payload.journal ? payload.journal.count : null,
     }
     const preview = compareForRestore(device, file, device.appVersion)
     const { RestorePreviewDialogComponent } = await import('../restore-preview-dialog/restore-preview-dialog.component')
@@ -410,7 +413,9 @@ export class MissionAdvancedOptionsComponent {
         // reload() right below depends on. See importMission()'s own doc comment.
         await this.backupService.importMission(payload)
         if (safetyCopy === 'kept') await this.importSafety.markImportDone()
-        this.log.info(`Restored the mission from ${backupFile.name}.`, this.id)
+        this.journal.record('mission-restored',
+          `Restored the mission from ${backupFile.name}. The backup's journal: ${this.backupService.describeBackupJournal(payload)}.`)
+        await this.recordStore.flush() // stored before the reload below
         restoredMission = true
       }
 

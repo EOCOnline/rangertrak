@@ -22,6 +22,7 @@ import { IoPanelComponent } from '../../shared/io-panel/io-panel.component'
 import { readSheetFile, rowsToXlsxBytes } from '../../shared/import/sheet-reader'
 import { LogService, MissionLocationService, MissionService } from '../../shared/services'
 import type { MissionLocationType } from '../../shared/services'
+import { MissionJournalService } from '../../shared/services/mission-journal.service'
 import { LOCKED_FILE_MESSAGE, readEnvelope } from '../../shared/export/handover-kind'
 import { LayersCardComponent } from '../../shared/io-panel/layers-card.component'
 import { LayerService } from '../../shared/services/layer.service'
@@ -68,6 +69,7 @@ export class PlacesIoComponent {
   private readonly dialog = inject(MatDialog)
   private readonly snackBar = inject(MatSnackBar)
   private readonly log = inject(LogService)
+  private readonly journal = inject(MissionJournalService)
   private readonly locationService = inject(MissionLocationService)
   private readonly layerService = inject(LayerService)
   private readonly missionService = inject(MissionService)
@@ -301,8 +303,8 @@ export class PlacesIoComponent {
       + (plan.newCategories.length ? `. New categories: ${plan.newCategories.join(', ')}` : '')
       + (removed ? `. Removed ${removed} no longer in "${result.layer?.name}"` : '') + '.'
     // E-223: the snackbar names the places; the log keeps counts only.
-    this.log.info(`Imported places from "${fileName}": ${plan.merge.added.length} added, ${plan.merge.overwritten.length} updated, ${plan.merge.unchanged.length} already up to date`
-      + (removed ? `, ${removed} removed` : '') + '.', this.id)
+    this.journal.record('places-imported', `Imported places from "${fileName}": ${plan.merge.added.length} added, ${plan.merge.overwritten.length} updated, ${plan.merge.unchanged.length} already up to date`
+      + (removed ? `, ${removed} removed` : '') + '.')
     this.snackBar.open(summary, 'OK', { duration: 20000 })
   }
 
@@ -342,7 +344,7 @@ export class PlacesIoComponent {
         this.downloadBlob(new Blob(['﻿', rowsToCsv(placesToRows(places))], { type: 'text/csv;charset=utf-8' }),
           `rangertrak-places-${stamp}${partial}.csv`)
       }
-      this.log.info(`Exported ${places.length} places as ${this.format()}.`, this.id)
+      this.journal.record('places-exported', `Exported ${places.length} places as ${this.format()}.`)
     } catch (e: any) {
       this.log.error(`Failed to export places: ${e?.message ?? e}`, this.id)
       alert(`Could not export the places.\n\n${e?.message ?? e}`)
@@ -404,7 +406,7 @@ export class PlacesIoComponent {
         untitle()
       }
       window.addEventListener('afterprint', finish, { once: true })
-      this.log.info(`Opened the print dialog for ${places.length} places.`, this.id)
+      this.journal.record('print-places', `Printed ${places.length} places.`)
       const started = Date.now()
       window.print()
       // Where print() returns at once (the dialog is not modal), wait for afterprint, and as a

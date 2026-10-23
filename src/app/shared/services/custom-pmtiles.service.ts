@@ -1,6 +1,7 @@
-import { Injectable, signal } from '@angular/core'
+import { Injectable, inject, signal } from '@angular/core'
 
 import { LogService } from './log.service'
+import { MissionJournalService } from './mission-journal.service'
 
 /**
  * A scribe-supplied `.pmtiles` file, stored on THIS device only, for MapLibre to use in
@@ -43,6 +44,8 @@ export class CustomPmtilesService {
 
   private ready: Promise<void>
 
+  private journal = inject(MissionJournalService)
+
   constructor(private log: LogService) {
     this.ready = this.open()
       .then(() => this.loadStored())
@@ -68,7 +71,7 @@ export class CustomPmtilesService {
     const blob = new Blob([file], { type: file.type })
     await this.put({ name: file.name, blob })
     this.active.set({ name: file.name, blob })
-    this.log.info(`Stored custom PMTiles file "${file.name}" (${(blob.size / 1_048_576).toFixed(1)} MB).`, this.id)
+    this.journal.record('custom-map-stored', `Stored custom PMTiles file "${file.name}" (${(blob.size / 1_048_576).toFixed(1)} MB).`)
   }
 
   /** Forgets the stored file. The bundled map files are unaffected - it's a build asset,
@@ -78,7 +81,7 @@ export class CustomPmtilesService {
     if (!this.db) { this.active.set(null); return }
     await this.tx('readwrite', s => s.delete(KEY))
     this.active.set(null)
-    this.log.info('Cleared the custom PMTiles file. Maps will use the bundled map again.', this.id)
+    this.journal.record('custom-map-cleared', 'Cleared the custom PMTiles file. Maps will use the bundled map again.')
   }
 
   // ── internals ────────────────────────────────────────────────────────

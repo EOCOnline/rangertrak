@@ -10,6 +10,7 @@ import { AttachmentStoreService } from './attachment-store.service'
 import { BackupService } from './backup.service'
 import type { MissionExport } from './backup.service'
 import { LogService } from './log.service'
+import { MissionJournalService } from './mission-journal.service'
 import { RadioLogService } from './radio-log.service'
 
 /**
@@ -53,6 +54,7 @@ export class ImportSafetyService {
   private attachmentStore = inject(AttachmentStoreService)
   private radioLog = inject(RadioLogService)
   private log = inject(LogService)
+  private journal = inject(MissionJournalService)
   private dialog = inject(MatDialog)
 
   private heldSet: ReadonlySet<string> = new Set()
@@ -202,7 +204,7 @@ export class ImportSafetyService {
     // The hold is still in force here, so this import's own sweep keeps the copy's bytes.
     await this.backup.importMission(stored.payload)
     await this.discard()
-    this.log.info(`Undid the last import (a ${stored.meta.reason} import at ${stored.meta.takenAt}).`, this.id)
+    this.journal.record('import-undone', `Undid the last import (a ${stored.meta.reason} import at ${stored.meta.takenAt}).`)
   }
 
   /** Throws the copy away, then frees the bytes only it was keeping. */

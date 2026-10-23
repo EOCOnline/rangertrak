@@ -14,6 +14,7 @@ import { describeRangerMerge, mergeRangers } from '../../../domain/ranger-migrat
 import { diagnoseBytes, SETUP_FILE_DAMAGED_MESSAGE } from '../../../shared/export/import-file'
 import type { MissionZipManifest, MissionZipPhoto } from '../../../shared/export/mission-zip'
 import { LogService, MissionLocationService, MissionService, RangerService, RangerType } from '../../../shared/services'
+import { MissionJournalService } from '../../../shared/services/mission-journal.service'
 import { ImportSafetyService } from '../../../shared/services/import-safety.service'
 import { RangerPhotoService } from '../../../shared/services/ranger-photo.service'
 import { ViewService } from '../../../shared/services/view.service'
@@ -54,6 +55,7 @@ export class SetupFileComponent {
   private readonly locationService = inject(MissionLocationService)
   private readonly photos = inject(RangerPhotoService)
   private readonly log = inject(LogService)
+  private readonly journal = inject(MissionJournalService)
   private readonly recordStore = inject(RecordStore)
   private readonly importSafety = inject(ImportSafetyService)
   private readonly view = inject(ViewService)
@@ -139,7 +141,7 @@ export class SetupFileComponent {
       if (includePlaces) parts.push(`${locations?.length ?? 0} places`)
       if (includeSettings) parts.push('settings')
       parts.push(`${photoBlobs.length} photos`)
-      this.log.info(`Built the Setup file ${filename} (${parts.join(', ')}).`, this.id)
+      this.journal.record('setup-file-built', `Built the Setup file ${filename} (${parts.join(', ')}).`)
     } catch (e: any) {
       this.log.error(`Failed to build Setup file: ${e?.message ?? e}`, this.id)
       alert(`Could not build the Setup file.\n\n${e?.message ?? e}`)
@@ -237,12 +239,12 @@ export class SetupFileComponent {
       if (safetyCopy === 'kept') await this.importSafety.markImportDone()
       this.applied.set(`${file.fileName}: ${summary}${safetyCopy === 'kept' ? ' Undo is in Mission > Data safety for 24 hours.' : ''}`)
       // E-223: the summary names people and places; the log keeps counts only.
-      this.log.info(`Applied the Setup file ${file.fileName} (${[
+      this.journal.record('setup-file-applied', `Applied the Setup file ${file.fileName} (${[
         file.manifest.settings ? 'settings' : '',
         file.manifest.rangers ? `${file.manifest.rangers.length} people` : '',
         file.manifest.locations ? `${file.manifest.locations.length} places` : '',
         file.photos.length ? `${file.photos.length} photos` : '',
-      ].filter(Boolean).join(', ') || 'nothing to apply'}).`, this.id)
+      ].filter(Boolean).join(', ') || 'nothing to apply'}).`)
     } catch (e: any) {
       this.log.error(`Failed to apply "${file.fileName}": ${e?.message ?? e}`, this.id)
       alert(`Could not apply "${file.fileName}".\n\n${e?.message ?? e}`)

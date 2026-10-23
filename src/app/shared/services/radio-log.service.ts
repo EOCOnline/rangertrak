@@ -23,6 +23,7 @@ import { EntryMergeOptions, EntryMergeResult, mergeEntries } from '../../domain/
 import { RangerService } from './ranger.service'
 // E-194: deleting every entry also sweeps the attachment bytes nothing refers to any more.
 import { AttachmentStoreService, sha256Hex } from './attachment-store.service'
+import { MissionJournalService } from './mission-journal.service'
 import { distinctLiveRefs, matchMedia, shareNames, stillRemote } from '../../domain/report-packet-files'
 // E-122 Phase 2a: radio log entries are PII, and now live behind RecordStore (in-memory +
 // IndexedDB) rather than directly in localStorage. Direct import, same reasoning as the
@@ -55,6 +56,7 @@ export class RadioLogService {
   private id = 'Radio Log Service'
 
   private attachmentStore = inject(AttachmentStoreService)
+  private journal = inject(MissionJournalService)
 
   private radioLog!: RadioLogType
   // radioLogSignal is the single source of truth for state.
@@ -380,7 +382,7 @@ export class RadioLogService {
       this.updateRadioLogAndPublish()
     }
 
-    this.log.info(`Merged radio log entries: ${result.added} added, ${result.updated} updated, ${result.unchanged} unchanged, ${result.rejected} rejected.`, this.id)
+    this.journal.record('reports-merged', `Merged radio log entries: ${result.added} added, ${result.updated} updated, ${result.unchanged} unchanged, ${result.rejected} rejected.`)
     return result
   }
 
@@ -464,7 +466,7 @@ export class RadioLogService {
       for (const r of refs) if (await this.attachmentStore.has(r.sha256)) held.add(r.sha256)
       remote = stillRemote(refs, held)
     }
-    this.log.info(`Report Packet files: ${added} stored, ${unmatched.length} unmatched, ${remote} still elsewhere.`, this.id)
+    this.log.info(`Report Packet files: ${added} stored, ${unmatched.length} unmatched, ${remote} still elsewhere.`, this.id)   // part of the merge the journal already records
     return { added, unmatched: unmatched.length, remote }
   }
 

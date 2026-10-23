@@ -12,6 +12,7 @@ import {
 import { formatStation } from '../domain/station-label'
 import { printAttachments } from '../domain/attachments'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
+import { MissionJournalService } from '../shared/services/mission-journal.service'
 import { MatIconModule } from '@angular/material/icon'
 import { MatButtonModule } from '@angular/material/button'
 import { MatButtonToggleModule } from '@angular/material/button-toggle'
@@ -63,6 +64,7 @@ export class SummaryComponent implements OnDestroy {
   private usage = inject(UsageStateService)
   private appRef = inject(ApplicationRef)
   private log = inject(LogService)
+  protected journal = inject(MissionJournalService)
   private id = 'Summary Component'
 
   // ---- live inputs (copied into signals; the services push onto their arrays in place) ----
@@ -345,7 +347,9 @@ export class SummaryComponent implements OnDestroy {
     document.body.classList.add('rt-print-summary')
     window.addEventListener('afterprint', () => document.body.classList.remove('rt-print-summary'), { once: true })
     const untitle = armPrintTitle('Mission summary', this.settings())
-    this.log.info('Opened the print dialog for the mission summary.', this.id)
+    // E-222: recorded first, so the head printed on the sheet includes this print.
+    this.journal.record('print-summary', 'Printed the mission summary.')
+    this.appRef.tick()
     window.print()
     untitle()
     document.body.classList.remove('rt-print-summary')
@@ -356,6 +360,6 @@ export class SummaryComponent implements OnDestroy {
     const s = this.summary()
     const filename = summaryCsvFilename(this.missionName(), s.generatedAt)
     downloadCsv(buildSummaryCsv(s, this.stamp()), filename)
-    this.log.info(`Exported the mission summary to ${filename}.`, this.id)
+    this.journal.record('summary-exported', `Exported the mission summary to ${filename}.`)
   }
 }

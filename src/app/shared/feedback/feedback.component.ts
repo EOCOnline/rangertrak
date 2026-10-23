@@ -1,10 +1,11 @@
 import { HttpClient } from '@angular/common/http'
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { firstValueFrom } from 'rxjs'
 
 import { LogService } from '../services'
+import { MissionJournalService } from '../services/mission-journal.service'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatButtonModule } from '@angular/material/button'
@@ -49,6 +50,8 @@ export class FeedbackComponent {
   status = signal<'idle' | 'sending' | 'success' | 'error'>('idle')
   successUrl = signal('')
 
+  private journal = inject(MissionJournalService)
+
   constructor(private http: HttpClient, private log: LogService) { }
 
   get canSubmit(): boolean {
@@ -82,7 +85,7 @@ export class FeedbackComponent {
       )
       this.successUrl.set(response.url)
       this.status.set('success')
-      this.log.info(`Feedback submitted: ${response.url}`, this.id)
+      this.journal.record('feedback-sent', `Sent feedback to the developers: ${response.url}`)
     } catch (e) {
       this.status.set('error')
       this.log.error(`Feedback submission failed, falling back to a direct GitHub link: ${e}`, this.id)

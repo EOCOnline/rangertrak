@@ -3,7 +3,7 @@ import { Router } from '@angular/router'
 import { MatDialog } from '@angular/material/dialog'
 
 import { ScenarioClock, readScenarioClock, scenarioInstantFromLocal, scenarioLabelAt, scenarioOffsetExplanation } from '../../domain/scenario'
-import { ClearContext, ClearCounts, ClearId, DEFAULT_REPLACE_CLEAR, buildClearRows, clearedSummary, countNotes, noteMatcher } from '../../domain/clear-choices'
+import { ClearContext, ClearCounts, ClearId, DEFAULT_REPLACE_CLEAR, buildClearRows, clearedPlain, countNotes, noteMatcher } from '../../domain/clear-choices'
 import { UsageInputs, UsageState, deriveUsageState, effectiveMode } from '../../domain/usage-state'
 import { setQuiet } from '../quiet-flag'
 import { clearActiveDemoScenario, demoRecord } from '../mapping/demo-map'
@@ -14,6 +14,7 @@ import { AttachmentStoreService } from './attachment-store.service'
 import { MissionLocationService } from './mission-location.service'
 import { FieldModeService } from './field-mode.service'
 import { LogService } from './log.service'
+import { MissionJournalService } from './mission-journal.service'
 import { MissionModeType, MissionType } from './mission.interface'
 import { MissionService } from './mission.service'
 import { RadioLogService } from './radio-log.service'
@@ -102,6 +103,7 @@ export class UsageStateService {
   private attachmentStore = inject(AttachmentStoreService)
   private rangerPhotoService = inject(RangerPhotoService)
   private dialog = inject(MatDialog)
+  private journal = inject(MissionJournalService)
 
   constructor(
     private missionService: MissionService,
@@ -187,8 +189,9 @@ export class UsageStateService {
     if (clear.has('header')) this.activityLogHeaderService.clear()
     this.missionService.ResetDefaults()   // initMission() omits scenarioClock, so a real mission starts without one (D-66)
     clearActiveDemoScenario()
-    if (mode) this.setMode(mode)
-    this.log.info(`Started a real mission${mode ? ` in ${mode} mode` : ''}. Cleared: ${clearedSummary('replace', clear, counts)}.`, this.id)
+    if (mode) this.applyMode(mode)
+    this.journal.record('real-mission-started',
+      `Started a real mission${mode ? ` in ${mode} mode` : ''}. ${clearedPlain('replace', clear, counts)}`)
     await recordStore.flush()
   }
 
@@ -210,7 +213,7 @@ export class UsageStateService {
       const start = mode === 'exercise' ? 'Leave the demo and start an exercise?' : 'Leave the demo and start a real incident?'
       const clear = await this.chooseWhatToClear('replace', start, mode === 'exercise' ? 'Start exercise' : 'Start incident')
       if (!clear) return
-      this.log.info(`Leaving Demo mode for ${mode} mode.`, this.id)
+      this.journal.record('demo-left', `Left Demo mode for ${mode} mode.`)
       await this.startRealMission(mode, clear)
       window.location.reload()
       return
@@ -220,11 +223,16 @@ export class UsageStateService {
 
   /** The operator's choice, saved on the mission so a restored backup keeps it. */
   setMode(mode: MissionModeType | undefined): void {
+    this.applyMode(mode)
+    this.journal.record('mode-changed', `Set the mission mode to ${mode ?? 'not chosen'}.`)
+  }
+
+  /** Saves the mode without a journal entry, for callers that record a bigger action themselves. */
+  private applyMode(mode: MissionModeType | undefined): void {
     // D-66: the scenario clock only means something in Exercise mode, so any other mode clears it.
     const next = { ...this.missionService.settings, missionMode: mode }
     if (mode !== 'exercise') delete next.scenarioClock
     this.missionService.updateMission(next)
-    this.log.info(`Set the mission mode to ${mode ?? 'not chosen'}.`, this.id)
   }
 
   /** E-196 (D-66): "the scenario stands at `scenarioLocal` right now" (a date and time as picked,
@@ -238,7 +246,7 @@ export class UsageStateService {
   /** Saves a clock that is already in stored form (from a catch-up file). */
   saveScenarioClock(clock: ScenarioClock): void {
     this.missionService.updateMission({ ...this.missionService.settings, scenarioClock: clock })
-    this.log.info(`Set the scenario clock to ${clock.scenarioAt} (as of ${clock.realAt}).`, this.id)
+    this.journal.record('scenario-clock-set', `Set the scenario clock to ${clock.scenarioAt} (as of ${clock.realAt}).`)
   }
 
   clearScenarioClock(): void {

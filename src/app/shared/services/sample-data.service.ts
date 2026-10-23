@@ -9,10 +9,11 @@ import { newRangerUid } from '../../domain/ranger-migration'
 import type { TacticalCallType } from './mission.interface'
 import { recordStore } from '../storage/record-store'
 import { setActiveDemoScenario } from '../mapping/demo-map'
-import { ClearCounts, ClearId, DEFAULT_REPLACE_CLEAR, clearedSummary, countNotes, noteMatcher } from '../../domain/clear-choices'
+import { ClearCounts, ClearId, DEFAULT_REPLACE_CLEAR, clearedPlain, countNotes, noteMatcher } from '../../domain/clear-choices'
 import { DEFAULT_SAMPLE_SCENARIO, SampleScenarioId } from './sample-scenarios'
 import { AttachmentStoreService } from './attachment-store.service'
 import { AarNoteService } from './aar-note.service'
+import { MissionJournalService } from './mission-journal.service'
 import { ActivityLogHeaderService } from './activity-log-header.service'
 import { RangerPhotoService } from './ranger-photo.service'
 
@@ -148,6 +149,7 @@ export class SampleDataService {
 
   private attachmentStore = inject(AttachmentStoreService)
   private aarNoteService = inject(AarNoteService)
+  private journal = inject(MissionJournalService)
   private activityLogHeaderService = inject(ActivityLogHeaderService)
   private rangerPhotoService = inject(RangerPhotoService)
 
@@ -242,11 +244,10 @@ export class SampleDataService {
     this.aarNoteService.deleteWhere(noteMatcher(clear))
     if (clear.has('header')) this.activityLogHeaderService.clear()
 
-    this.log.info(
+    this.journal.record('demo-loaded',
       `Loaded the "${scenario}" demo: ${data.rangers.length} rangers, `
       + `${radioLog.numReport} radio log entries, ${data.locations.length} locations (this is DEMO data). `
-      + `Cleared: ${clearedSummary('replace', clear, cleared)}.`,
-      this.id)
+      + clearedPlain('replace', clear, cleared))
 
     // E-124: marks this demo as the loaded mission, so the Alternative map may fetch its
     // street-detail file (and evicts the previous demo's). See shared/mapping/demo-map.ts.

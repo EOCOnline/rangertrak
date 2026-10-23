@@ -23,6 +23,7 @@ import { PrintCopiesService } from '../shared/services/print-copies.service'
 import { AttachmentChipComponent } from '../shared/attachments/attachment-chip.component'
 import { ics213AttachmentsFor } from '../shared/attachments/attachment-print'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
+import { MissionJournalService } from '../shared/services/mission-journal.service'
 import { AttachmentViewerService } from '../shared/attachments/attachment-viewer.service'
 import {
   RadioLogService, RadioLogEntryType, LogService, MissionService, MissionType
@@ -66,6 +67,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
   private id = 'Messages'
   private attachmentViewer = inject(AttachmentViewerService)
   private attachmentStore = inject(AttachmentStoreService)
+  private journal = inject(MissionJournalService)
   title = 'Messages — ICS-213s'
   pageDescr = 'ICS-213 general messages generated from radio log entries.'
 
@@ -256,7 +258,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
       const filled = await this.buildIcs213Pdf(report)
       const outcome = await printIcs213(filled, `ics-213-${report.callsign || 'message'}-${report.id}.pdf`, this.printCopies(), this.settings)
       this.markPrintedOnce(report)
-      this.log.info(`ICS-213 for report ${report.id}: ${outcome}.`, this.id)
+      this.journal.record('print-213', `ICS-213 for report ${report.id}: ${outcome}.`)
     } catch (e) {
       this.log.error(`Failed to fill ICS-213 for report ${report.id}: ${e}`, this.id)
     } finally {
@@ -291,7 +293,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
       URL.revokeObjectURL(url)
 
       this.markPrintedOnce(report)
-      this.log.info(`Saved ICS-213 PDF for report ${report.id}`, this.id)
+      this.journal.record('pdf-213-saved', `Saved the ICS-213 PDF for report ${report.id}.`)
     } catch (e) {
       this.log.error(`Failed to fill ICS-213 for report ${report.id}: ${e}`, this.id)
     } finally {

@@ -46,6 +46,7 @@ import {
 // shared/services/index.ts leaves it unresolvable to the compiler ("no suitable injection
 // token"), the same way the barrel broke `imports:` arrays during Sprint B.
 import { RangerPhotoService } from '../shared/services/ranger-photo.service'
+import { MissionJournalService } from '../shared/services/mission-journal.service'
 // E-122 Phase 2a: reloadPage() below awaits this before reloading - see its own doc comment.
 import { RecordStore } from '../shared/storage/record-store'
 import { DevicePrefsService } from '../shared/services/device-prefs.service'
@@ -84,6 +85,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     return { layerCount: layersOfKind(this.layerService.layers(), 'people').length }
   }
   private readonly appRef = inject(ApplicationRef)
+  private readonly journal = inject(MissionJournalService)
   title = 'Rangers & Teams'
   pageDescr = `Grid display of rangers & teams on this mission`
 
@@ -595,7 +597,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       + `Radio log entries already filed are not deleted, but they will refer to callsigns `
       + `that are no longer in the roster.\n\n`
       + `Export the roster first if you might want it back.`)) {
-      this.log.info(`Deleted all ${count} rangers from this device.`, this.id)
+      this.journal.record('roster-cleared', `Deleted all ${count} rangers from this device.`)
       this.rangerService.deleteAllRangers()
       this.layerService.prune('people', new Set())
       this.refreshGrid()
@@ -655,7 +657,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     const summary = result.action === 'replace'
       ? `Replaced the roster with ${result.incoming.length} people from "${fileName}".`
       : `Imported "${fileName}"${layer ? ` (from "${layer}")` : ''}: ${describeRangerMerge(result.merge)}.${layerNote}`
-    this.log.info(summary, this.id)
+    this.journal.record('roster-imported', summary)
     this.gridApi?.setGridOption('rowData', this.rangers())
     this.refreshGrid()
     return summary
@@ -746,6 +748,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     const files = photos.map(p =>
       new File([p.bytes as BlobPart], p.filename, { type: this.mimeFor(p.filename) }))
     const { stored, unmatched } = await this.photos.importFiles(files, rosterNow)
+    if (stored.length) this.journal.record('photos-imported', `Stored ${stored.length} ranger photos from the Setup file.`)
 
     const lines = [summary, `${stored.length} photo${stored.length === 1 ? '' : 's'} stored.`]
     if (unmatched.length) {
@@ -783,6 +786,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const { stored, unmatched } = await this.photos.importFiles(files, this.rangerService.rangers)
+    if (stored.length) this.journal.record('photos-imported', `Stored ${stored.length} ranger photos on this device (${unmatched.length} unmatched).`)
 
     const lines = [`Stored ${stored.length} photo${stored.length === 1 ? '' : 's'} on this device.`]
     if (unmatched.length) {
@@ -810,7 +814,9 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       + `already names an image will keep showing that instead.`)) {
       return
     }
+    const count = this.photos.count()
     await this.photos.clear()
+    this.journal.record('photos-cleared', `Deleted all ${count} ranger photos from this device.`)
     this.reloadPage()
   }
 
@@ -948,7 +954,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       this.downloadBlob(new Blob(['\uFEFF', rowsToCsv(table)], { type: 'text/csv;charset=utf-8' }),
         `rangertrak-roster-${stamp}${partial}.csv`)
     }
-    this.log.info(`Exported ${rows.length} rangers as ${this.exportFormat()}.`, this.id)
+    this.journal.record('roster-exported', `Exported ${rows.length} rangers as ${this.exportFormat()}.`)
   }
 
   //--------------------------------------------------------------------------
@@ -991,7 +997,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       untitle()
     }
     window.addEventListener('afterprint', finish, { once: true })
-    this.log.info(`Printing a contact sheet of ${rows.length} rangers.`, this.id)
+    this.journal.record('print-roster', `Printed a contact sheet of ${rows.length} rangers.`)
     const started = Date.now()
     window.print()
     // print() blocks until the dialog closes on desktop browsers. Where it returns at once, wait
@@ -1037,7 +1043,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     const partial = rows.length < this.rangerService.rangers.length ? '-selected' : ''
     this.downloadBlob(new Blob([zipSync(files) as BlobPart], { type: 'application/zip' }),
       `rangertrak-roster-${stamp}${partial}-photos.zip`)
-    this.log.info(`Exported ${photos.length} ranger photos.`, this.id)
+    this.journal.record('photos-exported', `Exported ${photos.length} ranger photos.`)
     if (unreadable) {
       alert(`${unreadable} photo${unreadable === 1 ? ' was' : 's were'} unreadable and left out.`)
     }
@@ -1086,8 +1092,8 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     const table = rosterToRows([], this.settings?.idFieldLabel, { changes })
     this.downloadBlob(new Blob(['\uFEFF', rowsToCsv(table)], { type: 'text/csv;charset=utf-8' }),
       `rangertrak-roster-changes-${localDateStamp()}.csv`)
-    this.log.info(`Exported roster changes: ${changes.added.length} added, ${changes.edited.length} edited, `
-      + `${changes.removed.length} removed.`, this.id)
+    this.journal.record('roster-changes-exported', `Exported roster changes: ${changes.added.length} added, ${changes.edited.length} edited, `
+      + `${changes.removed.length} removed.`)
   }
 
   private downloadBlob(blob: Blob, filename: string) {

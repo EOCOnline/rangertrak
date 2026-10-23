@@ -47,6 +47,7 @@ import {
   RadioLogService, RadioLogEntryType, LocationType, LogService, MissionLocationService,
   MissionLocationType, RangerService, MissionService
 } from '../shared/services'
+import { MissionJournalService } from '../shared/services/mission-journal.service'
 import { LocationDialogComponent } from '../map/location-dialog/location-dialog.component'
 import { MapEngineService } from '../map/map-engine.service'
 import { liveRefs } from '../domain/attachments'
@@ -126,6 +127,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
   /** E-187 phase B: where the Map page's Export places card learns what this map is showing. */
   private readonly engineService = inject(MapEngineService)
   private readonly attachmentStore = inject(AttachmentStoreService)
+  private readonly journal = inject(MissionJournalService)
   private readonly attachmentViewer = inject(AttachmentViewerService)
   readonly view = inject(ViewService)
 
@@ -1128,7 +1130,8 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
   /** Print map button (template): see LeafletPrintController.onBtnPrintMap(). */
   onBtnPrintMap(): Promise<void> {
-    this.log.info('Opened the print dialog for the map sheet.', this.id)
+    // E-222: recorded first, so the head printed in the sheet's footer includes this print.
+    this.journal.record('print-map', 'Printed the map sheet.')
     return this.print.onBtnPrintMap()
   }
 

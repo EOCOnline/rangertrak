@@ -41,10 +41,11 @@ import { PageComponent } from '../shared/page/page.component'
 import { TimePickerComponent } from '../shared/time-picker/time-picker.component'
 import { localFromScenarioInstant, scenarioTimeAt } from '../domain/scenario'
 import {
-  RadioLogStatusType, LocationCategoryType, LogService, MissionReadinessService,
+  RadioLogStatusType, LocationCategoryType, LogService, MissionJournalService, MissionReadinessService,
   MISSION_SCHEMA_VERSION, DEFAULT_OP_PERIOD_HOURS, BUNDLED_IMAGE_DIRECTORY, MissionService, MissionType, TacticalCallType, UsageStateService
 } from '../shared/services/'
 import { confirmReplaceMission } from '../shared/demo-picker/replace-guard'
+import { RecordStore } from '../shared/storage/record-store'
 import { InstallUpdateComponent } from '../shared/install-update/install-update.component'
 import { HasUnsavedChanges } from '../shared/guards/unsaved-changes.guard'
 
@@ -269,6 +270,8 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
 
   constructor(
     private log: LogService,
+    private journal: MissionJournalService,
+    private recordStore: RecordStore,
     private missionService: MissionService,
     public readiness: MissionReadinessService,
     public usage: UsageStateService,
@@ -494,16 +497,18 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
    * "fixed" only by whatever next reloaded the page, which is the real signal this needed
    * one all along rather than a smaller per-field resync.
    */
-  onBtnResetDefaults() {
+  async onBtnResetDefaults() {
     // E-168 (2026-10-01, John): in a live mission this is a typed confirmation, as for loading a
     // demo; otherwise it stays one click, as before.
     if (this.usage.state() === 'live' && !confirmReplaceMission({
       state: 'live', missionName: this.settings.mission,
       message: 'Reset the mission settings to their defaults?\n\nThis clears the mission name, op period and every other setting on the Mission page.',
     })) return
+    // E-222: recorded first, so the journal entry names the mission being reset.
+    this.journal.record('mission-reset', 'Reset the mission settings to their defaults.')
     this.settings = this.missionService.ResetDefaults()
-    this.log.info('Reset the mission settings to their defaults.', this.id)
     clearActiveDemoScenario() // E-124: evicts a demo's street-detail map file
+    await this.recordStore.flush() // the journal entry must reach storage before the reload below
     this.reloadPage()
   }
 

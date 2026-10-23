@@ -35,7 +35,8 @@ import { formatStation } from '../domain/station-label'
 import { isScenarioEntry, formatScenarioTime, scenarioTimeAt, sameScenarioClock } from '../domain/scenario'
 import { UsageStateService } from '../shared/services/usage-state.service'
 import { AarNoteService } from '../shared/services/aar-note.service'
-import { clearedSummary, noteMatcher } from '../domain/clear-choices'
+import { MissionJournalService } from '../shared/services/mission-journal.service'
+import { clearedPlain, noteMatcher } from '../domain/clear-choices'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
 import { ImportSafetyService } from '../shared/services/import-safety.service'
 import { AttachmentChipComponent } from '../shared/attachments/attachment-chip.component'
@@ -488,6 +489,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
   /** E-196 (D-66): the mode decides the catch-up wording and the import warnings. */
   protected usage = inject(UsageStateService)
   private aarNoteService = inject(AarNoteService)
+  protected journal = inject(MissionJournalService)
 
   constructor(
     private radioLogService: RadioLogService,
@@ -864,7 +866,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       exportedRows: this.allRows() ? 'all' : 'filteredAndSorted',
       onlySelected,
     })
-    this.log.info(`Exported the radio log to ${onlySelected ? params.fileName.replace(/\.csv$/, '-selected.csv') : params.fileName}.`, this.id)
+    this.journal.record('radio-log-exported', `Exported the radio log to ${onlySelected ? params.fileName.replace(/\.csv$/, '-selected.csv') : params.fileName}.`)
   }
 
 
@@ -893,10 +895,10 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     const outcome = await sendReportPacket(text, filename, media, this.document,
       (why) => this.log.warn(`Sharing the Report Packet was cancelled or failed, so it was downloaded instead: ${why}`, this.id))
     if (outcome === 'downloaded') {
-      this.log.info(`Downloaded Report Packet: ${filename} (${count} reports, ${media.length} files).`, this.id)
+      this.journal.record('packet-exported', `Downloaded Report Packet: ${filename} (${count} reports, ${media.length} files).`)
       return
     }
-    this.log.info(`Shared Report Packet: ${filename} (${count} reports, ${outcome === 'shared' ? media.length : 0} files).`, this.id)
+    this.journal.record('packet-exported', `Shared Report Packet: ${filename} (${count} reports, ${outcome === 'shared' ? media.length : 0} files).`)
     if (outcome === 'shared-text-only') alert(PHOTOS_LEFT_OUT_MESSAGE)
   }
 
@@ -943,8 +945,8 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       a.download = file.filename
       a.click()
       URL.revokeObjectURL(url)
-      this.log.info(`Built hand-over file: ${file.filename} (${entries.length} entries, `
-        + `${this.rangerService.rangers.length} people)${file.encrypted ? ' (encrypted)' : ' (NOT encrypted)'}.`, this.id)
+      this.journal.record('handover-built', `Built hand-over file: ${file.filename} (${entries.length} entries, `
+        + `${this.rangerService.rangers.length} people)${file.encrypted ? ' (encrypted)' : ' (NOT encrypted)'}.`)
       this.handoverSummary.set(`Saved ${file.filename}: ${entries.length} radio log entries and `
         + `${this.rangerService.rangers.length} people${file.encrypted ? ', locked with your passphrase' : ', NOT locked'}.`)
     } catch (e: any) {
@@ -1051,11 +1053,11 @@ export class RadioLogComponent implements OnInit, OnDestroy {
 
     const summary = `Merged "${fileName}": ${parts.join('. ')}.`
     // E-223: the summary names people, places and entries; the log keeps counts only.
-    this.log.info(`Merged the hand-over file "${fileName}": `
+    this.journal.record('handover-merged', `Merged the hand-over file "${fileName}": `
       + `${result.rangerMerge ? `${result.rangerMerge.added.length} people added, ${result.rangerMerge.overwritten.length} updated; ` : ''}`
       + `${result.locationMerge ? `${result.locationMerge.added.length} places added, ${result.locationMerge.overwritten.length} updated; ` : ''}`
       + `${result.photos.length} photos offered; `
-      + `${entries.added} entries added, ${entries.updated} updated, ${entries.unchanged} unchanged, ${entries.rejected} rejected.`, this.id)
+      + `${entries.added} entries added, ${entries.updated} updated, ${entries.unchanged} unchanged, ${entries.rejected} rejected.`)
     this.handoverSummary.set(summary)
   }
 
@@ -1216,8 +1218,9 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       }
     }
     this.printThumbs.set(thumbs)
+    // E-222: recorded before the block renders, so the head printed on the sheet includes this print.
+    this.journal.record('print-309', `Printed the ICS-309 log: ${reports.length} rows, scope "${this.printScope()}".`)
     this.ics309Log.set(log)
-    this.log.info(`Opened the print dialog for the ICS-309 log: ${reports.length} rows, scope "${this.printScope()}".`, this.id)
 
     // A tick to let the print-only block (bound to the signal just set) actually render
     // before the browser's print dialog captures the page - `window.print()` right after a
@@ -1294,7 +1297,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     const counts = this.usage.clearCounts()   // E-223: for the log, taken before anything goes
     await this.radioLogService.deleteAllRadioLogEntries()
     this.aarNoteService.deleteWhere(noteMatcher(clear))
-    this.log.info(`Cleared the radio log. Cleared: ${clearedSummary('log', clear, counts)}.`, this.id)
+    this.journal.record('radio-log-cleared', `Cleared the radio log. ${clearedPlain('log', clear, counts)}`)
     this.refreshGrid()
     this.reloadPage()
   }

@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs'
 import { DOCUMENT, NgTemplateOutlet } from '@angular/common'
 import {
   AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, Input, OnDestroy, OnInit,
-  TemplateRef, ViewChild, computed, signal
+  TemplateRef, ViewChild, computed, inject, signal
 } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { MatButtonModule } from '@angular/material/button'
@@ -50,6 +50,8 @@ import {
   RadioLogType, RadioLogService, RadioLogEntryType, LogService, MissionLocationService,
   MissionLocationType, MissionService, MissionType, CustomPmtilesService, OfflineBasemapService
 } from '../shared/services'
+import { MissionJournalService } from '../shared/services/mission-journal.service'
+import { RecordStore } from '../shared/storage/record-store'
 // 2026-09-02: imported directly, not via the '../shared' barrel - that barrel also
 // re-exports ranger-icon.ts's Leaflet-typed functions (rangerIconFor/evidenceIconFor), and
 // since 'leaflet' has side effects, esbuild can't tree-shake it out of the barrel even
@@ -238,6 +240,9 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     const bbox = b ? b.map(n => n.toFixed(4)).join(',') : 'WEST,SOUTH,EAST,NORTH'
     return `pmtiles extract https://build.protomaps.com/YYYYMMDD.pmtiles my-area.pmtiles --bbox=${bbox} --maxzoom=15`
   })
+
+  private journal = inject(MissionJournalService)
+  private recordStore = inject(RecordStore)
 
   constructor(
     private missionService: MissionService,
@@ -542,6 +547,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     await this.customPmtiles.setFile(file)
+    await this.recordStore.flush() // the journal entry must be stored before the page goes
     window.location.reload()
   }
 
@@ -572,6 +578,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       return
     }
     await this.customPmtiles.clear()
+    await this.recordStore.flush() // the journal entry must be stored before the page goes
     window.location.reload()
   }
 
@@ -1079,7 +1086,8 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
   onBtnPrintMap(): void {
     // 2026-09-30, John: E-152 - the body class, and now a landscape page, live in the shared
     // helper so both engines print the same sheet.
-    this.log.info('Opened the print dialog for the map sheet.', 'MapLibreComponent')
+    // E-222: recorded first, so the head printed in the sheet's footer includes this print.
+    this.journal.record('print-map', 'Printed the map sheet.')
     printMapSheet(this.missionService.settings)
   }
 

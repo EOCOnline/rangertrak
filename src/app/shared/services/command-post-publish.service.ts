@@ -1,6 +1,6 @@
 import { Subscription } from 'rxjs'
 
-import { Injectable, OnDestroy, signal } from '@angular/core'
+import { Injectable, OnDestroy, inject, signal } from '@angular/core'
 import { MatSnackBar } from '@angular/material/snack-bar'
 
 import {
@@ -13,6 +13,7 @@ import { liveRefs } from '../../domain/attachments'
 import { AttachmentStoreService } from './attachment-store.service'
 import { DevicePrefsService } from './device-prefs.service'
 import { LogService } from './log.service'
+import { MissionJournalService } from './mission-journal.service'
 import { MissionService } from './mission.service'
 import { OperatorNameService } from './operator-name.service'
 import { RadioLogService } from './radio-log.service'
@@ -131,6 +132,7 @@ export class CommandPostPublishService implements OnDestroy {
   /** Originals being uploaded or waiting to be: a fingerprint is never queued twice. */
   private uploadQueue: string[] = []
   private uploading = false
+  private journal = inject(MissionJournalService)
 
   constructor(
     private missionService: MissionService,
@@ -260,7 +262,9 @@ export class CommandPostPublishService implements OnDestroy {
   }
 
   private onStateChanged(before: BoardState, now: BoardState): void {
-    this.log.info(`Board publishing: ${before} -> ${now}.`, this.id)
+    // E-222: turning publishing on or off sends (or stops sending) mission data; other steps are only the handshake.
+    if (now === 'publishing' || now === 'off') this.journal.record('board-publishing-changed', `Board publishing: ${before} -> ${now}.`)
+    else this.log.info(`Board publishing: ${before} -> ${now}.`, this.id)
     if (now === 'publishing') this.startPolling()
     else this.stopPolling()
     if (now === 'off' || now === 'replaced') { this.retry.stop(); this.unreachableSignal.set(undefined) }
@@ -397,7 +401,7 @@ export class CommandPostPublishService implements OnDestroy {
         headers: { 'Content-Type': 'application/json' }, key: usedKey, body: JSON.stringify({ password }),
       })
       const read = readKeyedReply(reply.status, reply.body)
-      if (read.kind === 'ok') this.log.info('Changed the Board password.', this.id)
+      if (read.kind === 'ok') this.journal.record('board-password-changed', 'Changed the Board password.')
       else if (read.kind !== 'other') this.onKeyedRefusal(read, usedKey)
     } catch (e) {
       this.log.warn(`Board password not sent (${e})`, this.id)
@@ -472,7 +476,7 @@ export class CommandPostPublishService implements OnDestroy {
       headers: { 'Content-Type': 'application/octet-stream' }, key: usedKey, body: bytes,
     })
     const read = readKeyedReply(reply.status, reply.body)
-    if (read.kind === 'ok') this.log.info('Sent 1 attachment to the Board.', this.id)
+    if (read.kind === 'ok') this.journal.record('board-attachment-sent', 'Sent 1 attachment to the Board.')
     else if (read.kind === 'other') this.log.warn(`Board attachment refused (HTTP ${read.status}).`, this.id)
     else this.onKeyedRefusal(read, usedKey)
   }
