@@ -166,6 +166,17 @@ function newDownloads(dir, before) {
 }
 function queueDialogs(...responses) { dialogQueue.push(...responses) }
 
+// E-221: a demo load, Start a real mission or Clear radio log on a device that holds data opens
+// the "What to clear" Material dialog in place of a native confirm(). Waits for it and accepts
+// its defaults; `typed` fills the live-mission name field when the dialog shows one.
+async function acceptClearDialog(typed = '') {
+  const opened = await pollUntil(() => evaluate(`!!document.querySelector('[data-testid="clear-confirm"]')`), v => v === true)
+  if (!opened) return false
+  if (typed) await evaluate(`(() => { const i = document.querySelector('[data-testid="clear-type"]'); if (i) { i.value = ${JSON.stringify(typed)}; i.dispatchEvent(new Event('input', { bubbles: true })) } })()`)
+  await evaluate(`document.querySelector('[data-testid="clear-confirm"]')?.click()`)
+  return true
+}
+
 // sessionId (optional, 3rd arg): every check before item 9 (2026-09-28) only ever drove ONE
 // tab, so `send()` never needed to say which target a command was for - the implicit session
 // of the page-level WebSocket connection was always the right (only) answer. checkOneActiveTab()
@@ -1901,9 +1912,10 @@ async function checkUsageModes() {
   // Grand Canyon). Pick State fair in the card's own dropdown, load it, and check it took.
   await evaluate(`document.querySelector('[data-testid="demo-card"] mat-select')?.click()`)
   await sleep(600)
-  queueDialogs(true, true) // the replace confirm, then the "loaded" alert
+  queueDialogs(true) // the "loaded" alert
   await evaluate(`[...document.querySelectorAll('mat-option')].find(o => /State fair/.test(o.textContent))?.click()`)
-  await sleep(5000) // picking it asks (confirm queued below) and loads straight away
+  check('switching demos: the "What to clear" dialog opens (E-221)', await acceptClearDialog(), true)
+  await sleep(5000) // loads straight away once the dialog is accepted
   await goto('/')
   // Read what was stored, not the card's text: the card's dropdown shows the label just picked,
   // which would pass whether or not the load worked.
@@ -1913,7 +1925,8 @@ async function checkUsageModes() {
   check('switching demos: the dropdown shows State fair, not the default', await evaluate(`document.querySelector('[data-testid="demo-card"] mat-select')?.textContent.includes('State fair') ?? false`), true)
   dialogQueue.length = 0
 
-  await evaluate(`window.confirm = () => true; document.querySelector('.rt-mode-choice[data-mode="exercise"]')?.click()`)
+  await evaluate(`document.querySelector('.rt-mode-choice[data-mode="exercise"]')?.click()`)
+  check('leaving Demo: the "What to clear" dialog opens (E-221)', await acceptClearDialog(), true)
   await new Promise(r => setTimeout(r, 4000)) // startRealMission() clears the demo and reloads
   await goto('/')
   check('choosing Exercise: the pill shows exercise mode', await evaluate(`document.querySelector('.status-cluster')?.getAttribute('data-mode') ?? 'none'`), 'exercise')
@@ -4282,7 +4295,8 @@ async function checkAttachments(downloads) {
   await entrySaveWithAttachments('E2E-REAL', [wavPath])
   check('on a demo, an attachment is stored', await pollUntil(attachmentKeys, k => k.length === 1), [wavSha])
   await goto('/')
-  await evaluate(`window.confirm = () => true; document.querySelector('.rt-mode-choice[data-mode="exercise"]')?.click()`)
+  await evaluate(`document.querySelector('.rt-mode-choice[data-mode="exercise"]')?.click()`)
+  await acceptClearDialog()
   await sleep(4000)   // startRealMission() clears the demo, sweeps, and reloads
   await goto('/')
   check('Start a real mission leaves the attachments store empty', await attachmentKeys(), [])
