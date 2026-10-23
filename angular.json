@@ -55,6 +55,11 @@
                 "output": "./exercise"
               },
               {
+                "glob": "{index.html,tour.css}",
+                "input": "./tools/tour",
+                "output": "./tour"
+              },
+              {
                 "glob": "**/*",
                 "input": "./src/assets",
                 "output": "./assets",

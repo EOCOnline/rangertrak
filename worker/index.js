@@ -407,6 +407,15 @@ export default {
       })
     }
 
+    // The beta tester tour, copied to /tour/ by angular.json, the same way. /try was the working
+    // name; it redirects too. The browser keeps a #T3.4 fragment across the redirect.
+    if (['/tour', '/tour/', '/try', '/try/'].includes(url.pathname)) {
+      return new Response(null, {
+        status: 302,
+        headers: { Location: '/tour/index.html', 'Cache-Control': 'no-store' },
+      })
+    }
+
     if (!url.pathname.endsWith('.pmtiles')) {
       return env.ASSETS.fetch(request)
     }

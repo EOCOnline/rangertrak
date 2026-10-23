@@ -46,6 +46,16 @@
           "/exercise/**"
         ]
       }
+    },
+    {
+      "name": "tour",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/tour/**"
+        ]
+      }
     }
   ],
   "navigationUrls": [
@@ -54,7 +64,11 @@
     "!/**/*__*",
     "!/**/*__*/**",
     "!/exercise",
-    "!/exercise/"
+    "!/exercise/",
+    "!/tour",
+    "!/tour/",
+    "!/try",
+    "!/try/"
   ],
   "dataGroups": [
     {

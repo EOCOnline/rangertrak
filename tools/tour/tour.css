@@ -1,0 +1,70 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later
+   Beta tester tour. Plain .org look: system fonts, readable beside the app, prints cleanly. */
+:root {
+  --bg: #ffffff;
+  --fg: #1c1b1f;
+  --muted: #5f5d66;
+  --rule: #d9d6de;
+  --accent: #2e5d8a;
+  --q: #6b4c9a;
+  --tint: #f3f1f6;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17161a;
+    --fg: #e7e4ea;
+    --muted: #a8a4ae;
+    --rule: #3a3840;
+    --accent: #8fb8e3;
+    --q: #c3a8ec;
+    --tint: #222027;
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 4rem; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.55 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+a { color: var(--accent); }
+.top {
+  position: sticky; top: 0; z-index: 1;
+  display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; justify-content: space-between;
+  padding: .6rem 16px; background: var(--bg); border-bottom: 1px solid var(--rule);
+}
+.top .home { font-weight: 600; text-decoration: none; color: var(--fg); }
+.top nav a { margin-left: .9rem; }
+main { max-width: 46rem; margin: 0 auto; padding: 1rem 16px 3rem; }
+h1 { font-size: 1.8rem; line-height: 1.2; margin: 1rem 0 .25rem; }
+h2 { font-size: 1.3rem; margin: 2.25rem 0 .5rem; padding-top: .75rem; border-top: 1px solid var(--rule); }
+.ver { color: var(--muted); margin-top: 0; }
+ul.checks { list-style: none; padding-left: 0; }
+ul.checks li { padding: .35rem 0 .35rem .6rem; border-left: 3px solid var(--rule); margin: .35rem 0; }
+ul.checks li.q { border-left-color: var(--q); }
+ul.checks li:target, ul.checks li:has(span:target) { background: var(--tint); border-left-color: var(--accent); }
+.self { color: var(--muted); text-decoration: none; font-size: .85em; opacity: .5; }
+.self:hover, .self:focus { opacity: 1; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; margin: .75rem 0; font-size: .95rem; }
+th, td { border: 1px solid var(--rule); padding: .35rem .5rem; text-align: left; vertical-align: top; }
+th { background: var(--tint); }
+pre { background: var(--tint); padding: .75rem; overflow-x: auto; font-size: .9rem; }
+table.sheet td:nth-child(3), table.sheet td:nth-child(4) { width: 3.2rem; }
+table.sheet td:nth-child(5) { width: 30%; }
+.fields { line-height: 2.4; }
+button { font: inherit; padding: .3rem .8rem; cursor: pointer; }
+footer { max-width: 46rem; margin: 0 auto; padding: 1rem 16px 2rem; color: var(--muted); font-size: .9rem; border-top: 1px solid var(--rule); }
+
+@media print {
+  :root { --bg: #fff; --fg: #000; --muted: #444; --rule: #999; --accent: #000; --q: #000; --tint: #eee; }
+  .top, footer, .noprint, .self { display: none; }
+  main { max-width: none; padding: 0; }
+  a { text-decoration: none; }
+  h2 { break-after: avoid; }
+  li, tr { break-inside: avoid; }
+  #sheet { break-before: page; }
+  body.sheet-only main > :not(#sheet) { display: none; }
+  body.sheet-only #sheet { break-before: auto; }
+}
