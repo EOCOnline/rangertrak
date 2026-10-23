@@ -59,10 +59,9 @@ export class GlobalErrorHandler implements ErrorHandler {
     if (typeof error === 'string') {
       return error
     }
-    try {
-      return JSON.stringify(error)
-    } catch {
-      return String(error)
-    }
+    // Not JSON.stringify(error): a thrown plain object can carry anything, including entry text.
+    return error && typeof error === 'object'
+      ? `a thrown ${(error as object).constructor?.name ?? 'object'} (not an Error)`
+      : String(error)
   }
 }

@@ -141,7 +141,7 @@ export class AfterActionComponent {
     if (confirm(`Delete all ${count} after-action notes on this device, both about this incident and about RangerTrak? This cannot be undone.\n\n`
       + `Back up the mission first (Mission page) if you may need them. The ICS-214 lines are not deleted.`)) {
       this.notes.deleteAllOfKind('aar')
-      this.log.warn(`Deleted all ${count} after-action notes`, this.id)
+      this.log.info(`Deleted all ${count} after-action notes.`, this.id)
     }
   }
 
@@ -151,7 +151,7 @@ export class AfterActionComponent {
     if (confirm(`Delete these ${count} note(s) about RangerTrak? This cannot be undone.\n\n`
       + `Notes about this incident and the ICS-214 lines are not deleted.`)) {
       this.notes.deleteWhere(n => n.kind === 'aar' && n.about === 'app')
-      this.log.warn(`Deleted ${count} after-action notes about RangerTrak`, this.id)
+      this.log.info(`Deleted ${count} after-action notes about RangerTrak.`, this.id)
     }
   }
 
@@ -161,6 +161,7 @@ export class AfterActionComponent {
     document.body.classList.add('rt-print-aar')
     window.addEventListener('afterprint', () => document.body.classList.remove('rt-print-aar'), { once: true })
     const untitle = armPrintTitle('After Action', this.mission.settings) // E-172, see print-title.ts
+    this.log.info('Opened the print dialog for the After Action page.', this.id)
     window.print()
     untitle()
     document.body.classList.remove('rt-print-aar')
@@ -174,7 +175,9 @@ export class AfterActionComponent {
     const csv = [header.map(csvCell).join(','), ...rows].join('\r\n')
 
     const label = (this.missionName() || 'mission').replace(/[^a-z0-9_-]+/gi, '_')
-    downloadCsv(csv, `rangertrak-after-action-${label}-${localDateStamp()}.csv`)
+    const filename = `rangertrak-after-action-${label}-${localDateStamp()}.csv`
+    downloadCsv(csv, filename)
+    this.log.info(`Exported ${this.aarNotes().length} after-action notes to ${filename}.`, this.id)
   }
 
   /** Opens Help > Feedback with the RangerTrak notes filled in. Nothing is sent from here. */

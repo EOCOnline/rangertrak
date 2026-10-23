@@ -35,7 +35,7 @@ import { formatStation } from '../domain/station-label'
 import { isScenarioEntry, formatScenarioTime, scenarioTimeAt, sameScenarioClock } from '../domain/scenario'
 import { UsageStateService } from '../shared/services/usage-state.service'
 import { AarNoteService } from '../shared/services/aar-note.service'
-import { noteMatcher } from '../domain/clear-choices'
+import { clearedSummary, noteMatcher } from '../domain/clear-choices'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
 import { ImportSafetyService } from '../shared/services/import-safety.service'
 import { AttachmentChipComponent } from '../shared/attachments/attachment-chip.component'
@@ -864,6 +864,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
       exportedRows: this.allRows() ? 'all' : 'filteredAndSorted',
       onlySelected,
     })
+    this.log.info(`Exported the radio log to ${onlySelected ? params.fileName.replace(/\.csv$/, '-selected.csv') : params.fileName}.`, this.id)
   }
 
 
@@ -890,7 +891,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     // D-60 item 6: the originals this device holds go beside the .txt, in the same share.
     const media = await this.radioLogService.reportPacketMedia()
     const outcome = await sendReportPacket(text, filename, media, this.document,
-      (why) => this.log.warn(`Report Packet share cancelled or failed, falling back to download: ${why}`, this.id))
+      (why) => this.log.warn(`Sharing the Report Packet was cancelled or failed, so it was downloaded instead: ${why}`, this.id))
     if (outcome === 'downloaded') {
       this.log.info(`Downloaded Report Packet: ${filename} (${count} reports, ${media.length} files).`, this.id)
       return
@@ -1049,7 +1050,12 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     }
 
     const summary = `Merged "${fileName}": ${parts.join('. ')}.`
-    this.log.warn(summary, this.id)
+    // E-223: the summary names people, places and entries; the log keeps counts only.
+    this.log.info(`Merged the hand-over file "${fileName}": `
+      + `${result.rangerMerge ? `${result.rangerMerge.added.length} people added, ${result.rangerMerge.overwritten.length} updated; ` : ''}`
+      + `${result.locationMerge ? `${result.locationMerge.added.length} places added, ${result.locationMerge.overwritten.length} updated; ` : ''}`
+      + `${result.photos.length} photos offered; `
+      + `${entries.added} entries added, ${entries.updated} updated, ${entries.unchanged} unchanged, ${entries.rejected} rejected.`, this.id)
     this.handoverSummary.set(summary)
   }
 
@@ -1211,7 +1217,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     }
     this.printThumbs.set(thumbs)
     this.ics309Log.set(log)
-    this.log.info(`Printing ICS-309 log: ${reports.length} row(s), scope "${this.printScope()}".`, this.id)
+    this.log.info(`Opened the print dialog for the ICS-309 log: ${reports.length} rows, scope "${this.printScope()}".`, this.id)
 
     // A tick to let the print-only block (bound to the signal just set) actually render
     // before the browser's print dialog captures the page - `window.print()` right after a
@@ -1285,9 +1291,10 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     // 214 lines (kept unless ticked).
     const clear = await this.usage.chooseWhatToClear('log', 'Delete radio log entries and messages?', 'Delete radio log')
     if (!clear) return
-    this.log.info("Removing all radio log entries from local storage...", this.id)
+    const counts = this.usage.clearCounts()   // E-223: for the log, taken before anything goes
     await this.radioLogService.deleteAllRadioLogEntries()
     this.aarNoteService.deleteWhere(noteMatcher(clear))
+    this.log.info(`Cleared the radio log. Cleared: ${clearedSummary('log', clear, counts)}.`, this.id)
     this.refreshGrid()
     this.reloadPage()
   }
@@ -1299,7 +1306,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
    * "should happen automatically".
    */
   private onCellEdited() {
-    this.log.verbose(`Radio log entry edited in grid; saving.`, this.id)
+    this.log.info(`Edited a radio log entry in the grid.`, this.id)
     this.radioLogService.saveEditedRadioLog()
   }
 
@@ -1313,7 +1320,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
     const limit = axis === 'lat' ? 90 : 180
 
     if (newValue === '' || newValue === null || isNaN(parsed) || Math.abs(parsed) > limit) {
-      this.log.warn(`Ignoring invalid ${axis} "${newValue}" for report ${report.id}.`, this.id)
+      this.log.warn(`Ignored an invalid ${axis} "${newValue}" for report ${report.id}.`, this.id)
       return false
     }
 

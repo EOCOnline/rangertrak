@@ -129,7 +129,7 @@ export class RangerPhotoService {
         photos.push({ stem, blob: await (await fetch(this.urls.get(stem)!)).blob() })
       } catch (e: any) {
         unreadable++
-        this.log.warn(`photosFor(): could not read stored photo "${stem}": ${e?.message ?? e}`, this.id)
+        this.log.warn(`Could not read the stored photo "${stem}": ${e?.message ?? e}`, this.id)
       }
     }
     return { photos, unreadable }
@@ -142,7 +142,7 @@ export class RangerPhotoService {
       try {
         out.push({ stem, blob: await (await fetch(url)).blob() })
       } catch (e: any) {
-        this.log.warn(`allPhotoBlobs(): could not read stored photo "${stem}": ${e?.message ?? e}`, this.id)
+        this.log.warn(`Could not read the stored photo "${stem}": ${e?.message ?? e}`, this.id)
       }
     }
     return out
@@ -191,7 +191,7 @@ export class RangerPhotoService {
     this.urls.clear()
     if (!this.db) return
     await this.tx('readwrite', s => s.clear())
-    this.log.warn('Deleted all ranger photos from this device.', this.id)
+    this.log.info('Deleted all ranger photos from this device.', this.id)
   }
 
   // ── internals ────────────────────────────────────────────────────────
@@ -269,7 +269,7 @@ export class RangerPhotoService {
         // Same "treat as missing, never a boot failure" rule RecordStore.load() follows -
         // this device is either still locked (shouldn't happen; main.ts unlocks before this
         // service ever constructs) or this photo predates a key this session never got.
-        this.log.warn(`Photo "${stem}" is encrypted but no key is available this session; skipping.`, this.id)
+        this.log.warn(`Skipped the photo "${stem}": it is encrypted and no key is available this session.`, this.id)
         continue
       }
       try {
@@ -279,7 +279,7 @@ export class RangerPhotoService {
         this.log.error(`Could not decrypt stored photo "${stem}": ${e?.message ?? e}`, this.id)
       }
     }
-    if (this.urls.size) this.log.info(`Loaded ${this.urls.size} ranger photos from this device.`, this.id)
+    if (this.urls.size) this.log.verbose(`Loaded ${this.urls.size} ranger photos from this device.`, this.id)
   }
 
   /**
@@ -309,7 +309,7 @@ export class RangerPhotoService {
         failures.push(stem)
       }
     }
-    this.log.warn(`Encrypted ${this.urls.size - failures.length} ranger photos on this device.`, this.id)
+    this.log.info(`Encrypted ${this.urls.size - failures.length} ranger photos on this device.`, this.id)
     if (failures.length) {
       throw new Error(`could not encrypt ${failures.length} photo(s) (${failures.join(', ')}); `
         + `they remain unencrypted on this device. Turn encryption off and on again to retry.`)
@@ -352,7 +352,7 @@ export class RangerPhotoService {
         failures.push(stem)
       }
     }
-    this.log.warn(`Decrypted ${count} ranger photos on this device.`, this.id)
+    this.log.info(`Decrypted ${count} ranger photos on this device.`, this.id)
     if (failures.length) {
       throw new Error(`could not decrypt ${failures.length} photo(s) (${failures.join(', ')}); `
         + `they are still encrypted and encryption was not turned off.`)

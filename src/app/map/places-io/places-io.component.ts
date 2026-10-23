@@ -300,7 +300,9 @@ export class PlacesIoComponent {
       + describeLocationMerge(plan.merge)
       + (plan.newCategories.length ? `. New categories: ${plan.newCategories.join(', ')}` : '')
       + (removed ? `. Removed ${removed} no longer in "${result.layer?.name}"` : '') + '.'
-    this.log.warn(summary, this.id)
+    // E-223: the snackbar names the places; the log keeps counts only.
+    this.log.info(`Imported places from "${fileName}": ${plan.merge.added.length} added, ${plan.merge.overwritten.length} updated, ${plan.merge.unchanged.length} already up to date`
+      + (removed ? `, ${removed} removed` : '') + '.', this.id)
     this.snackBar.open(summary, 'OK', { duration: 20000 })
   }
 
@@ -402,7 +404,7 @@ export class PlacesIoComponent {
         untitle()
       }
       window.addEventListener('afterprint', finish, { once: true })
-      this.log.info(`Printing ${places.length} places.`, this.id)
+      this.log.info(`Opened the print dialog for ${places.length} places.`, this.id)
       const started = Date.now()
       window.print()
       // Where print() returns at once (the dialog is not modal), wait for afterprint, and as a

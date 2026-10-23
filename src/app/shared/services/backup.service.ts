@@ -398,7 +398,7 @@ export class BackupService {
       }
     }
 
-    this.log.warn(`Imported mission from export dated ${payload.exportedAt} (schema v${payload.schemaVersion}, app v${payload.appVersion})`, this.id)
+    this.log.info(`Restored the mission from an export dated ${payload.exportedAt} (schema v${payload.schemaVersion}, app v${payload.appVersion}).`, this.id)
 
     await recordStore.flush()
   }

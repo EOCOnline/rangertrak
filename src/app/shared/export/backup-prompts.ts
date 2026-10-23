@@ -38,7 +38,7 @@ export async function promptAndBackUpMission(backup: BackupService, log: LogServ
   if (passphrase !== '') {
     if (prompt('Type the same passphrase again to confirm it.') !== passphrase) {
       alert('Those did not match. Nothing was written - start the backup again.')
-      log.warn('promptAndBackUpMission: passphrase confirmation did not match.', id)
+      log.warn('The backup was not made: the two passphrases did not match.', id)
       return false
     }
   }

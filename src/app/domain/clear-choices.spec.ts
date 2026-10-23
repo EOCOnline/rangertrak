@@ -1,4 +1,4 @@
-import { buildClearRows, chosenIds, countNotes, countText, DEFAULT_REPLACE_CLEAR, noteMatcher } from './clear-choices';
+import { buildClearRows, chosenIds, clearedSummary, countNotes, countText, DEFAULT_REPLACE_CLEAR, noteMatcher } from './clear-choices';
 import type { ClearCounts } from './clear-choices';
 import type { AarNoteType } from '../shared/services/aar-note.interface';
 
@@ -53,5 +53,11 @@ describe('clear-choices (E-221)', () => {
     expect(gone(new Set(['appNotes']))).toEqual(['a1']);
     expect(gone(new Set())).toEqual([]);
     expect(countNotes(all)).toEqual({ incidentNotes: 1, lines: 1, appNotes: 1 });
+  });
+
+  it('E-223: the log summary has row ids and counts only', () => {
+    expect(clearedSummary('replace', DEFAULT_REPLACE_CLEAR, counts()))
+      .toBe('roster 42, photos 5, log 318, places 12, settings, incidentNotes 7, lines 23, header');
+    expect(clearedSummary('log', new Set(['lines']), counts())).toBe('log 318, lines 23');
   });
 });

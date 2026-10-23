@@ -202,7 +202,7 @@ export class ImportSafetyService {
     // The hold is still in force here, so this import's own sweep keeps the copy's bytes.
     await this.backup.importMission(stored.payload)
     await this.discard()
-    this.log.warn(`Undid the last import (a ${stored.meta.reason} import at ${stored.meta.takenAt}).`, this.id)
+    this.log.info(`Undid the last import (a ${stored.meta.reason} import at ${stored.meta.takenAt}).`, this.id)
   }
 
   /** Throws the copy away, then frees the bytes only it was keeping. */

@@ -92,10 +92,10 @@ export class LocationDialogComponent {
 
     if (this.data.existing) {
       this.locationService.updateLocation({ ...location, uid: this.data.existing.uid })
-      this.log.verbose(`Updated location "${name}"`, this.id)
+      this.log.info(`Updated place ${this.data.existing.uid}.`, this.id)
     } else {
       this.locationService.addLocation(location)
-      this.log.verbose(`Added location "${name}"`, this.id)
+      this.log.info(`Added a place.`, this.id)
     }
 
     this.dialogRef.close()
@@ -110,7 +110,7 @@ export class LocationDialogComponent {
       return
     }
     this.locationService.deleteLocationByUid(existing.uid)
-    this.log.verbose(`Deleted location "${existing.name}"`, this.id)
+    this.log.info(`Deleted place ${existing.uid}.`, this.id)
     this.dialogRef.close()
   }
 

@@ -630,7 +630,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     // D-60 item 6: this phone's photos go beside the .txt, in the same share.
     const media = await this.radioLogService.reportPacketMedia()
     const outcome = await sendReportPacket(text, filename, media, this.document,
-      (why) => this.log.warn(`Report Packet share cancelled or failed, falling back to download: ${why}`, this.id))
+      (why) => this.log.warn(`Sharing the Report Packet was cancelled or failed, so it was downloaded instead: ${why}`, this.id))
     if (outcome === 'downloaded') {
       this.log.info(`Downloaded Report Packet: ${filename} (${count} reports, ${media.length} files).`, this.id)
       return
@@ -710,11 +710,11 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         if (this.locationParent !== before) {
-          this.log.info('Field mode GPS fix arrived after the location was already changed - not overwriting it.', this.id)
+          this.log.verbose('Field mode GPS fix arrived after the location was already changed - not overwriting it.', this.id)
           return
         }
         // The fix is this device's own position, so it is not written to the log.
-        this.log.info(`Field mode GPS auto-fill (accuracy ${Math.round(position.coords.accuracy)} m)`, this.id)
+        this.log.verbose(`Field mode GPS auto-fill (accuracy ${Math.round(position.coords.accuracy)} m)`, this.id)
         this.onNewLocationEvent({
           lat: position.coords.latitude,
           lng: position.coords.longitude,
@@ -723,7 +723,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       },
       (err) => {
-        this.log.warn(`Field mode GPS auto-fill unavailable (${err.message}) - keeping the mission default location.`, this.id)
+        this.log.warn(`Field mode GPS auto-fill was unavailable (${err.message}), so the mission default location was kept.`, this.id)
       },
       { timeout: 10000, maximumAge: 60000 }
     )
@@ -1169,7 +1169,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
           : `Entry id # ${report.id} saved - 213 saved as a file (this browser won't print it directly): open the file to print`
         Utility.resetMaterialFadeAnimation(this.submitInfo)
       }
-      this.log.info(`Auto-print ICS-213 for report ${report.id}: ${outcome}`, this.id)
+      this.log.info(`Auto-printed ICS-213 for report ${report.id}: ${outcome}.`, this.id)
     } catch (e) {
       // No throw, no snackbar (debug-mode-only here, deliberately - see onFormSubmit()'s own
       // comment on AlertsComponent.OpenSnackBar) - just the same fading line beside Submit a
@@ -1198,7 +1198,7 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
     let formDataJSON = JSON.stringify(this.mergedFormValue())
 
     let newReport = this.radioLogService.addRadioLogEntry(formDataJSON)
-    this.log.info(`Report id # ${newReport.id} has been added`, this.id)
+    this.log.info(`Added report ${newReport.id}.`, this.id)
     // E-194: the entry is saved first, then its files are stored and attached, so a slow or failed
     // file can never cost the log entry. Not awaited: the form resets at once, like the 213 print.
     const picked = this.pendingFiles()

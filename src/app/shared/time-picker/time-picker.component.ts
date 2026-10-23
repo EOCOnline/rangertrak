@@ -172,7 +172,7 @@ export class TimePickerComponent implements OnInit, OnChanges {
   private toDate(value: Date | string): Date {
     const date = value instanceof Date ? value : new Date(value)
     if (isNaN(date.getTime())) {
-      this.log.error(`initialDate was not a usable date (${JSON.stringify(value)}); defaulting to now.`, this.id)
+      this.log.error(`initialDate was not a usable date (a ${typeof value}); defaulting to now.`, this.id)
       return new Date()
     }
     return date

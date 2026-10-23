@@ -335,7 +335,7 @@ export class CommandPostPublishService implements OnDestroy {
 
   private claimFailed(base: string, e: unknown): void {
     // Expected, not an error: the Board is a separate process a mission may not have running yet.
-    this.log.warn(`Board not reachable - is the server running at ${base}? (${e})`, this.id)
+    this.log.warn(`The Board was not reachable; is the server running at ${base}? (${e})`, this.id)
     this.refuse()
   }
 
@@ -381,7 +381,7 @@ export class CommandPostPublishService implements OnDestroy {
     } catch (e) {
       // Expected/normal, not an error: the CP server is a separate process a mission may
       // simply not have running yet (or ever). See this file's own header comment.
-      this.log.warn(`Command Post publish failed - is the server running at ${base}? (${e})`, this.id)
+      this.log.warn(`Publishing to the Command Post failed; is the server running at ${base}? (${e})`, this.id)
     } finally {
       this.publishing = false
       if (this.publishAgain) { this.publishAgain = false; void this.publish() }
@@ -397,7 +397,7 @@ export class CommandPostPublishService implements OnDestroy {
         headers: { 'Content-Type': 'application/json' }, key: usedKey, body: JSON.stringify({ password }),
       })
       const read = readKeyedReply(reply.status, reply.body)
-      if (read.kind === 'ok') this.log.info('Board password changed.', this.id)
+      if (read.kind === 'ok') this.log.info('Changed the Board password.', this.id)
       else if (read.kind !== 'other') this.onKeyedRefusal(read, usedKey)
     } catch (e) {
       this.log.warn(`Board password not sent (${e})`, this.id)

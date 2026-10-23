@@ -166,13 +166,13 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       // google map
       // TODO
     } else {
-      this.log.warn(`(Abstract) map initMainMap(): map not a leaflet or google map - ignoring as uninitialized?`, this.id)
+      this.log.warn(`The map was neither a Leaflet nor a Google map, so it was treated as not set up.`, this.id)
     }
     */
 
   captureLMoveAndZoom(map: L.Map) {
     if (!map) {
-      this.log.warn(`(Abstract) No map in captureLMoveAndZoom()`, this.id)
+      this.log.warn(`A map move or zoom was reported before the map existed.`, this.id)
       return
     }
 
@@ -180,7 +180,7 @@ export abstract class AbstractMap implements OnInit, OnDestroy {
       if ($event.latlng) {
         this.mouseLatLng.set($event.latlng) //.toJSON()
       } else {
-        this.log.warn(`(Abstract) No latlng on event in captureLMoveAndZoom()`, this.id)
+        this.log.warn(`A map move or zoom event carried no position.`, this.id)
       }
     })
     // 2026-10-19, John (AAR): on a phone (no hover, so no mousemove) the readout kept the last

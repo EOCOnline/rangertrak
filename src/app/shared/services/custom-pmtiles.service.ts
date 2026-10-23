@@ -78,7 +78,7 @@ export class CustomPmtilesService {
     if (!this.db) { this.active.set(null); return }
     await this.tx('readwrite', s => s.delete(KEY))
     this.active.set(null)
-    this.log.warn('Cleared the custom PMTiles file. Maps will use the bundled map again.', this.id)
+    this.log.info('Cleared the custom PMTiles file. Maps will use the bundled map again.', this.id)
   }
 
   // ── internals ────────────────────────────────────────────────────────

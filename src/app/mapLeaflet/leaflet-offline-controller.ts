@@ -426,7 +426,7 @@ export class LeafletOfflineController {
       }
     }
     await Promise.all([worker(), worker(), worker()])
-    this.log.info(`saveReliefTiles(): saved ${saved} USGS shaded relief tiles`, this.id)
+    this.log.info(`Saved ${saved} USGS shaded relief tiles.`, this.id)
   }
 
   private wireOfflineAreaInfo(

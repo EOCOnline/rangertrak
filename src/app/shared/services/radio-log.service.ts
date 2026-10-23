@@ -130,12 +130,12 @@ export class RadioLogService {
         this.log.excessive('Received new Settings via subscription.', this.id)
       },
       error: (e) => this.log.error('Settings Subscription got:' + e, this.id),
-      complete: () => this.log.info('Settings Subscription complete', this.id)
+      complete: () => this.log.verbose('Settings Subscription complete', this.id)
     })
 
     this.radioLog = this.loadRadioLogFromLocalStorage()
 
-    this.log.info(`Got v.${this.radioLog.version} for event: ${this.radioLog.event} on  ${this.radioLog.date} with ${this.radioLog.numReport} Radio Log entries from localstorage`, this.id)
+    this.log.verbose(`Got v.${this.radioLog.version} dated ${this.radioLog.date} with ${this.radioLog.numReport} Radio Log entries from localstorage`, this.id)
 
     // bounds is a plain, synchronous BoundsType (radio-log-entry.interface.ts) - no async
     // involved. Likely extraneous most of the time (every mutation path already recalculates
@@ -164,7 +164,7 @@ export class RadioLogService {
     let localStorageFieldReports = recordStore.getItem(this.storageLocalName)
 
     if (localStorageFieldReports == null) {
-      this.log.warn(`No Radio Log entries found in Local Storage. Will rebuild from defaults.`, this.id)
+      this.log.verbose(`No Radio Log entries found in Local Storage. Will rebuild from defaults.`, this.id)
       return this.initEmptyRadioLog()
     }
     else if (localStorageFieldReports.indexOf("version") <= 0) {
@@ -269,7 +269,7 @@ export class RadioLogService {
    */
   public addRadioLogEntry(formData: string) {
     // Not the entry itself: it can name people and addresses, and the Log page exports to CSV.
-    this.log.info(`Got new radio log entry.`, 'RadioLogService')
+    this.log.verbose(`Got new radio log entry.`, this.id)
 
     // EntryComponent hands this over as JSON.stringify(mergedFormValue()) - a deliberate
     // deep clone - so `date` arrives here as an ISO STRING even though RadioLogEntryType
@@ -369,7 +369,7 @@ export class RadioLogService {
     const result = mergeEntries(this.radioLog.logEntries, incoming, { ...opts, nextId: this.radioLog.maxId })
 
     for (const note of result.rejectedNotes) {
-      this.log.warn(`mergeEntries: rejected entry ${note.id} (${note.reason})`, this.id)
+      this.log.warn(`Rejected incoming entry ${note.id} (${note.reason}).`, this.id)
     }
 
     if (result.added || result.updated) {
@@ -380,7 +380,7 @@ export class RadioLogService {
       this.updateRadioLogAndPublish()
     }
 
-    this.log.warn(`mergeEntries: ${result.added} added, ${result.updated} updated, ${result.unchanged} unchanged, ${result.rejected} rejected.`, this.id)
+    this.log.info(`Merged radio log entries: ${result.added} added, ${result.updated} updated, ${result.unchanged} unchanged, ${result.rejected} rejected.`, this.id)
     return result
   }
 
@@ -509,8 +509,7 @@ export class RadioLogService {
   public getSelectedRadioLogEntries(): RadioLogType {
     // TODO: Use setter & getters?, pg 452 Ang Dev w/ TS
     if (this.selectedRadioLog == null) {
-      this.log.warn(`User hasn't selected any rows yet,
-      so we're returning an empty array for the selected radio log!`, this.id)
+      this.log.verbose(`No rows are selected yet, so the selected radio log is empty.`, this.id)
       this.selectedRadioLog = this.initEmptyRadioLog()
       this.selectedRadioLog.filter = "As selected by user"
       this.selectedRadioLog.logEntries = []
@@ -595,16 +594,16 @@ export class RadioLogService {
     }
 
     // Broaden boundaries to minimum values
-    this.log.info(`recalcRadioLogBounds got E:${east} W:${west} N:${north} S:${south} `, this.id)
+    this.log.verbose(`recalcRadioLogBounds got E:${east} W:${west} N:${north} S:${south} `, this.id)
     if (east - west < 2 * this.boundsMargin) {
       east += this.boundsMargin
       west -= this.boundsMargin
-      this.log.info(`recalcRadioLogBounds BROADENED to E:${east} W:${west} `, this.id)
+      this.log.verbose(`recalcRadioLogBounds BROADENED to E:${east} W:${west} `, this.id)
     }
     if (north - south < 2 * this.boundsMargin) {
       north += this.boundsMargin
       south -= this.boundsMargin
-      this.log.info(`recalcRadioLogBounds BROADENED to N:${north} S:${south} `, this.id)
+      this.log.verbose(`recalcRadioLogBounds BROADENED to N:${north} S:${south} `, this.id)
     }
 
     reports.bounds = { north, south, east, west }

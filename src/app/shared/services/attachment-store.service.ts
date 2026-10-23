@@ -429,7 +429,7 @@ export class AttachmentStoreService {
         }
       }
     }
-    this.log.warn(`Encrypted ${done} stored attachment records on this device.`, this.id)
+    this.log.info(`Encrypted ${done} stored attachment records on this device.`, this.id)
     if (failures) {
       throw new Error(`could not encrypt ${failures} attachment file(s); `
         + `they remain unencrypted on this device. Turn encryption off and on again to retry.`)
@@ -463,7 +463,7 @@ export class AttachmentStoreService {
         }
       }
     }
-    this.log.warn(`Decrypted ${done} stored attachment records on this device.`, this.id)
+    this.log.info(`Decrypted ${done} stored attachment records on this device.`, this.id)
     if (failures) {
       throw new Error(`could not decrypt ${failures} attachment file(s); `
         + `they are still encrypted and encryption was not turned off.`)

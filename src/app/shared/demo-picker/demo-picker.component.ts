@@ -102,7 +102,7 @@ export class DemoPickerComponent implements OnInit {
 
     const { SampleDataService } = await import('../services/sample-data.service')
     await this.injector.get(SampleDataService).loadSampleMission(scenario, clear)
-    this.log.warn(`Loaded the sample mission (demo data): ${scenario}.`, this.id)
+    this.log.verbose(`Demo "${scenario}" loaded; reloading the page.`, this.id)
     if (state !== 'empty') alert('Sample mission loaded. Reloading to refresh every screen with the new data...')
     window.location.reload()
     return true

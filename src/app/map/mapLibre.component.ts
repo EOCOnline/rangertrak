@@ -356,7 +356,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     // them: an offline map silently showing blank is the single most confusing failure
     // this screen can have.
     this.map.on('error', (ev: any) => {
-      this.log.error(`MapLibre error${ev?.sourceId ? ` (source "${ev.sourceId}")` : ''}: ${ev?.error?.message ?? JSON.stringify(ev)}`, 'MapLibreComponent')
+      this.log.error(`MapLibre error${ev?.sourceId ? ` (source "${ev.sourceId}")` : ''}: ${ev?.error?.message ?? String(ev)}`, 'MapLibreComponent')
       // `ev.tile` is only present when this error came from a tile load rejecting (see
       // this constructor's retriedTileKeysByMap comment above) - style/validation errors
       // don't carry one, and this safety net has nothing to retry for those.
@@ -520,7 +520,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       header = await new PMTiles(new FileSource(file)).getHeader()
     } catch (err) {
-      this.log.warn(`onCustomPmtilesFileSelected(): rejected "${file.name}": ${err}`, 'MapLibreComponent')
+      this.log.warn(`Rejected the custom map file "${file.name}": ${err}`, 'MapLibreComponent')
       alert(
         `"${file.name}" doesn't look like a real PMTiles archive`
         + `${err instanceof Error ? ` (${err.message})` : ''}.\n\n`
@@ -562,7 +562,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
           + `may fail, or push other data out.`
       }
     } catch (err) {
-      this.log.warn(`storageHeadroomWarning(): navigator.storage.estimate() failed: ${err}`, 'MapLibreComponent')
+      this.log.warn(`Could not check how much storage is left: ${err}`, 'MapLibreComponent')
     }
     return ''
   }
@@ -629,7 +629,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private warmBundledPmtilesCache(): void {
     this.offlineBasemap.warm({ userInitiated: true })
-      .catch(err => this.log.warn(`Failed to warm bundled PMTiles cache entry: ${err}`, 'MapLibreComponent'))
+      .catch(err => this.log.warn(`Could not warm a bundled map cache entry: ${err}`, 'MapLibreComponent'))
   }
 
   /**
@@ -663,7 +663,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!tileIds.length) {
         return
       }
-      this.log.info(`Retrying ${tileIds.length} map tile(s) that failed to load.`, 'MapLibreComponent')
+      this.log.info(`Retrying ${tileIds.length} map tiles that failed to load.`, 'MapLibreComponent')
       for (const sourceId of new Set(tileIds.map(t => t.sourceId))) {
         map.refreshTiles(sourceId, tileIds.filter(t => t.sourceId === sourceId).map(({ z, x, y }) => ({ z, x, y })))
       }
@@ -850,7 +850,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
       const header = await new PMTiles(new FileSource(file)).getHeader()
       this.customArchiveBounds = [header.minLon, header.minLat, header.maxLon, header.maxLat]
     } catch (err) {
-      this.log.warn(`loadCustomArchiveBounds(): could not read stored custom file's header: ${err}`, 'MapLibreComponent')
+      this.log.warn(`Could not read the header of the stored custom map file: ${err}`, 'MapLibreComponent')
       this.customArchiveBounds = undefined
     }
   }
@@ -899,7 +899,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
         return
       }
       this.map.easeTo({ center: geometry.coordinates as [number, number], zoom })
-    }).catch((e: unknown) => this.log.warn(`onClusterClick: ${e}`, 'MapLibreComponent'))
+    }).catch((e: unknown) => this.log.warn(`Could not zoom into a map cluster: ${e}`, 'MapLibreComponent'))
   }
 
   private onPointClick(ev: MapLayerMouseEvent): void {
@@ -1051,7 +1051,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!b) {
       // Nothing to fit (empty mission, or the selected-only view filtered down to nothing) -
       // leave the camera where the operator left it rather than snapping to a default.
-      this.log.info('onBtnZoomToExtent(): nothing to fit, leaving the camera alone', 'MapLibreComponent')
+      this.log.verbose('onBtnZoomToExtent(): nothing to fit, leaving the camera alone', 'MapLibreComponent')
       return
     }
     // MapLibre wants [lng, lat] pairs, the reverse of Leaflet - fitToBounds() above already
@@ -1079,6 +1079,7 @@ export class MapLibreComponent implements OnInit, AfterViewInit, OnDestroy {
   onBtnPrintMap(): void {
     // 2026-09-30, John: E-152 - the body class, and now a landscape page, live in the shared
     // helper so both engines print the same sheet.
+    this.log.info('Opened the print dialog for the map sheet.', 'MapLibreComponent')
     printMapSheet(this.missionService.settings)
   }
 

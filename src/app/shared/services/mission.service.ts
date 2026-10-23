@@ -160,7 +160,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
       } catch (error: any) {
         // The raw text is deliberately not logged: it can hold a legacy geocoding key, and it
         // is kept under the -BAD key below for anyone who needs it.
-        this.log.verbose(`Unable to parse settings in localstorage, so will be renamed out of the way. Error: ${error.name}; msg: ${error.message}`, this.id);
+        this.log.warn(`Could not read the saved settings from local storage; they were renamed out of the way. Error: ${error.name}; msg: ${error.message}`, this.id);
         // localStorage.removeItem(this.storageLocalName) /// will get overwritten anyway
         localStorage.setItem(this.storageLocalName + '-BAD', localStorageMission!)
       }
@@ -226,7 +226,7 @@ console.log(decrypted.toString(CryptoJS.enc.Utf8));
    * Called by Mission Component when user wants to reset
    */
   public ResetDefaults(): MissionType {
-    this.log.verbose(`Settings are being restored to their initial (hardcoded) values. Please re-enter mission info as desired.`, this.id)
+    this.log.info(`Mission settings were set back to their initial values.`, this.id)
     this.updateMission(this.initMission())
     return this.settings
   }

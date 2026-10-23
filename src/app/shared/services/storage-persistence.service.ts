@@ -44,7 +44,7 @@ export class StoragePersistenceService {
    */
   async requestPersistence(): Promise<boolean> {
     if (!navigator.storage?.persist) {
-      this.log.warn('navigator.storage.persist() is not supported by this browser.', this.id)
+      this.log.warn('This browser cannot keep data persistently (navigator.storage.persist is not supported).', this.id)
       this.persistedSignal.set(null)
       return false
     }

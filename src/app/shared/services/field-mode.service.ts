@@ -28,7 +28,7 @@ export class FieldModeService {
   enable(): void {
     localStorage.setItem(FIELD_MODE_KEY, 'true')
     this.enabled.set(true)
-    this.log.warn('Field mode (lite mode) enabled on this device.', this.id)
+    this.log.info('Turned field mode (lite mode) on for this device.', this.id)
   }
 
   /** E-142 (2026-09-29, John): wired to Help's "Turn off field mode" button
@@ -36,6 +36,6 @@ export class FieldModeService {
   disable(): void {
     localStorage.removeItem(FIELD_MODE_KEY)
     this.enabled.set(false)
-    this.log.warn('Field mode (lite mode) disabled on this device.', this.id)
+    this.log.info('Turned field mode (lite mode) off for this device.', this.id)
   }
 }

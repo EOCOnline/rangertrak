@@ -581,7 +581,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     const converted = MGRSToDD(gridRef, easting, northing)
     if (!converted) {
-      this.log.warn(`onMgrsChg: MGRSToDD rejected "${gridRef}" ${easting} ${northing}`, this.id)
+      this.log.verbose(`onMgrsChg: MGRSToDD rejected "${gridRef}" ${easting} ${northing}`, this.id)
       return
     }
 
@@ -599,7 +599,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     const converted = UTMToDD(zone, hemisphere, easting, northing)
     if (!converted) {
-      this.log.warn(`onUtmChg: UTMToDD rejected ${zone}${hemisphere} ${easting} ${northing}`, this.id)
+      this.log.verbose(`onUtmChg: UTMToDD rejected ${zone}${hemisphere} ${easting} ${northing}`, this.id)
       return
     }
 
@@ -794,7 +794,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
   chkMaidenhead(locator: string) {
     const converted = MaidenheadToDD(locator)
     if (!converted) {
-      this.log.warn(`chkMaidenhead: MaidenheadToDD rejected "${locator}"`, this.id)
+      this.log.verbose(`chkMaidenhead: MaidenheadToDD rejected "${locator}"`, this.id)
       return
     }
     this.newLocationToFormAndEmit({ lat: converted.lat, lng: converted.lng, address: "", derivedFromAddress: false })
@@ -896,7 +896,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
       .then((result) => {
         // Async: likely runs after subroutine returns
         if (!result.found) {
-          this.log.warn(`DDToAddress: ${result.error}`, this.id)
+          this.log.warn(`The address lookup for a position failed: ${result.error}`, this.id)
           return
         }
 
@@ -939,7 +939,7 @@ export class LocationComponent implements OnInit, AfterViewInit, OnChanges, OnDe
 
     this.geocodingProvider.geocodeAddress(addrText).then((result) => {
       if (!result.found) {
-        this.log.warn(`chkStreetAddress: ${result.error}`, this.id)
+        this.log.warn(`The address lookup for typed text failed: ${result.error}`, this.id)
         return
       }
 

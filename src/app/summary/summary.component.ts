@@ -23,7 +23,7 @@ import { showFirstPrintTip } from '../shared/export/print-tip'
 import { armPrintTitle } from '../shared/export/print-title'
 import { PageComponent } from '../shared/page/page.component'
 import {
-  AarNoteService, MissionService, MissionType, OperatorNameService, RadioLogEntryType, RadioLogService,
+  AarNoteService, LogService, MissionService, MissionType, OperatorNameService, RadioLogEntryType, RadioLogService,
   RangerService, RangerType, UsageStateService, statusColorValue,
 } from '../shared/services'
 import { TimePickerComponent } from '../shared/time-picker/time-picker.component'
@@ -62,6 +62,8 @@ export class SummaryComponent implements OnDestroy {
   private operatorName = inject(OperatorNameService)
   private usage = inject(UsageStateService)
   private appRef = inject(ApplicationRef)
+  private log = inject(LogService)
+  private id = 'Summary Component'
 
   // ---- live inputs (copied into signals; the services push onto their arrays in place) ----
   private entries = signal<readonly RadioLogEntryType[]>([...this.radioLogService.getCurrentRadioLog().logEntries])
@@ -343,6 +345,7 @@ export class SummaryComponent implements OnDestroy {
     document.body.classList.add('rt-print-summary')
     window.addEventListener('afterprint', () => document.body.classList.remove('rt-print-summary'), { once: true })
     const untitle = armPrintTitle('Mission summary', this.settings())
+    this.log.info('Opened the print dialog for the mission summary.', this.id)
     window.print()
     untitle()
     document.body.classList.remove('rt-print-summary')
@@ -351,6 +354,8 @@ export class SummaryComponent implements OnDestroy {
   onExportCsv(): void {
     this.refresh()
     const s = this.summary()
-    downloadCsv(buildSummaryCsv(s, this.stamp()), summaryCsvFilename(this.missionName(), s.generatedAt))
+    const filename = summaryCsvFilename(this.missionName(), s.generatedAt)
+    downloadCsv(buildSummaryCsv(s, this.stamp()), filename)
+    this.log.info(`Exported the mission summary to ${filename}.`, this.id)
   }
 }

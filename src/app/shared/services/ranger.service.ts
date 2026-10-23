@@ -176,7 +176,7 @@ export class RangerService implements OnInit {
       this.rangers = store.rangers
     } catch (error: any) {
       this.rangers = []
-      this.log.verbose(`Unable to parse Rangers from Local Storage. Error: ${error.message}`, this.id)
+      this.log.warn(`Could not read the saved roster from local storage, so the roster starts empty. Error: ${error.message}`, this.id)
     }
     this.SortRangersByCallsign()   // TODO: Getting called too often?
   }
@@ -231,7 +231,7 @@ export class RangerService implements OnInit {
   deleteAllRangers() {
     this.rangers = []
     this.updateLocalStorageAndPublish()
-    this.log.warn(`Emptied the roster (stored as an empty list, so it stays empty).`, this.id)
+    this.log.info(`Emptied the roster.`, this.id)
   }
 
   /** Replaces the whole roster wholesale (e.g. restoring from a mission backup). */

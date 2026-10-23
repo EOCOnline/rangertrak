@@ -139,7 +139,7 @@ export class SetupFileComponent {
       if (includePlaces) parts.push(`${locations?.length ?? 0} places`)
       if (includeSettings) parts.push('settings')
       parts.push(`${photoBlobs.length} photos`)
-      this.log.info(`Built Setup file: ${filename} (${parts.join(', ')}).`, this.id)
+      this.log.info(`Built the Setup file ${filename} (${parts.join(', ')}).`, this.id)
     } catch (e: any) {
       this.log.error(`Failed to build Setup file: ${e?.message ?? e}`, this.id)
       alert(`Could not build the Setup file.\n\n${e?.message ?? e}`)
@@ -236,7 +236,13 @@ export class SetupFileComponent {
       const summary = await this.applyFile(file)
       if (safetyCopy === 'kept') await this.importSafety.markImportDone()
       this.applied.set(`${file.fileName}: ${summary}${safetyCopy === 'kept' ? ' Undo is in Mission > Data safety for 24 hours.' : ''}`)
-      this.log.warn(`Applied Setup file ${file.fileName}: ${summary}`, this.id)
+      // E-223: the summary names people and places; the log keeps counts only.
+      this.log.info(`Applied the Setup file ${file.fileName} (${[
+        file.manifest.settings ? 'settings' : '',
+        file.manifest.rangers ? `${file.manifest.rangers.length} people` : '',
+        file.manifest.locations ? `${file.manifest.locations.length} places` : '',
+        file.photos.length ? `${file.photos.length} photos` : '',
+      ].filter(Boolean).join(', ') || 'nothing to apply'}).`, this.id)
     } catch (e: any) {
       this.log.error(`Failed to apply "${file.fileName}": ${e?.message ?? e}`, this.id)
       alert(`Could not apply "${file.fileName}".\n\n${e?.message ?? e}`)
@@ -264,7 +270,7 @@ export class SetupFileComponent {
     let rosterForPhotoMatch: RangerType[] = this.rangerService.rangers
     if (manifest.rangers) {
       const warnings = this.rangerService.rosterWarnings(manifest.rangers, this.missionService.settings?.idFieldLabel)
-      warnings.forEach(w => this.log.warn(`Setup file import warning (${file.fileName}): ${w}`, this.id))
+      warnings.forEach(w => this.log.warn(`Setup file ${file.fileName} warning: ${w}`, this.id))
       const merge = mergeRangers(this.rangerService.rangers, manifest.rangers)
       this.rangerService.replaceAllRangers(merge.rangers)
       this.rangerService.recordMergeImport(file.fileName, merge)

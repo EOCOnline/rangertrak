@@ -105,3 +105,19 @@ export function countNotes(notes: readonly AarNoteType[]): Pick<ClearCounts, 'in
     appNotes: notes.filter(n => n.kind !== 'activity' && n.about === 'app').length,
   }
 }
+
+/**
+ * E-223: what a clear removed, for the log: row ids and counts only, never the contents.
+ * e.g. "roster 42, photos 3, log 118, places 9, settings, incidentNotes 2". `counts` are the
+ * live counts taken before the clear. A replace always clears its locked rows; `clear` names
+ * the rest (and, for a log clear, the log row is always included).
+ */
+export function clearedSummary(context: ClearContext, clear: ReadonlySet<ClearId>, counts: ClearCounts): string {
+  const always: ClearId[] = context === 'replace' ? ['roster', 'photos', 'log', 'places', 'settings'] : ['log']
+  const ids = [...new Set<ClearId>([...always, ...clear])]
+  const countOf: Record<ClearId, number | null> = {
+    roster: counts.rangers, photos: counts.photos, log: counts.entries, places: counts.places,
+    settings: null, incidentNotes: counts.incidentNotes, lines: counts.lines, header: null, appNotes: counts.appNotes,
+  }
+  return ids.map(id => countOf[id] === null ? id : `${id} ${countOf[id]}`).join(', ')
+}

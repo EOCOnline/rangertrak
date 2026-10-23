@@ -87,7 +87,7 @@ export class AarNoteService {
     if (kind === 'activity' && at && !isNaN(new Date(at).getTime())) note.at = at
     this.list = [...this.list, note]
     this.saveAndPublish()
-    this.log.verbose(`Noted for the after-action review (${kind}, ${about}, on ${page})`, this.id)
+    this.log.info(`Added an after-action note (${kind}, ${about}, on ${page}).`, this.id)
     return note
   }
 
@@ -100,11 +100,12 @@ export class AarNoteService {
     }
     const [normalized] = normalizeAarNotes([note])
     if (!normalized) {
-      this.log.warn('updateNote got a note with no text; kept the previous version', this.id)
+      this.log.warn('An edited note had no text, so the previous text was kept.', this.id)
       return
     }
     this.list = this.list.map((n, i) => i === index ? { ...normalized, uid: note.uid } : n)
     this.saveAndPublish()
+    this.log.info(`Edited after-action note ${note.uid}.`, this.id)
   }
 
   deleteNote(uid: string): void {
@@ -115,6 +116,7 @@ export class AarNoteService {
       return
     }
     this.saveAndPublish()
+    this.log.info(`Deleted after-action note ${uid}.`, this.id)
   }
 
   deleteAllNotes(): void {

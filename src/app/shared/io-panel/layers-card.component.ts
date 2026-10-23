@@ -89,7 +89,7 @@ export class LayersCardComponent {
       }
     }
     this.layerService.forget(layer.name, kind)
-    this.log.warn(`Removed layer "${layer.name}" (${kind}): ${toRemove.length} removed, ${shared} kept because another layer holds them.`, this.id)
+    this.log.info(`Removed layer "${layer.name}" (${kind}): ${toRemove.length} removed, ${shared} kept because another layer holds them.`, this.id)
   }
 }
 

@@ -394,7 +394,7 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
 
   ngOnInit(): void {
     if (this.settings == undefined) {
-      this.log.warn('Mission needs to be initialized, in ngOnInit.', this.id)
+      this.log.warn('The mission settings were not set up yet when the page opened.', this.id)
     } else {
       // rowData is seeded by the settings subscription in the constructor (and re-seeded
       // on every later emission), so it is already populated by the time we get here.
@@ -495,7 +495,6 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
    * one all along rather than a smaller per-field resync.
    */
   onBtnResetDefaults() {
-    this.log.verbose(`onBtnResetDefaults: Reset Mission.`, this.id)
     // E-168 (2026-10-01, John): in a live mission this is a typed confirmation, as for loading a
     // demo; otherwise it stays one click, as before.
     if (this.usage.state() === 'live' && !confirmReplaceMission({
@@ -503,6 +502,7 @@ export class MissionComponent implements OnInit, OnDestroy, HasUnsavedChanges {
       message: 'Reset the mission settings to their defaults?\n\nThis clears the mission name, op period and every other setting on the Mission page.',
     })) return
     this.settings = this.missionService.ResetDefaults()
+    this.log.info('Reset the mission settings to their defaults.', this.id)
     clearActiveDemoScenario() // E-124: evicts a demo's street-detail map file
     this.reloadPage()
   }

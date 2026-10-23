@@ -510,7 +510,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
    *      callsign, so "last row" was never reliable either) and go there.
    */
   onBtnAddRanger(formData?: string) {
-    this.log.verbose("Adding new ranger", this.id)
+    this.log.info("Added a new ranger.", this.id)
     const added = this.rangerService.AddRanger(formData ?? "")  // this calls updateLocalStorageAndPublish
     // Keeps the grid's own copy in lockstep with the service synchronously, rather than
     // waiting for the next change-detection pass to pick up the `rangers()` signal through
@@ -536,7 +536,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       if (node.data === added) rowIndex = index
     })
     if (rowIndex < 0) {
-      this.log.warn(`focusNewRangerRow: could not find the new ranger in the grid's own row model.`, this.id)
+      this.log.warn(`Could not find the new ranger in the grid, so the grid did not scroll to it.`, this.id)
       return
     }
 
@@ -571,7 +571,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
    * row can still move once its callsign commits. Not new behavior, just now automatic.
    */
   private onCellEdited() {
-    this.log.verbose(`Ranger edited in grid; saving.`, this.id)
+    this.log.info(`Edited a ranger in the grid.`, this.id)
     this.rangerService.updateLocalStorageAndPublish()
   }
 
@@ -579,7 +579,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
   // otherwise delete the wrong row. No UI caller today; kept as the obvious hook for a
   // per-row delete on the grid.
   onBtnDeleteRanger(uid: string) {
-    this.log.verbose(`onBtnDeleteRanger: deleting ranger with uid: ${uid}`, this.id)
+    this.log.info(`Deleted ranger ${uid}.`, this.id)
     this.rangerService.deleteRangerByUid(uid)
   }
 
@@ -595,7 +595,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
       + `Radio log entries already filed are not deleted, but they will refer to callsigns `
       + `that are no longer in the roster.\n\n`
       + `Export the roster first if you might want it back.`)) {
-      this.log.info("Removing all rangers from local storage...", this.id)
+      this.log.info(`Deleted all ${count} rangers from this device.`, this.id)
       this.rangerService.deleteAllRangers()
       this.layerService.prune('people', new Set())
       this.refreshGrid()
@@ -655,7 +655,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     const summary = result.action === 'replace'
       ? `Replaced the roster with ${result.incoming.length} people from "${fileName}".`
       : `Imported "${fileName}"${layer ? ` (from "${layer}")` : ''}: ${describeRangerMerge(result.merge)}.${layerNote}`
-    this.log.warn(summary, this.id)
+    this.log.info(summary, this.id)
     this.gridApi?.setGridOption('rowData', this.rangers())
     this.refreshGrid()
     return summary
@@ -1150,7 +1150,7 @@ export class RangersComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.devicePrefs.dismissRangersPrivacyNotice()) {
       // Private-browsing or a full quota. The bar still goes away for this visit; it
       // simply comes back next time, which is the safe direction to fail in.
-      this.log.warn('Could not persist privacy-notice dismissal', this.id)
+      this.log.warn('Could not save that the privacy notice was dismissed.', this.id)
     }
   }
 

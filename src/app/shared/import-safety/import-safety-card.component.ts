@@ -110,7 +110,7 @@ export class ImportSafetyCardComponent implements OnInit {
 
     try {
       await this.safety.undo()
-      this.log.warn('Undid the last import from the Undo card.', this.id)
+      this.log.verbose('Undo card: undid the last import.', this.id)
       alert('The last import was undone. Reloading to refresh every screen with the restored mission...')
       await this.reloadPage()
     } catch (e: any) {

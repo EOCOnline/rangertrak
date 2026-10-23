@@ -51,25 +51,25 @@ export class UpdateService {
   public init(): void {
     if (!this.updates.isEnabled) {
       // Normal in `ng serve` and in any browser without service-worker support.
-      this.log.info(`Service worker not enabled; no update checks will run.`, this.id)
+      this.log.verbose(`Service worker not enabled; no update checks will run.`, this.id)
       return
     }
 
     // Logged unconditionally so the Log page can answer "is update checking even
     // armed?" after a deploy. Without it, an update flow that never fires and one
     // that fires and finds nothing look identical - silence.
-    this.log.info(`Update checks armed; watching for new versions.`, this.id)
+    this.log.verbose(`Update checks armed; watching for new versions.`, this.id)
 
     this.updates.versionUpdates.subscribe(evt => {
       switch (evt.type) {
         case 'VERSION_DETECTED':
-          this.log.info(`Downloading new app version: ${evt.version.hash}`, this.id)
+          this.log.verbose(`Downloading new app version: ${evt.version.hash}`, this.id)
           break
         case 'NO_NEW_VERSION_DETECTED':
           this.recordCheck()
           break
         case 'VERSION_READY':
-          this.log.info(`New app version ready: ${evt.latestVersion.hash} (running ${evt.currentVersion.hash})`, this.id)
+          this.log.info(`A new app version is ready: ${evt.latestVersion.hash} (running ${evt.currentVersion.hash}).`, this.id)
           break
         case 'VERSION_INSTALLATION_FAILED':
           this.log.error(`Failed to install app version '${evt.version.hash}': ${evt.error}`, this.id)
@@ -129,7 +129,7 @@ export class UpdateService {
       await this.updates.activateUpdate()
       // E-122 Phase 2a: a report saved moments ago may still be queued for IndexedDB.
       await recordStore.flush()
-      this.log.info(`New version activated; reloading.`, this.id)
+      this.log.info(`Activated the new app version; reloading.`, this.id)
       location.reload()
     } catch (e) {
       // Most often "Service workers are disabled or not supported by this browser".

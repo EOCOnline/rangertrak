@@ -1114,7 +1114,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
     if (!b) {
       // Nothing to fit (empty mission, or the selected-only view filtered down to nothing) -
       // leave the camera where the operator left it rather than snapping to defLat/defLng.
-      this.log.info('onBtnZoomToExtent(): nothing to fit, leaving the camera alone', this.id)
+      this.log.verbose('onBtnZoomToExtent(): nothing to fit, leaving the camera alone', this.id)
       return
     }
     // maxZoom matters: without it, two reports 10m apart would slam the map to max zoom.
@@ -1128,6 +1128,7 @@ export class LmapComponent extends AbstractMap implements OnInit, AfterViewInit,
 
   /** Print map button (template): see LeafletPrintController.onBtnPrintMap(). */
   onBtnPrintMap(): Promise<void> {
+    this.log.info('Opened the print dialog for the map sheet.', this.id)
     return this.print.onBtnPrintMap()
   }
 

@@ -154,7 +154,7 @@ export class MissionAdvancedOptionsComponent {
   }
 
   onBtnRequestPersistence() {
-    this.log.verbose('onBtnRequestPersistence: re-requesting persistent storage.', this.id)
+    this.log.info('Asked the browser again to keep this device\'s data (persistent storage).', this.id)
     this.storagePersistence.requestPersistence()
   }
 
@@ -214,7 +214,7 @@ export class MissionAdvancedOptionsComponent {
     }
     if (prompt('Type the same passphrase again to confirm it.') !== passphrase) {
       alert('Those did not match. Encryption was not turned on - start again.')
-      this.log.warn('onBtnEnableEncryption: passphrase confirmation did not match.', this.id)
+      this.log.warn('Encryption was not turned on: the two passphrases did not match.', this.id)
       return
     }
 
@@ -251,7 +251,7 @@ export class MissionAdvancedOptionsComponent {
       alert(`Device encryption is on, but not everything was encrypted yet:\n\n${errors.join('\n\n')}`)
       return
     }
-    this.log.warn('Device encryption turned on: roster, radio log entries, photos and attachments are now encrypted at rest.', this.id)
+    this.log.info('Turned device encryption on: roster, radio log entries, photos and attachments are now encrypted at rest.', this.id)
     alert('Device encryption is on. You will be asked for this passphrase on your next visit '
       + 'and after every app update.')
   }
@@ -280,7 +280,7 @@ export class MissionAdvancedOptionsComponent {
     const key = await this.recordStore.verifyPassphrase(passphrase)
     if (!key) {
       alert('Wrong passphrase. Encryption was not turned off.')
-      this.log.warn('onBtnDisableEncryption: wrong passphrase.', this.id)
+      this.log.warn('Encryption was not turned off: wrong passphrase.', this.id)
       return
     }
 
@@ -292,7 +292,7 @@ export class MissionAdvancedOptionsComponent {
       // E-194: attachments the same way, for the same reason, before the key is cleared.
       await this.attachmentStore.decryptAll(key)
       await this.recordStore.disableEncryption()
-      this.log.warn('Device encryption turned off: roster, radio log entries, photos and attachments are stored unencrypted again.', this.id)
+      this.log.info('Turned device encryption off: roster, radio log entries, photos and attachments are stored unencrypted again.', this.id)
       alert('Device encryption is off.')
     } catch (error: any) {
       this.log.error(`onBtnDisableEncryption: failed: ${error.message}`, this.id)
@@ -410,7 +410,7 @@ export class MissionAdvancedOptionsComponent {
         // reload() right below depends on. See importMission()'s own doc comment.
         await this.backupService.importMission(payload)
         if (safetyCopy === 'kept') await this.importSafety.markImportDone()
-        this.log.warn(`Restored mission from ${backupFile.name}.`, this.id)
+        this.log.info(`Restored the mission from ${backupFile.name}.`, this.id)
         restoredMission = true
       }
 

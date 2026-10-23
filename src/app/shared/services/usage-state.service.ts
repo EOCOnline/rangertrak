@@ -3,7 +3,7 @@ import { Router } from '@angular/router'
 import { MatDialog } from '@angular/material/dialog'
 
 import { ScenarioClock, readScenarioClock, scenarioInstantFromLocal, scenarioLabelAt, scenarioOffsetExplanation } from '../../domain/scenario'
-import { ClearContext, ClearCounts, ClearId, DEFAULT_REPLACE_CLEAR, buildClearRows, countNotes, noteMatcher } from '../../domain/clear-choices'
+import { ClearContext, ClearCounts, ClearId, DEFAULT_REPLACE_CLEAR, buildClearRows, clearedSummary, countNotes, noteMatcher } from '../../domain/clear-choices'
 import { UsageInputs, UsageState, deriveUsageState, effectiveMode } from '../../domain/usage-state'
 import { setQuiet } from '../quiet-flag'
 import { clearActiveDemoScenario, demoRecord } from '../mapping/demo-map'
@@ -178,6 +178,7 @@ export class UsageStateService {
    * caller confirms first and reloads after it resolves, as for loading a demo.
    */
   async startRealMission(mode?: MissionModeType, clear: ReadonlySet<ClearId> = DEFAULT_REPLACE_CLEAR): Promise<void> {
+    const counts = this.clearCounts()   // E-223: for the log, taken before anything goes
     this.rangerService.deleteAllRangers()
     await this.rangerPhotoService.clear()   // keyed by callsign: real photos must not outlive the roster
     await this.radioLogService.deleteAllRadioLogEntries()
@@ -187,7 +188,7 @@ export class UsageStateService {
     this.missionService.ResetDefaults()   // initMission() omits scenarioClock, so a real mission starts without one (D-66)
     clearActiveDemoScenario()
     if (mode) this.setMode(mode)
-    this.log.warn(`Started a real mission (demo data cleared)${mode ? `, mode ${mode}` : ''}.`, this.id)
+    this.log.info(`Started a real mission${mode ? ` in ${mode} mode` : ''}. Cleared: ${clearedSummary('replace', clear, counts)}.`, this.id)
     await recordStore.flush()
   }
 
@@ -209,6 +210,7 @@ export class UsageStateService {
       const start = mode === 'exercise' ? 'Leave the demo and start an exercise?' : 'Leave the demo and start a real incident?'
       const clear = await this.chooseWhatToClear('replace', start, mode === 'exercise' ? 'Start exercise' : 'Start incident')
       if (!clear) return
+      this.log.info(`Leaving Demo mode for ${mode} mode.`, this.id)
       await this.startRealMission(mode, clear)
       window.location.reload()
       return
@@ -222,7 +224,7 @@ export class UsageStateService {
     const next = { ...this.missionService.settings, missionMode: mode }
     if (mode !== 'exercise') delete next.scenarioClock
     this.missionService.updateMission(next)
-    this.log.warn(`Mission mode set to ${mode ?? 'not chosen'}.`, this.id)
+    this.log.info(`Set the mission mode to ${mode ?? 'not chosen'}.`, this.id)
   }
 
   /** E-196 (D-66): "the scenario stands at `scenarioLocal` right now" (a date and time as picked,
@@ -236,7 +238,7 @@ export class UsageStateService {
   /** Saves a clock that is already in stored form (from a catch-up file). */
   saveScenarioClock(clock: ScenarioClock): void {
     this.missionService.updateMission({ ...this.missionService.settings, scenarioClock: clock })
-    this.log.warn(`Scenario clock set (${clock.scenarioAt} at ${clock.realAt}).`, this.id)
+    this.log.info(`Set the scenario clock to ${clock.scenarioAt} (as of ${clock.realAt}).`, this.id)
   }
 
   clearScenarioClock(): void {

@@ -9,7 +9,7 @@ import { newRangerUid } from '../../domain/ranger-migration'
 import type { TacticalCallType } from './mission.interface'
 import { recordStore } from '../storage/record-store'
 import { setActiveDemoScenario } from '../mapping/demo-map'
-import { ClearId, DEFAULT_REPLACE_CLEAR, noteMatcher } from '../../domain/clear-choices'
+import { ClearCounts, ClearId, DEFAULT_REPLACE_CLEAR, clearedSummary, countNotes, noteMatcher } from '../../domain/clear-choices'
 import { DEFAULT_SAMPLE_SCENARIO, SampleScenarioId } from './sample-scenarios'
 import { AttachmentStoreService } from './attachment-store.service'
 import { AarNoteService } from './aar-note.service'
@@ -192,6 +192,14 @@ export class SampleDataService {
     clear: ReadonlySet<ClearId> = DEFAULT_REPLACE_CLEAR,
   ): Promise<void> {
     const data = await this.buildScenario(scenario)
+    // E-223: what is about to be replaced, counted for the log (counts only, never contents).
+    const cleared: ClearCounts = {
+      rangers: this.rangerService.rangers.length,
+      photos: this.rangerPhotoService.count(),
+      entries: this.radioLogService.getCurrentRadioLog().logEntries.length,
+      places: this.missionLocationService.getCurrentLocations().length,
+      ...countNotes(this.aarNoteService.getCurrentNotes()),
+    }
 
     // Settings first, then rangers, then reports - the same ordering (and for the same
     // reason) as BackupService.importMission(): replaceAllRadioLog() recalculates
@@ -234,9 +242,10 @@ export class SampleDataService {
     this.aarNoteService.deleteWhere(noteMatcher(clear))
     if (clear.has('header')) this.activityLogHeaderService.clear()
 
-    this.log.warn(
-      `Loaded sample mission "${scenario}": ${data.rangers.length} rangers, `
-      + `${radioLog.numReport} radio log entries, ${data.locations.length} locations. This is DEMO data.`,
+    this.log.info(
+      `Loaded the "${scenario}" demo: ${data.rangers.length} rangers, `
+      + `${radioLog.numReport} radio log entries, ${data.locations.length} locations (this is DEMO data). `
+      + `Cleared: ${clearedSummary('replace', clear, cleared)}.`,
       this.id)
 
     // E-124: marks this demo as the loaded mission, so the Alternative map may fetch its
@@ -304,7 +313,7 @@ export class SampleDataService {
       }
 
       const timer = setTimeout(() => {
-        this.log.info('near-me scenario: geolocation timed out, using the mission default location.', this.id)
+        this.log.warn('The near-me demo could not get the device location in time, so it used the mission default location.', this.id)
         finish(fallback)
       }, 6000)
 
@@ -315,7 +324,7 @@ export class SampleDataService {
         },
         () => {
           clearTimeout(timer)
-          this.log.info('near-me scenario: geolocation unavailable/denied, using the mission default location.', this.id)
+          this.log.warn('The near-me demo could not use the device location (unavailable or denied), so it used the mission default location.', this.id)
           finish(fallback)
         },
         { timeout: 5000, maximumAge: 60000 },

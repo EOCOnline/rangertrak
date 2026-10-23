@@ -60,7 +60,7 @@ export class MissionLocationService {
       this.locations = result.locations
     } catch (error: any) {
       this.locations = []
-      this.log.verbose(`Unable to parse Locations from local storage. Error: ${error.message}`, this.id)
+      this.log.warn(`Could not read the saved places from local storage, so the list starts empty. Error: ${error.message}`, this.id)
     }
   }
 
@@ -90,7 +90,7 @@ export class MissionLocationService {
   public updateLocation(location: MissionLocationType): void {
     const uid = String(location.uid ?? '').trim()
     if (!uid) {
-      this.log.error(`updateLocation got a location with no uid (name: ${location.name})`, this.id)
+      this.log.error(`updateLocation got a location with no uid`, this.id)
       return
     }
     const index = this.locations.findIndex(l => l.uid === uid)

@@ -76,7 +76,7 @@ export class OfflineBasemapService {
 
     const connection = (navigator as unknown as { connection?: { saveData?: boolean } }).connection
     if (connection?.saveData && !options.userInitiated) {
-      this.log.info('Skipping automatic offline-map warm: Data Saver is on.', this.id)
+      this.log.verbose('Skipping automatic offline-map warm: Data Saver is on.', this.id)
       return
     }
 
@@ -95,7 +95,7 @@ export class OfflineBasemapService {
         this.log.info(`Removed ${pruned} map file(s) this device no longer needs from the offline cache.`, this.id)
       }
     } catch (err) {
-      this.log.warn(`warm(): ${err}`, this.id)
+      this.log.warn(`Offline map warm-up failed: ${err}`, this.id)
     } finally {
       this.warming = false
       this.downloadProgress.set(null)
@@ -108,7 +108,7 @@ export class OfflineBasemapService {
         await this.downloadOnce(cache, url)
         return
       } catch (err) {
-        this.log.warn(`Offline-map warm attempt ${attempt}/${MAX_ATTEMPTS} failed: ${err}`, this.id)
+        this.log.warn(`Offline map warm-up attempt ${attempt} of ${MAX_ATTEMPTS} failed: ${err}`, this.id)
         if (attempt === MAX_ATTEMPTS) {
           this.armOnlineRetry(cache, url)
           return
@@ -130,7 +130,7 @@ export class OfflineBasemapService {
       window.removeEventListener('online', handler)
       this.onlineRetryArmed = false
       this.downloadWithRetry(cache, url).catch(err =>
-        this.log.warn(`Offline-map warm retry after 'online' failed: ${err}`, this.id))
+        this.log.warn(`Offline map warm-up retry after coming back online failed: ${err}`, this.id))
     }
     window.addEventListener('online', handler)
   }

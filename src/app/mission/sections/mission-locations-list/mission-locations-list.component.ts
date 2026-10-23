@@ -97,6 +97,6 @@ export class MissionLocationsListComponent implements OnInit, OnDestroy {
       return
     }
     this.locationService.deleteLocationByUid(location.uid)
-    this.log.verbose(`Deleted location "${location.name}" from the Mission page list`, this.id)
+    this.log.info(`Deleted place ${location.uid} from the Mission page list.`, this.id)
   }
 }
