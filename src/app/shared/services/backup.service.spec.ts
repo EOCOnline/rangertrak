@@ -11,6 +11,8 @@ import { MissionService } from './mission.service';
 import { AarNoteService } from './aar-note.service';
 import { ActivityLogHeaderService } from './activity-log-header.service';
 import { RangerPhotoService } from './ranger-photo.service';
+import { MissionJournalService } from './mission-journal.service';
+import { verifyJournal } from '../../domain/mission-journal';
 // E-122 Phase 2a: the roster (and radio log) now live behind RecordStore, not localStorage
 // directly - see that module's own doc comment.
 import { recordStore } from '../storage/record-store';
@@ -395,6 +397,50 @@ describe('BackupService', () => {
       expect(header.header().name).toBe('Kept');
     });
   });
+  describe('mission journal (E-222 / D-67)', () => {
+    it('puts a copy of the journal in the export, including the backup entry itself', async () => {
+      const journal = TestBed.inject(MissionJournalService);
+      const backup = TestBed.inject(BackupService);
+      journal.record('demo-loaded', 'Loaded a demo.');
+
+      const blobs: Blob[] = [];
+      spyOn(URL, 'createObjectURL').and.callFake((b: Blob | MediaSource) => { blobs.push(b as Blob); return 'blob:test'; });
+      spyOn(URL, 'revokeObjectURL');
+      spyOn(HTMLAnchorElement.prototype, 'click');
+      await backup.exportMission();
+
+      const payload: MissionExport = JSON.parse(await blobs[0].text());
+      expect(payload.journal!.count).toBe(2);
+      expect(payload.journal!.entries.map(e => e.action)).toEqual(['demo-loaded', 'backup-exported']);
+      expect(payload.journal!.head).toBe(payload.journal!.entries[1].hash);
+      expect(verifyJournal(payload.journal!.entries).ok).toBeTrue();
+    });
+
+    it('restore keeps the device journal, ignores the backup journal, and the caller adds one entry', async () => {
+      const journal = TestBed.inject(MissionJournalService);
+      const backup = TestBed.inject(BackupService);
+      journal.record('print-309', 'Device entry one.');
+      const payload: MissionExport = JSON.parse(JSON.stringify(await backup.buildExportPayload()));
+      expect(backup.describeBackupJournal(payload)).toMatch(/^jrnl [0-9a-f]{4}·[0-9a-f]{4} \(1\)$/);
+
+      journal.record('print-309', 'Device entry two, after the backup.');
+      await backup.importMission(payload);
+      expect(journal.entries().map(e => e.summary)).toEqual(['Device entry one.', 'Device entry two, after the backup.']);
+
+      journal.record('mission-restored', `Restored the mission from x.json. The backup's journal: ${backup.describeBackupJournal(payload)}.`);
+      expect(journal.entries().length).toBe(3);
+      expect(journal.verify().ok).toBeTrue();
+    });
+
+    it('reads a backup made before the journal as having none', async () => {
+      const backup = TestBed.inject(BackupService);
+      const payload = JSON.parse(JSON.stringify(await backup.buildExportPayload()));
+      delete payload.journal;
+      expect(backup.describeBackupJournal(payload)).toBe('none');
+      await backup.importMission(payload);
+    });
+  });
+
   describe('geocoding key and photos (2026-10-01, John)', () => {
     const KEY = 'AIza-test-key'
 

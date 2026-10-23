@@ -17,6 +17,9 @@ import { migrateAarNotes } from '../../domain/aar-note-migration'
 import { ActivityLogHeader, normalizeActivityLogHeader } from '../../domain/activity-log'
 import { recordStore } from '../storage/record-store'
 import { AttachmentStoreService } from './attachment-store.service'
+import { MissionJournalService } from './mission-journal.service'
+import type { JournalEntry } from '../../domain/mission-journal'
+import { shortHead } from '../../domain/mission-journal'
 import { clearActiveDemoScenario } from '../mapping/demo-map'
 import { diagnoseImportFile, stripBom } from '../../domain/import-diagnosis'
 import { BACKUP_DAMAGED_MESSAGE, DIAGNOSIS_HEAD_BYTES } from '../export/import-file'
@@ -49,6 +52,10 @@ import { localDateStamp } from '../export/local-date'
  * `photos` (2026-10-01, John): the same rule. Ranger photos, one entry per stored photo, `data`
  * base64. PRESENT (even empty) on restore means "replace this device's photos with these";
  * ABSENT (an older backup) leaves the device's photos alone. No schema bump.
+ *
+ * `journal` (E-222 / D-67, 2026-10-23): a copy of this device's mission journal with its latest hash and
+ * count. Additive and optional like `aarNotes`, so no schema bump. It is for the record only: Restore never
+ * replaces the device's own journal; it adds one entry naming this file and the head it carried.
  */
 export type MissionExport = {
   schemaVersion: number,
@@ -62,6 +69,7 @@ export type MissionExport = {
   activityLogHeader?: ActivityLogHeader,
   layers?: LayerRecord[],
   photos?: { stem: string, type: string, data: string }[],
+  journal?: { head: string, count: number, entries: JournalEntry[] },
 }
 
 export const MISSION_EXPORT_SCHEMA_VERSION = 1
@@ -109,6 +117,7 @@ export class BackupService {
     private activityLogHeaderService: ActivityLogHeaderService,
     private log: LogService,
     private photoService: RangerPhotoService,
+    private journal: MissionJournalService,
   ) { }
 
   private injector = inject(Injector)
@@ -155,6 +164,7 @@ export class BackupService {
       activityLogHeader: this.activityLogHeaderService.getCurrentHeader(),
       layers: (await this.layerService()).snapshot(),
       photos: await this.photosForExport(),
+      journal: { ...this.journal.head(), entries: this.journal.snapshot() },
     }
   }
 
@@ -170,6 +180,8 @@ export class BackupService {
    * Triggers a browser download of the current mission as a JSON file.
    */
   async exportMission(passphrase?: string): Promise<void> {
+    // E-222: recorded first, so the journal copy inside the backup includes the backup itself.
+    this.journal.record('backup-exported', `Exported a mission backup${passphrase ? ' (encrypted)' : ' (NOT encrypted)'}.`)
     const payload = await this.buildExportPayload(!!passphrase)
 
     // E-122 Phase 1: the backup carries the whole roster, so it is the file most worth
@@ -199,8 +211,7 @@ export class BackupService {
     a.click()
     URL.revokeObjectURL(url)
 
-    this.log.info(`Exported mission to ${filename}`
-      + `${encrypted ? ' (encrypted)' : ' (NOT encrypted)'}`, this.id)
+    this.log.verbose(`Backup file named ${filename}.`, this.id)
 
     // E-194 / D-60 item 6: attachment bytes never go in the JSON (references only, so every D-53
     // fixture stays valid). When any live reference has bytes here, they follow in a companion
@@ -244,8 +255,8 @@ export class BackupService {
     a.download = filename
     a.click()
     setTimeout(() => URL.revokeObjectURL(url), 1000)
-    this.log.info(`Exported ${files.length} attachments to a companion file`
-      + `${encrypted ? ' (encrypted)' : ' (NOT encrypted)'}.`, this.id)
+    this.journal.record('backup-attachments-exported',
+      `Exported ${files.length} attachments to a companion file${encrypted ? ' (encrypted)' : ' (NOT encrypted)'}.`)
     return files.length
   }
 
@@ -307,6 +318,11 @@ export class BackupService {
       for (const ref of liveRefs(entry)) if (!(ref.sha256 in sizes)) missing.add(ref.sha256)
     }
     return { restored: 0, alreadyHere: 0, unreferenced: 0, mismatched: [], elsewhere: missing.size }
+  }
+
+  /** E-222: `jrnl 3f9a·c21b (143)` for the journal a backup carries, or 'none' for one made before the journal. */
+  describeBackupJournal(payload: MissionExport): string {
+    return payload.journal ? shortHead(payload.journal.head, payload.journal.count) : 'none'
   }
 
   /** The restore line for a result, e.g. "3 attachments restored, 2 still on another device." '' when there is nothing to say. */
@@ -398,7 +414,8 @@ export class BackupService {
       }
     }
 
-    this.log.info(`Restored the mission from an export dated ${payload.exportedAt} (schema v${payload.schemaVersion}, app v${payload.appVersion}).`, this.id)
+    // E-222: the journal entry (with the file name) is recorded by the caller; this line is only the debug trace.
+    this.log.verbose(`Restore applied: export dated ${payload.exportedAt} (schema v${payload.schemaVersion}, app v${payload.appVersion}).`, this.id)
 
     await recordStore.flush()
   }

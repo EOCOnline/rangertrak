@@ -121,3 +121,33 @@ export function clearedSummary(context: ClearContext, clear: ReadonlySet<ClearId
   }
   return ids.map(id => countOf[id] === null ? id : `${id} ${countOf[id]}`).join(', ')
 }
+
+/**
+ * E-222: what a clear removed and what it kept, in plain words for the mission journal (counts
+ * only, never contents). e.g. "Cleared: 42 rangers, 118 radio log entries, 7 incident notes.
+ * Kept: 4 notes about RangerTrak." Rows with nothing to clear are left out.
+ */
+export function clearedPlain(context: ClearContext, clear: ReadonlySet<ClearId>, counts: ClearCounts): string {
+  const always: ClearId[] = context === 'replace' ? ['roster', 'photos', 'log', 'places', 'settings'] : ['log']
+  const chosen = new Set<ClearId>([...always, ...clear])
+  const text = (id: ClearId): string => {
+    switch (id) {
+      case 'roster': return countText(id, counts.rangers)
+      case 'photos': return countText(id, counts.photos)
+      case 'log': return `${counts.entries} radio log ${counts.entries === 1 ? 'entry' : 'entries'}`
+      case 'places': return countText(id, counts.places)
+      case 'settings': return 'the mission settings'
+      case 'incidentNotes': return `${counts.incidentNotes} incident ${counts.incidentNotes === 1 ? 'note' : 'notes'}`
+      case 'lines': return `${counts.lines} ICS-214 ${counts.lines === 1 ? 'line' : 'lines'}`
+      case 'header': return 'the ICS-214 header'
+      case 'appNotes': return `${counts.appNotes} ${counts.appNotes === 1 ? 'note' : 'notes'} about RangerTrak`
+    }
+  }
+  const empty = (id: ClearId) => (id === 'roster' && !counts.rangers) || (id === 'photos' && !counts.photos)
+    || (id === 'places' && !counts.places) || (id === 'incidentNotes' && !counts.incidentNotes)
+    || (id === 'lines' && !counts.lines) || (id === 'appNotes' && !counts.appNotes)
+  const cleared = [...chosen].filter(id => !empty(id)).map(text)
+  const keepable: ClearId[] = ['incidentNotes', 'lines', 'appNotes']
+  const kept = keepable.filter(id => !chosen.has(id) && !empty(id)).map(text)
+  return `Cleared: ${cleared.join(', ') || 'nothing'}.${kept.length ? ` Kept: ${kept.join(', ')}.` : ''}`
+}

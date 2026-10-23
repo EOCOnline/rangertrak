@@ -58,7 +58,9 @@ export const ENCRYPTION_MARKER_KEY = '__encryption'
 // whole roster included (rule 5) - so it is covered exactly as the roster is.
 // 'activityLogHeader' added 2026-10-20 (E-04 / D-63): the ICS-214 header names people (the scribe and
 // the Resources Assigned rows), so it is covered with the roster (rule 5).
-export const ENCRYPTED_KEYS = ['rangers', 'radioLog', 'radioLog-BAD', 'aarNotes', 'secrets', 'rangersImported', 'layers', 'importSafetyCopy', 'activityLogHeader'] as const
+// 'missionJournal' added 2026-10-23 (E-222, D-67): the mission journal; its summaries name call signs and
+// file names, so it is covered with the roster.
+export const ENCRYPTED_KEYS = ['rangers', 'radioLog', 'radioLog-BAD', 'aarNotes', 'secrets', 'rangersImported', 'layers', 'importSafetyCopy', 'activityLogHeader', 'missionJournal'] as const
 
 const VERIFIER_PLAINTEXT = 'rangertrak-encryption-verifier-v1'
 const SALT_BYTES = 16

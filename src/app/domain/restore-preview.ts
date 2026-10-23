@@ -21,6 +21,8 @@ export type RestoreSide = {
   activityLines: number
   /** Ranger photos. null = the side does not say (an older backup has no `photos`; the device's stay). */
   photos: number | null
+  /** Mission journal entries (E-222). Omitted by callers that do not say; null = the file has no journal. */
+  journal?: number | null
 }
 
 export type RestoreRow = { label: string, device: string, file: string }
@@ -109,6 +111,14 @@ export function compareForRestore(device: RestoreSide, file: RestoreSide, thisAp
       file: file.photos === null ? 'not in this file (photos here stay)' : String(file.photos),
     },
   ]
+  // E-222: Restore never replaces this device's journal, so the row says what the file carries.
+  if (device.journal !== undefined || file.journal !== undefined) {
+    rows.push({
+      label: 'Journal entries',
+      device: device.journal == null ? '?' : `${device.journal} (kept)`,
+      file: file.journal == null ? 'none in this file' : `${file.journal} (not imported)`,
+    })
+  }
 
   const notInFileLine = notInFile === 0
     ? 'Every entry on this device is also in the file.'

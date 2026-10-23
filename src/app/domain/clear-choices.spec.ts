@@ -1,4 +1,4 @@
-import { buildClearRows, chosenIds, clearedSummary, countNotes, countText, DEFAULT_REPLACE_CLEAR, noteMatcher } from './clear-choices';
+import { buildClearRows, chosenIds, clearedPlain, clearedSummary, countNotes, countText, DEFAULT_REPLACE_CLEAR, noteMatcher } from './clear-choices';
 import type { ClearCounts } from './clear-choices';
 import type { AarNoteType } from '../shared/services/aar-note.interface';
 
@@ -59,5 +59,12 @@ describe('clear-choices (E-221)', () => {
     expect(clearedSummary('replace', DEFAULT_REPLACE_CLEAR, counts()))
       .toBe('roster 42, photos 5, log 318, places 12, settings, incidentNotes 7, lines 23, header');
     expect(clearedSummary('log', new Set(['lines']), counts())).toBe('log 318, lines 23');
+  });
+
+  it('E-222: the journal summary says what went and what stayed, in plain words', () => {
+    expect(clearedPlain('replace', DEFAULT_REPLACE_CLEAR, { ...counts(), appNotes: 4 }))
+      .toBe('Cleared: 42 rangers, 5 photos, 318 radio log entries, 12 places, the mission settings, 7 incident notes, 23 ICS-214 lines, the ICS-214 header. Kept: 4 notes about RangerTrak.');
+    expect(clearedPlain('log', new Set(), { ...counts(), appNotes: 0, lines: 0, incidentNotes: 0 }))
+      .toBe('Cleared: 318 radio log entries.');
   });
 });

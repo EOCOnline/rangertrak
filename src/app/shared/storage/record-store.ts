@@ -93,6 +93,8 @@ export const STORE = 'kv'
 // nothing to migrate; listed so load() reads it from IndexedDB like the others.
 // 'activityLogHeader' (2026-10-20, E-04 / D-63): the ICS-214 header and Resources Assigned rows
 // (ActivityLogHeaderService). New; nothing to migrate, listed so load() reads it.
+// 'missionJournal' (2026-10-23, E-222 / D-67): the append-only mission journal (MissionJournalService).
+// New; nothing to migrate, listed so load() reads it.
 // 'secrets' (2026-10-01, John): a small JSON object holding the Google geocoding key, kept out
 // of plaintext appSettings (and out of plain backups). MissionService moves a legacy key in.
 // 'rangersImported' (2026-10-05): the roster import baseline for "Export changes since import"
@@ -101,7 +103,7 @@ export const STORE = 'kv'
 // migrate, listed so load() reads it.
 // 'importSafetyCopy' (2026-10-18, E-198 phase 1): the whole device as it was just before an import, kept
 // 24 hours so "Undo last import" can put it back (ImportSafetyService). New; nothing to migrate.
-export const MIGRATED_KEYS = ['rangers', 'radioLog', 'radioLog-BAD', 'locations', 'aarNotes', 'secrets', 'rangersImported', 'layers', 'importSafetyCopy', 'activityLogHeader'] as const
+export const MIGRATED_KEYS = ['rangers', 'radioLog', 'radioLog-BAD', 'locations', 'aarNotes', 'secrets', 'rangersImported', 'layers', 'importSafetyCopy', 'activityLogHeader', 'missionJournal'] as const
 
 /**
  * The real implementation, and the module-level singleton this file exports as `recordStore`.

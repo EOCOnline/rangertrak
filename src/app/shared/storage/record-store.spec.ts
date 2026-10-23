@@ -309,6 +309,7 @@ describe('RecordStore', () => {
         layers: JSON.stringify({ schemaVersion: 1, layers: [{ name: 'Fernhollow CERT', kind: 'people', asOf: '2026-10-15', fileName: 'f.xlsx', importedAt: '2026-10-15T10:00:00Z', uids: ['u1'] }] }),
         activityLogHeader: JSON.stringify({ name: 'Pat Doe', icsPosition: 'Radio Operator', homeAgency: '', resources: [] }),
         importSafetyCopy: JSON.stringify({ meta: { takenAt: '2026-10-18T14:02:00Z', reason: 'restore', fileName: 'f.json', appVersion: '0.99.56-alpha' }, payload: { schemaVersion: 1 } }),
+        missionJournal: JSON.stringify({ schemaVersion: 1, entries: [] }),
       };
       for (const key of MIGRATED_KEYS) localStorage.setItem(key, values[key]);
 
