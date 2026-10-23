@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.81-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.80-alpha...v0.99.81-alpha) (2026-10-23)
+
+
+### Features
+
+* **board:** E-216 slice 2 /api/hello, scribe heartbeat, viewer count, start-up self-check, status line ([10a1a7f](https://github.com/SteadyEOC/RangerTrak/commit/10a1a7f45ec38d097feecc987d00a16f9b9f8de5))
+* **board:** E-216 slice 2 shared causes list and viewer board-lost / scribe-quiet ([18c7903](https://github.com/SteadyEOC/RangerTrak/commit/18c79033e1111d7f6bcc0d5e898bdc155e5185ef))
+* **board:** E-216 slice 2 Test connection (board-diagnosis, /api/hello check, card) ([89468e2](https://github.com/SteadyEOC/RangerTrak/commit/89468e2b75d37c9e9bfcfe5f19edb54646ece283))
+* **import:** Undo last import now covers roster imports (roster parts only) ([c10c7cb](https://github.com/SteadyEOC/RangerTrak/commit/c10c7cba7fd75e376ee21d49012998bb2e5fa8b2))
+* **mission:** Add on the map button on the Locations card ([ec2204b](https://github.com/SteadyEOC/RangerTrak/commit/ec2204b6654fbc78d31b2eae5f0e8f3c52e70962))
+
+
+### Bug Fixes
+
+* **rangers:** paging panel wraps at 360 px instead of scrolling the page sideways ([d7ffb90](https://github.com/SteadyEOC/RangerTrak/commit/d7ffb908c98c13d9940d67fcbebce24c45093ef3))
+
 ### [0.99.80-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.79-alpha...v0.99.80-alpha) (2026-10-23)
 
 
