@@ -393,6 +393,18 @@ to anyone on the station's WiFi, behind an optional password you set on the Miss
 cannot send reports through it. Only one device publishes to it at a time, and another device with
 the password can take it over.
 
+**If the Board won't connect.** On the Mission page's RangerTrak Board card, press **Test connection**. It
+asks the Board to say hello and tells you, in one sentence, the most likely reason it can't: this device is
+not on a network, it is on a different Wi-Fi from the Board laptop, the browser has not accepted the Board's
+certificate yet (press **Open the Board**, choose Advanced, then Proceed, and come back), the browser is
+blocking access to devices on this network, or something answered that is not a RangerTrak Board. A browser
+cannot see exactly why a connection fails, so these are best guesses; **Details** shows the technical line
+for whoever is helping. The Board laptop's own window lists what it found when it started, and prints a line
+whenever the scribe, the number of viewers or the latest report changes. On a viewer's screen, **lost** means
+the viewer can't reach the Board ("Lost the Board at 12:04. Still on the Wi-Fi? Is the Board laptop awake?"),
+and the last reports stay on screen. **Scribe quiet** means the Board is fine but the scribe's device has not
+checked in for over 2 minutes ("The Board is fine. The scribe's device last checked in 6 min ago.").
+
 **Handing over to the next scribe.** When a mission runs past one scribe, or a second scribe is
 logging at another radio, the other device usually has entries of its own already. On the Radio
 Log page, **Hand over to another scribe** saves one file with the people, the places and every
