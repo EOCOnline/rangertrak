@@ -2013,7 +2013,10 @@ async function checkControls() {
   // Removed again at the end: left installed, it puts every later group (the view group's
   // clean profile included) in Full view.
   const { identifier: controlsViewId } = await send('Page.addScriptToEvaluateOnNewDocument', { source: `try { if (localStorage.getItem('rt-view') === null) { localStorage.setItem('rt-view', 'full'); localStorage.setItem('rt-view-source', 'user') } } catch {}` })
-  const routes = [['Entry', '/'], ['Map', '/map'], ['Mission', '/mission'], ['Rangers', '/rangers']]
+  // E-209 leftover: every Help tab too (ids from HelpComponent.TAB_KEYS in src/app/lazy/help/help.component.ts).
+  const helpTabs = ['start', 'about', 'faq', 'data', 'after', 'feedback']
+  const routes = [['Entry', '/'], ['Map', '/map'], ['Mission', '/mission'], ['Rangers', '/rangers'],
+    ...helpTabs.map(tab => [`Help ${tab}`, `/help?tab=${tab}`])]
   for (const [width, touch] of [[1280, false], [360, true]]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height: touch ? 800 : 900, deviceScaleFactor: 1, mobile: touch })
     await send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: 1 })
