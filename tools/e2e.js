@@ -3667,12 +3667,12 @@ async function checkAarNotes() {
   check('an edited recommendation survives a reload', rec, 'Add a relay on the ridge')
 
   await evaluate(`(async () => {
-    const del = [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Delete all notes');
+    const del = [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Delete all after-action notes');
     del && del.click();
     await new Promise(r => setTimeout(r, 600));
   })()`)
   const empty = await evaluate(`!!document.querySelector('[data-testid="aar-empty"]')`)
-  check('Delete all notes empties the page', empty, true)
+  check('Delete all after-action notes empties the page', empty, true)
 }
 
 /**

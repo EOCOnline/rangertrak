@@ -569,12 +569,10 @@ export class EntryComponent implements OnInit, AfterViewInit, OnDestroy {
   /** The demo card's "Start a real mission": clears the demo, confirms first (a demo is
    *  replaceable, but anything typed on top of it is not). */
   async onStartRealMission(): Promise<void> {
-    const attachmentNote = await this.attachmentStore.deletionNotice([])
-    if (!confirm('Start a real mission?\n\n'
-      + 'This clears the demo data - rangers, radio log entries and locations - and resets the '
-      + 'mission settings to their defaults. Anything you added on top of the demo goes too. '
-      + 'Back up the mission first if you want to keep it.' + attachmentNote)) return
-    await this.usage.startRealMission()
+    // E-221: the operator chooses what else goes with the demo (notes, 214 lines, 214 header).
+    const clear = await this.usage.chooseWhatToClear('replace', 'Start a real mission?', 'Start real mission')
+    if (!clear) return
+    await this.usage.startRealMission(undefined, clear)
     // 2026-10-02, John: reloading Entry put the empty-device demo offer straight back in front of
     // him ("came back to the home page still showing the demo bar"). A real mission starts with
     // setup, so go to the Mission page. A full load, not a router hop: every service re-reads the

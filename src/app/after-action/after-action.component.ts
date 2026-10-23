@@ -135,12 +135,23 @@ export class AfterActionComponent {
     this.dialog.open(Ics214ExportDialogComponent, { maxWidth: '95vw', autoFocus: 'first-tabbable' })
   }
 
+  /** Deletes every `aar` note, both kinds (this incident and about RangerTrak). The 214 lines stay. */
   onDeleteAll(): void {
     const count = this.aarNotes().length
-    if (confirm(`Delete all ${count} after-action notes on this device? This cannot be undone.\n\n`
+    if (confirm(`Delete all ${count} after-action notes on this device, both about this incident and about RangerTrak? This cannot be undone.\n\n`
       + `Back up the mission first (Mission page) if you may need them. The ICS-214 lines are not deleted.`)) {
       this.notes.deleteAllOfKind('aar')
       this.log.warn(`Deleted all ${count} after-action notes`, this.id)
+    }
+  }
+
+  /** E-221: deletes the notes about RangerTrak only, e.g. once a summary has gone to the developers. */
+  onDeleteAppNotes(): void {
+    const count = this.appNotes().length
+    if (confirm(`Delete these ${count} note(s) about RangerTrak? This cannot be undone.\n\n`
+      + `Notes about this incident and the ICS-214 lines are not deleted.`)) {
+      this.notes.deleteWhere(n => n.kind === 'aar' && n.about === 'app')
+      this.log.warn(`Deleted ${count} after-action notes about RangerTrak`, this.id)
     }
   }
 

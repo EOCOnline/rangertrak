@@ -436,7 +436,7 @@ group:
 1. **Mission** → *Danger zone* → **Reset mission to defaults**, then re-enter what you want.
 2. **Rangers** → *Danger zone* → **Delete all rangers**. The roster stays empty until you
    import one or add rangers — edits save automatically as you make them.
-3. **Radio Log** → *Danger zone* → **Delete radio log entries and messages**.
+3. **Radio Log** → *Danger zone* → **Delete radio log entries and messages**. You choose whether your After Action notes and ICS-214 lines go too; they stay unless you tick them.
 
 Switching to a different browser or a different device also gives you a completely fresh
 environment — RangerTrak's data is per-browser, so Firefox knows nothing about what you did
@@ -593,7 +593,9 @@ post on each side of the slide, *modeled on* the March 22, 2014 SR 530 landslide
 (every person, team and message is invented).
 
 > This **replaces** your current roster and reports. Export first if you have anything you
-> need.
+> need. Before it goes ahead, RangerTrak lists what will go and lets you choose what else to clear,
+> such as your After Action notes and ICS-214 lines. The same list appears when you start a real
+> mission or delete the radio log.
 
 **Demo, Exercise or Incident.** The icon at the left of the status pill in the header shows what
 the mission is: a demo, an exercise, or a real incident (hover it to change it). An exercise stamps

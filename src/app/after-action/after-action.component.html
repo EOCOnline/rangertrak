@@ -99,6 +99,9 @@
         <button matButton="outlined" type="button" (click)="onSendAppNotes()">
           <mat-icon>send</mat-icon> Review and send
         </button>
+        <button matButton type="button" class="rt-aar__danger" (click)="onDeleteAppNotes()" data-testid="aar-delete-app-notes">
+          <mat-icon>delete</mat-icon> Delete these {{ appNotes().length }} notes
+        </button>
       </mat-card-content>
     </mat-card>
     }
@@ -106,10 +109,11 @@
     <mat-card appearance="outlined" class="rt-aar__section">
       <mat-card-header><mat-card-title>Delete notes</mat-card-title></mat-card-header>
       <mat-card-content>
-        <p>Notes stay on this device until you delete them. Deleting the radio log or loading a demo leaves
-          them alone; Restore mission replaces them with the backup's.</p>
+        <p>Notes stay on this device until you delete them. Deleting the radio log leaves them alone unless
+          you choose otherwise. Loading a demo or starting a real mission asks what to clear. Restore mission
+          replaces them with the backup's.</p>
         <button matButton="outlined" type="button" class="rt-aar__danger" (click)="onDeleteAll()">
-          Delete all notes
+          Delete all after-action notes
         </button>
       </mat-card-content>
     </mat-card>

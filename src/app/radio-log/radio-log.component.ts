@@ -24,7 +24,6 @@ import { describeGridFilters, FilterChip } from '../domain/grid-filter-chips';
 // 2026-09-02: also imported from its own file now, not the '../shared/' barrel - same
 // reason as rangerColorFor below (the barrel re-exports ranger-icon.ts's Leaflet-typed
 // functions too, and 'leaflet' has side effects esbuild can't tree-shake out of a barrel).
-import { Utility } from '../shared/utility'
 import { ensureAgGridRegistered } from '../shared/ag-grid-setup'
 import { rangertrakGridTheme } from '../shared/ag-grid-theme'
 // Imported from its own file, not the '../shared/' barrel - that barrel also re-exports the
@@ -35,6 +34,8 @@ import { buildIcs309Log, Ics309Log } from '../shared/export/ics309-log'
 import { formatStation } from '../domain/station-label'
 import { isScenarioEntry, formatScenarioTime, scenarioTimeAt, sameScenarioClock } from '../domain/scenario'
 import { UsageStateService } from '../shared/services/usage-state.service'
+import { AarNoteService } from '../shared/services/aar-note.service'
+import { noteMatcher } from '../domain/clear-choices'
 import { AttachmentStoreService } from '../shared/services/attachment-store.service'
 import { ImportSafetyService } from '../shared/services/import-safety.service'
 import { AttachmentChipComponent } from '../shared/attachments/attachment-chip.component'
@@ -486,6 +487,7 @@ export class RadioLogComponent implements OnInit, OnDestroy {
   private attachmentViewer = inject(AttachmentViewerService)
   /** E-196 (D-66): the mode decides the catch-up wording and the import warnings. */
   protected usage = inject(UsageStateService)
+  private aarNoteService = inject(AarNoteService)
 
   constructor(
     private radioLogService: RadioLogService,
@@ -1279,14 +1281,15 @@ export class RadioLogComponent implements OnInit, OnDestroy {
   }
 
   async onBtnClearRadioLog() {
-    // E-194: says how many attachments go with the entries, when there are any.
-    const attachmentNote = await this.attachmentStore.deletionNotice([])
-    if (Utility.getConfirmation(`Delete radio log entries and messages? This cannot be undone.${attachmentNote}`)) {
-      this.log.info("Removing all radio log entries from local storage...", this.id)
-      await this.radioLogService.deleteAllRadioLogEntries()
-      this.refreshGrid()
-      this.reloadPage()
-    }
+    // E-221: the dialog says how many attachments go with the entries and offers the notes and
+    // 214 lines (kept unless ticked).
+    const clear = await this.usage.chooseWhatToClear('log', 'Delete radio log entries and messages?', 'Delete radio log')
+    if (!clear) return
+    this.log.info("Removing all radio log entries from local storage...", this.id)
+    await this.radioLogService.deleteAllRadioLogEntries()
+    this.aarNoteService.deleteWhere(noteMatcher(clear))
+    this.refreshGrid()
+    this.reloadPage()
   }
 
   /**

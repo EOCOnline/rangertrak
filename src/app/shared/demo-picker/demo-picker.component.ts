@@ -4,22 +4,21 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatButtonModule } from '@angular/material/button'
 import { MatSelectModule } from '@angular/material/select'
-import { LogService, MissionService, UsageStateService } from '../services'
+import { LogService, UsageStateService } from '../services'
 // Direct path, not the barrel - see the note in rangers.component.ts.
 // sample-scenarios.ts is the small list; the demo data itself (sample-data.service.ts) is
 // loaded with a dynamic import() at the moment a demo loads (E-192).
 import {
   DEFAULT_SAMPLE_SCENARIO, SAMPLE_SCENARIOS, SampleScenarioId
 } from '../services/sample-scenarios'
-import { AttachmentStoreService } from '../services/attachment-store.service'
 import { activeDemoScenario } from '../mapping/demo-map'
-import { confirmReplaceMission } from './replace-guard'
+import type { ClearId } from '../../domain/clear-choices'
 
 /**
  * E-168 (2026-10-01, John): the demo scenario picker plus its Load button, in one place. It
  * used to be copied into Entry, Mission > Advanced and Rangers, each with its own confirm text
  * and reload; they now all use this, so a demo is loaded and guarded the same way everywhere
- * (and in a live mission the guard is the stronger one in replace-guard.ts).
+ * (and in a live mission the guard is the stronger one in the clear dialog, E-221).
  */
 @Component({
   selector: 'rangertrak-demo-picker',
@@ -74,7 +73,6 @@ export class DemoPickerComponent implements OnInit {
   constructor(
     private injector: Injector,
     private usage: UsageStateService,
-    private missionService: MissionService,
     private log: LogService,
   ) { }
 
@@ -89,25 +87,21 @@ export class DemoPickerComponent implements OnInit {
     const label = this.scenarios.find(s => s.id === scenario)?.label ?? scenario
     const state = this.usage.state()
 
-    const attachmentNote = await this.injector.get(AttachmentStoreService).deletionNotice([])
-
     // An empty device has nothing to replace, so no question (the Entry welcome panel's old
-    // behaviour); every other state confirms, and a live mission confirms hard.
-    if (state !== 'empty' && !confirmReplaceMission({
-      state,
-      missionName: this.missionService.settings.mission,
-      message: `Load the "${label}" sample mission?\n\n`
-        + `This REPLACES all rangers, radio log entries and locations currently on this device with `
-        + `demonstration data, renames the mission to make that obvious, and moves the mission's `
-        + `default location to the demo's command post.\n\n`
-        + `This cannot be undone - back up the current mission first if you want to keep it.${attachmentNote}`,
-    })) {
-      this.log.verbose('onLoad: user cancelled.', this.id)
-      return false
+    // behaviour); every other state asks what to clear (E-221), and a live mission asks hard
+    // (the dialog carries E-168's back-up-first and type-the-name guard).
+    let clear: ReadonlySet<ClearId> | undefined
+    if (state !== 'empty') {
+      const chosen = await this.usage.chooseWhatToClear('replace', `Load the "${label}" demo?`, 'Load demo')
+      if (!chosen) {
+        this.log.verbose('onLoad: user cancelled.', this.id)
+        return false
+      }
+      clear = chosen
     }
 
     const { SampleDataService } = await import('../services/sample-data.service')
-    await this.injector.get(SampleDataService).loadSampleMission(scenario)
+    await this.injector.get(SampleDataService).loadSampleMission(scenario, clear)
     this.log.warn(`Loaded the sample mission (demo data): ${scenario}.`, this.id)
     if (state !== 'empty') alert('Sample mission loaded. Reloading to refresh every screen with the new data...')
     window.location.reload()
