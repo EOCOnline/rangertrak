@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.84-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.83-alpha...v0.99.84-alpha) (2026-10-24)
+
+
+### Bug Fixes
+
+* **icons:** add anchor, edit, update, wifi_find to icon font subset ([16550ab](https://github.com/SteadyEOC/RangerTrak/commit/16550ab5e476b6bbc8975a6dbea5d2e61988c5fc))
+
 ### [0.99.83-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.82-alpha...v0.99.83-alpha) (2026-10-24)
 
 
