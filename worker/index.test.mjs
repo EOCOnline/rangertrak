@@ -424,9 +424,9 @@ test('/exercise and /exercise/ redirect to the hosted console, without touching 
   }
 })
 
-test('/tour, /try and their slash forms redirect to the tour page, without touching the asset store', async () => {
+test('/tour and /tour/ redirect to the tour page, without touching the asset store', async () => {
   const env = { ASSETS: { fetch: async () => { throw new Error('asset store should not be called') } } }
-  for (const path of ['/tour', '/tour/', '/try', '/try/']) {
+  for (const path of ['/tour', '/tour/']) {
     const res = await worker.fetch(new Request(`https://rangertrak.org${path}`), env)
     assert.equal(res.status, 302)
     assert.equal(res.headers.get('Location'), '/tour/index.html')
