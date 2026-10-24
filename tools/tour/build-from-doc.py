@@ -23,17 +23,17 @@ ICONS = {
     3: '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.5"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',
     4: '<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2h6v2M8.5 10h7M8.5 14h7M8.5 18h4"/>',
     5: '<path d="M12 10v12M8.5 22h7"/><circle cx="12" cy="8" r="2"/><path d="M7.8 3.8a6 6 0 0 0 0 8.4M16.2 3.8a6 6 0 0 1 0 8.4M5 1.5a9.5 9.5 0 0 0 0 13M19 1.5a9.5 9.5 0 0 1 0 13"/>',
-    6: '<rect x="2.5" y="4" width="19" height="13" rx="1.5"/><path d="M8 21h8M12 17v4M6 9h5M6 12h8"/>',
-    7: '<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
-    8: '<path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/>',
-    9: '<path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4M9 11h6M9 14h6M9 17h4"/>',
+    6: '<path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/>',
+    7: '<path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4M9 11h6M9 14h6M9 17h4"/>',
+    8: '<rect x="2.5" y="4" width="19" height="13" rx="1.5"/><path d="M8 21h8M12 17v4M6 9h5M6 12h8"/>',
+    9: '<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
 }
 SVG = ('<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" '
        'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">{}</svg>')
 
 # Who each module needs, for the route table (the doc's route is a chart, not text).
 WHO = {1: 'solo', 2: 'solo or pairs', 3: 'solo or pairs', 4: 'solo', 5: 'best with a crew',
-       6: 'your laptop and a phone', 7: 'optional; a phone', 8: 'solo', 9: 'solo'}
+       6: 'solo', 7: 'solo', 8: 'optional; your laptop and a phone', 9: 'optional; a phone'}
 
 # Links the doc does not carry: (exact text as it appears in the page, href). First match only.
 LINKS = [
@@ -126,7 +126,7 @@ def build(root):
                     out.append(f'<h2 id="m{module}" class="mod"><span class="icon" aria-hidden="true">'
                                f'{SVG.format(ICONS[module])}</span><span><span class="mnum">Module {module}</span> '
                                f'{html.escape(m.group(2), quote=False)}</span></h2>')
-                elif title.startswith('The RangerTrak Tour'):
+                elif title.endswith('RangerTrak Tour'):
                     out.append('<h1>RangerTrak Tour Guide</h1>')
                 elif title == 'The route':
                     rows = ''.join(f'<tr><td><a href="#m{n}">{n}</a></td><td><a href="#m{n}">{{m{n}}}</a></td>'
@@ -161,6 +161,7 @@ def build(root):
         elif t == 'list':
             check = b.get('kind') == 'check'
             lis = []
+            prev = ''
             for li in b:
                 p = li.find('paragraph')
                 text = inline(p) if p is not None else ''
@@ -184,6 +185,10 @@ def build(root):
                     else:
                         items.append((iid, body))
                     cls = 'q' if iid[0] == 'Q' else 't'
+                    # A gap between a module's tests and its questions.
+                    if cls == 'q' and prev == 't':
+                        cls = 'q first'
+                    prev = cls[0]
                     lis.append(f'<li id="{iid}" class="{cls}">{spans}<strong>{iid}</strong> {body} '
                                f'<a class="self" href="#{iid}" aria-label="Link to {iid}">#</a></li>')
                 else:

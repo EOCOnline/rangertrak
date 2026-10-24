@@ -43,6 +43,7 @@ h2 { font-size: 1.3rem; margin: 2.25rem 0 .5rem; padding-top: .75rem; border-top
 ul.checks { list-style: none; padding-left: 0; }
 ul.checks li { padding: .35rem 0 .35rem .6rem; border-left: 3px solid var(--rule); margin: .35rem 0; }
 ul.checks li.q { border-left-color: var(--q); }
+ul.checks li.q.first { margin-top: 1.5rem; }
 ul.checks li:target, ul.checks li:has(span:target) { background: var(--tint); border-left-color: var(--accent); }
 .self { color: var(--muted); text-decoration: none; font-size: .85em; opacity: .5; }
 .self:hover, .self:focus { opacity: 1; }
