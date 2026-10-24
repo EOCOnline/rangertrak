@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.85-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.84-alpha...v0.99.85-alpha) (2026-10-24)
+
+
+### Features
+
+* **tour:** serve at /tour/, show the doc's h3s and asides, Tour Checklist ([00f9754](https://github.com/SteadyEOC/RangerTrak/commit/00f9754aa0caf2ac9ead3cd2784ae7c60030a5df))
+
 ### [0.99.84-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.83-alpha...v0.99.84-alpha) (2026-10-24)
 
 
