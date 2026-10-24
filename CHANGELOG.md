@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.86-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.85-alpha...v0.99.86-alpha) (2026-10-24)
+
+
+### Features
+
+* **tour:** works offline at /tour/, logo, three-stage route trail, closing question ([fe1fd09](https://github.com/SteadyEOC/RangerTrak/commit/fe1fd09849a43bd53cd225b9146e2554436c4e48))
+
 ### [0.99.85-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.84-alpha...v0.99.85-alpha) (2026-10-24)
 
 
