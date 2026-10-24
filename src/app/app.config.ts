@@ -61,7 +61,8 @@ export const appConfig: ApplicationConfig = {
       withPreloading(NoPreloading),
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
     ),
-    provideServiceWorker('ngsw-worker.js', {
+    // rt-sw.js wraps ngsw-worker.js, adding offline /tour/; see that file.
+    provideServiceWorker('rt-sw.js', {
       enabled: environment.production || !isDevMode(),
       // Register the ServiceWorker as soon as the app is stable
       // or after 30 seconds (whichever comes first).

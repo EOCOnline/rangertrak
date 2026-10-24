@@ -40,6 +40,11 @@
                 "output": "./"
               },
               {
+                "glob": "rt-sw.js",
+                "input": "./src",
+                "output": "./"
+              },
+              {
                 "glob": "robots.txt",
                 "input": "./src",
                 "output": "./"
