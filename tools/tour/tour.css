@@ -68,3 +68,19 @@ footer { max-width: 46rem; margin: 0 auto; padding: 1rem 16px 2rem; color: var(-
   body.sheet-only main > :not(#sheet) { display: none; }
   body.sheet-only #sheet { break-before: auto; }
 }
+
+/* Module header: icon + title, then Setup / Goals / Situation boxes; Skills learned closes it */
+h2.mod { display: flex; align-items: center; gap: .7rem; }
+h2.mod .icon { flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--tint); color: var(--accent); }
+h2.mod .mnum { display: block; font-size: .75rem; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted); }
+.mhead { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin: .75rem 0 1rem; }
+.mhead .box { background: var(--tint); border-left: 3px solid var(--accent); border-radius: 6px; padding: .55rem .8rem; }
+.mhead .sit { grid-column: 1 / -1; border-left-color: var(--q); }
+.mhead h3 { margin: 0 0 .2rem; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.mhead p, .mhead ul { margin: 0; }
+.mhead ul { padding-left: 1.1rem; }
+p.skills { background: var(--tint); border-radius: 6px; padding: .5rem .8rem; }
+@media (max-width: 560px) { .mhead { grid-template-columns: 1fr; } }
+@media print { .mhead .box { border: 1px solid var(--rule); border-left-width: 3px; } }
