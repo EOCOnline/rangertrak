@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.83-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.82-alpha...v0.99.83-alpha) (2026-10-24)
+
+
+### Features
+
+* **help:** E-224 the in-app Guide becomes Help ([149ecf5](https://github.com/SteadyEOC/RangerTrak/commit/149ecf54e53e2a32749d6f9e0e36766d56af3b68))
+
 ### [0.99.82-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.81-alpha...v0.99.82-alpha) (2026-10-24)
 
 
