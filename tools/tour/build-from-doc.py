@@ -81,7 +81,7 @@ def inline(p):
             out += t
             continue
         if 'mention' in m:
-            body = f'<a href="#sheet">{body}</a>'
+            body = '<a href="#sheet">Tour Checklist</a>'
         if 'code' in m:
             body = f'<code>{body}</code>'
         if 'italic' in m:
@@ -117,6 +117,9 @@ def build(root):
             if not text or b.find('date') is not None:
                 continue
             if h == '1':
+                continue
+            if h == '3':
+                out.append(f'<h3>{text}</h3>')
                 continue
             if h == '2':
                 title = plain(text)
@@ -157,7 +160,12 @@ def build(root):
                 body = body[:1].upper() + body[1:]
                 cls = ' sit' if label == 'Situation' else ''
                 boxes.append(f'<div class="box{cls}"><h3>{label}</h3><p>{body}</p></div>')
-            out.append('<div class="mhead">' + ''.join(boxes) + '</div>')
+            if boxes:
+                out.append('<div class="mhead">' + ''.join(boxes) + '</div>')
+            else:
+                # An aside, not a module's Setup / Goals / Situation.
+                paras = ''.join(f'<p>{inline(p)}</p>' for p in b if p.tag == 'paragraph' and inline(p))
+                out.append(f'<blockquote>{paras}</blockquote>')
         elif t == 'list':
             check = b.get('kind') == 'check'
             lis = []
@@ -243,14 +251,14 @@ HEAD = '''<!doctype html>
 <body>
 <header class="top">
   <a class="home" href="/">RangerTrak</a>
-  <nav><a href="#route">Route</a> <a href="#telling-us">Telling us</a> <a href="#sheet">Tester sheet</a></nav>
+  <nav><a href="#route">Route</a> <a href="#telling-us">Telling us</a> <a href="#sheet">Tour Checklist</a></nav>
 </header>
 <main>
 '''
 
 TAIL = '''<section id="sheet">
-<h2>Tester sheet</h2>
-<p class="noprint">Every test and question in one list. <button type="button" onclick="document.body.classList.add('sheet-only');print();document.body.classList.remove('sheet-only')">Print the tester sheet</button></p>
+<h2>Tour Checklist</h2>
+<p class="noprint">Every test and question in one list. <button type="button" onclick="document.body.classList.add('sheet-only');print();document.body.classList.remove('sheet-only')">Print the Tour Checklist</button></p>
 <p class="fields">Name ____________________ &nbsp; Date __________ &nbsp; Device and browser ____________________ &nbsp; RangerTrak version __________</p>
 <div class="scroll"><table class="sheet"><tr><th>ID</th><th>Step</th><th>Pass</th><th>Fail</th><th>Note</th></tr>
 {rows}</table></div>

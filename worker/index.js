@@ -407,13 +407,17 @@ export default {
       })
     }
 
-    // The beta tester tour, copied to /tour/ by angular.json, the same way. The browser keeps a
-    // #T3.4 fragment across the redirect.
-    if (['/tour', '/tour/'].includes(url.pathname)) {
+    // The beta tester tour, copied to /tour/ by angular.json. Unlike the console it is served at
+    // /tour/ itself, the URL testers are given; /tour and /tour/index.html redirect there (the
+    // trailing slash keeps tour.css relative). The browser keeps a #T3.4 fragment across them.
+    if (url.pathname === '/tour' || url.pathname === '/tour/index.html') {
       return new Response(null, {
         status: 302,
-        headers: { Location: '/tour/index.html', 'Cache-Control': 'no-store' },
+        headers: { Location: '/tour/', 'Cache-Control': 'no-store' },
       })
+    }
+    if (url.pathname === '/tour/') {
+      return env.ASSETS.fetch(new Request(new URL('/tour/index.html', url), request))
     }
 
     if (!url.pathname.endsWith('.pmtiles')) {
