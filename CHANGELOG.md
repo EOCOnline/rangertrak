@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.99.82-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.81-alpha...v0.99.82-alpha) (2026-10-24)
+
+
+### Features
+
+* **tour:** beta tester tour page at /tour/ (Take RangerTrak for a Shift, v1) ([d464494](https://github.com/SteadyEOC/RangerTrak/commit/d4644945d6661b40c19ccaa8cde3fc0243f551d0)), closes [#m1](https://github.com/SteadyEOC/RangerTrak/issues/m1) [-#m9](https://github.com/SteadyEOC/-/issues/m9)
+* **tour:** RangerTrak Tour Guide; standard module header, built from the doc ([9d6455d](https://github.com/SteadyEOC/RangerTrak/commit/9d6455db22f5e52e2a3bfdf8c04458a0f5b874b2))
+
+
+### Bug Fixes
+
+* **tour:** double-escaped ampersand on the tester sheet ([fa996e4](https://github.com/SteadyEOC/RangerTrak/commit/fa996e44c5e3507641999d33be50491e0188ba53))
+* **tour:** drop the /try redirect; /tour/ is the only address ([d942b47](https://github.com/SteadyEOC/RangerTrak/commit/d942b474b0e2f8d378fd004c39948dca51b948ef))
+
 ### [0.99.81-alpha](https://github.com/SteadyEOC/RangerTrak/compare/v0.99.80-alpha...v0.99.81-alpha) (2026-10-23)
 
 
