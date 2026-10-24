@@ -2,6 +2,7 @@
 abc
 add
 add_location
+anchor
 archive
 assignment
 attach_file
@@ -31,6 +32,7 @@ difference
 dock
 done
 download
+edit
 edit_note
 email
 emergency
@@ -116,6 +118,7 @@ title
 today
 transform
 undo
+update
 upgrade
 upload
 upload_file
@@ -124,5 +127,6 @@ videocam
 visibility
 warning
 water
+wifi_find
 window
 zoom_out_map
