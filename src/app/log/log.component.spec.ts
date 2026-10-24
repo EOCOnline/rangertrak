@@ -10,6 +10,10 @@ describe('LogComponent', () => {
   let fixture: ComponentFixture<LogComponent>;
 
   beforeEach(async () => {
+    // Start from empty storage: specs run in random order, and one that sends feedback leaves
+    // journal entries behind, which the Journal tab test would count.
+    localStorage.clear();
+    await recordStore.resetForTests();
     await TestBed.configureTestingModule({
       imports: [ LogComponent ],
       // HeaderComponent renders MissionReadinessComponent, whose readiness dot is now a
