@@ -192,7 +192,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
             bullets: [
               'Send my reports, next to the badge, packages every report on this device into one file and hands it to whatever app you pick — Mail, Messages, AirDrop, a messaging app — the same "Share" sheet a photo or a link uses. Where it goes from there is up to the person you choose, not RangerTrak.',
               'Nothing is ever lost by staying offline — every report saves to this device the instant it is submitted, exactly like normal. Sending is a separate, later step, never a requirement to file a report at all.',
-              'At the command post, the matching Load Report Packet button on the Radio Log page merges those reports in — see that page\'s own guide entry.'
+              'At the command post, the matching Load Report Packet button on the Radio Log page merges those reports in — see that page\'s own Help.'
             ]
           }
         ]
@@ -250,7 +250,7 @@ export const GUIDE_CONTENT: Record<string, GuideEntry> = {
           },
           {
             heading: 'Report Packet — reports from another device',
-            text: 'A separate pair of buttons from the CSV export above — this one is for merging reports IN from another device, most often a ranger\'s own field phone (see "Field mode" on the Entry page\'s own guide entry), not for reading data out.',
+            text: 'A separate pair of buttons from the CSV export above — this one is for merging reports IN from another device, most often a ranger\'s own field phone (see "Field mode" in the Entry page\'s own Help), not for reading data out.',
             bullets: [
               'Build Report Packet packages every report on THIS device into one small file, ready to hand to another device.',
               'Load Report Packet reads one of those files back in and merges it — it only ever ADDS reports this device does not already have; nothing existing is ever replaced or overwritten.',

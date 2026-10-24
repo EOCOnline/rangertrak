@@ -101,12 +101,15 @@
       <!-- E-04 / D-63: AAR/214 names both uses of the one button; a field phone keeps "AAR note". -->
       {{ fieldMode.enabled() ? 'AAR note' : 'AAR/214' }}
     </button>
+    <!-- E-224 (John 2026-10-23): was "Guide". "Field Guide" is the rangertrak.com manual, so the
+         in-app reference is one thing called Help: this per-screen drawer, which links to the
+         full Help page. -->
     @if (guide.available()) {
     <button matButton="outlined" type="button" class="header__guide" (click)="guide.toggle()"
       [attr.aria-expanded]="guide.isOpen()"
-      title="Instructions, tips and keyboard help for this screen">
+      title="Help for this screen: instructions, tips and keyboard keys">
       <mat-icon>help_outline</mat-icon>
-      Guide
+      Help
     </button>
     }
   </div>

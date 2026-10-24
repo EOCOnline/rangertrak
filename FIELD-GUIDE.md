@@ -438,7 +438,8 @@ check it.
 
 ## What's on each screen
 
-For what each screen does and how to use it, see the in-app **Help** page — it ships with
+For what each screen does and how to use it, press **Help** at the top of that screen, or open
+the in-app **Help** page from the menu — it ships with
 the app, always matches the version you're running, and works with no Internet. This guide
 covers what Help can't: getting a device ready before you no longer have a connection to
 fall back on.
